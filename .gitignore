@@ -1,0 +1,24 @@
+# Folder structure
+
+**/builds/
+**/cooked/
+**/saved/
+
+# Visual Studio
+
+.vs/
+.vsconfig
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+
+# C++
+
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
