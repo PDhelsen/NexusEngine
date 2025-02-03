@@ -10,7 +10,7 @@ namespace NxAp
 {
 	void HelloWorld()
 	{
-		NEXUS_LOG(Info, Default, "App - Hello World 5");
+		NEXUS_LOG(Info, Default, "App - Hello World");
 	}
 }
 
@@ -18,8 +18,8 @@ int main()
 {
 	NxFr::Initialize();
 
-	NxAp::HelloWorld();
 	NxEn::HelloWorld();
+	NxAp::HelloWorld();
 
 	NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
 

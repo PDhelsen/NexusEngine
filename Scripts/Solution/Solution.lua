@@ -87,7 +87,7 @@ project (Engine)
     {
         Code .. "**.h",
         Code .. "**.cpp",
-        Code .. "**.nativs"
+        Code .. "**.natvis"
     }
 
     includedirs
