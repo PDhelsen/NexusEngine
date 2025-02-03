@@ -7,6 +7,7 @@ Link = "_%{cfg.platform}_%{cfg.buildcfg}"
 
 Framework = "NexusFramework"
 Engine = "NexusEngine"
+App = "NexusApp"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -29,6 +30,10 @@ workspace (Engine)
 
     platforms { "Win64" }
     configurations { "Debug", "Release", "Distrib" }
+
+	startproject (App)
+	debugcommand (Artifacts .. App .. ".exe")
+	debugdir (Root)
 
 	characterset "Unicode"
     flags { "MultiProcessorCompile" }
@@ -61,8 +66,8 @@ workspace (Engine)
 
 group "Libraries"
 group "Tests"
-group "Projects"
 group "Modules"
+project (App)
 group ""
 
 project (Engine)
@@ -104,6 +109,49 @@ project (Engine)
 	defines
 	{
 		"NEXUS_ENGINE_DLL"
+	}
+
+    postbuildcommands
+    {
+        PostBuild
+    }
+
+project (App)
+    location (Code)
+
+    kind "ConsoleApp"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.h",
+        Code .. "**.cpp",
+    }
+
+    includedirs
+    {
+        Sources,
+		NexusFramework .. "Sources/"
+    }
+
+	libdirs
+	{
+		NexusFramework .. "Builds/NexusFramework" .. Link,
+		Engine
+	}
+
+	links
+	{
+		Framework,
+		Engine
+	}
+
+	defines
+	{
 	}
 
     postbuildcommands
