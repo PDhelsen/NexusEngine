@@ -4,6 +4,6 @@ namespace NxSt
 {
 	void Start(NxFr::StringView Dll)
 	{
-		NxFr::Platform::GetInstance()->ExecuteFromDll(Dll, "Main");
+		NxFr::Platform::GetInstance()->GetFunctionFromDll<void>(Dll, "Main").Invoke();
 	}
 }
