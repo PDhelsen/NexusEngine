@@ -8,6 +8,9 @@ Link = "_%{cfg.platform}_%{cfg.buildcfg}"
 Framework = "NexusFramework"
 Engine = "NexusEngine"
 App = "NexusApp"
+Starter = "NexusStarter"
+
+StarterApp = "Starter-NexusApp"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -31,7 +34,7 @@ workspace (Engine)
     platforms { "Win64" }
     configurations { "Debug", "Release", "Distrib" }
 
-	startproject (App)
+	startproject (StarterApp)
 	debugcommand (Artifacts .. App .. ".exe")
 	debugdir (Root)
 
@@ -66,8 +69,11 @@ workspace (Engine)
 
 group "Libraries"
 group "Tests"
+group "Starters"
+project (StarterApp)
 group "Modules"
 project (App)
+project (Starter)
 group ""
 
 project (Engine)
@@ -119,6 +125,92 @@ project (Engine)
 project (App)
     location (Code)
 
+    kind "SharedLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.h",
+        Code .. "**.cpp",
+    }
+
+    includedirs
+    {
+        Sources,
+		NexusFramework .. "Sources/"
+    }
+
+	libdirs
+	{
+		NexusFramework .. "Builds/NexusFramework" .. Link,
+	}
+
+	links
+	{
+		Framework,
+		Engine
+	}
+
+	defines
+	{
+		"NEXUS_APP_DLL"
+	}
+
+    postbuildcommands
+    {
+        PostBuild
+    }
+
+project (Starter)
+    location (Code)
+
+    kind "SharedLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.h",
+        Code .. "**.cpp",
+    }
+
+    includedirs
+    {
+        Sources,
+		NexusFramework .. "Sources/"
+    }
+
+	libdirs
+	{
+		NexusFramework .. "Builds/NexusFramework" .. Link,
+	}
+
+	links
+	{
+		Framework,
+		Engine
+	}
+
+	defines
+	{
+		"NEXUS_STARTER_DLL"
+	}
+
+    postbuildcommands
+    {
+        PostBuild
+    }
+
+project (StarterApp)
+    location (Code)
+
     kind "ConsoleApp"
     language "C++"
 	cppdialect "C++20"
@@ -141,13 +233,14 @@ project (App)
 	libdirs
 	{
 		NexusFramework .. "Builds/NexusFramework" .. Link,
-		Engine
 	}
 
 	links
 	{
 		Framework,
-		Engine
+		Engine,
+		App,
+        Starter,
 	}
 
 	defines

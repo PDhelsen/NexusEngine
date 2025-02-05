@@ -1,6 +1,9 @@
 #pragma once
 
+#include "NexusApp/Core/NexusAppCore.h"
+#include "NexusFramework/Core/NexusFramework.h"
+
 namespace NxAp
 {
-	void HelloWorld();
+	NEXUS_APP_API void HelloWorld();
 }
