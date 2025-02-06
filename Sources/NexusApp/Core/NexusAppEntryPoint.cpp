@@ -9,7 +9,7 @@
 
 namespace NxAp
 {
-	void Main(int argc, char* argv[])
+	int Main(int argc, char* argv[])
 	{
 		NxFr::Initialize();
 
@@ -23,5 +23,7 @@ namespace NxAp
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
 
 		NxFr::Shutdown();
+
+		return 0;
 	}
 }

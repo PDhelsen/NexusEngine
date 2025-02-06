@@ -2,5 +2,5 @@
 
 int main(int argc, char* argv[])
 {
-	NxAp::Main(argc, argv);
+	return NxAp::Main(argc, argv);
 }
