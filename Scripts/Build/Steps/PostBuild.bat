@@ -1,5 +1,4 @@
 @echo off
-setlocal enabledelayedexpansion
 
 set Root=%~dp0..\..\..\
 
@@ -20,14 +19,6 @@ set Framework=%NexusFramework%\Builds\NexusFramework_%Platform%_%Configuration%\
 robocopy %Binaries% %Artifacts% *.lib *.dll *.exe /it /is /e /v
 if "%Project%"=="NexusEngine" (
 robocopy %Framework% %Artifacts% *.lib *.dll *.exe /it /is /e /v
-)
-
-if "%Project:~0,7%"=="Starter" (
-	set Executable=""
-	for /F "tokens=1,2 delims=-" %%A in ("%Project%") do (
-		set Executable=%%B
-	)
-	move /Y %Artifacts%%Project%.exe %Artifacts%!Executable!.exe
 )
 
 if %errorlevel% NEQ 0 pause

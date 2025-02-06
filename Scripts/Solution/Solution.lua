@@ -8,9 +8,7 @@ Link = "_%{cfg.platform}_%{cfg.buildcfg}"
 Framework = "NexusFramework"
 Engine = "NexusEngine"
 App = "NexusApp"
-Starter = "NexusStarter"
-
-StarterApp = "Starter-NexusApp"
+AppExe = "NexusApp-Exe"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -69,11 +67,10 @@ workspace (Engine)
 
 group "Libraries"
 group "Tests"
-group "Starters"
-project (StarterApp)
+group "Executable"
+project (AppExe)
 group "Modules"
 project (App)
-project (Starter)
 group ""
 
 project (Engine)
@@ -165,56 +162,14 @@ project (App)
         PostBuild
     }
 
-project (Starter)
-    location (Code)
-
-    kind "SharedLib"
-    language "C++"
-	cppdialect "C++20"
-
-	targetdir (Target)
-	objdir (Object)
-
-    files
-    {
-        Code .. "**.h",
-        Code .. "**.cpp",
-    }
-
-    includedirs
-    {
-        Sources,
-		NexusFramework .. "Sources/"
-    }
-
-	libdirs
-	{
-		NexusFramework .. "Builds/NexusFramework" .. Link,
-	}
-
-	links
-	{
-		Framework,
-		Engine
-	}
-
-	defines
-	{
-		"NEXUS_STARTER_DLL"
-	}
-
-    postbuildcommands
-    {
-        PostBuild
-    }
-
-project (StarterApp)
+project (AppExe)
     location (Code)
 
     kind "ConsoleApp"
     language "C++"
 	cppdialect "C++20"
 
+	targetname (App)
 	targetdir (Target)
 	objdir (Object)
 
@@ -227,20 +182,15 @@ project (StarterApp)
     includedirs
     {
         Sources,
-		NexusFramework .. "Sources/"
     }
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. Link,
 	}
 
 	links
 	{
-		Framework,
-		Engine,
 		App,
-        Starter,
 	}
 
 	defines

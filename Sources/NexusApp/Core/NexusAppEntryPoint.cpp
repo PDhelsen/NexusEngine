@@ -9,9 +9,13 @@
 
 namespace NxAp
 {
-	void Main()
+	void Main(int argc, char* argv[])
 	{
 		NxFr::Initialize();
+
+		NEXUS_LOG(Info, Default, "Args count: %d", argc);
+		for (uint64 Index = 0; Index < argc; Index++)
+			NEXUS_LOG(Info, Default, "%d: %s", Index, argv[Index]);
 
 		NxEn::HelloWorld();
 		HelloWorld();

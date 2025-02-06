@@ -4,5 +4,5 @@
 
 namespace NxAp
 {
-	extern "C" NEXUS_APP_API void Main();
+	NEXUS_APP_API void Main(int argc, char* argv[]);
 }
