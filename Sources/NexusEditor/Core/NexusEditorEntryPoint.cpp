@@ -1,9 +1,9 @@
-#include "NexusApp/Core/NexusAppEntryPoint.h"
+#include "NexusEditor/Core/NexusEditorEntryPoint.h"
 
 #include "NexusFramework/Core/NexusFramework.h"
 #include "NexusFramework/Core/NexusFrameworkEntryPoint.h"
 
-namespace NxAp
+namespace NxEd
 {
 	int Main(int argc, char* argv[])
 	{
@@ -13,7 +13,7 @@ namespace NxAp
 		for (uint64 Index = 0; Index < argc; Index++)
 			NEXUS_LOG(Info, Default, "%d: %s", Index, argv[Index]);
 
-		NxFr::Platform::GetInstance()->GetFunctionFromDll<void>("NexusSandbox-App", "HelloWorldApp").Invoke();
+		NxFr::Platform::GetInstance()->GetFunctionFromDll<void>("NexusSandbox-Editor", "HelloWorldEditor").Invoke();
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
 
 		NxFr::Shutdown();

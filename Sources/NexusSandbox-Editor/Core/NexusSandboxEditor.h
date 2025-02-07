@@ -3,7 +3,7 @@
 #include "NexusSandbox-App/Core/NexusSandboxAppCore.h"
 #include "NexusFramework/Core/NexusFramework.h"
 
-namespace NxSA
+namespace NxSE
 {
-	extern "C" NEXUS_SANDBOX_APP_API void HelloWorldApp();
+	extern "C" NEXUS_SANDBOX_APP_API void HelloWorldEditor();
 }

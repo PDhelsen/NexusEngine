@@ -8,8 +8,11 @@ Link = "_%{cfg.platform}_%{cfg.buildcfg}"
 Framework = "NexusFramework"
 Engine = "NexusEngine"
 App = "NexusApp"
+Editor = "NexusEditor"
 AppExe = "NexusApp-Exe"
+EditorExe = "NexusEditor-Exe"
 SandboxApp = "NexusSandbox-App"
+SandboxEditor = "NexusSandbox-Editor"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -69,10 +72,13 @@ workspace (Engine)
 group "Libraries"
 group "Tests"
 project (SandboxApp)
+project (SandboxEditor)
 group "Executable"
 project (AppExe)
+project (EditorExe)
 group "Modules"
 project (App)
+project (Editor)
 group ""
 
 project (Engine)
@@ -121,6 +127,7 @@ project (Engine)
         PostBuild
     }
 
+-- ----------------------------------------------------------------------------------
 project (App)
     location (Code)
 
@@ -164,6 +171,51 @@ project (App)
         PostBuild
     }
 
+project (Editor)
+    location (Code)
+
+    kind "SharedLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.h",
+        Code .. "**.cpp",
+    }
+
+    includedirs
+    {
+        Sources,
+		NexusFramework .. "Sources/"
+    }
+
+	libdirs
+	{
+		NexusFramework .. "Builds/NexusFramework" .. Link,
+	}
+
+	links
+	{
+		Framework,
+		Engine,
+		App
+	}
+
+	defines
+	{
+		"NEXUS_EDITOR_DLL"
+	}
+
+    postbuildcommands
+    {
+        PostBuild
+    }
+
+-- ----------------------------------------------------------------------------------
 project (AppExe)
     location (Code)
 
@@ -204,6 +256,47 @@ project (AppExe)
         PostBuild
     }
 
+project (EditorExe)
+    location (Code)
+
+    kind "ConsoleApp"
+    language "C++"
+	cppdialect "C++20"
+
+	targetname (Editor)
+	targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.h",
+        Code .. "**.cpp",
+    }
+
+    includedirs
+    {
+        Sources,
+    }
+
+	libdirs
+	{
+	}
+
+	links
+	{
+		Editor,
+	}
+
+	defines
+	{
+	}
+
+    postbuildcommands
+    {
+        PostBuild
+    }
+
+-- ----------------------------------------------------------------------------------
 project (SandboxApp)
     location (Code)
 
@@ -241,6 +334,53 @@ project (SandboxApp)
 	defines
 	{
 		"NEXUS_SANDBOX_APP_DLL"
+	}
+
+    postbuildcommands
+    {
+        PostBuild
+    }
+
+
+project (SandboxEditor)
+    location (Code)
+
+    kind "SharedLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.h",
+        Code .. "**.cpp",
+    }
+
+    includedirs
+    {
+        Sources,
+		NexusFramework .. "Sources/"
+    }
+
+	libdirs
+	{
+		NexusFramework .. "Builds/NexusFramework" .. Link,
+	}
+
+	links
+	{
+		Framework,
+		Engine,
+		App,
+		Editor,
+		SandboxApp
+	}
+
+	defines
+	{
+		"NEXUS_SANDBOX_EDITOR_DLL"
 	}
 
     postbuildcommands

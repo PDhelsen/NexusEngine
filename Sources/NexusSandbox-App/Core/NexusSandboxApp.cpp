@@ -4,13 +4,13 @@
 #include "NexusEngine/Core/NexusEngine.h"
 #include "NexusApp/Core/NexusApp.h"
 
-namespace NxSb
+namespace NxSA
 {
-	void HelloWorld()
+	void HelloWorldApp()
 	{
 		NxEn::HelloWorld();
 		NxAp::HelloWorld();
 
-		NEXUS_LOG(Info, Default, "Sandbox - Hello World");
+		NEXUS_LOG(Info, Default, "Sandbox - Hello World (App)");
 	}
 }
