@@ -9,6 +9,7 @@ Framework = "NexusFramework"
 Engine = "NexusEngine"
 App = "NexusApp"
 AppExe = "NexusApp-Exe"
+SandboxApp = "NexusSandbox-App"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -67,6 +68,7 @@ workspace (Engine)
 
 group "Libraries"
 group "Tests"
+project (SandboxApp)
 group "Executable"
 project (AppExe)
 group "Modules"
@@ -195,6 +197,50 @@ project (AppExe)
 
 	defines
 	{
+	}
+
+    postbuildcommands
+    {
+        PostBuild
+    }
+
+project (SandboxApp)
+    location (Code)
+
+    kind "SharedLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.h",
+        Code .. "**.cpp",
+    }
+
+    includedirs
+    {
+        Sources,
+		NexusFramework .. "Sources/"
+    }
+
+	libdirs
+	{
+		NexusFramework .. "Builds/NexusFramework" .. Link,
+	}
+
+	links
+	{
+		Framework,
+		Engine,
+		App
+	}
+
+	defines
+	{
+		"NEXUS_SANDBOX_APP_DLL"
 	}
 
     postbuildcommands

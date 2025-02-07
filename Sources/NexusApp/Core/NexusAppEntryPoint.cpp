@@ -17,9 +17,7 @@ namespace NxAp
 		for (uint64 Index = 0; Index < argc; Index++)
 			NEXUS_LOG(Info, Default, "%d: %s", Index, argv[Index]);
 
-		NxEn::HelloWorld();
-		HelloWorld();
-
+		NxFr::Platform::GetInstance()->GetFunctionFromDll<void>("NexusSandbox-App", "HelloWorld").Invoke();
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
 
 		NxFr::Shutdown();
