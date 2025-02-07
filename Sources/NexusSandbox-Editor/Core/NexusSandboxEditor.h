@@ -1,9 +1,9 @@
 #pragma once
 
-#include "NexusSandbox-App/Core/NexusSandboxAppCore.h"
+#include "NexusSandbox-Editor/Core/NexusSandboxEditorCore.h"
 #include "NexusFramework/Core/NexusFramework.h"
 
 namespace NxSE
 {
-	extern "C" NEXUS_SANDBOX_APP_API void HelloWorldEditor();
+	extern "C" NEXUS_SANDBOX_EDITOR_API void HelloWorldEditor();
 }
