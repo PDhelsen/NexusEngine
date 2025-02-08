@@ -258,11 +258,6 @@ project (Starter)
         Editor
 	}
 
-	defines
-	{
-		"NEXUS_STARTER_DLL"
-	}
-
     postbuildcommands
     {
         PostBuild
