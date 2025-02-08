@@ -3,14 +3,13 @@ NexusFramework = os.getenv('NexusFramework') .. "/"
 
 Name = "%{prj.name}"
 Output = "%{prj.name}_%{cfg.platform}_%{cfg.buildcfg}"
-Link = "_%{cfg.platform}_%{cfg.buildcfg}"
+Link = "_%{cfg.platform:gsub('-Editor', '')}_%{cfg.buildcfg}"
 
 Framework = "NexusFramework"
 Engine = "NexusEngine"
 App = "NexusApp"
 Editor = "NexusEditor"
-AppExe = "NexusApp-Exe"
-EditorExe = "NexusEditor-Exe"
+Starter = "NexusStarter"
 SandboxApp = "NexusSandbox-App"
 SandboxEditor = "NexusSandbox-Editor"
 
@@ -33,12 +32,15 @@ PostBuild = Scripts .. "Build/Steps/PostBuild.bat " .. Output
 workspace (Engine)
     location (Root)
 
-    platforms { "Win64" }
+    platforms { "Win64", "Win64-Editor" }
     configurations { "Debug", "Release", "Distrib" }
 
-	startproject (StarterApp)
-	debugcommand (Artifacts .. App .. ".exe")
+	startproject (Starter)
 	debugdir (Root)
+	debugcommand (Artifacts .. App .. "/" .. App .. ".exe")
+	filter "platforms:*-Editor"
+		debugcommand (Artifacts .. Editor .. "/" .. Editor .. ".exe")
+	filter {}
 
 	characterset "Unicode"
     flags { "MultiProcessorCompile" }
@@ -49,10 +51,13 @@ workspace (Engine)
     filter "toolset:msc"
         defines { "NEXUS_MSVC" }
 
-    filter "platforms:Win64"
+    filter "platforms:Win64*"
         defines { "NEXUS_WINDOWS" }
         architecture "x64"
 		system "windows"
+
+    filter "platforms:*-Editor"
+        defines { "NEXUS_EDITOR" }
 
     filter "configurations:Debug"
         defines { "NEXUS_DEBUG" }
@@ -73,12 +78,10 @@ group "Libraries"
 group "Tests"
 project (SandboxApp)
 project (SandboxEditor)
-group "Executable"
-project (AppExe)
-project (EditorExe)
 group "Modules"
 project (App)
 project (Editor)
+project (Starter)
 group ""
 
 project (Engine)
@@ -152,7 +155,7 @@ project (App)
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. Link,
+		NexusFramework .. "Builds/NexusFramework" .. Link
 	}
 
 	links
@@ -195,7 +198,7 @@ project (Editor)
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. Link,
+		NexusFramework .. "Builds/NexusFramework" .. Link
 	}
 
 	links
@@ -215,17 +218,20 @@ project (Editor)
         PostBuild
     }
 
--- ----------------------------------------------------------------------------------
-project (AppExe)
+project (Starter)
     location (Code)
 
     kind "ConsoleApp"
     language "C++"
 	cppdialect "C++20"
 
-	targetname (App)
 	targetdir (Target)
 	objdir (Object)
+
+    targetname (App)
+	filter "platforms:*-Editor"
+		targetname (Editor)
+	filter {}
 
     files
     {
@@ -236,59 +242,25 @@ project (AppExe)
     includedirs
     {
         Sources,
+		NexusFramework .. "Sources/"
     }
 
 	libdirs
 	{
+		NexusFramework .. "Builds/NexusFramework" .. Link
 	}
 
 	links
 	{
+		Framework,
+		Engine,
 		App,
+        Editor
 	}
 
 	defines
 	{
-	}
-
-    postbuildcommands
-    {
-        PostBuild
-    }
-
-project (EditorExe)
-    location (Code)
-
-    kind "ConsoleApp"
-    language "C++"
-	cppdialect "C++20"
-
-	targetname (Editor)
-	targetdir (Target)
-	objdir (Object)
-
-    files
-    {
-        Code .. "**.h",
-        Code .. "**.cpp",
-    }
-
-    includedirs
-    {
-        Sources,
-    }
-
-	libdirs
-	{
-	}
-
-	links
-	{
-		Editor,
-	}
-
-	defines
-	{
+		"NEXUS_STARTER_DLL"
 	}
 
     postbuildcommands
@@ -321,7 +293,7 @@ project (SandboxApp)
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. Link,
+		NexusFramework .. "Builds/NexusFramework" .. Link
 	}
 
 	links
@@ -366,7 +338,7 @@ project (SandboxEditor)
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. Link,
+		NexusFramework .. "Builds/NexusFramework" .. Link
 	}
 
 	links

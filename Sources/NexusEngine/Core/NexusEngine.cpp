@@ -6,6 +6,10 @@ namespace NxEn
 {
 	void HelloWorld()
 	{
-		NEXUS_LOG(Info, Default, "Engine - Hello World");
+#if NEXUS_EDITOR
+		NEXUS_LOG(Info, Default, "Engine - Hello World (Editor)");
+#else
+		NEXUS_LOG(Info, Default, "Engine - Hello World (App)");
+#endif
 	}
 }

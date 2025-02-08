@@ -2,3 +2,4 @@
 
 set Root=%~dp0..\..\..\
 call %Root%Scripts\Build\Steps\Build.bat Release Win64
+call %Root%Scripts\Build\Steps\Build.bat Release Win64-Editor
