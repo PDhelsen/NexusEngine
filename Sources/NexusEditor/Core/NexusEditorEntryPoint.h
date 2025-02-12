@@ -4,5 +4,5 @@
 
 namespace NxEd
 {
-	NEXUS_EDITOR_API int Main(int argc, char* argv[]);
+	NEXUS_EDITOR_API void Main();
 }

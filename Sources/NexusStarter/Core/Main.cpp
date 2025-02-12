@@ -1,3 +1,4 @@
+#include "NexusEngine/Core/NexusEngineEntryPoint.h"
 #if NEXUS_EDITOR
 	#include "NexusEditor/Core/NexusEditorEntryPoint.h"
 #else
@@ -6,9 +7,13 @@
 
 int main(int argc, char* argv[])
 {
+	NxEn::Initialize(argc, argv);
+
 #if NEXUS_EDITOR
-	return NxEd::Main(argc, argv);
+	NxEd::Main();
 #else
-	return NxAp::Main(argc, argv);
+	NxAp::Main();
 #endif
+
+	return NxEn::Shutdown();
 }
