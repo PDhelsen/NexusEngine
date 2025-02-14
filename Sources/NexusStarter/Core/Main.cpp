@@ -13,9 +13,15 @@
 
 int main(int argc, char* argv[])
 {
-	NxEn::EntryPoint::Initialize();
-	NEXUS_NAMESPACE::EntryPoint::Run();
-	NxEn::EntryPoint::Shutdown();
+	do
+	{
+		NxEn::EntryPoint::ResetRestart();
 
-	return 0;
+		NxEn::EntryPoint::Initialize();
+		NEXUS_NAMESPACE::EntryPoint::Run();
+		NxEn::EntryPoint::Shutdown();
+
+	} while (NxEn::EntryPoint::ShouldRestart());
+
+	return NxEn::EntryPoint::GetErrorCode();
 }
