@@ -5,5 +5,5 @@
 
 namespace NxSE
 {
-	extern "C" NEXUS_SANDBOX_EDITOR_API void HelloWorldEditor();
+	extern "C" NEXUS_SANDBOX_EDITOR_API void HelloWorld();
 }

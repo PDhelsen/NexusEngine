@@ -9,10 +9,8 @@
 
 namespace NxSE
 {
-	void HelloWorldEditor()
+	void HelloWorld()
 	{
-		NxSA::HelloWorldApp();
-
 		NxEd::HelloWorld();
 
 		NEXUS_LOG(Info, Default, "Sandbox - Hello World (Editor)");

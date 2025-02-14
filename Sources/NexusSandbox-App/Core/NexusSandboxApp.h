@@ -5,5 +5,5 @@
 
 namespace NxSA
 {
-	extern "C" NEXUS_SANDBOX_APP_API void HelloWorldApp();
+	extern "C" NEXUS_SANDBOX_APP_API void HelloWorld();
 }

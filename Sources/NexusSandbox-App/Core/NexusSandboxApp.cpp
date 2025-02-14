@@ -6,7 +6,7 @@
 
 namespace NxSA
 {
-	void HelloWorldApp()
+	void HelloWorld()
 	{
 		NxEn::HelloWorld();
 		NxAp::HelloWorld();
