@@ -17,9 +17,9 @@ int main(int argc, char* argv[])
 	{
 		NxEn::EntryPoint::ResetRestart();
 
-		NxEn::EntryPoint::Initialize();
-		NEXUS_NAMESPACE::EntryPoint::Run();
-		NxEn::EntryPoint::Shutdown();
+		NxEn::Application* Application = NEXUS_NAMESPACE::EntryPoint::CreateApplication();
+		Application->Run();
+		delete Application;
 
 	} while (NxEn::EntryPoint::ShouldRestart());
 

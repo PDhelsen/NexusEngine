@@ -1,15 +1,14 @@
 #include "NexusApp/Core/NexusAppEntryPoint.h"
 
-#include "NexusFramework/Core/NexusFramework.h"
+#include "NexusApp/Application/ApplicationApp.h"
 
 namespace NxAp
 {
 	namespace EntryPoint
 	{
-		void Run()
+		NxEn::Application* CreateApplication()
 		{
-			NxFr::Platform::GetInstance()->GetFunctionFromDll<void>("NexusSandbox-App", "Run").Invoke();
-			NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
+			return new ApplicationApp();
 		}
 	}
 }

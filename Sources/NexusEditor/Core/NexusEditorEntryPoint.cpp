@@ -1,15 +1,14 @@
 #include "NexusEditor/Core/NexusEditorEntryPoint.h"
 
-#include "NexusFramework/Core/NexusFramework.h"
+#include "NexusEditor/Application/ApplicationEditor.h"
 
 namespace NxEd
 {
 	namespace EntryPoint
 	{
-		void Run()
+		NxEn::Application* CreateApplication()
 		{
-			NxFr::Platform::GetInstance()->GetFunctionFromDll<void>("NexusSandbox-Editor", "Run").Invoke();
-			NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
+			return new ApplicationEditor();
 		}
 	}
 }
