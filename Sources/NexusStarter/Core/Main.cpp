@@ -1,14 +1,9 @@
-#include "NexusEngine/Core/NexusEngineEntryPoint.h"
-#if NEXUS_EDITOR
-	#include "NexusEditor/Core/NexusEditorEntryPoint.h"
-#else
-	#include "NexusApp/Core/NexusAppEntryPoint.h"
-#endif
+#include "NexusEngine/Application/EntryPoint.h"
 
 #if NEXUS_EDITOR
-	#define NEXUS_NAMESPACE NxEd
+	#define NEXUS_DLL "NexusSandbox-Editor"
 #else
-	#define NEXUS_NAMESPACE NxAp
+	#define NEXUS_DLL "NexusSandbox-App"
 #endif
 
 int main(int argc, char* argv[])
@@ -17,9 +12,9 @@ int main(int argc, char* argv[])
 	{
 		NxEn::EntryPoint::ResetRestart();
 
-		NxEn::Application* Application = NEXUS_NAMESPACE::EntryPoint::CreateApplication();
+		auto Application = NxEn::EntryPoint::CreateApplication(NEXUS_DLL);
 		Application->Run();
-		delete Application;
+		NxEn::EntryPoint::DestroyApplication(NEXUS_DLL, Application);
 
 	} while (NxEn::EntryPoint::ShouldRestart());
 

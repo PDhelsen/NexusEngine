@@ -1,18 +1,24 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Application.h"
 
-#include "NexusFramework/Core/NexusFrameworkEntryPoint.h"
-
 namespace NxEn
 {
+	static Application* Instance = nullptr;
+
+	Application* Application::GetInstance()
+	{
+		return Instance;
+	}
+
 	Application::Application()
 	{
-		NxFr::Initialize();
+		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
+		Instance = this;
 	}
 
 	Application::~Application()
 	{
-		NxFr::Shutdown();
+		Instance = nullptr;
 	}
 
 	void Application::Run()

@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Core/NexusEngineEntryPoint.h"
+#include "NexusEngine/Application/EntryPoint.h"
 
 namespace NxEn
 {
@@ -7,6 +7,16 @@ namespace NxEn
 	{
 		int8 ErrorCode = 0;
 		bool Restart = false;
+
+		Application* CreateApplication(NxFr::StringView DllName)
+		{
+			return NxFr::Platform::GetInstance()->GetFunctionFromDll<Application*>(DllName, "CreateApplication").Invoke();
+		}
+
+		void DestroyApplication(NxFr::StringView DllName, Application* Target)
+		{
+			NxFr::Platform::GetInstance()->GetFunctionFromDll<void, Application*>(DllName, "DestroyApplication").Invoke(Target);
+		}
 
 		int GetErrorCode()
 		{

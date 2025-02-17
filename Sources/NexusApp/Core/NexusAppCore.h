@@ -5,3 +5,6 @@
 #else
 	#define NEXUS_APP_API __declspec(dllimport)
 #endif
+
+#include "NexusFramework/Core/NexusFramework.h"
+#include "NexusEngine/Core/NexusEngine.h"
