@@ -1,26 +1,28 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/EntryPoint.h"
 
+#include "NexusEngine/Application/Application.h"
+
+#if NEXUS_EDITOR
+	#define NEXUS_DLL "NexusSandbox-Editor"
+#else
+	#define NEXUS_DLL "NexusSandbox-App"
+#endif
+
 namespace NxEn
 {
 	namespace EntryPoint
 	{
-		int8 ErrorCode = 0;
+		// -------------------------------------------------------------------------------------------------------------------------------
+		// Variables
+		// -------------------------------------------------------------------------------------------------------------------------------
+
 		bool Restart = false;
+		int8 ErrorCode = 0;
 
-		Application* CreateApplication(NxFr::StringView DllName)
+		void ScheduleRestart()
 		{
-			return NxFr::Platform::GetInstance()->GetFunctionFromDll<Application*>(DllName, "CreateApplication").Invoke();
-		}
-
-		void DestroyApplication(NxFr::StringView DllName, Application* Target)
-		{
-			NxFr::Platform::GetInstance()->GetFunctionFromDll<void, Application*>(DllName, "DestroyApplication").Invoke(Target);
-		}
-
-		int GetErrorCode()
-		{
-			return ErrorCode;
+			Restart = true;
 		}
 
 		void SetErrorCode(int8 Code)
@@ -34,19 +36,38 @@ namespace NxEn
 			ErrorCode = Code;
 		}
 
-		bool ShouldRestart()
+		int GetErrorCode()
 		{
-			return Restart;
+			return ErrorCode;
 		}
 
-		void ScheduleRestart()
-		{
-			Restart = true;
-		}
+		// -------------------------------------------------------------------------------------------------------------------------------
+		// Main
+		// -------------------------------------------------------------------------------------------------------------------------------
 
-		void ResetRestart()
+		int Main(int argc, char* argv[])
 		{
-			Restart = false;
+			NxFr::AllocatorContext Context(nullptr);
+			NxFr::Platform* Platform = NxFr::Platform::GetInstance();
+			// ArgumentParser
+			
+			// Dll Name
+			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(NEXUS_DLL, "CreateApplication");
+			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(NEXUS_DLL, "DestroyApplication");
+
+			do
+			{
+				Restart = false;
+
+				Application* Instance = CreateApplication.Invoke();
+				Instance->Run();
+				DestroyApplication.Invoke(Instance);
+
+			} while (Restart);
+
+			Platform->ClearDll();
+
+			return ErrorCode;
 		}
 	}
 }
