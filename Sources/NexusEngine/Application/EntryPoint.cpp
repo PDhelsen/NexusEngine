@@ -4,9 +4,9 @@
 #include "NexusEngine/Application/Application.h"
 
 #if NEXUS_EDITOR
-	#define NEXUS_DLL "NexusSandbox-Editor"
+	#define NEXUS_PROJECT_DLL "NexusProject-Editor"
 #else
-	#define NEXUS_DLL "NexusSandbox-App"
+	#define NEXUS_PROJECT_DLL "NexusProject-App"
 #endif
 
 namespace NxEn
@@ -49,11 +49,10 @@ namespace NxEn
 		{
 			NxFr::AllocatorContext Context(nullptr);
 			NxFr::Platform* Platform = NxFr::Platform::GetInstance();
-			// ArgumentParser
-			
-			// Dll Name
-			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(NEXUS_DLL, "CreateApplication");
-			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(NEXUS_DLL, "DestroyApplication");
+			NxFr::Arguments::Parse(argc, argv);
+
+			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(NEXUS_PROJECT_DLL, "CreateApplication");
+			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(NEXUS_PROJECT_DLL, "DestroyApplication");
 
 			do
 			{

@@ -10,6 +10,7 @@ Engine = "NexusEngine"
 App = "NexusApp"
 Editor = "NexusEditor"
 Starter = "NexusStarter"
+Project = "NexusProject"
 SandboxApp = "NexusSandbox-App"
 SandboxEditor = "NexusSandbox-Editor"
 
@@ -269,6 +270,7 @@ project (SandboxApp)
     language "C++"
 	cppdialect "C++20"
 
+	targetname (Project .. "-App")
 	targetdir (Target)
 	objdir (Object)
 
@@ -314,6 +316,7 @@ project (SandboxEditor)
     language "C++"
 	cppdialect "C++20"
 
+	targetname (Project .. "-Editor")
 	targetdir (Target)
 	objdir (Object)
 
