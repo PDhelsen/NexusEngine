@@ -4,17 +4,15 @@ namespace NxSE
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxSE::NexusSandboxEditorApplication)
 
-	NexusSandboxEditorApplication::NexusSandboxEditorApplication()
+	void NexusSandboxEditorApplication::Initialize(NxEn::Bootstrapper& Bootstrap)
 	{
+		NexusEditorApplication::Initialize(Bootstrap);
+
+		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[Sandbox-Editor] Hello World"); });
 	}
 
-	NexusSandboxEditorApplication::~NexusSandboxEditorApplication()
+	void NexusSandboxEditorApplication::Shutdown(NxEn::Bootstrapper& Bootstrap)
 	{
-	}
-
-	void NexusSandboxEditorApplication::Run()
-	{
-		NEXUS_LOG(Info, Default, "[Sandbox-Editor] Hello World");
-		NexusEditorApplication::Run();
+		NexusEditorApplication::Shutdown(Bootstrap);
 	}
 }

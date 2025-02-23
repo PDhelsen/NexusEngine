@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Application/Bootstrapper.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
 namespace EntryPoint\
@@ -31,7 +32,14 @@ namespace NxEn
 
 		NEXUS_ENGINE_API Application();
 		NEXUS_ENGINE_API virtual ~Application();
-		NEXUS_ENGINE_API virtual void Run();
+		NEXUS_ENGINE_API void Run();
+
+	protected:
+		NEXUS_ENGINE_API virtual void Initialize(Bootstrapper& Bootstrap) = 0;
+		NEXUS_ENGINE_API virtual void Shutdown(Bootstrapper& Bootstrap) = 0;
+
+	private:
+		Bootstrapper Bootstrap;
 	};
 }
 

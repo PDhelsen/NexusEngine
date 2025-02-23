@@ -4,17 +4,15 @@ namespace NxAp
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxAp::NexusAppApplication)
 
-	NexusAppApplication::NexusAppApplication()
+	void NexusAppApplication::Initialize(NxEn::Bootstrapper& Bootstrap)
 	{
+		NexusEngineApplication::Initialize(Bootstrap);
+
+		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[App] Hello World"); });
 	}
 
-	NexusAppApplication::~NexusAppApplication()
+	void NexusAppApplication::Shutdown(NxEn::Bootstrapper& Bootstrap)
 	{
-	}
-
-	void NexusAppApplication::Run()
-	{
-		NEXUS_LOG(Info, Default, "[App] Hello World");
-		NexusEngineApplication::Run();
+		NexusEngineApplication::Shutdown(Bootstrap);
 	}
 }

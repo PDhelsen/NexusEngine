@@ -7,24 +7,20 @@ namespace NxEn
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
-	NexusEngineApplication::NexusEngineApplication()
+	void NexusEngineApplication::Initialize(NxEn::Bootstrapper& Bootstrap)
 	{
-		NxFr::Initialize();
-	}
-
-	NexusEngineApplication::~NexusEngineApplication()
-	{
-		NxFr::Shutdown();
-	}
-
-	void NexusEngineApplication::Run()
-	{
+		Bootstrap.AddStep([]() { NxFr::Initialize(); });
+		Bootstrap.AddStep([]() {
 #if NEXUS_EDITOR
-		NEXUS_LOG(Info, Default, "[Engine] Hello World (Editor)");
+			NEXUS_LOG(Info, Default, "[Engine] Hello World (Editor)");
 #else
-		NEXUS_LOG(Info, Default, "[Engine] Hello World (App)");
+			NEXUS_LOG(Info, Default, "[Engine] Hello World (App)");
 #endif
+		});
+	}
 
-		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
+	void NexusEngineApplication::Shutdown(NxEn::Bootstrapper& Bootstrap)
+	{
+		Bootstrap.AddStep([]() { NxFr::Shutdown(); });
 	}
 }

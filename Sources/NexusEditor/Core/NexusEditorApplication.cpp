@@ -4,17 +4,15 @@ namespace NxEd
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
-	NexusEditorApplication::NexusEditorApplication()
+	void NexusEditorApplication::Initialize(NxEn::Bootstrapper& Bootstrap)
 	{
+		NexusEngineApplication::Initialize(Bootstrap);
+
+		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[Editor] Hello World"); });
 	}
 
-	NexusEditorApplication::~NexusEditorApplication()
+	void NexusEditorApplication::Shutdown(NxEn::Bootstrapper& Bootstrap)
 	{
-	}
-
-	void NexusEditorApplication::Run()
-	{
-		NEXUS_LOG(Info, Default, "[Editor] Hello World");
-		NexusEngineApplication::Run();
+		NexusEngineApplication::Shutdown(Bootstrap);
 	}
 }

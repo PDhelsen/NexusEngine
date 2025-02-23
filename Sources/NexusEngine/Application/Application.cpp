@@ -23,5 +23,12 @@ namespace NxEn
 
 	void Application::Run()
 	{
+		Initialize(Bootstrap);
+		Bootstrap.Boot();
+
+		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
+
+		Shutdown(Bootstrap);
+		Bootstrap.Unboot();
 	}
 }
