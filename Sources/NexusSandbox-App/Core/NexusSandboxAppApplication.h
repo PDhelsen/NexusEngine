@@ -13,7 +13,7 @@ namespace NxSA
 		static NexusSandboxAppApplication* GetInstance() { return (NexusSandboxAppApplication*)Application::GetInstance(); }
 
 	protected:
-		NEXUS_SANDBOX_APP_API virtual void Initialize(NxEn::Bootstrapper& Bootstrap) override;
-		NEXUS_SANDBOX_APP_API virtual void Shutdown(NxEn::Bootstrapper& Bootstrap) override;
+		NEXUS_SANDBOX_APP_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap) override;
+		NEXUS_SANDBOX_APP_API virtual void OnShutdown(NxEn::Bootstrapper& Bootstrap) override;
 	};
 }

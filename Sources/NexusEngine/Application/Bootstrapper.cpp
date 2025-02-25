@@ -11,6 +11,11 @@ namespace NxEn
 	{
 	}
 
+	void Bootstrapper::AddStep(NxFr::Delegate<void()> Step)
+	{
+		Steps += Step;
+	}
+
 	void Bootstrapper::Boot()
 	{
 		ExecuteSteps();
@@ -19,11 +24,6 @@ namespace NxEn
 	void Bootstrapper::Unboot()
 	{
 		ExecuteSteps();
-	}
-
-	void Bootstrapper::AddStep(NxFr::Delegate<void()> Step)
-	{
-		Steps += Step;
 	}
 
 	void Bootstrapper::ExecuteSteps()

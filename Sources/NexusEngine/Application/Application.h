@@ -32,11 +32,16 @@ namespace NxEn
 
 		NEXUS_ENGINE_API Application();
 		NEXUS_ENGINE_API virtual ~Application();
-		NEXUS_ENGINE_API void Run();
+		NEXUS_ENGINE_API void Execute();
 
 	protected:
-		NEXUS_ENGINE_API virtual void Initialize(Bootstrapper& Bootstrap) = 0;
-		NEXUS_ENGINE_API virtual void Shutdown(Bootstrapper& Bootstrap) = 0;
+		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;
+		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Bootstrap) = 0;
+
+	private:
+		void Initialize();
+		void Shutdown();
+		void Run();
 
 	private:
 		Bootstrapper Bootstrap;

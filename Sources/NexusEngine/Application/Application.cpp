@@ -21,14 +21,27 @@ namespace NxEn
 		Instance = nullptr;
 	}
 
+	void Application::Execute()
+	{
+		Initialize();
+		Run();
+		Shutdown();
+	}
+
+	void Application::Initialize()
+	{
+		OnInitialize(Bootstrap);
+		Bootstrap.Boot();
+	}
+
+	void Application::Shutdown()
+	{
+		OnShutdown(Bootstrap);
+		Bootstrap.Unboot();
+	}
+
 	void Application::Run()
 	{
-		Initialize(Bootstrap);
-		Bootstrap.Boot();
-
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
-
-		Shutdown(Bootstrap);
-		Bootstrap.Unboot();
 	}
 }

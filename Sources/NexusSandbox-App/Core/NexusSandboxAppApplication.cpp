@@ -4,15 +4,15 @@ namespace NxSA
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxSA::NexusSandboxAppApplication)
 
-	void NexusSandboxAppApplication::Initialize(NxEn::Bootstrapper& Bootstrap)
+	void NexusSandboxAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
 	{
-		NexusAppApplication::Initialize(Bootstrap);
+		NexusAppApplication::OnInitialize(Bootstrap);
 
 		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[Sandbox-App] Hello World"); });
 	}
 
-	void NexusSandboxAppApplication::Shutdown(NxEn::Bootstrapper& Bootstrap)
+	void NexusSandboxAppApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
 	{
-		NexusAppApplication::Shutdown(Bootstrap);
+		NexusAppApplication::OnShutdown(Bootstrap);
 	}
 }

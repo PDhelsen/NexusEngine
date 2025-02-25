@@ -7,7 +7,7 @@ namespace NxEn
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
-	void NexusEngineApplication::Initialize(NxEn::Bootstrapper& Bootstrap)
+	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
 	{
 		Bootstrap.AddStep([]() { NxFr::Initialize(); });
 		Bootstrap.AddStep([]() {
@@ -19,7 +19,7 @@ namespace NxEn
 		});
 	}
 
-	void NexusEngineApplication::Shutdown(NxEn::Bootstrapper& Bootstrap)
+	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
 	{
 		Bootstrap.AddStep([]() { NxFr::Shutdown(); });
 	}

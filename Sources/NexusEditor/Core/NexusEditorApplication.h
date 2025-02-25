@@ -13,7 +13,7 @@ namespace NxEd
 		static NexusEditorApplication* GetInstance() { return (NexusEditorApplication*)Application::GetInstance(); }
 
 	protected:
-		NEXUS_EDITOR_API virtual void Initialize(NxEn::Bootstrapper& Bootstrap) override;
-		NEXUS_EDITOR_API virtual void Shutdown(NxEn::Bootstrapper& Bootstrap) override;
+		NEXUS_EDITOR_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap) override;
+		NEXUS_EDITOR_API virtual void OnShutdown(NxEn::Bootstrapper& Bootstrap) override;
 	};
 }
