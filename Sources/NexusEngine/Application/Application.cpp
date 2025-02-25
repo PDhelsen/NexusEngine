@@ -11,6 +11,7 @@ namespace NxEn
 	}
 
 	Application::Application()
+		: Bootstrap(), Systems(1)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -31,17 +32,22 @@ namespace NxEn
 	void Application::Initialize()
 	{
 		OnInitialize(Bootstrap);
-		Bootstrap.Boot();
+		Bootstrap.Boot(Systems);
 	}
 
 	void Application::Shutdown()
 	{
 		OnShutdown(Bootstrap);
-		Bootstrap.Unboot();
+		Bootstrap.Unboot(Systems);
 	}
 
 	void Application::Run()
 	{
+		for (auto System : Systems)
+		{
+			System->Tick();
+		}
+
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
 	}
 }

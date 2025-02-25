@@ -16,13 +16,20 @@ namespace NxEn
 		Steps += Step;
 	}
 
-	void Bootstrapper::Boot()
+	void Bootstrapper::AddSystem(NxFr::Delegate<System*()> System)
 	{
-		ExecuteSteps();
+		Dependencies.Append(System);
 	}
 
-	void Bootstrapper::Unboot()
+	void Bootstrapper::Boot(NxFr::Array<System*>& Systems)
 	{
+		ExecuteSteps();
+		Systems = CreateSystems();
+	}
+
+	void Bootstrapper::Unboot(NxFr::Array<System*>& Systems)
+	{
+		DestroySystems(Systems);
 		ExecuteSteps();
 	}
 
@@ -30,5 +37,26 @@ namespace NxEn
 	{
 		Steps.Invoke();
 		Steps.Clear();
+	}
+
+	NxFr::Array<System*> Bootstrapper::CreateSystems()
+	{
+		NxFr::Array<System*> Systems(Dependencies.GetCount());
+		for (uint64 Index = 0, Count = Dependencies.GetCount(); Index < Count; ++Index)
+		{
+			Systems[Index] = Dependencies[Index].Invoke();
+			Systems[Index]->Initialize();
+		}
+
+		return Systems;
+	}
+
+	void Bootstrapper::DestroySystems(NxFr::Array<System*>& Systems)
+	{
+		for (uint64 Index = 0, Count = Systems.GetCount(); Index < Count; ++Index)
+		{
+			Systems[Index]->Shutdown();
+			delete Systems[Index];
+		}
 	}
 }

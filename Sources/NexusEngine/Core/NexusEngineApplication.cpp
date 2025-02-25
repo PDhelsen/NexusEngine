@@ -17,6 +17,8 @@ namespace NxEn
 			NEXUS_LOG(Info, Default, "[Engine] Hello World (App)");
 #endif
 		});
+
+		Bootstrap.AddSystem([]() { return new System(); });
 	}
 
 	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)

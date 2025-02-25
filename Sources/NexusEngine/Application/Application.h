@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Bootstrapper.h"
+#include "NexusEngine/Application/System.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
 namespace EntryPoint\
@@ -45,6 +46,7 @@ namespace NxEn
 
 	private:
 		Bootstrapper Bootstrap;
+		NxFr::Array<System*> Systems;
 	};
 }
 
