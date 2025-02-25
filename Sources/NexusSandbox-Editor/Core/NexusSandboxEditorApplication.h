@@ -12,9 +12,6 @@ namespace NxSE
 	public:
 		static NexusSandboxEditorApplication* GetInstance() { return (NexusSandboxEditorApplication*)Application::GetInstance(); }
 
-		NEXUS_SANDBOX_EDITOR_API NexusSandboxEditorApplication() = default;
-		NEXUS_SANDBOX_EDITOR_API virtual ~NexusSandboxEditorApplication() = default;
-
 	protected:
 		NEXUS_SANDBOX_EDITOR_API virtual void Initialize(NxEn::Bootstrapper& Bootstrap) override;
 		NEXUS_SANDBOX_EDITOR_API virtual void Shutdown(NxEn::Bootstrapper& Bootstrap) override;

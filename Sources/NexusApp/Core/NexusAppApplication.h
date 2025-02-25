@@ -12,9 +12,6 @@ namespace NxAp
 	public:
 		static NexusAppApplication* GetInstance() { return (NexusAppApplication*)Application::GetInstance(); }
 
-		NEXUS_APP_API NexusAppApplication() = default;
-		NEXUS_APP_API virtual ~NexusAppApplication() = default;
-
 	protected:
 		NEXUS_APP_API virtual void Initialize(NxEn::Bootstrapper& Bootstrap) override;
 		NEXUS_APP_API virtual void Shutdown(NxEn::Bootstrapper& Bootstrap) override;
