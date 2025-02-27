@@ -2,6 +2,8 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 
+#define NEXUS_SYSTEM_DECLARATION(Name) static NxFr::StringView GetSystemName() { return #Name; }
+
 namespace NxEn
 {
 	class System
@@ -10,6 +12,8 @@ namespace NxEn
 		friend class Bootstrapper;
 
 	public:
+		NEXUS_SYSTEM_DECLARATION(System)
+
 		NEXUS_ENGINE_API System();
 		NEXUS_ENGINE_API virtual ~System();
 

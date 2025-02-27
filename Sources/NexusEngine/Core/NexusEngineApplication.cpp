@@ -18,7 +18,7 @@ namespace NxEn
 #endif
 		});
 
-		Bootstrap.AddSystem([]() { return new System(); });
+		Bootstrap.AddSystem<System>();
 	}
 
 	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
