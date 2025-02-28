@@ -7,8 +7,10 @@ namespace NxEn
 {
 	class Bootstrapper
 	{
-		friend class Application;
+	public:
+		using Signature = NxFr::Delegate<void()>;
 
+	private:
 		struct SystemInfo
 		{
 		public:
@@ -24,7 +26,10 @@ namespace NxEn
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
-		Bootstrapper& AddStep(NxFr::Delegate<void()> Step)
+		NEXUS_ENGINE_API void Boot(NxFr::Array<System*>* Systems);
+		NEXUS_ENGINE_API void Unboot(NxFr::Array<System*>* Systems);
+
+		Bootstrapper& AddStep(Signature Step)
 		{
 			Steps += Step;
 			return *this;
@@ -45,9 +50,6 @@ namespace NxEn
 		}
 
 	private:
-		void Boot(NxFr::Array<System*>& Systems);
-		void Unboot(NxFr::Array<System*>& Systems);
-
 		void ExecuteSteps();
 		void CreateSystems(NxFr::Array<System*>& Systems);
 		void DestroySystems(NxFr::Array<System*>& Systems);

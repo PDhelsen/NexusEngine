@@ -16,15 +16,15 @@ namespace NxEn
 	{
 	}
 
-	void Bootstrapper::Boot(NxFr::Array<System*>& Systems)
+	void Bootstrapper::Boot(NxFr::Array<System*>* Systems)
 	{
 		ExecuteSteps();
-		CreateSystems(Systems);
+		CreateSystems(*Systems);
 	}
 
-	void Bootstrapper::Unboot(NxFr::Array<System*>& Systems)
+	void Bootstrapper::Unboot(NxFr::Array<System*>* Systems)
 	{
-		DestroySystems(Systems);
+		DestroySystems(*Systems);
 		ExecuteSteps();
 	}
 

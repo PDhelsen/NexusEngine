@@ -32,13 +32,13 @@ namespace NxEn
 	void Application::Initialize()
 	{
 		OnInitialize(Bootstrap);
-		Bootstrap.Boot(Systems);
+		Bootstrap.Boot(&Systems);
 	}
 
 	void Application::Shutdown()
 	{
 		OnShutdown(Bootstrap);
-		Bootstrap.Unboot(Systems);
+		Bootstrap.Unboot(&Systems);
 	}
 
 	void Application::Run()

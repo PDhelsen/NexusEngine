@@ -9,7 +9,7 @@ namespace NxEn
 
 	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
 	{
-		Bootstrap.AddStep([]() { NxFr::Initialize(); });
+		Bootstrap.AddStep(&NxFr::Initialize);
 		Bootstrap.AddStep([]() {
 #if NEXUS_EDITOR
 			NEXUS_LOG(Info, Default, "[Engine] Hello World (Editor)");
@@ -23,6 +23,6 @@ namespace NxEn
 
 	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
 	{
-		Bootstrap.AddStep([]() { NxFr::Shutdown(); });
+		Bootstrap.AddStep(&NxFr::Shutdown);
 	}
 }
