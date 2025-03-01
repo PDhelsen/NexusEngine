@@ -3,8 +3,13 @@
 
 namespace NxEn
 {
-	Bootstrapper::SystemInfo::SystemInfo(System* Target)
-		: Target(Target), Remaining(0), Dependencies(), Dependents()
+	Bootstrapper::StepInfo::StepInfo(const Signature& Target, NxFr::StringView Tag)
+		: Target(Target), Tag(Tag)
+	{
+	}
+
+	Bootstrapper::SystemInfo::SystemInfo(System* Target, NxFr::StringView Tag)
+		: Target(Target), Tag(Tag), Remaining(0), Dependencies(), Dependents()
 	{
 	}
 
@@ -16,49 +21,58 @@ namespace NxEn
 	{
 	}
 
-	void Bootstrapper::Boot(NxFr::Array<System*>* Systems)
+	void Bootstrapper::Boot()
 	{
 		ExecuteSteps();
-		CreateSystems(*Systems);
+		CreateSystems();
 	}
 
-	void Bootstrapper::Unboot(NxFr::Array<System*>* Systems)
+	void Bootstrapper::Unboot()
 	{
-		DestroySystems(*Systems);
+		DestroySystems();
 		ExecuteSteps();
 	}
 
 	void Bootstrapper::ExecuteSteps()
 	{
-		Steps.Invoke();
-		Steps.Clear();
+		for (auto It = StepInfos.Begin(); It != StepInfos.End(); ++It)
+		{
+			NEXUS_LOG(Info, Default, "Bootstrapper - Step (%i / %i) %s", It.Id() + 1, StepInfos.GetCount(), It->Tag.C());
+			It->Target.Invoke();
+		}
+
+		StepInfos.Clear();
 	}
 
-	void Bootstrapper::CreateSystems(NxFr::Array<System*>& Systems)
+	void Bootstrapper::CreateSystems()
 	{
-		Systems = NxFr::Array<System*>(SystemInfos.GetCount());
+		NxFr::Array<SystemInfo*> Infos = SortSystems();
 
-		SortSystems(Systems);
-		for (auto It = Systems.Begin(); It != Systems.End(); ++It)
+		for (auto It = Infos.Begin(); It != Infos.End(); ++It)
 		{
-			(*It)->Initialize();
+			NEXUS_LOG(Info, Default, "Bootstrapper - System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
+			It.Get()->Target->Initialize();
 		}
 	}
 
-	void Bootstrapper::DestroySystems(NxFr::Array<System*>& Systems)
+	void Bootstrapper::DestroySystems()
 	{
-		SortSystems(Systems);
-		for (auto It = Systems.BeginReverse(); It != Systems.EndReverse(); --It)
+		NxFr::Array<SystemInfo*> Infos = SortSystems();
+
+		for (auto It = Infos.BeginReverse(); It != Infos.EndReverse(); --It)
 		{
-			(*It)->Shutdown();
-			delete *It;
+			NEXUS_LOG(Info, Default, "Bootstrapper - System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
+			It.Get()->Target->Shutdown();
+
+			delete It.Get()->Target;
 		}
 	}
 
-	void Bootstrapper::SortSystems(NxFr::Array<System*>& Systems)
+	NxFr::Array<Bootstrapper::SystemInfo*> Bootstrapper::SortSystems()
 	{
-		int Index = 0;
+		NxFr::Array<SystemInfo*> Infos = NxFr::Array<SystemInfo*>(GetSystemsCount());
 		NxFr::Queue<NxFr::StringView> Queue;
+		int Index = 0;
 
 		for (auto& [Name, Info] : SystemInfos)
 		{
@@ -82,7 +96,7 @@ namespace NxEn
 			Queue.Remove();
 
 			SystemInfo& Info = SystemInfos[Name];
-			Systems[Index++] = Info.Target;
+			Infos[Index++] = &Info;
 
 			for (auto Dependent : Info.Dependents)
 			{
@@ -95,6 +109,7 @@ namespace NxEn
 			Info.Dependents.Clear();
 		}
 
-		NEXUS_ASSERT(Index == Systems.GetCount(), Default, "Some Systems were not initialized, probaly unable to resolve all the dependencies");
+		NEXUS_ASSERT(Index == GetSystemsCount(), Default, "Some Systems were not initialized, probaly unable to resolve all the dependencies");
+		return Infos;
 	}
 }

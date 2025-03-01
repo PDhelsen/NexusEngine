@@ -7,38 +7,47 @@ namespace NxEn
 {
 	class Bootstrapper
 	{
+		friend class Application;
+
 	public:
 		using Signature = NxFr::Delegate<void()>;
 
 	private:
+		struct StepInfo
+		{
+		public:
+			Signature Target;
+			NxFr::StringView Tag;
+
+			NEXUS_ENGINE_API StepInfo(const Signature& Target, NxFr::StringView Tag = "");
+		};
+
 		struct SystemInfo
 		{
 		public:
 			System* Target;
+			NxFr::StringView Tag;
 			uint64 Remaining;
 			NxFr::List<NxFr::StringView> Dependencies;
 			NxFr::List<NxFr::StringView> Dependents;
 
-			NEXUS_ENGINE_API SystemInfo(System* Target);
+			NEXUS_ENGINE_API SystemInfo(System* Target, NxFr::StringView Tag = "");
 		};
 
 	public:
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
-		NEXUS_ENGINE_API void Boot(NxFr::Array<System*>* Systems);
-		NEXUS_ENGINE_API void Unboot(NxFr::Array<System*>* Systems);
-
-		Bootstrapper& AddStep(Signature Step)
+		Bootstrapper& AddStep(Signature Step, NxFr::StringView Tag = "")
 		{
-			Steps += Step;
+			StepInfos.Append({ Step, Tag });
 			return *this;
 		}
 
 		template<typename S>
 		Bootstrapper& AddSystem()
 		{
-			SystemInfos.AppendConstruct(S::GetSystemName(), new S());
+			SystemInfos.Append(S::GetSystemName(), { new S(), S::GetSystemName() });
 			return *this;
 		}
 
@@ -49,13 +58,19 @@ namespace NxEn
 			return *this;
 		}
 
-	private:
-		void ExecuteSteps();
-		void CreateSystems(NxFr::Array<System*>& Systems);
-		void DestroySystems(NxFr::Array<System*>& Systems);
-		void SortSystems(NxFr::Array<System*>& Systems);
+		uint64 GetStepsCount() const { return StepInfos.GetCount(); }
+		uint64 GetSystemsCount() const { return SystemInfos.GetCount(); }
 
-		NxFr::Event<> Steps;
+	private:
+		void Boot();
+		void Unboot();
+
+		void ExecuteSteps();
+		void CreateSystems();
+		void DestroySystems();
+		NxFr::Array<SystemInfo*> SortSystems();
+
+		NxFr::List<StepInfo> StepInfos;
 		NxFr::Dictionary<NxFr::StringView, SystemInfo> SystemInfos;
 	};
 }

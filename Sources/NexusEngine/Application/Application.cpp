@@ -32,22 +32,34 @@ namespace NxEn
 	void Application::Initialize()
 	{
 		OnInitialize(Bootstrap);
-		Bootstrap.Boot(&Systems);
+		Bootstrap.Boot();
 	}
 
 	void Application::Shutdown()
 	{
 		OnShutdown(Bootstrap);
-		Bootstrap.Unboot(&Systems);
+		Bootstrap.Unboot();
 	}
 
 	void Application::Run()
 	{
-		for (auto System : Systems)
+		for (auto& It : Systems)
 		{
-			System->Tick();
+			It.Value->Tick();
 		}
 
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
+	}
+
+	void Application::RegisterSystem(NxFr::StringView Name, System* System)
+	{
+		NEXUS_ASSERT(!Systems.ContainsKey(Name), Default, "System is already created");
+		Systems.Append(Name, System);
+	}
+
+	void Application::UnregisterSystem(NxFr::StringView Name)
+	{
+		NEXUS_ASSERT(Systems.ContainsKey(Name), Default, "System was not created");
+		Systems.Remove(Name);
 	}
 }

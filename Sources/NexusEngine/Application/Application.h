@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Application/EntryPoint.h"
 #include "NexusEngine/Application/Bootstrapper.h"
 #include "NexusEngine/Application/System.h"
 
@@ -28,25 +29,34 @@ namespace NxEn
 {
 	class Application
 	{
+		friend int EntryPoint::Main(int argc, char* argv[]);
+		friend class System;
+
 	public:
 		NEXUS_ENGINE_API static Application* GetInstance();
 
 		NEXUS_ENGINE_API Application();
 		NEXUS_ENGINE_API virtual ~Application();
-		NEXUS_ENGINE_API void Execute();
+
+		template<typename T>
+		T* GetSystem() const { return Systems[T::GetSystemName()]; }
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;
 		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Bootstrap) = 0;
 
 	private:
+		void Execute();
 		void Initialize();
 		void Shutdown();
 		void Run();
 
+		void RegisterSystem(NxFr::StringView Name, System* System);
+		void UnregisterSystem(NxFr::StringView Name);
+
 	private:
+		NxFr::Dictionary<NxFr::StringView, System*> Systems;
 		Bootstrapper Bootstrap;
-		NxFr::Array<System*> Systems;
 	};
 }
 
