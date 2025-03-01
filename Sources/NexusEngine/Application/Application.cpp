@@ -11,7 +11,7 @@ namespace NxEn
 	}
 
 	Application::Application()
-		: Bootstrap(), Systems(1)
+		: Bootstrap(), Systems(1), WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -20,6 +20,34 @@ namespace NxEn
 	Application::~Application()
 	{
 		Instance = nullptr;
+	}
+
+	void Application::Quit()
+	{
+		NEXUS_LOG(Info, Default, "Application was requested to quit");
+
+		WantsToQuit = true;
+	}
+
+	void Application::Restart()
+	{
+		NEXUS_LOG(Info, Default, "Application was requested to restart");
+
+		EntryPoint::ScheduleRestart();
+		Quit();
+	}
+
+	void Application::Crash(CrashCode ErrorCode)
+	{
+		NEXUS_LOG(Info, Default, "Application crashed with code %i", ErrorCode);
+
+		EntryPoint::SetErrorCode((int8)ErrorCode);
+		Quit();
+	}
+
+	bool Application::IsRunning()
+	{
+		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
 	}
 
 	void Application::Execute()
@@ -43,9 +71,9 @@ namespace NxEn
 
 	void Application::Run()
 	{
-		for (auto& It : Systems)
+		for (auto It = Systems.Begin(); It != Systems.End() && IsRunning(); ++It)
 		{
-			It.Value->Tick();
+			It->Value->Tick();
 		}
 
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();

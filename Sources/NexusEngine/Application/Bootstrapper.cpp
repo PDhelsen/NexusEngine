@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Bootstrapper.h"
 
+#include "NexusEngine/Application/Application.h"
+
 namespace NxEn
 {
 	Bootstrapper::StepInfo::StepInfo(const Signature& Target, NxFr::StringView Tag)
@@ -35,7 +37,9 @@ namespace NxEn
 
 	void Bootstrapper::ExecuteSteps()
 	{
-		for (auto It = StepInfos.Begin(); It != StepInfos.End(); ++It)
+		Application* Instance = Application::GetInstance();
+
+		for (auto It = StepInfos.Begin(); It != StepInfos.End() && Instance->IsRunning(); ++It)
 		{
 			NEXUS_LOG(Info, Default, "Bootstrapper - Step (%i / %i) %s", It.Id() + 1, StepInfos.GetCount(), It->Tag.C());
 			It->Target.Invoke();
@@ -46,9 +50,10 @@ namespace NxEn
 
 	void Bootstrapper::CreateSystems()
 	{
+		Application* Instance = Application::GetInstance();
 		NxFr::Array<SystemInfo*> Infos = SortSystems();
 
-		for (auto It = Infos.Begin(); It != Infos.End(); ++It)
+		for (auto It = Infos.Begin(); It != Infos.End() && Instance->IsRunning(); ++It)
 		{
 			NEXUS_LOG(Info, Default, "Bootstrapper - System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
 			It.Get()->Target->Initialize();
@@ -57,9 +62,10 @@ namespace NxEn
 
 	void Bootstrapper::DestroySystems()
 	{
+		Application* Instance = Application::GetInstance();
 		NxFr::Array<SystemInfo*> Infos = SortSystems();
 
-		for (auto It = Infos.BeginReverse(); It != Infos.EndReverse(); --It)
+		for (auto It = Infos.BeginReverse(); It != Infos.EndReverse() && Instance->IsRunning(); --It)
 		{
 			NEXUS_LOG(Info, Default, "Bootstrapper - System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
 			It.Get()->Target->Shutdown();

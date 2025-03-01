@@ -27,6 +27,11 @@ namespace EntryPoint\
 
 namespace NxEn
 {
+	enum class CrashCode : int8
+	{
+		None = 0, Crash = 1
+	};
+
 	class Application
 	{
 		friend int EntryPoint::Main(int argc, char* argv[]);
@@ -37,6 +42,11 @@ namespace NxEn
 
 		NEXUS_ENGINE_API Application();
 		NEXUS_ENGINE_API virtual ~Application();
+
+		NEXUS_ENGINE_API void Quit();
+		NEXUS_ENGINE_API void Restart();
+		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
+		NEXUS_ENGINE_API bool IsRunning();
 
 		template<typename T>
 		T* GetSystem() const { return Systems[T::GetSystemName()]; }
@@ -57,6 +67,8 @@ namespace NxEn
 	private:
 		NxFr::Dictionary<NxFr::StringView, System*> Systems;
 		Bootstrapper Bootstrap;
+
+		bool WantsToQuit;
 	};
 }
 
