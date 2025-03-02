@@ -10,6 +10,7 @@ Engine = "NexusEngine"
 App = "NexusApp"
 Editor = "NexusEditor"
 Starter = "NexusStarter"
+Utility = "NexusUtility"
 Project = "NexusProject"
 SandboxApp = "NexusSandbox-App"
 SandboxEditor = "NexusSandbox-Editor"
@@ -79,6 +80,8 @@ group "Libraries"
 group "Tests"
 project (SandboxApp)
 project (SandboxEditor)
+group "Misc"
+project (Utility)
 group "Modules"
 project (App)
 project (Editor)
@@ -102,7 +105,6 @@ project (Engine)
     {
         Code .. "**.h",
         Code .. "**.cpp",
-        Code .. "**.natvis"
     }
 
     includedirs
@@ -260,6 +262,21 @@ project (Starter)
     postbuildcommands
     {
         PostBuild
+    }
+
+-- ----------------------------------------------------------------------------------
+project (Utility)
+    location (Code)
+
+    kind "Utility"
+
+    targetdir (Target)
+	objdir (Object)
+
+    files
+    {
+        Code .. "**.natvis",
+		NexusFramework .. "Sources/" .. "**.natvis",
     }
 
 -- ----------------------------------------------------------------------------------
