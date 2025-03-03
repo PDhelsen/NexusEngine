@@ -7,8 +7,6 @@ namespace NxAp
 	void NexusAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
 	{
 		NexusEngineApplication::OnInitialize(Bootstrap);
-
-		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[App] Hello World"); });
 	}
 
 	void NexusAppApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)

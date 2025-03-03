@@ -7,8 +7,6 @@ namespace NxEd
 	void NexusEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
 	{
 		NexusEngineApplication::OnInitialize(Bootstrap);
-
-		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[Editor] Hello World"); });
 	}
 
 	void NexusEditorApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)

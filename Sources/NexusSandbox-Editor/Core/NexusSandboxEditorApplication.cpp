@@ -7,8 +7,6 @@ namespace NxSE
 	void NexusSandboxEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
 	{
 		NexusEditorApplication::OnInitialize(Bootstrap);
-
-		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[Sandbox-Editor] Hello World"); });
 	}
 
 	void NexusSandboxEditorApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)

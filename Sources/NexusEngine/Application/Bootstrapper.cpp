@@ -76,6 +76,11 @@ namespace NxEn
 
 	NxFr::Array<Bootstrapper::SystemInfo*> Bootstrapper::SortSystems()
 	{
+		if (GetSystemsCount() == 0)
+		{
+			return NxFr::Array<SystemInfo*>();
+		}
+
 		NxFr::Array<SystemInfo*> Infos = NxFr::Array<SystemInfo*>(GetSystemsCount());
 		NxFr::Queue<NxFr::StringView> Queue;
 		int Index = 0;

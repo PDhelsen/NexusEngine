@@ -7,8 +7,6 @@ namespace NxSA
 	void NexusSandboxAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
 	{
 		NexusAppApplication::OnInitialize(Bootstrap);
-
-		Bootstrap.AddStep([]() { NEXUS_LOG(Info, Default, "[Sandbox-App] Hello World"); });
 	}
 
 	void NexusSandboxAppApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
