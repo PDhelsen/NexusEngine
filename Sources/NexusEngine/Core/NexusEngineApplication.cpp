@@ -18,6 +18,8 @@ namespace NxEn
 
 	static void InitializeDebug()
 	{
+		bool Profile = NxFr::Arguments::HasFlag("Profile", false);
+
 		NxFr::Path DebugPath = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 		NxFr::Directory(DebugPath).Create();
 
@@ -28,9 +30,17 @@ namespace NxEn
 
 		NxFr::Stats* Statistiques = new NxFr::Stats(DebugPath + "stats.csv");
 		Statistiques->Initialize();
+		if (Profile)
+		{
+			Statistiques->StartRecording();
+		}
 		NxFr::Globals::Statistiques = Statistiques;
 
 		NxFr::Instruments* Instrumentor = NxFr::Instruments::Create(DebugPath + "instruments.json", false);
+		if (Profile)
+		{
+			Instrumentor->StartRecording();
+		}
 		NxFr::Globals::Instrumentor = Instrumentor;
 	}
 
@@ -41,10 +51,18 @@ namespace NxEn
 		delete Logs;
 
 		NxFr::Stats* Statistiques = NxFr::Globals::Statistiques;
+		if (Statistiques->IsRecording())
+		{
+			Statistiques->StopRecording();
+		}
 		NxFr::Globals::Statistiques = nullptr;
 		delete Statistiques;
 
 		NxFr::Instruments* Instrumentor = NxFr::Globals::Instrumentor;
+		if (Instrumentor->IsRecording())
+		{
+			Instrumentor->StopRecording();
+		}
 		NxFr::Globals::Instrumentor = nullptr;
 		NxFr::Instruments::Destroy(Instrumentor);
 	}
