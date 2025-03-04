@@ -3,6 +3,8 @@
 
 namespace NxEn
 {
+	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
+
 	void NxEn::DebugSystem::OnTick()
 	{
 		TickDebugGlobals();

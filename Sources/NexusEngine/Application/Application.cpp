@@ -79,15 +79,15 @@ namespace NxEn
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
 	}
 
-	void Application::RegisterSystem(NxFr::StringView Name, System* System)
+	void Application::RegisterSystem(NxFr::StringId Type, System* System)
 	{
-		NEXUS_ASSERT(!Systems.ContainsKey(Name), Default, "System is already created");
-		Systems.Append(Name, System);
+		NEXUS_ASSERT(!Systems.ContainsKey(Type), Default, "System is already created");
+		Systems.Append(Type, System);
 	}
 
-	void Application::UnregisterSystem(NxFr::StringView Name)
+	void Application::UnregisterSystem(NxFr::StringId Type)
 	{
-		NEXUS_ASSERT(Systems.ContainsKey(Name), Default, "System was not created");
-		Systems.Remove(Name);
+		NEXUS_ASSERT(Systems.ContainsKey(Type), Default, "System was not created");
+		Systems.Remove(Type);
 	}
 }

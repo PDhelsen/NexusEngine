@@ -82,7 +82,7 @@ namespace NxEn
 		}
 
 		NxFr::Array<SystemInfo*> Infos = NxFr::Array<SystemInfo*>(GetSystemsCount());
-		NxFr::Queue<NxFr::StringView> Queue;
+		NxFr::Queue<NxFr::StringId> Queue;
 		int Index = 0;
 
 		for (auto& [Name, Info] : SystemInfos)
@@ -103,7 +103,7 @@ namespace NxEn
 
 		while (!Queue.IsEmpty())
 		{
-			NxFr::StringView Name = Queue.Get();
+			NxFr::StringId Name = Queue.Get();
 			Queue.Remove();
 
 			SystemInfo& Info = SystemInfos[Name];

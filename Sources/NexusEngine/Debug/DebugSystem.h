@@ -7,8 +7,9 @@ namespace NxEn
 	class DebugSystem : public System
 	{
 	public:
-		NEXUS_SYSTEM_DECLARATION(DebugSystem);
+		NEXUS_OBJECT_DECLARATION(DebugSystem)
 
+	protected:
 		NEXUS_ENGINE_API virtual void OnTick() override;
 
 	private:

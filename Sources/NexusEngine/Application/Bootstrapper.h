@@ -28,8 +28,8 @@ namespace NxEn
 			System* Target;
 			NxFr::StringView Tag;
 			uint64 Remaining;
-			NxFr::List<NxFr::StringView> Dependencies;
-			NxFr::List<NxFr::StringView> Dependents;
+			NxFr::List<NxFr::StringId> Dependencies;
+			NxFr::List<NxFr::StringId> Dependents;
 
 			NEXUS_ENGINE_API SystemInfo(System* Target, NxFr::StringView Tag = "");
 		};
@@ -47,14 +47,15 @@ namespace NxEn
 		template<typename S>
 		Bootstrapper& AddSystem()
 		{
-			SystemInfos.Append(S::GetSystemName(), { new S(), S::GetSystemName() });
+			NxFr::StringId Type = S::GetClassType();
+			SystemInfos.Append(Type, { new S(), Type.C() });
 			return *this;
 		}
 
 		template<typename S,typename D>
 		Bootstrapper& AddDependency()
 		{
-			SystemInfos[S::GetSystemName()].Dependencies.Append(D::GetSystemName());
+			SystemInfos[S::GetClassType()].Dependencies.Append(D::GetClassType());
 			return *this;
 		}
 
@@ -71,6 +72,6 @@ namespace NxEn
 		NxFr::Array<SystemInfo*> SortSystems();
 
 		NxFr::List<StepInfo> StepInfos;
-		NxFr::Dictionary<NxFr::StringView, SystemInfo> SystemInfos;
+		NxFr::Dictionary<NxFr::StringId, SystemInfo> SystemInfos;
 	};
 }

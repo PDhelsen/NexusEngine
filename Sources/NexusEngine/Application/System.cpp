@@ -5,56 +5,15 @@
 
 namespace NxEn
 {
-	System::System()
-		: Enabled(true)
-	{
-		Application::GetInstance()->RegisterSystem(GetSystemName(), this);
-	}
-
-	System::~System()
-	{
-		Application::GetInstance()->UnregisterSystem(GetSystemName());
-	}
+	NEXUS_OBJECT_IMPLEMENTATION(System)
 
 	void System::OnInitialize()
 	{
+		Application::GetInstance()->RegisterSystem(GetObjectType(), this);
 	}
 
-	void System::OnShutdowm()
+	void System::OnShutdown()
 	{
-	}
-
-	void System::OnTick()
-	{
-	}
-
-	void System::OnEnable()
-	{
-	}
-
-	void System::OnDisable()
-	{
-	}
-
-	void System::Initialize()
-	{
-		OnInitialize();
-		OnEnable();
-	}
-
-	void System::Shutdown()
-	{
-		OnDisable();
-		OnShutdowm();
-	}
-
-	void System::Tick()
-	{
-		if (!Enabled)
-		{
-			return;
-		}
-
-		OnTick();
+		Application::GetInstance()->UnregisterSystem(GetObjectType());
 	}
 }

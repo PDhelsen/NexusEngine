@@ -49,7 +49,7 @@ namespace NxEn
 		NEXUS_ENGINE_API bool IsRunning();
 
 		template<typename T>
-		T* GetSystem() const { return Systems[T::GetSystemName()]; }
+		T* GetSystem() const { return Systems[T::GetType()]; }
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;
@@ -61,11 +61,11 @@ namespace NxEn
 		void Shutdown();
 		void Run();
 
-		void RegisterSystem(NxFr::StringView Name, System* System);
-		void UnregisterSystem(NxFr::StringView Name);
+		void RegisterSystem(NxFr::StringId Type, System* System);
+		void UnregisterSystem(NxFr::StringId Type);
 
 	private:
-		NxFr::Dictionary<NxFr::StringView, System*> Systems;
+		NxFr::Dictionary<NxFr::StringId, System*> Systems;
 		Bootstrapper Bootstrap;
 
 		bool WantsToQuit;
