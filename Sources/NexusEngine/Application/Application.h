@@ -50,6 +50,7 @@ namespace NxEn
 
 		template<typename T>
 		T* GetSystem() const { return Systems[T::GetType()]; }
+		System* GetSystem(NxFr::StringId Type) const { return Systems[Type]; }
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;

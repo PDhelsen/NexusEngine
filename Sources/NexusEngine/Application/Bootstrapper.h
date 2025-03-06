@@ -63,8 +63,8 @@ namespace NxEn
 		uint64 GetSystemsCount() const { return SystemInfos.GetCount(); }
 
 	private:
-		void Boot();
-		void Unboot();
+		void ExecuteBoot();
+		void ExecuteUnboot();
 
 		void ExecuteSteps();
 		void CreateSystems();

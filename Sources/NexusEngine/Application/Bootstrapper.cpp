@@ -23,13 +23,13 @@ namespace NxEn
 	{
 	}
 
-	void Bootstrapper::Boot()
+	void Bootstrapper::ExecuteBoot()
 	{
 		ExecuteSteps();
 		CreateSystems();
 	}
 
-	void Bootstrapper::Unboot()
+	void Bootstrapper::ExecuteUnboot()
 	{
 		DestroySystems();
 		ExecuteSteps();
@@ -37,6 +37,12 @@ namespace NxEn
 
 	void Bootstrapper::ExecuteSteps()
 	{
+		if (GetStepsCount() == 0)
+		{
+			NEXUS_LOG(Warning, Default, "There is no boot step");
+			return;
+		}
+
 		Application* Instance = Application::GetInstance();
 
 		for (auto It = StepInfos.Begin(); It != StepInfos.End() && Instance->IsRunning(); ++It)
@@ -50,6 +56,12 @@ namespace NxEn
 
 	void Bootstrapper::CreateSystems()
 	{
+		if (GetSystemsCount() == 0)
+		{
+			NEXUS_LOG(Warning, Default, "There is no systems to initialize");
+			return;
+		}
+
 		Application* Instance = Application::GetInstance();
 		NxFr::Array<SystemInfo*> Infos = SortSystems();
 
@@ -62,6 +74,12 @@ namespace NxEn
 
 	void Bootstrapper::DestroySystems()
 	{
+		if (GetSystemsCount() == 0)
+		{
+			NEXUS_LOG(Warning, Default, "There is no systems to shutdown");
+			return;
+		}
+
 		Application* Instance = Application::GetInstance();
 		NxFr::Array<SystemInfo*> Infos = SortSystems();
 
@@ -76,37 +94,32 @@ namespace NxEn
 
 	NxFr::Array<Bootstrapper::SystemInfo*> Bootstrapper::SortSystems()
 	{
-		if (GetSystemsCount() == 0)
-		{
-			return NxFr::Array<SystemInfo*>();
-		}
-
 		NxFr::Array<SystemInfo*> Infos = NxFr::Array<SystemInfo*>(GetSystemsCount());
 		NxFr::Queue<NxFr::StringId> Queue;
 		int Index = 0;
 
-		for (auto& [Name, Info] : SystemInfos)
+		for (auto& [Type, Info] : SystemInfos)
 		{
 			for (auto Dependency : Info.Dependencies)
 			{
-				SystemInfos[Dependency].Dependents.Append(Name);
+				SystemInfos[Dependency].Dependents.Append(Type);
 			}
 
 			Info.Remaining = Info.Dependencies.GetCount();
 			if (Info.Remaining == 0)
 			{
-				Queue.Append(Name);
+				Queue.Append(Type);
 			}
 		}
 
-		NEXUS_ASSERT(!Queue.IsEmpty(), Default, "Impossible to start creating the systems because each one depened on another one, probably circular dependency.");
+		NEXUS_ASSERT(!Queue.IsEmpty(), Default, "Impossible to start sorting the systems because each one depened on another one, probably circular dependency.");
 
 		while (!Queue.IsEmpty())
 		{
-			NxFr::StringId Name = Queue.Get();
+			NxFr::StringId Type = Queue.Get();
 			Queue.Remove();
 
-			SystemInfo& Info = SystemInfos[Name];
+			SystemInfo& Info = SystemInfos[Type];
 			Infos[Index++] = &Info;
 
 			for (auto Dependent : Info.Dependents)
@@ -120,7 +133,7 @@ namespace NxEn
 			Info.Dependents.Clear();
 		}
 
-		NEXUS_ASSERT(Index == GetSystemsCount(), Default, "Some Systems were not initialized, probaly unable to resolve all the dependencies");
+		NEXUS_ASSERT(Index == GetSystemsCount(), Default, "Some Systems were not sorted, probaly unable to resolve all the dependencies");
 		return Infos;
 	}
 }
