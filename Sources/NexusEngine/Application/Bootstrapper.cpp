@@ -23,13 +23,13 @@ namespace NxEn
 	{
 	}
 
-	void Bootstrapper::ExecuteBoot()
+	void Bootstrapper::RunBoot()
 	{
 		ExecuteSteps();
 		CreateSystems();
 	}
 
-	void Bootstrapper::ExecuteUnboot()
+	void Bootstrapper::RunUnboot()
 	{
 		DestroySystems();
 		ExecuteSteps();

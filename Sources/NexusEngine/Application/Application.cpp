@@ -60,13 +60,13 @@ namespace NxEn
 	void Application::Initialize()
 	{
 		OnInitialize(Bootstrap);
-		Bootstrap.ExecuteBoot();
+		Bootstrap.RunBoot();
 	}
 
 	void Application::Shutdown()
 	{
 		OnShutdown(Bootstrap);
-		Bootstrap.ExecuteUnboot();
+		Bootstrap.RunUnboot();
 	}
 
 	void Application::Run()
