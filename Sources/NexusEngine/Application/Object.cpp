@@ -14,6 +14,23 @@ namespace NxEn
 	{
 	}
 
+	void Object::Initialize()
+	{
+		OnInitialize();
+		OnEnable();
+	}
+
+	void Object::Shutdown()
+	{
+		OnDisable();
+		OnShutdown();
+	}
+
+	void Object::Tick()
+	{
+		OnTick();
+	}
+
 	bool Object::IsEnabled() const
 	{
 		return Enabled;
@@ -40,22 +57,5 @@ namespace NxEn
 	NxFr::StringView Object::GetName() const
 	{
 		return GetObjectType().C();
-	}
-
-	void Object::Initialize()
-	{
-		OnInitialize();
-		OnEnable();
-	}
-
-	void Object::Shutdown()
-	{
-		OnDisable();
-		OnShutdown();
-	}
-
-	void Object::Tick()
-	{
-		OnTick();
 	}
 }

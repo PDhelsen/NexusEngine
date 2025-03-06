@@ -34,14 +34,12 @@ namespace NxEn
 
 	class Application
 	{
-		friend int EntryPoint::Main(int argc, char* argv[]);
-		friend class System;
-
 	public:
 		NEXUS_ENGINE_API static Application* GetInstance();
 
 		NEXUS_ENGINE_API Application();
 		NEXUS_ENGINE_API virtual ~Application();
+		NEXUS_ENGINE_API void Run();
 
 		NEXUS_ENGINE_API void Quit();
 		NEXUS_ENGINE_API void Restart();
@@ -49,21 +47,19 @@ namespace NxEn
 		NEXUS_ENGINE_API bool IsRunning();
 
 		template<typename T>
-		T* GetSystem() const { return Systems[T::GetType()]; }
-		System* GetSystem(NxFr::StringId Type) const { return Systems[Type]; }
+		T* GetSystem() const { return (T*)GetSystem(T::GetClassType()); }
+		NEXUS_ENGINE_API System* GetSystem(NxFr::StringId Type);
+		NEXUS_ENGINE_API void RegisterSystem(NxFr::StringId Type, System* System);
+		NEXUS_ENGINE_API void UnregisterSystem(NxFr::StringId Type);
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;
 		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Bootstrap) = 0;
 
 	private:
-		void Execute();
 		void Initialize();
 		void Shutdown();
-		void Run();
-
-		void RegisterSystem(NxFr::StringId Type, System* System);
-		void UnregisterSystem(NxFr::StringId Type);
+		void Execute();
 
 	private:
 		NxFr::Dictionary<NxFr::StringId, System*> Systems;

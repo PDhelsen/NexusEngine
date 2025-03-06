@@ -50,10 +50,10 @@ namespace NxEn
 		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
 	}
 
-	void Application::Execute()
+	void Application::Run()
 	{
 		Initialize();
-		Run();
+		Execute();
 		Shutdown();
 	}
 
@@ -69,7 +69,7 @@ namespace NxEn
 		Bootstrap.RunUnboot();
 	}
 
-	void Application::Run()
+	void Application::Execute()
 	{
 		for (auto It = Systems.Begin(); It != Systems.End() && IsRunning(); ++It)
 		{
@@ -77,6 +77,11 @@ namespace NxEn
 		}
 
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
+	}
+
+	System* Application::GetSystem(NxFr::StringId Type)
+	{
+		return Systems[Type];
 	}
 
 	void Application::RegisterSystem(NxFr::StringId Type, System* System)

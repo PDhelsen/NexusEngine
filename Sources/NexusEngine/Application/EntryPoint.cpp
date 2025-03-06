@@ -59,7 +59,7 @@ namespace NxEn
 				Restart = false;
 
 				Application* Instance = CreateApplication.Invoke();
-				Instance->Execute();
+				Instance->Run();
 				DestroyApplication.Invoke(Instance);
 
 			} while (Restart);

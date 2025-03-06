@@ -27,6 +27,10 @@ namespace NxEn
 		NEXUS_ENGINE_API Object();
 		NEXUS_ENGINE_API virtual ~Object();
 
+		NEXUS_ENGINE_API void Initialize();
+		NEXUS_ENGINE_API void Shutdown();
+		NEXUS_ENGINE_API void Tick();
+
 		NEXUS_ENGINE_API virtual bool IsEnabled() const;
 		NEXUS_ENGINE_API virtual void SetEnabled(bool enabled);
 
@@ -34,10 +38,6 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual NxFr::StringView GetName() const;
 
 	protected:
-		NEXUS_ENGINE_API void Initialize();
-		NEXUS_ENGINE_API void Shutdown();
-		NEXUS_ENGINE_API void Tick();
-
 		NEXUS_ENGINE_API virtual void OnInitialize() { };
 		NEXUS_ENGINE_API virtual void OnShutdown() { };
 		NEXUS_ENGINE_API virtual void OnTick() { };

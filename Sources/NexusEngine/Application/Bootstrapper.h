@@ -7,8 +7,6 @@ namespace NxEn
 {
 	class Bootstrapper
 	{
-		friend class Application;
-
 	public:
 		using Signature = NxFr::Delegate<void()>;
 
@@ -38,6 +36,9 @@ namespace NxEn
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
+		NEXUS_ENGINE_API void RunBoot();
+		NEXUS_ENGINE_API void RunUnboot();
+
 		Bootstrapper& AddStep(Signature Step, NxFr::StringView Tag = "")
 		{
 			StepInfos.Append({ Step, Tag });
@@ -63,14 +64,12 @@ namespace NxEn
 		uint64 GetSystemsCount() const { return SystemInfos.GetCount(); }
 
 	private:
-		void RunBoot();
-		void RunUnboot();
-
 		void ExecuteSteps();
 		void CreateSystems();
 		void DestroySystems();
 		NxFr::Array<SystemInfo*> SortSystems();
 
+	private:
 		NxFr::List<StepInfo> StepInfos;
 		NxFr::Dictionary<NxFr::StringId, SystemInfo> SystemInfos;
 	};
