@@ -3,7 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/EntryPoint.h"
 #include "NexusEngine/Application/Bootstrapper.h"
-#include "NexusEngine/Application/System.h"
+#include "NexusEngine/Systems/System.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
 namespace EntryPoint\

@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/EntryPoint.h"
 
-#include "NexusEngine/Application/Application.h"
-
 #if NEXUS_EDITOR
 	#define NEXUS_PROJECT_DLL "NexusProject-Editor"
 #else

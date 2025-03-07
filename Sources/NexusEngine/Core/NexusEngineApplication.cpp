@@ -1,10 +1,10 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngineApplication.h"
+#include "NexusEngine/Core/NexusEngineApplication.h"
 
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
-#include "NexusEngine/Debug/DebugSystem.h"
+#include "NexusEngine/Systems/Debug/DebugSystem.h"
 
 namespace NxEn
 {

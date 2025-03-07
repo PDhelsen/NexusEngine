@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Bootstrapper.h"
 
-#include "NexusEngine/Application/Application.h"
-
 namespace NxEn
 {
 	Bootstrapper::StepInfo::StepInfo(const Signature& Target, NxFr::StringView Tag)

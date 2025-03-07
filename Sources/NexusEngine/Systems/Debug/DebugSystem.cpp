@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Debug/DebugSystem.h"
+#include "NexusEngine/Systems/Debug/DebugSystem.h"
 
 namespace NxEn
 {
