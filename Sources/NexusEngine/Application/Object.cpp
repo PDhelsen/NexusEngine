@@ -6,7 +6,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(Object)
 
 	Object::Object()
-		: Enabled(true)
+		: Flags(ObjectFlags::None)
 	{
 	}
 
@@ -16,30 +16,57 @@ namespace NxEn
 
 	void Object::Initialize()
 	{
+		if (IsInitialized())
+		{
+			NEXUS_LOG(Warning, Default, "Object (%s) is already initialized", GetName().C());
+			return;
+		}
+
 		OnInitialize();
 		OnEnable();
+
+		SetFlag(ObjectFlags::Initialized, true);
 	}
 
 	void Object::Shutdown()
 	{
+		if (!IsInitialized())
+		{
+			NEXUS_LOG(Warning, Default, "Object (%s) is already shutdown", GetName().C());
+			return;
+		}
+
 		OnDisable();
 		OnShutdown();
+
+		SetFlag(ObjectFlags::Initialized, false);
 	}
 
 	void Object::Tick()
 	{
+		if (!IsTickable())
+		{
+			return;
+		}
+
 		OnTick();
+	}
+
+	bool Object::IsInitialized() const
+	{
+		return GetFlag(ObjectFlags::Initialized);
 	}
 
 	bool Object::IsEnabled() const
 	{
-		return Enabled;
+		return GetFlag(ObjectFlags::Enabled);
 	}
 
-	void Object::SetEnabled(bool enabled)
+	void Object::SetEnabled(bool Enabled)
 	{
-		Enabled = enabled;
-		if (Enabled)
+		SetFlag(ObjectFlags::Enabled, Enabled);
+
+		if (IsEnabled())
 		{
 			OnEnable();
 		}
@@ -47,6 +74,16 @@ namespace NxEn
 		{
 			OnDisable();
 		}
+	}
+
+	bool Object::IsTickable() const
+	{
+		return GetFlag(ObjectFlags::Tickable);
+	}
+
+	void Object::SetTickable(bool Tickable)
+	{
+		SetFlag(ObjectFlags::Tickable, Tickable);
 	}
 
 	NxFr::String Object::ToString() const
@@ -57,5 +94,15 @@ namespace NxEn
 	NxFr::StringView Object::GetName() const
 	{
 		return GetObjectType().C();
+	}
+
+	bool Object::GetFlag(ObjectFlags Flag) const
+	{
+		return Enum::CheckFlag(Flags, Flag);
+	}
+
+	void Object::SetFlag(ObjectFlags Flag, bool Value)
+	{
+		Flags = Enum::SetFlag(Flags, Flag, Value);
 	}
 }

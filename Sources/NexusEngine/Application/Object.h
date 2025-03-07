@@ -19,6 +19,16 @@ NxFr::StringId Type::GetClassType()\
 
 namespace NxEn
 {
+	enum class ObjectFlags : uint8
+	{
+		None = 0,
+
+		Initialized = 1 << 0,
+		Enabled = 1 << 1,
+		Tickable = 1 << 2,
+	};
+	NEXUS_ENUM_TO_FLAG(ObjectFlags)
+
 	class Object
 	{
 	public:
@@ -31,8 +41,11 @@ namespace NxEn
 		NEXUS_ENGINE_API void Shutdown();
 		NEXUS_ENGINE_API void Tick();
 
-		NEXUS_ENGINE_API virtual bool IsEnabled() const;
-		NEXUS_ENGINE_API virtual void SetEnabled(bool enabled);
+		NEXUS_ENGINE_API bool IsInitialized() const;
+		NEXUS_ENGINE_API bool IsEnabled() const;
+		NEXUS_ENGINE_API void SetEnabled(bool Enabled);
+		NEXUS_ENGINE_API bool IsTickable() const;
+		NEXUS_ENGINE_API void SetTickable(bool Tickable);
 
 		NEXUS_ENGINE_API virtual NxFr::String ToString() const;
 		NEXUS_ENGINE_API virtual NxFr::StringView GetName() const;
@@ -45,6 +58,10 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnDisable() { };
 
 	private:
-		bool Enabled;
+		inline bool GetFlag(ObjectFlags Flag) const;
+		inline void SetFlag(ObjectFlags Flag, bool Value);
+
+	private:
+		ObjectFlags Flags;
 	};
 }

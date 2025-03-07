@@ -10,6 +10,7 @@ namespace NxEn
 	void System::OnInitialize()
 	{
 		Application::GetInstance()->RegisterSystem(GetObjectType(), this);
+		SetTickable(true);
 	}
 
 	void System::OnShutdown()
