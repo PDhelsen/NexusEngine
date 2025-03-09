@@ -50,6 +50,23 @@ namespace NxEn
 		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
 	}
 
+	System* Application::GetSystem(NxFr::StringId Type)
+	{
+		return Systems[Type];
+	}
+
+	void Application::RegisterSystem(NxFr::StringId Type, System* System)
+	{
+		NEXUS_ASSERT(!Systems.ContainsKey(Type), Default, "System is already created");
+		Systems.Append(Type, System);
+	}
+
+	void Application::UnregisterSystem(NxFr::StringId Type)
+	{
+		NEXUS_ASSERT(Systems.ContainsKey(Type), Default, "System was not created");
+		Systems.Remove(Type);
+	}
+
 	void Application::Run()
 	{
 		Initialize();
@@ -77,22 +94,5 @@ namespace NxEn
 		}
 
 		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
-	}
-
-	System* Application::GetSystem(NxFr::StringId Type)
-	{
-		return Systems[Type];
-	}
-
-	void Application::RegisterSystem(NxFr::StringId Type, System* System)
-	{
-		NEXUS_ASSERT(!Systems.ContainsKey(Type), Default, "System is already created");
-		Systems.Append(Type, System);
-	}
-
-	void Application::UnregisterSystem(NxFr::StringId Type)
-	{
-		NEXUS_ASSERT(Systems.ContainsKey(Type), Default, "System was not created");
-		Systems.Remove(Type);
 	}
 }
