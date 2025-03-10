@@ -58,8 +58,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnDisable() { };
 
 	private:
-		inline bool GetFlag(ObjectFlags Flag) const;
-		inline void SetFlag(ObjectFlags Flag, bool Value);
+		NEXUS_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;
+		NEXUS_FORCE_INLINE void SetFlag(ObjectFlags Flag, bool Value);
 
 	private:
 		ObjectFlags Flags;
