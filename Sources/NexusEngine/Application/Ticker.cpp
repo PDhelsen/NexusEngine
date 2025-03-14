@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Ticker.h"
 
+#include "NexusEngine/Misc/DebugManager.h"
+
 namespace NxEn
 {
 	Ticker::SystemInfo::SystemInfo(System* Target, NxFr::StringView Tag, Bucket TickBucket, float TickRate, bool FixedTimeStep)
@@ -44,6 +46,8 @@ namespace NxEn
 			}
 
 			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
+
+			DebugManager::GetInstance()->Flush();
 		}
 	}
 

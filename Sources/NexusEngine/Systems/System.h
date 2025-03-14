@@ -12,5 +12,6 @@ namespace NxEn
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize() override;
 		NEXUS_ENGINE_API virtual void OnShutdown() override;
+		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 	};
 }

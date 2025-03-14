@@ -41,9 +41,7 @@ namespace NxEn
 			return;
 		}
 
-		Application* Instance = Application::GetInstance();
-
-		for (auto It = StepInfos.Begin(); It != StepInfos.End() && Instance->IsRunning(); ++It)
+		for (auto It = StepInfos.Begin(); It != StepInfos.End(); ++It)
 		{
 			NEXUS_LOG(Info, Default, "Bootstrapper - Step (%i / %i) %s", It.Id() + 1, StepInfos.GetCount(), It->Tag.C());
 			It->Target.Invoke();
@@ -60,10 +58,8 @@ namespace NxEn
 			return;
 		}
 
-		Application* Instance = Application::GetInstance();
 		NxFr::Array<SystemInfo*> Infos = SortSystems();
-
-		for (auto It = Infos.Begin(); It != Infos.End() && Instance->IsRunning(); ++It)
+		for (auto It = Infos.Begin(); It != Infos.End(); ++It)
 		{
 			NEXUS_LOG(Info, Default, "Bootstrapper - Create System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
 			It.Get()->Target->Initialize();
@@ -80,10 +76,8 @@ namespace NxEn
 			return;
 		}
 
-		Application* Instance = Application::GetInstance();
 		NxFr::Array<SystemInfo*> Infos = SortSystems();
-
-		for (auto It = Infos.Begin(); It != Infos.End() && Instance->IsRunning(); ++It)
+		for (auto It = Infos.Begin(); It != Infos.End(); ++It)
 		{
 			NEXUS_LOG(Info, Default, "Bootstrapper - Destroy System (%i / %i) %s", Infos.GetCount() - It.Id(), Infos.GetCount(), It.Get()->Tag.C());
 			It.Get()->Target->Shutdown();
