@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Ticker.h"
 
-#include "NexusEngine/Misc/DebugManager.h"
-
 namespace NxEn
 {
 	Ticker::SystemInfo::SystemInfo(System* Target, NxFr::StringView Tag, Bucket TickBucket, float TickRate, bool FixedTimeStep)
@@ -20,34 +18,24 @@ namespace NxEn
 
 	void Ticker::Run()
 	{
-		Application* Instance = Application::GetInstance();
-		NxFr::Array<SystemInfo*> Systems = SortSystems();
+		Systems = SortSystems();
 
 		NEXUS_LOG(Info, Default, "Tick order:")
 		for (auto Info : Systems)
 		{
 			NEXUS_LOG(Info, Default, "- %s", Info->Tag.C());
 		}
+	}
 
-		NxFr::Stopwatch Stopwatch;
-		float DeltaTime = 0.0;
-
-		while (Instance->IsRunning())
+	void Ticker::Tick(float DeltaTime)
+	{
+		for (auto Info : Systems)
 		{
-			Stopwatch.Start();
-
-			for (auto Info : Systems)
+			float TimeStep = ComputeTimeStep(*Info, DeltaTime);
+			if (TimeStep > 0.0f)
 			{
-				float TimeStep = ComputeTimeStep(*Info, DeltaTime);
-				if (TimeStep > 0.0f)
-				{
-					Info->Target->Tick(TimeStep);
-				}
+				Info->Target->Tick(TimeStep);
 			}
-
-			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
-
-			DebugManager::GetInstance()->Flush();
 		}
 	}
 

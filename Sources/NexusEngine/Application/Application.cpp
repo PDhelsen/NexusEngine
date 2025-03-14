@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Application.h"
 
+#include "NexusEngine/Misc/DebugManager.h"
+
 namespace NxEn
 {
 	static Application* Instance = nullptr;
@@ -90,5 +92,19 @@ namespace NxEn
 	{
 		OnExecute(Ticks);
 		Ticks.Run();
+
+		NxFr::Stopwatch Stopwatch;
+		float DeltaTime = 0.0;
+
+		while (IsRunning())
+		{
+			Stopwatch.Start();
+
+			Ticks.Tick(DeltaTime);
+
+			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
+
+			DebugManager::GetInstance()->Flush();
+		}
 	}
 }

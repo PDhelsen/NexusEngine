@@ -6,7 +6,7 @@ namespace NxEn
 {
 	class DebugManager
 	{
-		friend class Ticker;
+		friend class Application;
 
 	public :
 		NEXUS_ENGINE_API static DebugManager* GetInstance();

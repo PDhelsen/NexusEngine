@@ -67,12 +67,14 @@ namespace NxEn
 
 	private:
 		void Run();
+		void Tick(float DeltaTime);
 
 		float ComputeTimeStep(SystemInfo& Info, float DeltaTime) const;
 		NxFr::Array<SystemInfo*> SortSystems();
 
 	private:
 		NxFr::Dictionary<NxFr::StringId, SystemInfo> SystemInfos;
+		NxFr::Array<SystemInfo*> Systems;
 	};
 }
 
