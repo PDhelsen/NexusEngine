@@ -8,6 +8,12 @@ namespace NxEn
 	void DebugSystem::OnTick(float TimeStep)
 	{
 		NEXUS_LOG(Info, Default, "Tick (%.5f)", TimeStep);
+		FrameCount++;
+
+		if (FrameCount > 10)
+		{
+			Application::GetInstance()->Quit();
+		}
 
 		TickDebugGlobals();
 	}

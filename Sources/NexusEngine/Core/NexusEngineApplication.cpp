@@ -75,9 +75,11 @@ namespace NxEn
 		Bootstrap.AddSystem<DebugSystem>();
 	}
 
-	void NexusEngineApplication::OnShutdown(Bootstrapper& Bootstrap)
+	void NexusEngineApplication::OnShutdown(Bootstrapper& Unbootstrap)
 	{
-		Bootstrap.AddStep(&ShutdownDebug, "Shutdown Debug Globals");
+		Unbootstrap.AddStep(&ShutdownDebug, "Shutdown Debug Globals");
+
+		Unbootstrap.AddSystem<DebugSystem>();
 	}
 
 	void NexusEngineApplication::OnExecute(Ticker& Ticks)

@@ -4,7 +4,7 @@
 namespace NxEn
 {
 	Ticker::SystemInfo::SystemInfo(System* Target, NxFr::StringView Tag, Bucket TickBucket, float TickRate, bool FixedTimeStep)
-		: Target(Target), Tag(Tag), TickBucket(TickBucket), TickRate(TickRate), FixedTimeStep(FixedTimeStep), WaitOn(0), Dependencies(), Dependents()
+		: Target(Target), Tag(Tag), TickBucket(TickBucket), TickRate(TickRate), TickTimer(0), FixedTimeStep(FixedTimeStep), WaitOn(0), Dependencies(), Dependents()
 	{
 	}
 
@@ -19,51 +19,52 @@ namespace NxEn
 	void Ticker::Run()
 	{
 		Application* Instance = Application::GetInstance();
-		NxFr::Array<SystemData> Systems = Sort();
+		NxFr::Array<SystemInfo*> Systems = SortSystems();
 
 		NEXUS_LOG(Info, Default, "Tick order:")
-		for (auto& Data : Systems)
+		for (auto Info : Systems)
 		{
-			NEXUS_LOG(Info, Default, "- %s", SystemInfos[Data.Target->GetObjectType()].Tag.C());
+			NEXUS_LOG(Info, Default, "- %s", Info->Tag.C());
 		}
 
 		NxFr::Stopwatch Stopwatch;
-		double DeltaTime = 0.0;
+		float DeltaTime = 0.0;
 
 		while (Instance->IsRunning())
 		{
 			Stopwatch.Start();
 
-			for (auto& Data : Systems)
+			for (auto Info : Systems)
 			{
-				float TimeStep = ComputeTimeStep(Data, DeltaTime);
+				float TimeStep = ComputeTimeStep(*Info, DeltaTime);
 				if (TimeStep > 0.0f)
 				{
-					Data.Target->Tick(TimeStep);
+					Info->Target->Tick(TimeStep);
 				}
 			}
 
-			DeltaTime = Stopwatch.Stop(NxFr::Time::SecondToMilli);
+			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
 		}
 	}
 
-	float Ticker::ComputeTimeStep(SystemData& Data, double DeltaTime) const
+	float Ticker::ComputeTimeStep(SystemInfo& Info, float DeltaTime) const
 	{
-		Data.Timer += DeltaTime;
+		Info.TickTimer += DeltaTime;
 
-		if (Data.Timer < Data.Rate)
+		if (Info.TickTimer < Info.TickRate)
 		{
 			return 0.0f;
 		}
 
-		float Timer = Data.FixedTimeStep ? Data.Rate : Data.Timer;
-		Data.Timer -= Data.FixedTimeStep ? Data.Rate : Data.Timer;
-		return Timer;
+		float TickTimer = Info.FixedTimeStep ? Info.TickRate : Info.TickTimer;
+		Info.TickTimer -= Info.FixedTimeStep ? Info.TickRate : Info.TickTimer;
+		return TickTimer;
 	}
 
-	NxFr::Array<Ticker::SystemData> Ticker::Sort()
+	NxFr::Array<Ticker::SystemInfo*> Ticker::SortSystems()
 	{
-		NxFr::Array<SystemData> Systems = NxFr::Array<SystemData>(GetSystemsCount());
+		NxFr::Array<SystemInfo*> Infos = NxFr::Array<SystemInfo*>(GetSystemsCount());
+		NxFr::Queue<NxFr::StringId> Queue;
 		int Index = 0;
 
 		for (auto& [Type, Info] : SystemInfos)
@@ -81,7 +82,6 @@ namespace NxEn
 			}
 		}
 
-		NxFr::Queue<NxFr::StringId> Queue;
 		for (uint64 TickBucketIndex = 0; TickBucketIndex < (uint64)Bucket::COUNT; ++TickBucketIndex)
 		{
 			Queue.Clear();
@@ -113,7 +113,7 @@ namespace NxEn
 				Queue.Remove();
 
 				SystemInfo& Info = SystemInfos[Type];
-				Systems[Index++] = SystemData { .Target = Info.Target, .Rate = Info.TickRate, .Timer = 0, .FixedTimeStep = Info.FixedTimeStep };
+				Infos[Index++] = &Info;
 
 				for (auto& Dependent : Info.Dependents)
 				{
@@ -133,12 +133,6 @@ namespace NxEn
 
 		NEXUS_ASSERT(Index == GetSystemsCount(), Default, "Some Systems were not sorted, probaly unable to resolve all the dependencies");
 
-		return Systems;
-	}
-
-	void Ticker::AddSystem(NxFr::StringId Type, Bucket Bucket, float TickRate, bool FixedTimeStep)
-	{
-		System* System = Application::GetInstance()->GetSystem(Type);
-		SystemInfos.Append(Type, { System, System->GetObjectType().C(), Bucket, TickRate, FixedTimeStep });
+		return Infos;
 	}
 }

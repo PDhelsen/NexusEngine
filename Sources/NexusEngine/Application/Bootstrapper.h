@@ -27,6 +27,7 @@ namespace NxEn
 		public:
 			System* Target;
 			NxFr::StringView Tag;
+
 			uint64 WaitOn;
 			NxFr::List<NxFr::StringId> Dependencies;
 			NxFr::List<NxFr::StringId> Dependents;
@@ -69,6 +70,7 @@ namespace NxEn
 		void ExecuteSteps();
 		void CreateSystems();
 		void DestroySystems();
+
 		NxFr::Array<SystemInfo*> SortSystems();
 
 	private:

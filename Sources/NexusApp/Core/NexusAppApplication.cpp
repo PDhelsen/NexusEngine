@@ -9,8 +9,8 @@ namespace NxAp
 		NexusEngineApplication::OnInitialize(Bootstrap);
 	}
 
-	void NexusAppApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
+	void NexusAppApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap)
 	{
-		NexusEngineApplication::OnShutdown(Bootstrap);
+		NexusEngineApplication::OnShutdown(Unbootstrap);
 	}
 }

@@ -45,7 +45,7 @@ namespace NxEn
 		Quit();
 	}
 
-	bool Application::IsRunning()
+	bool Application::IsRunning() const
 	{
 		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
 	}

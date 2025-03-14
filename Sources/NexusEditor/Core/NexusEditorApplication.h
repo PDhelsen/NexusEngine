@@ -14,6 +14,6 @@ namespace NxEd
 
 	protected:
 		NEXUS_EDITOR_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap) override;
-		NEXUS_EDITOR_API virtual void OnShutdown(NxEn::Bootstrapper& Bootstrap) override;
+		NEXUS_EDITOR_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrap) override;
 	};
 }

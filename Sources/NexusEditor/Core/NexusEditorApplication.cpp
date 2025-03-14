@@ -9,8 +9,8 @@ namespace NxEd
 		NexusEngineApplication::OnInitialize(Bootstrap);
 	}
 
-	void NexusEditorApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
+	void NexusEditorApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap)
 	{
-		NexusEngineApplication::OnShutdown(Bootstrap);
+		NexusEngineApplication::OnShutdown(Unbootstrap);
 	}
 }

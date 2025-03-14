@@ -9,8 +9,8 @@ namespace NxSE
 		NexusEditorApplication::OnInitialize(Bootstrap);
 	}
 
-	void NexusSandboxEditorApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
+	void NexusSandboxEditorApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap)
 	{
-		NexusEditorApplication::OnShutdown(Bootstrap);
+		NexusEditorApplication::OnShutdown(Unbootstrap);
 	}
 }

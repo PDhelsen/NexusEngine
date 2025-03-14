@@ -46,7 +46,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void Quit();
 		NEXUS_ENGINE_API void Restart();
 		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
-		NEXUS_ENGINE_API bool IsRunning();
+		NEXUS_ENGINE_API bool IsRunning() const;
 
 		template<typename T>
 		T* GetSystem() const { return (T*)GetSystem(T::GetClassType()); }
@@ -56,7 +56,7 @@ namespace NxEn
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;
-		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Bootstrap) = 0;
+		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Unbootstrap) = 0;
 		NEXUS_ENGINE_API virtual void OnExecute(Ticker& Ticks) = 0;
 
 	private:

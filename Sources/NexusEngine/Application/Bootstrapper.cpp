@@ -65,9 +65,11 @@ namespace NxEn
 
 		for (auto It = Infos.Begin(); It != Infos.End() && Instance->IsRunning(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Bootstrapper - System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
+			NEXUS_LOG(Info, Default, "Bootstrapper - Create System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
 			It.Get()->Target->Initialize();
 		}
+
+		SystemInfos.Clear();
 	}
 
 	void Bootstrapper::DestroySystems()
@@ -81,13 +83,15 @@ namespace NxEn
 		Application* Instance = Application::GetInstance();
 		NxFr::Array<SystemInfo*> Infos = SortSystems();
 
-		for (auto It = Infos.BeginReverse(); It != Infos.EndReverse() && Instance->IsRunning(); --It)
+		for (auto It = Infos.Begin(); It != Infos.End() && Instance->IsRunning(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Bootstrapper - System (%i / %i) %s", It.Id() + 1, Infos.GetCount(), It.Get()->Tag.C());
+			NEXUS_LOG(Info, Default, "Bootstrapper - Destroy System (%i / %i) %s", Infos.GetCount() - It.Id(), Infos.GetCount(), It.Get()->Tag.C());
 			It.Get()->Target->Shutdown();
 
 			delete It.Get()->Target;
 		}
+
+		SystemInfos.Clear();
 	}
 
 	NxFr::Array<Bootstrapper::SystemInfo*> Bootstrapper::SortSystems()
@@ -98,7 +102,7 @@ namespace NxEn
 
 		for (auto& [Type, Info] : SystemInfos)
 		{
-			for (auto Dependency : Info.Dependencies)
+			for (auto& Dependency : Info.Dependencies)
 			{
 				SystemInfos[Dependency].Dependents.Append(Type);
 			}
@@ -120,7 +124,7 @@ namespace NxEn
 			SystemInfo& Info = SystemInfos[Type];
 			Infos[Index++] = &Info;
 
-			for (auto Dependent : Info.Dependents)
+			for (auto& Dependent : Info.Dependents)
 			{
 				if (--SystemInfos[Dependent].WaitOn == 0)
 				{
@@ -129,6 +133,7 @@ namespace NxEn
 			}
 
 			Info.Dependents.Clear();
+			Info.Dependencies.Clear();
 		}
 
 		NEXUS_ASSERT(Index == GetSystemsCount(), Default, "Some Systems were not sorted, probaly unable to resolve all the dependencies");

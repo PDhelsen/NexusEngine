@@ -14,6 +14,9 @@ namespace NxEn
 
 	private:
 		inline void TickDebugGlobals() const;
+
+	private:
+		uint64 FrameCount;
 	};
 }
 
