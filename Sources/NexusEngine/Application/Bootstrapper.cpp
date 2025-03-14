@@ -9,7 +9,7 @@ namespace NxEn
 	}
 
 	Bootstrapper::SystemInfo::SystemInfo(System* Target, NxFr::StringView Tag)
-		: Target(Target), Tag(Tag), Remaining(0), Dependencies(), Dependents()
+		: Target(Target), Tag(Tag), WaitOn(0), Dependencies(), Dependents()
 	{
 	}
 
@@ -103,8 +103,8 @@ namespace NxEn
 				SystemInfos[Dependency].Dependents.Append(Type);
 			}
 
-			Info.Remaining = Info.Dependencies.GetCount();
-			if (Info.Remaining == 0)
+			Info.WaitOn = Info.Dependencies.GetCount();
+			if (Info.WaitOn == 0)
 			{
 				Queue.Append(Type);
 			}
@@ -122,7 +122,7 @@ namespace NxEn
 
 			for (auto Dependent : Info.Dependents)
 			{
-				if (--SystemInfos[Dependent].Remaining == 0)
+				if (--SystemInfos[Dependent].WaitOn == 0)
 				{
 					Queue.Append(Dependent);
 				}

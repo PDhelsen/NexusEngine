@@ -3,6 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/EntryPoint.h"
 #include "NexusEngine/Application/Bootstrapper.h"
+#include "NexusEngine/Application/Ticker.h"
 #include "NexusEngine/Systems/System.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
@@ -56,6 +57,7 @@ namespace NxEn
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;
 		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Bootstrap) = 0;
+		NEXUS_ENGINE_API virtual void OnExecute(Ticker& Ticks) = 0;
 
 	private:
 		void Run();
@@ -66,6 +68,7 @@ namespace NxEn
 	private:
 		NxFr::Dictionary<NxFr::StringId, System*> Systems;
 		Bootstrapper Bootstrap;
+		Ticker Ticks;
 
 		bool WantsToQuit;
 	};

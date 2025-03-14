@@ -67,7 +67,7 @@ namespace NxEn
 		NxFr::Instruments::Destroy(Instrumentor);
 	}
 
-	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
+	void NexusEngineApplication::OnInitialize(Bootstrapper& Bootstrap)
 	{
 		Bootstrap.AddStep(&InitializeFolders, "Generate Folders");
 		Bootstrap.AddStep(&InitializeDebug, "Initialize Debug Globals");
@@ -75,8 +75,13 @@ namespace NxEn
 		Bootstrap.AddSystem<DebugSystem>();
 	}
 
-	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Bootstrap)
+	void NexusEngineApplication::OnShutdown(Bootstrapper& Bootstrap)
 	{
 		Bootstrap.AddStep(&ShutdownDebug, "Shutdown Debug Globals");
+	}
+
+	void NexusEngineApplication::OnExecute(Ticker& Ticks)
+	{
+		Ticks.AddSystem<DebugSystem>(Ticker::Bucket::Cleanup);
 	}
 }

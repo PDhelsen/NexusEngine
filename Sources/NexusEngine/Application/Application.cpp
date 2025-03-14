@@ -11,7 +11,7 @@ namespace NxEn
 	}
 
 	Application::Application()
-		: Bootstrap(), Systems(), WantsToQuit(false)
+		: Systems(), Bootstrap(), Ticks(), WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -88,11 +88,7 @@ namespace NxEn
 
 	void Application::Execute()
 	{
-		for (auto It = Systems.Begin(); It != Systems.End() && IsRunning(); ++It)
-		{
-			It->Value->Tick();
-		}
-
-		NxFr::Platform::GetInstance()->WaitForUserToCloseTerminal();
+		OnExecute(Ticks);
+		Ticks.Run();
 	}
 }

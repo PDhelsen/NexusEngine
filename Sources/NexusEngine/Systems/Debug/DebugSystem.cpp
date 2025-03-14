@@ -5,8 +5,10 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 
-	void DebugSystem::OnTick()
+	void DebugSystem::OnTick(float TimeStep)
 	{
+		NEXUS_LOG(Info, Default, "Tick (%.5f)", TimeStep);
+
 		TickDebugGlobals();
 	}
 

@@ -19,7 +19,7 @@ namespace NxEn
 			Signature Target;
 			NxFr::StringView Tag;
 
-			NEXUS_ENGINE_API StepInfo(const Signature& Target, NxFr::StringView Tag = "");
+			NEXUS_ENGINE_API StepInfo(const Signature& Target, NxFr::StringView Tag);
 		};
 
 		struct SystemInfo
@@ -27,11 +27,11 @@ namespace NxEn
 		public:
 			System* Target;
 			NxFr::StringView Tag;
-			uint64 Remaining;
+			uint64 WaitOn;
 			NxFr::List<NxFr::StringId> Dependencies;
 			NxFr::List<NxFr::StringId> Dependents;
 
-			NEXUS_ENGINE_API SystemInfo(System* Target, NxFr::StringView Tag = "");
+			NEXUS_ENGINE_API SystemInfo(System* Target, NxFr::StringView Tag);
 		};
 
 	public:

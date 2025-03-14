@@ -42,14 +42,14 @@ namespace NxEn
 		SetFlag(ObjectFlags::Initialized, false);
 	}
 
-	void Object::Tick()
+	void Object::Tick(float TimeStep)
 	{
 		if (!IsTickable())
 		{
 			return;
 		}
 
-		OnTick();
+		OnTick(TimeStep);
 	}
 
 	bool Object::IsInitialized() const
