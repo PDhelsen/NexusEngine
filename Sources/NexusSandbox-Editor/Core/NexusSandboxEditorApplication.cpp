@@ -4,14 +4,14 @@ namespace NxSE
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxSE::NexusSandboxEditorApplication)
 
-	void NexusSandboxEditorApplication::OnInitialize()
+	void NexusSandboxEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrapper, NxEn::SystemManager& Systems)
 	{
-		NexusEditorApplication::OnInitialize();
+		NexusEditorApplication::OnInitialize(Bootstrapper, Systems);
 	}
 
-	void NexusSandboxEditorApplication::OnShutdown()
+	void NexusSandboxEditorApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrapper, NxEn::SystemManager& Systems)
 	{
-		NexusEditorApplication::OnShutdown();
+		NexusEditorApplication::OnShutdown(Unbootstrapper, Systems);
 	}
 
 	void NexusSandboxEditorApplication::OnExecute()

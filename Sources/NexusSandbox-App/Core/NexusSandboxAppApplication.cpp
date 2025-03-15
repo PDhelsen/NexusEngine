@@ -4,14 +4,14 @@ namespace NxSA
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxSA::NexusSandboxAppApplication)
 
-	void NexusSandboxAppApplication::OnInitialize()
+	void NexusSandboxAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrapper, NxEn::SystemManager& Systems)
 	{
-		NexusAppApplication::OnInitialize();
+		NexusAppApplication::OnInitialize(Bootstrapper, Systems);
 	}
 
-	void NexusSandboxAppApplication::OnShutdown()
+	void NexusSandboxAppApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrapper, NxEn::SystemManager& Systems)
 	{
-		NexusAppApplication::OnShutdown();
+		NexusAppApplication::OnShutdown(Unbootstrapper, Systems);
 	}
 
 	void NexusSandboxAppApplication::OnExecute()

@@ -13,8 +13,8 @@ namespace NxEn
 		static NexusEngineApplication* GetInstance() { return (NexusEngineApplication*)Application::GetInstance(); }
 
 	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize() override;
-		NEXUS_ENGINE_API virtual void OnShutdown() override;
+		NEXUS_ENGINE_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems) override;
+		NEXUS_ENGINE_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems) override;
 		NEXUS_ENGINE_API virtual void OnExecute() override;
 	};
 }

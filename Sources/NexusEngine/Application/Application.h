@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/EntryPoint.h"
+#include "NexusEngine/Application/Bootstrapper.h"
 #include "NexusEngine/Systems/SystemManager.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
@@ -49,8 +50,8 @@ namespace NxEn
 		SystemManager& GetSystems() { return Systems; }
 
 	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize() = 0;
-		NEXUS_ENGINE_API virtual void OnShutdown() = 0;
+		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems) = 0;
+		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems) = 0;
 		NEXUS_ENGINE_API virtual void OnExecute() = 0;
 
 	private:
@@ -61,6 +62,7 @@ namespace NxEn
 
 	private:
 		SystemManager Systems;
+		Bootstrapper Bootstrap;
 		bool WantsToQuit;
 	};
 }

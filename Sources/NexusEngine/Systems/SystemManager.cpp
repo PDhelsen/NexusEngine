@@ -43,7 +43,7 @@ namespace NxEn
 		return Instance;
 	}
 
-	void SystemManager::ClearSystem()
+	void SystemManager::ClearSystems()
 	{
 		for (auto& Info : Systems)
 		{
@@ -53,7 +53,7 @@ namespace NxEn
 		Systems.Clear();
 	}
 
-	NxFr::Array<SystemInfo*> SystemManager::SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies)
+	NxFr::Array<SystemInfo*> SystemManager::SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const
 	{
 		NxFr::Array<SystemInfo*> Result = NxFr::Array<SystemInfo*>(SystemsDependencies.GetCount());
 		NxFr::Queue<NxFr::StringId> Queue;
@@ -61,7 +61,7 @@ namespace NxEn
 
 		for (auto& [Type, Dependencies] : SystemsDependencies)
 		{
-			for (auto Dependency : Dependencies.Dependencies)
+			for (auto& Dependency : Dependencies.Dependencies)
 			{
 				SystemsDependencies[Dependency].Dependents.Append(Type);
 			}
@@ -81,9 +81,9 @@ namespace NxEn
 			Queue.Remove();
 			
 			SystemDependencies& Dependencies = SystemsDependencies[Type];
-			Result[Index++] = &Systems[Type];
+			Result[Index++] = const_cast<SystemInfo*>(& Systems[Type]);
 			
-			for (auto Dependent : Dependencies.Dependents)
+			for (auto& Dependent : Dependencies.Dependents)
 			{
 				if (--SystemsDependencies[Dependent].WaitOn == 0)
 				{

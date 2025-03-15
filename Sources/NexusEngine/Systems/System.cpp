@@ -7,11 +7,13 @@ namespace NxEn
 
 	void System::OnInitialize()
 	{
+		NEXUS_LOG(Info, Default, "Initialize - %s", GetObjectType().C());
 		SetTickable(true);
 	}
 
 	void System::OnShutdown()
 	{
+		NEXUS_LOG(Info, Default, "Shutdown - %s", GetObjectType().C());
 	}
 
 	void System::OnTick(float TimeStep)
