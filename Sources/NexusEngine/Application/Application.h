@@ -2,8 +2,6 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/EntryPoint.h"
-#include "NexusEngine/Application/Bootstrapper.h"
-#include "NexusEngine/Application/Ticker.h"
 #include "NexusEngine/Systems/System.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
@@ -48,16 +46,10 @@ namespace NxEn
 		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
 		NEXUS_ENGINE_API bool IsRunning() const;
 
-		template<typename T>
-		T* GetSystem() const { return (T*)GetSystem(T::GetClassType()); }
-		NEXUS_ENGINE_API System* GetSystem(NxFr::StringId Type);
-		NEXUS_ENGINE_API void RegisterSystem(NxFr::StringId Type, System* System);
-		NEXUS_ENGINE_API void UnregisterSystem(NxFr::StringId Type);
-
 	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap) = 0;
-		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Unbootstrap) = 0;
-		NEXUS_ENGINE_API virtual void OnExecute(Ticker& Ticks) = 0;
+		NEXUS_ENGINE_API virtual void OnInitialize() = 0;
+		NEXUS_ENGINE_API virtual void OnShutdown() = 0;
+		NEXUS_ENGINE_API virtual void OnExecute() = 0;
 
 	private:
 		void Run();
@@ -66,10 +58,6 @@ namespace NxEn
 		void Execute();
 
 	private:
-		NxFr::Dictionary<NxFr::StringId, System*> Systems;
-		Bootstrapper Bootstrap;
-		Ticker Ticks;
-
 		bool WantsToQuit;
 	};
 }

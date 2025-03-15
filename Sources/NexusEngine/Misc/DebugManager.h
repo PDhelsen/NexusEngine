@@ -8,13 +8,16 @@ namespace NxEn
 	{
 		friend class Application;
 
-	public :
+	public:
 		NEXUS_ENGINE_API static DebugManager* GetInstance();
 		NEXUS_ENGINE_API static void Initialize();
 		NEXUS_ENGINE_API static void Shutdown();
 
 	private:
-		void Flush();
+		NEXUS_ENGINE_API DebugManager();
+		NEXUS_ENGINE_API ~DebugManager();
+
+		NEXUS_ENGINE_API void Flush();
 
 	private:
 		NxFr::Logger* Logger;

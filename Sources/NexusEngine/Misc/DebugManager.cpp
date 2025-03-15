@@ -18,53 +18,67 @@ namespace NxEn
 		NEXUS_ASSERT(Instance == nullptr, Default, "DebugManager was already created");
 		Instance = new DebugManager();
 
+		NxFr::Globals::Logs = Instance->Logger;
+		NxFr::Globals::Statistiques = Instance->Stats;
+		NxFr::Globals::Instrumentor = Instance->Instrumentor;
+	}
+
+	void DebugManager::Shutdown()
+	{
+		NxFr::Globals::Logs = nullptr;
+		NxFr::Globals::Statistiques = nullptr;
+		NxFr::Globals::Instrumentor = nullptr;
+
+		Instance = nullptr;
+	}
+
+	DebugManager::DebugManager()
+	{
 		bool Profile = NxFr::Arguments::HasFlag("Profile", false);
 
 		NxFr::Path DebugPath = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 		NxFr::Directory(DebugPath).Create();
 
-		Instance->Logger = NxFr::Globals::Logs = new NxFr::Logger(false, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, DebugPath + "logs.txt");
-		Instance->Logger->AddChannel(NxFr::LoggerChannel::Default, true);
-		Instance->Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
+		Logger = new NxFr::Logger(false, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, DebugPath + "logs.txt");
+		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
+		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
 
-		Instance->Stats = NxFr::Globals::Statistiques = new NxFr::Stats(DebugPath + "stats.csv");
-		Instance->Stats->Initialize();
-		Instance->Stats->Lock();
+		Stats = new NxFr::Stats(DebugPath + "stats.csv");
+		Stats->Initialize();
+		Stats->Lock();
 		if (Profile)
 		{
-			Instance->Stats->StartRecording();
+			Stats->StartRecording();
 		}
 
-		Instance->Instrumentor = NxFr::Globals::Instrumentor = NxFr::Instruments::Create(DebugPath + "instruments.json", false);
+		Instrumentor = NxFr::Instruments::Create(DebugPath + "instruments.json", false);
 		if (Profile)
 		{
-			Instance->Instrumentor->StartRecording();
+			Instrumentor->StartRecording();
 		}
 	}
 
-	void DebugManager::Shutdown()
+	DebugManager::~DebugManager()
 	{
-		Instance->Logger->Flush();
-		delete Instance->Logger;
+		Logger->Flush();
+		delete Logger;
 		NxFr::Globals::Logs = nullptr;
 
-		if (Instance->Stats->IsRecording())
+		if (Stats->IsRecording())
 		{
-			Instance->Stats->StopRecording();
+			Stats->StopRecording();
 		}
-		Instance->Stats->Unlock();
-		Instance->Stats->Flush();
-		delete Instance->Stats;
+		Stats->Unlock();
+		Stats->Flush();
+		delete Stats;
 		NxFr::Globals::Statistiques = nullptr;
 
-		if (Instance->Instrumentor->IsRecording())
+		if (Instrumentor->IsRecording())
 		{
-			Instance->Instrumentor->StopRecording();
+			Instrumentor->StopRecording();
 		}
-		NxFr::Instruments::Destroy(Instance->Instrumentor);
+		NxFr::Instruments::Destroy(Instrumentor);
 		NxFr::Globals::Instrumentor = nullptr;
-
-		Instance = nullptr;
 	}
 
 	void DebugManager::Flush()

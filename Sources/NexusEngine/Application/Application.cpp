@@ -13,7 +13,7 @@ namespace NxEn
 	}
 
 	Application::Application()
-		: Systems(), Bootstrap(), Ticks(), WantsToQuit(false)
+		: WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -52,23 +52,6 @@ namespace NxEn
 		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
 	}
 
-	System* Application::GetSystem(NxFr::StringId Type)
-	{
-		return Systems[Type];
-	}
-
-	void Application::RegisterSystem(NxFr::StringId Type, System* System)
-	{
-		NEXUS_ASSERT(!Systems.ContainsKey(Type), Default, "System is already created");
-		Systems.Append(Type, System);
-	}
-
-	void Application::UnregisterSystem(NxFr::StringId Type)
-	{
-		NEXUS_ASSERT(Systems.ContainsKey(Type), Default, "System was not created");
-		Systems.Remove(Type);
-	}
-
 	void Application::Run()
 	{
 		Initialize();
@@ -78,20 +61,17 @@ namespace NxEn
 
 	void Application::Initialize()
 	{
-		OnInitialize(Bootstrap);
-		Bootstrap.RunBoot();
+		OnInitialize();
 	}
 
 	void Application::Shutdown()
 	{
-		OnShutdown(Bootstrap);
-		Bootstrap.RunUnboot();
+		OnShutdown();
 	}
 
 	void Application::Execute()
 	{
-		OnExecute(Ticks);
-		Ticks.Run();
+		OnExecute();
 
 		NxFr::Stopwatch Stopwatch;
 		float DeltaTime = 0.0;
@@ -100,7 +80,6 @@ namespace NxEn
 		{
 			Stopwatch.Start();
 
-			Ticks.Tick(DeltaTime);
 
 			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
 

@@ -4,13 +4,18 @@ namespace NxEd
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
-	void NexusEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
+	void NexusEditorApplication::OnInitialize()
 	{
-		NexusEngineApplication::OnInitialize(Bootstrap);
+		NexusEngineApplication::OnInitialize();
 	}
 
-	void NexusEditorApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap)
+	void NexusEditorApplication::OnShutdown()
 	{
-		NexusEngineApplication::OnShutdown(Unbootstrap);
+		NexusEngineApplication::OnShutdown();
+	}
+
+	void NexusEditorApplication::OnExecute()
+	{
+		NexusEngineApplication::OnExecute();
 	}
 }

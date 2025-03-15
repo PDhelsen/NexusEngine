@@ -8,23 +8,15 @@ namespace NxEn
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
-	void NexusEngineApplication::OnInitialize(Bootstrapper& Bootstrap)
+	void NexusEngineApplication::OnInitialize()
 	{
-		Bootstrap.AddStep(&NxFr::Paths::CreateFrameworkFolders, "Generate Folders");
-		Bootstrap.AddStep(&DebugManager::Initialize, "Initialize Debug Manager");
-
-		Bootstrap.AddSystem<System>();
 	}
 
-	void NexusEngineApplication::OnShutdown(Bootstrapper& Unbootstrap)
+	void NexusEngineApplication::OnShutdown()
 	{
-		Unbootstrap.AddStep(&DebugManager::Shutdown, "Shutdown Debug Manager");
-
-		Unbootstrap.AddSystem<System>();
 	}
 
-	void NexusEngineApplication::OnExecute(Ticker& Ticks)
+	void NexusEngineApplication::OnExecute()
 	{
-		Ticks.AddSystem<System>(Ticker::Bucket::Engine);
 	}
 }

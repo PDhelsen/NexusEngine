@@ -13,7 +13,8 @@ namespace NxAp
 		static NexusAppApplication* GetInstance() { return (NexusAppApplication*)Application::GetInstance(); }
 
 	protected:
-		NEXUS_APP_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap) override;
-		NEXUS_APP_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrap) override;
+		NEXUS_APP_API virtual void OnInitialize() override;
+		NEXUS_APP_API virtual void OnShutdown() override;
+		NEXUS_APP_API virtual void OnExecute() override;
 	};
 }

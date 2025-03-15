@@ -13,7 +13,8 @@ namespace NxSE
 		static NexusSandboxEditorApplication* GetInstance() { return (NexusSandboxEditorApplication*)Application::GetInstance(); }
 
 	protected:
-		NEXUS_SANDBOX_EDITOR_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap) override;
-		NEXUS_SANDBOX_EDITOR_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrap) override;
+		NEXUS_SANDBOX_EDITOR_API virtual void OnInitialize() override;
+		NEXUS_SANDBOX_EDITOR_API virtual void OnShutdown() override;
+		NEXUS_SANDBOX_EDITOR_API virtual void OnExecute() override;
 	};
 }

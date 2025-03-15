@@ -4,13 +4,18 @@ namespace NxAp
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxAp::NexusAppApplication)
 
-	void NexusAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap)
+	void NexusAppApplication::OnInitialize()
 	{
-		NexusEngineApplication::OnInitialize(Bootstrap);
+		NexusEngineApplication::OnInitialize();
 	}
 
-	void NexusAppApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap)
+	void NexusAppApplication::OnShutdown()
 	{
-		NexusEngineApplication::OnShutdown(Unbootstrap);
+		NexusEngineApplication::OnShutdown();
+	}
+
+	void NexusAppApplication::OnExecute()
+	{
+		NexusEngineApplication::OnExecute();
 	}
 }
