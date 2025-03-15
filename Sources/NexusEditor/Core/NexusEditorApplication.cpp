@@ -14,8 +14,8 @@ namespace NxEd
 		NexusEngineApplication::OnShutdown(Unbootstrapper, Systems);
 	}
 
-	void NexusEditorApplication::OnExecute()
+	void NexusEditorApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
-		NexusEngineApplication::OnExecute();
+		NexusEngineApplication::OnExecute(Ticks, Systems);
 	}
 }

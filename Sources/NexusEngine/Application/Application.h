@@ -3,6 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/EntryPoint.h"
 #include "NexusEngine/Application/Bootstrapper.h"
+#include "NexusEngine/Application/Ticker.h"
 #include "NexusEngine/Systems/SystemManager.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
@@ -47,12 +48,15 @@ namespace NxEn
 		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
 		NEXUS_ENGINE_API bool IsRunning() const;
 
+		template<typename T>
+		void SetTickRate(float TickRate, bool FixedTimeStep = false) { Ticks.SetTickRate(Systems.GetSystem<T>(), TickRate, FixedTimeStep); }
+
 		SystemManager& GetSystems() { return Systems; }
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems) = 0;
 		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems) = 0;
-		NEXUS_ENGINE_API virtual void OnExecute() = 0;
+		NEXUS_ENGINE_API virtual void OnExecute(Ticker& Ticks, SystemManager& Systems) = 0;
 
 	private:
 		void Run();
@@ -63,6 +67,8 @@ namespace NxEn
 	private:
 		SystemManager Systems;
 		Bootstrapper Bootstrap;
+		Ticker Ticks;
+
 		bool WantsToQuit;
 	};
 }

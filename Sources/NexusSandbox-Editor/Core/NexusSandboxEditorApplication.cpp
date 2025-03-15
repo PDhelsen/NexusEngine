@@ -14,8 +14,8 @@ namespace NxSE
 		NexusEditorApplication::OnShutdown(Unbootstrapper, Systems);
 	}
 
-	void NexusSandboxEditorApplication::OnExecute()
+	void NexusSandboxEditorApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
-		NexusEditorApplication::OnExecute();
+		NexusEditorApplication::OnExecute(Ticks, Systems);
 	}
 }

@@ -15,6 +15,9 @@ namespace NxEn
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
+		template<typename T, typename D>
+		Bootstrapper& AddDependency() { return AddDependency(T::GetClassType(), D::GetClassType()); }
+
 		NEXUS_ENGINE_API Bootstrapper& AddStep(Bootstrapper::Signature Step, NxFr::StringView Tag = "");
 		NEXUS_ENGINE_API Bootstrapper& AddSystem(System* Target);
 		NEXUS_ENGINE_API Bootstrapper& AddDependency(NxFr::StringId Target, NxFr::StringId Dependency);

@@ -15,6 +15,6 @@ namespace NxSA
 	protected:
 		NEXUS_SANDBOX_APP_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrapper, NxEn::SystemManager& Systems) override;
 		NEXUS_SANDBOX_APP_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrapper, NxEn::SystemManager& Systems) override;
-		NEXUS_SANDBOX_APP_API virtual void OnExecute() override;
+		NEXUS_SANDBOX_APP_API virtual void OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems) override;
 	};
 }

@@ -24,7 +24,8 @@ namespace NxEn
 		Unbootstrap.AddSystem(Systems.GetSystem<System>());
 	}
 
-	void NexusEngineApplication::OnExecute()
+	void NexusEngineApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
+		Ticks.AddSystem(Systems.GetSystem<System>(), NxEn::Ticker::TickBucket::Engine);
 	}
 }

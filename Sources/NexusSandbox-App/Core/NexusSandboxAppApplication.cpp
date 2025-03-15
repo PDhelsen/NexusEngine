@@ -14,8 +14,8 @@ namespace NxSA
 		NexusAppApplication::OnShutdown(Unbootstrapper, Systems);
 	}
 
-	void NexusSandboxAppApplication::OnExecute()
+	void NexusSandboxAppApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
-		NexusAppApplication::OnExecute();
+		NexusAppApplication::OnExecute(Ticks, Systems);
 	}
 }

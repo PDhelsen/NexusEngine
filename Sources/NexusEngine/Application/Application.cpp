@@ -73,7 +73,8 @@ namespace NxEn
 
 	void Application::Execute()
 	{
-		OnExecute();
+		OnExecute(Ticks, Systems);
+		Ticks.Run(Systems);
 
 		NxFr::Stopwatch Stopwatch;
 		float DeltaTime = 0.0;
@@ -82,6 +83,7 @@ namespace NxEn
 		{
 			Stopwatch.Start();
 
+			Ticks.Tick(DeltaTime);
 
 			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
 

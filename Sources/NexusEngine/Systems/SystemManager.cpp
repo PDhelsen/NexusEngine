@@ -13,7 +13,7 @@ namespace NxEn
 
 	System* SystemManager::GetSystem(NxFr::StringId Type) const
 	{
-		return Systems[Type].Instance;
+		return Systems[Type];
 	}
 
 	System* SystemManager::RegisterSystem(System* Target)
@@ -30,9 +30,7 @@ namespace NxEn
 
 	System* SystemManager::PatchSystem(System* Target, bool Destroy)
 	{
-		SystemInfo& Info = Systems[Target->GetObjectType()];
-		System* Instance = Info.Instance;
-		Info.Instance = Target;
+		System* Instance = Systems[Target->GetObjectType()];
 
 		if (Destroy)
 		{
@@ -47,15 +45,15 @@ namespace NxEn
 	{
 		for (auto& Info : Systems)
 		{
-			delete Info.Value.Instance;
+			delete Info.Value;
 		}
 
 		Systems.Clear();
 	}
 
-	NxFr::Array<SystemInfo*> SystemManager::SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const
+	NxFr::Array<System*> SystemManager::SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const
 	{
-		NxFr::Array<SystemInfo*> Result = NxFr::Array<SystemInfo*>(SystemsDependencies.GetCount());
+		NxFr::Array<System*> Result = NxFr::Array<System*>(SystemsDependencies.GetCount());
 		NxFr::Queue<NxFr::StringId> Queue;
 		uint64 Index = 0;
 
@@ -81,7 +79,7 @@ namespace NxEn
 			Queue.Remove();
 			
 			SystemDependencies& Dependencies = SystemsDependencies[Type];
-			Result[Index++] = const_cast<SystemInfo*>(& Systems[Type]);
+			Result[Index++] = const_cast<System*>(Systems[Type]);
 			
 			for (auto& Dependent : Dependencies.Dependents)
 			{

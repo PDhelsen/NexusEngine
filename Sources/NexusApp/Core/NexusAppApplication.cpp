@@ -14,8 +14,8 @@ namespace NxAp
 		NexusEngineApplication::OnShutdown(Unbootstrap, Systems);
 	}
 
-	void NexusAppApplication::OnExecute()
+	void NexusAppApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
-		NexusEngineApplication::OnExecute();
+		NexusEngineApplication::OnExecute(Ticks, Systems);
 	}
 }
