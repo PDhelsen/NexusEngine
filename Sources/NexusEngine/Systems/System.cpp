@@ -18,7 +18,12 @@ namespace NxEn
 
 	void System::OnTick(float TimeStep)
 	{
-		NEXUS_LOG(Info, Default, "Tick %.2f - %s", TimeStep, GetObjectType().C());
+		NEXUS_LOG(Info, Default, "Tick %.2f - %s - %i", TimeStep, GetObjectType().C(), TimeManager::GetInstance()->GetFrameIndex());
+
+		if (FrameCount == 5)
+		{
+			Application::GetInstance()->GetTicker().AddTickOnceCallback([]() { TimeManager::GetInstance()->SetMultiplier(0.1f); });
+		}
 
 		if (FrameCount++ > 10)
 		{

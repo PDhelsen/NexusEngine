@@ -51,7 +51,7 @@ namespace NxEn
 
 		for (auto It = Steps.Begin(); It != Steps.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Booting - Steps (%i / %i): %s", It.Id() + 1, Steps.GetCount(), It.Get().GetSecond().C());
+			NEXUS_LOG(Info, Default, "Boot - Steps (%i / %i): %s", It.Id() + 1, Steps.GetCount(), It.Get().GetSecond().C());
 			It.Get().GetFirst().Invoke();
 		}
 
@@ -69,7 +69,7 @@ namespace NxEn
 		NxFr::Array<System*> Instances = Manager.SortSystems(Systems);
 		for (auto It = Instances.Begin(); It != Instances.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Booting - Systems (%i / %i): %s", It.Id() + 1, Instances.GetCount(), It.Get()->GetObjectType().C());
+			NEXUS_LOG(Info, Default, "Initializing - Systems (%i / %i): %s", It.Id() + 1, Instances.GetCount(), It.Get()->GetObjectType().C());
 			It.Get()->Initialize();
 		}
 
@@ -87,7 +87,7 @@ namespace NxEn
 		NxFr::Array<System*> Instances = Manager.SortSystems(Systems);
 		for (auto It = Instances.Begin(); It != Instances.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Unbooting - Systems (%i / %i): %s", Instances.GetCount() - It.Id(), Instances.GetCount(), It.Get()->GetObjectType().C());
+			NEXUS_LOG(Info, Default, "Shutdowning - Systems (%i / %i): %s", Instances.GetCount() - It.Id(), Instances.GetCount(), It.Get()->GetObjectType().C());
 			It.Get()->Shutdown();
 		}
 

@@ -23,12 +23,13 @@ namespace NxEn
 	}
 
 	TimeManager::TimeManager()
-		: Watch(), FrameIndex(0), DeltaTime(0)
+		: Watch(), FrameIndex(0), DeltaTime(0.0f), UnscaledDeltaTime(0.0f), Time(0.0f), UnscaledTime(0.0f), Multiplier(1.0f)
 	{
 	}
 
 	TimeManager::~TimeManager()
 	{
+		NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)UnscaledTime)
 	}
 
 	void TimeManager::Run()
@@ -38,8 +39,12 @@ namespace NxEn
 
 	void TimeManager::Tick()
 	{
-		DeltaTime = Watch.Stop(NxFr::Time::SecondToMilli);
+		UnscaledDeltaTime = Watch.Stop(NxFr::Time::SecondToMilli);
+		UnscaledTime += UnscaledDeltaTime * NxFr::Time::MilliToSecond;
 		Watch.Start();
+
+		DeltaTime = UnscaledDeltaTime * Multiplier;
+		Time += DeltaTime * NxFr::Time::MilliToSecond;
 
 		FrameIndex++;
 	}

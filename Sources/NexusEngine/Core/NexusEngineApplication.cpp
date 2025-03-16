@@ -21,8 +21,8 @@ namespace NxEn
 	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
 	{
 		Unbootstrap.AddStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
-		Unbootstrap.AddStep(&DebugManager::Shutdown, "Shutdown Debug Manager");
 		Unbootstrap.AddStep(&TimeManager::Shutdown, "Shutdown Time Manager");
+		Unbootstrap.AddStep(&DebugManager::Shutdown, "Shutdown Debug Manager");
 
 		Unbootstrap.AddSystem(Systems.GetSystem<System>());
 	}
