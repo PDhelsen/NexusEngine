@@ -22,7 +22,7 @@ namespace NxEn
 
 		if (FrameCount == 5)
 		{
-			Application::GetInstance()->GetTicker().AddTickOnceCallback([]() { TimeManager::GetInstance()->SetMultiplier(0.1f); });
+			Application::GetInstance()->GetTicker().AppendTickOnceCallback([]() { TimeManager::GetInstance()->SetMultiplier(0.1f); });
 		}
 
 		if (FrameCount++ > 10)

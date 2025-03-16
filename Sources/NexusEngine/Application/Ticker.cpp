@@ -23,12 +23,12 @@ namespace NxEn
 
 	}
 
-	void Ticker::AddTickCallback(const Signature& Callback, TickBucket Bucket)
+	void Ticker::AppendTickCallback(const Signature& Callback, TickBucket Bucket)
 	{
 		OnTicks[(uint64)Bucket] += Callback;
 	}
 
-	void Ticker::AddTickOnceCallback(const Signature& Callback, TickBucket Bucket)
+	void Ticker::AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket)
 	{
 		OnTicksOnce[(uint64)Bucket] += Callback;
 	}
@@ -38,14 +38,14 @@ namespace NxEn
 		OnTicks[(uint64)Bucket] -= Callback;
 	}
 
-	Ticker& Ticker::AddSystem(System* Target, TickBucket Bucket, float TickRate, bool FixedTimeStep)
+	Ticker& Ticker::AppendSystem(System* Target, TickBucket Bucket, float TickRate, bool FixedTimeStep)
 	{
 		Systems.AppendConstruct(Target, Bucket, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
 		SystemsDependencies.Append(Target->GetObjectType(), SystemDependencies());
 		return *this;
 	}
 
-	Ticker& Ticker::AddDependency(NxFr::StringId Target, NxFr::StringId Dependency)
+	Ticker& Ticker::AppendDependency(NxFr::StringId Target, NxFr::StringId Dependency)
 	{
 		SystemsDependencies[Target].Dependencies.Append(Dependency);
 		return *this;

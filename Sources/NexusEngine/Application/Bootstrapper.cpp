@@ -11,19 +11,19 @@ namespace NxEn
 	{
 	}
 
-	Bootstrapper& Bootstrapper::AddStep(const Signature& Step, NxFr::StringView Tag)
+	Bootstrapper& Bootstrapper::AppendStep(const Signature& Step, NxFr::StringView Tag)
 	{
 		Steps.Append({ Step, Tag });
 		return *this;
 	}
 
-	Bootstrapper& Bootstrapper::AddSystem(System* Target)
+	Bootstrapper& Bootstrapper::AppendSystem(System* Target)
 	{
 		Systems.Append(Target->GetObjectType(), SystemDependencies());
 		return *this;
 	}
 
-	Bootstrapper& Bootstrapper::AddDependency(NxFr::StringId Target, NxFr::StringId Dependency)
+	Bootstrapper& Bootstrapper::AppendDependency(NxFr::StringId Target, NxFr::StringId Dependency)
 	{
 		Systems[Target].Dependencies.Append(Dependency);
 		return *this;

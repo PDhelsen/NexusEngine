@@ -47,14 +47,14 @@ namespace NxEn
 		NEXUS_ENGINE_API Ticker();
 		NEXUS_ENGINE_API ~Ticker();
 
-		NEXUS_ENGINE_API void AddTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
-		NEXUS_ENGINE_API void AddTickOnceCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
+		NEXUS_ENGINE_API void AppendTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
+		NEXUS_ENGINE_API void AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
 		NEXUS_ENGINE_API void RemoveTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
 
 		template<typename T, typename D>
-		Ticker& AddDependency() { return AddDependency(T::GetClassType(), D::GetClassType()); }
-		NEXUS_ENGINE_API Ticker& AddSystem(System* Target, TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false);
-		NEXUS_ENGINE_API Ticker& AddDependency(NxFr::StringId Target, NxFr::StringId Dependency);
+		Ticker& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
+		NEXUS_ENGINE_API Ticker& AppendSystem(System* Target, TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false);
+		NEXUS_ENGINE_API Ticker& AppendDependency(NxFr::StringId Target, NxFr::StringId Dependency);
 
 		NEXUS_ENGINE_API void SetTickRate(System* Target, float TickRate, bool FixedTimeStep = false);
 

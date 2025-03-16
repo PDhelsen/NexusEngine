@@ -15,12 +15,12 @@ namespace NxEn
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
-		NEXUS_ENGINE_API Bootstrapper& AddStep(const Signature& Step, NxFr::StringView Tag = "");
+		NEXUS_ENGINE_API Bootstrapper& AppendStep(const Signature& Step, NxFr::StringView Tag = "");
 
 		template<typename T, typename D>
-		Bootstrapper& AddDependency() { return AddDependency(T::GetClassType(), D::GetClassType()); }
-		NEXUS_ENGINE_API Bootstrapper& AddSystem(System* Target);
-		NEXUS_ENGINE_API Bootstrapper& AddDependency(NxFr::StringId Target, NxFr::StringId Dependency);
+		Bootstrapper& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
+		NEXUS_ENGINE_API Bootstrapper& AppendSystem(System* Target);
+		NEXUS_ENGINE_API Bootstrapper& AppendDependency(NxFr::StringId Target, NxFr::StringId Dependency);
 
 		uint64 GetStepsCount() const { return Steps.GetCount(); }
 		uint64 GetSystemsCount() const { return Systems.GetCount(); }
