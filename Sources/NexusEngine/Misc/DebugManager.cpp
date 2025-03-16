@@ -36,11 +36,16 @@ namespace NxEn
 	DebugManager::DebugManager()
 	{
 		bool Profile = NxFr::Arguments::HasFlag("Profile", false);
+#if NEXUS_DEBUG
+		bool Debug = true;
+#else
+		bool Debug = false;
+#endif
 
 		NxFr::Path DebugPath = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 		NxFr::Directory(DebugPath).Create();
 
-		Logger = new NxFr::Logger(false, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, DebugPath + "logs.txt");
+		Logger = new NxFr::Logger(Debug, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, DebugPath + "logs.txt");
 		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
 		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
 

@@ -85,6 +85,9 @@ namespace NxEn
 
 			DebugManager::GetInstance()->Flush();
 			TimeManager::GetInstance()->Tick();
+
+			// TEMP: Avoid looping too fast for now since the app is empty
+			NxFr::Platform::GetInstance()->Sleep(1);
 		}
 	}
 }
