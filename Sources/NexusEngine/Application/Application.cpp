@@ -2,6 +2,7 @@
 #include "NexusEngine/Application/Application.h"
 
 #include "NexusEngine/Misc/DebugManager.h"
+#include "NexusEngine/Misc/TimeManager.h"
 
 namespace NxEn
 {
@@ -76,18 +77,14 @@ namespace NxEn
 		OnExecute(Ticks, Systems);
 		Ticks.Run(Systems);
 
-		NxFr::Stopwatch Stopwatch;
-		float DeltaTime = 0.0;
+		TimeManager::GetInstance()->Run();
 
 		while (IsRunning())
 		{
-			Stopwatch.Start();
-
-			Ticks.Tick(DeltaTime);
+			Ticks.Tick();
 
 			DebugManager::GetInstance()->Flush();
-
-			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
+			TimeManager::GetInstance()->Tick();
 		}
 	}
 }

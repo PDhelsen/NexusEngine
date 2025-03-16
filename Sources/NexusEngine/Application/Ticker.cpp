@@ -78,7 +78,7 @@ namespace NxEn
 			TickBucket Bucket = (TickBucket)BucketIndex;
 			DependenciesPerBucket.Clear();
 
-			SystemRange Range;
+			SystemRange Range = { 0, 0 };
 			Range.Start = SortedIndex;
 
 			// Split by Bucket
@@ -150,8 +150,10 @@ namespace NxEn
 		}
 	}
 
-	void Ticker::Tick(float DeltaTime)
+	void Ticker::Tick()
 	{
+		float DeltaTime = TimeManager::GetInstance()->GetDeltaTime();
+
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
 		{
 			NxFr::Event<>& OnTickOnce = OnTicksOnce[BucketIndex];

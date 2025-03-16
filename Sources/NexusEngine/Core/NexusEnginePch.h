@@ -3,4 +3,7 @@
 #include "NexusEngine/Application/Application.h"
 #include "NexusEngine/Application/Object.h"
 
+#include "NexusEngine/Misc/TimeManager.h"
+#include "NexusEngine/Misc/DebugManager.h"
+
 #include "NexusEngine/Systems/System.h"
