@@ -62,7 +62,29 @@ namespace NxEn
 				if (It->Bucket == Bucket)
 				{
 					NxFr::StringId Type = It->Target->GetObjectType();
-					DependenciesPerBucket.Append(Type, Dependencies[Type]);
+
+					// Validate dependencies
+					SystemDependencies& RawDependencies = Dependencies[Type];
+					SystemDependencies CleanedDependencies;
+					for (auto& D : RawDependencies.Dependencies)
+					{
+						for (auto& S : Systems)
+						{
+							if (D == S.Target->GetObjectType())
+							{
+								if (Bucket == S.Bucket)
+								{
+									CleanedDependencies.Dependencies.Append(D);
+								}
+								else
+								{
+									NEXUS_LOG(Warning, Default, "System (%s) can depend only on another system from the same bucket. %s is not in the same bucket, dependency will be ignored", Type.C(), D.C());
+								}
+							}
+						}
+					}
+
+					DependenciesPerBucket.Append(Type, CleanedDependencies);
 				}
 			}
 
@@ -87,8 +109,9 @@ namespace NxEn
 				if (UnsortedIndex != SortedIndex)
 				{
 					Systems.Swap(UnsortedIndex, SortedIndex);
-					SortedIndex++;
 				}
+
+				SortedIndex++;
 			}
 		}
 
@@ -121,7 +144,7 @@ namespace NxEn
 		}
 		
 		float Timer = Info.FixedTimeStep ? Info.TickRate : Info.Timer;
-		Info.Timer -= Info.FixedTimeStep ? Info.TickRate : Info.Timer;
+		Info.Timer -= Timer;
 		return Timer;
 	}
 

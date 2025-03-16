@@ -25,11 +25,12 @@ namespace NxEn
 
 	void DebugManager::Shutdown()
 	{
+		delete Instance;
+		Instance = nullptr;
+
 		NxFr::Globals::Logs = nullptr;
 		NxFr::Globals::Statistiques = nullptr;
 		NxFr::Globals::Instrumentor = nullptr;
-
-		Instance = nullptr;
 	}
 
 	DebugManager::DebugManager()

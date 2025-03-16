@@ -26,13 +26,7 @@ namespace NxEn
 		template<typename T>
 		T* CreateSystem(bool Register = true) { T* System = new T(); if (Register) RegisterSystem(System); return System; };
 		template<typename T>
-		T* RegisterSystem(T* Target) { return (T*)RegisterSystem(Target); }
-		template<typename T>
-		void UnregisterSystem(T* Target) { return (T*)UnregisterSystem(Target); }
-		template<typename T>
 		void DeleteSystem(T* Target, bool Unregister = true) { if (Unregister) UnregisterSystem(Target); delete Target; }
-		template<typename T>
-		T* PatchSystem(T* Target, bool Destroy = true) { return (T*)PatchSystem(Target, Destroy); }
 
 		NEXUS_ENGINE_API System* GetSystem(NxFr::StringId Type) const;
 		NEXUS_ENGINE_API System* RegisterSystem(System* Target);

@@ -19,13 +19,13 @@ namespace NxEn
 	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
 	{
 		Unbootstrap.AddStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
-		Unbootstrap.AddStep(&DebugManager::Initialize, "Shutdown Debug Manager");
+		Unbootstrap.AddStep(&DebugManager::Shutdown, "Shutdown Debug Manager");
 
 		Unbootstrap.AddSystem(Systems.GetSystem<System>());
 	}
 
 	void NexusEngineApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
-		Ticks.AddSystem(Systems.GetSystem<System>(), NxEn::Ticker::TickBucket::Engine);
+		Ticks.AddSystem(Systems.GetSystem<System>(), NxEn::Ticker::TickBucket::Engine, 1.0f, true);
 	}
 }
