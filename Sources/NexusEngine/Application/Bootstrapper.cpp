@@ -11,7 +11,7 @@ namespace NxEn
 	{
 	}
 
-	Bootstrapper& Bootstrapper::AddStep(Bootstrapper::Signature Step, NxFr::StringView Tag)
+	Bootstrapper& Bootstrapper::AddStep(const Signature& Step, NxFr::StringView Tag)
 	{
 		Steps.Append({ Step, Tag });
 		return *this;

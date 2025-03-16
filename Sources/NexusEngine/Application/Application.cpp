@@ -85,9 +85,9 @@ namespace NxEn
 
 			Ticks.Tick(DeltaTime);
 
-			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
-
 			DebugManager::GetInstance()->Flush();
+
+			DeltaTime = (float)Stopwatch.Stop(NxFr::Time::SecondToMilli);
 		}
 	}
 }

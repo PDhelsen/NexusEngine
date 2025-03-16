@@ -9,23 +9,45 @@ namespace NxEn
 	}
 
 	Ticker::Ticker()
+		: Systems(), SystemsPerBuckets((uint64)TickBucket::COUNT), SystemsDependencies(), OnTicks((uint64)TickBucket::COUNT), OnTicksOnce((uint64)TickBucket::COUNT)
 	{
+		for (uint64 Index = 0; Index < (uint64)TickBucket::COUNT; Index++)
+		{
+			OnTicks[Index] = NxFr::Event<>();
+			OnTicksOnce[Index] = NxFr::Event<>();
+		}
 	}
 
 	Ticker::~Ticker()
 	{
 
 	}
+
+	void Ticker::AddTickCallback(const Signature& Callback, TickBucket Bucket)
+	{
+		OnTicks[(uint64)Bucket] += Callback;
+	}
+
+	void Ticker::AddTickOnceCallback(const Signature& Callback, TickBucket Bucket)
+	{
+		OnTicksOnce[(uint64)Bucket] += Callback;
+	}
+
+	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket)
+	{
+		OnTicks[(uint64)Bucket] -= Callback;
+	}
+
 	Ticker& Ticker::AddSystem(System* Target, TickBucket Bucket, float TickRate, bool FixedTimeStep)
 	{
 		Systems.AppendConstruct(Target, Bucket, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
-		Dependencies.Append(Target->GetObjectType(), SystemDependencies());
+		SystemsDependencies.Append(Target->GetObjectType(), SystemDependencies());
 		return *this;
 	}
 
 	Ticker& Ticker::AddDependency(NxFr::StringId Target, NxFr::StringId Dependency)
 	{
-		Dependencies[Target].Dependencies.Append(Dependency);
+		SystemsDependencies[Target].Dependencies.Append(Dependency);
 		return *this;
 	}
 
@@ -56,6 +78,9 @@ namespace NxEn
 			TickBucket Bucket = (TickBucket)BucketIndex;
 			DependenciesPerBucket.Clear();
 
+			SystemRange Range;
+			Range.Start = SortedIndex;
+
 			// Split by Bucket
 			for (auto It = Systems.Begin(); It != Systems.End(); ++It)
 			{
@@ -64,7 +89,7 @@ namespace NxEn
 					NxFr::StringId Type = It->Target->GetObjectType();
 
 					// Validate dependencies
-					SystemDependencies& RawDependencies = Dependencies[Type];
+					SystemDependencies& RawDependencies = SystemsDependencies[Type];
 					SystemDependencies CleanedDependencies;
 					for (auto& D : RawDependencies.Dependencies)
 					{
@@ -113,6 +138,9 @@ namespace NxEn
 
 				SortedIndex++;
 			}
+
+			Range.End = SortedIndex;
+			SystemsPerBuckets[BucketIndex] = Range;
 		}
 
 		NEXUS_LOG(Info, Default, "Tick order:")
@@ -124,12 +152,30 @@ namespace NxEn
 
 	void Ticker::Tick(float DeltaTime)
 	{
-		for (auto& Info : Systems)
+		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
 		{
-			float TimeStep = ComputeTimeStep(Info, DeltaTime);
-			if (TimeStep > 0.0f)
+			NxFr::Event<>& OnTickOnce = OnTicksOnce[BucketIndex];
+			if (OnTickOnce)
 			{
-				Info.Target->Tick(TimeStep);
+				OnTickOnce.Invoke();
+				OnTickOnce.Clear();
+			}
+
+			NxFr::Event<>& OnTick = OnTicks[BucketIndex];
+			if (OnTick)
+			{
+				OnTick.Invoke();
+			}
+
+			SystemRange Range = SystemsPerBuckets[BucketIndex];
+			for (uint64 SystemIndex = Range.Start; SystemIndex < Range.End; SystemIndex++)
+			{
+				SystemInfo& Info = Systems[SystemIndex];
+				float TimeStep = ComputeTimeStep(Info, DeltaTime);
+				if (TimeStep > 0.0f)
+				{
+					Info.Target->Tick(TimeStep);
+				}
 			}
 		}
 	}

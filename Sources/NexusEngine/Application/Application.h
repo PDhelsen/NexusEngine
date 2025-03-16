@@ -48,10 +48,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
 		NEXUS_ENGINE_API bool IsRunning() const;
 
-		template<typename T>
-		void SetTickRate(float TickRate, bool FixedTimeStep = false) { Ticks.SetTickRate(Systems.GetSystem<T>(), TickRate, FixedTimeStep); }
-
 		SystemManager& GetSystems() { return Systems; }
+		Ticker& GetTicker() { return Ticks; }
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems) = 0;

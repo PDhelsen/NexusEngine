@@ -26,6 +26,9 @@ namespace NxEn
 
 	void NexusEngineApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
-		Ticks.AddSystem(Systems.GetSystem<System>(), NxEn::Ticker::TickBucket::Engine, 1.0f, true);
+		Ticks.AddTickCallback([]() { NEXUS_LOG(Info, Default, "Tick Callback"); });
+		Ticks.AddTickOnceCallback([]() { NEXUS_LOG(Info, Default, "Tick Once Callback"); });
+
+		Ticks.AddSystem(Systems.GetSystem<System>(), NxEn::Ticker::TickBucket::Engine, 10.0f, true);
 	}
 }
