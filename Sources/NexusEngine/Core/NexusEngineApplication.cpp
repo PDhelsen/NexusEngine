@@ -9,6 +9,22 @@ namespace NxEn
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
+	static void Tick()
+	{
+		// TEMP: Avoid looping too fast for now since the app is empty
+		//NxFr::Platform::GetInstance()->Sleep(1);
+
+		if (TimeManager::GetInstance()->GetFrameIndex() == 5)
+		{
+			Application::GetInstance()->GetTicker().AppendTickOnceCallback([]() { TimeManager::GetInstance()->SetMultiplier(0.1f); });
+		}
+
+		if (TimeManager::GetInstance()->GetFrameIndex() > 10)
+		{
+			Application::GetInstance()->Quit();
+		}
+	}
+
 	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		Bootstrap.AppendStep(&NxFr::Paths::CreateFrameworkFolders, "Generate Folders");
@@ -29,8 +45,9 @@ namespace NxEn
 
 	void NexusEngineApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
+		Ticks.AppendTickCallback(&Tick);
 		Ticks.AppendTickOnceCallback([]() { NEXUS_LOG(Info, Default, "Tick Once Callback"); });
 
-		Ticks.AppendSystem(Systems.GetSystem<System>(), NxEn::Ticker::TickBucket::Engine, 10.0f, true);
+		Ticks.AppendSystem(Systems.GetSystem<System>(), NxEn::Ticker::TickBucket::Engine);
 	}
 }
