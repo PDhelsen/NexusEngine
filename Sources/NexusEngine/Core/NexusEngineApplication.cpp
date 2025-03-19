@@ -30,9 +30,9 @@ namespace NxEn
 
 	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
 	{
-		Application::OnShutdown(Unbootstrap, Systems);
-
 		Unbootstrap.AppendSystem(Systems.GetSystem<System>());
+
+		Application::OnShutdown(Unbootstrap, Systems);
 	}
 
 	void NexusEngineApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
