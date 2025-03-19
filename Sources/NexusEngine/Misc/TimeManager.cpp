@@ -3,25 +3,6 @@
 
 namespace NxEn
 {
-	static TimeManager* Instance = nullptr;
-
-	TimeManager* TimeManager::GetInstance()
-	{
-		return Instance;
-	}
-
-	void TimeManager::Initialize()
-	{
-		NEXUS_ASSERT(Instance == nullptr, Default, "TimeManager was already created");
-		Instance = new TimeManager();
-	}
-
-	void TimeManager::Shutdown()
-	{
-		delete Instance;
-		Instance = nullptr;
-	}
-
 	TimeManager::TimeManager()
 		: Watch(), FrameIndex(0), DeltaTime(0.0f), UnscaledDeltaTime(0.0f), Time(0.0f), UnscaledTime(0.0f), Multiplier(1.0f)
 	{

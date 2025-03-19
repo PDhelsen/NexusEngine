@@ -1,8 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Application.h"
 
-#include "NexusEngine/Misc/DebugManager.h"
-#include "NexusEngine/Misc/TimeManager.h"
+#include "NexusFramework/Core/NexusFrameworkPaths.h"
+#include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
 namespace NxEn
 {
@@ -14,7 +14,7 @@ namespace NxEn
 	}
 
 	Application::Application()
-		: WantsToQuit(false)
+		: Systems(), Bootstrap(), Ticks(), Debug(), Time(), WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -53,6 +53,42 @@ namespace NxEn
 		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
 	}
 
+	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
+	{
+		Bootstrap.AppendStep("Generate Folders", &NxFr::Paths::CreateFrameworkFolders);
+		Bootstrap.AppendStep("Initialize Debug Manager", [&]()
+		{
+			NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
+			bool AutoStart = NxFr::Arguments::HasFlag("Profile", false);
+			Debug = new DebugManager(Folder, AutoStart);
+
+			NxFr::Globals::Logs = Debug->GetLogger();
+			NxFr::Globals::Statistiques = Debug->GetStats();
+			NxFr::Globals::Instrumentor = Debug->GetInstrumentor();
+
+		});
+		Bootstrap.AppendStep("Initialize Time Manager", [&]() { Time = new TimeManager(); });
+	}
+
+	void Application::OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems)
+	{
+		Unbootstrap.AppendStep("Clear Systems", NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems));
+		Unbootstrap.AppendStep("Shutdown Time Manager", [&]() { delete Time; Time = nullptr; });
+		Unbootstrap.AppendStep("Shutdown Debug Manager", [&]()
+		{
+			delete Debug;
+			Debug = nullptr;
+
+			NxFr::Globals::Logs = nullptr;
+			NxFr::Globals::Statistiques = nullptr;
+			NxFr::Globals::Instrumentor = nullptr;
+		});
+	}
+
+	void Application::OnExecute(Ticker& Ticks, SystemManager& Systems)
+	{
+	}
+
 	void Application::Run()
 	{
 		Initialize();
@@ -77,14 +113,13 @@ namespace NxEn
 		OnExecute(Ticks, Systems);
 		Ticks.Run(Systems);
 
-		TimeManager::GetInstance()->Run();
-
+		Time->Run();
 		while (IsRunning())
 		{
 			Ticks.Tick();
 
-			DebugManager::GetInstance()->Flush();
-			TimeManager::GetInstance()->Tick();
+			Debug->Flush();
+			Time->Tick();
 		}
 	}
 }

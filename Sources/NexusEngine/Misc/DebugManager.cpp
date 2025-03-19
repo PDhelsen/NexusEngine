@@ -1,64 +1,34 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Misc/DebugManager.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
-#include "NexusFramework/Core/NexusFrameworkGlobals.h"
-
 namespace NxEn
 {
-	static DebugManager* Instance = nullptr;
-
-	DebugManager* DebugManager::GetInstance()
-	{
-		return Instance;
-	}
-
-	void DebugManager::Initialize()
-	{
-		NEXUS_ASSERT(Instance == nullptr, Default, "DebugManager was already created");
-		Instance = new DebugManager();
-
-		NxFr::Globals::Logs = Instance->Logger;
-		NxFr::Globals::Statistiques = Instance->Stats;
-		NxFr::Globals::Instrumentor = Instance->Instrumentor;
-	}
-
-	void DebugManager::Shutdown()
-	{
-		delete Instance;
-		Instance = nullptr;
-
-		NxFr::Globals::Logs = nullptr;
-		NxFr::Globals::Statistiques = nullptr;
-		NxFr::Globals::Instrumentor = nullptr;
-	}
-
-	DebugManager::DebugManager()
-	{
-		bool Profile = NxFr::Arguments::HasFlag("Profile", false);
 #if NEXUS_DEBUG
-		bool Debug = true;
+	bool FlushOnLog = true;
 #else
-		bool Debug = false;
+	bool FlushOnLog = false;
 #endif
 
-		NxFr::Path DebugPath = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
-		NxFr::Directory(DebugPath).Create();
+	DebugManager::DebugManager(NxFr::StringView Folder, bool AutoStart)
+	{
+		NEXUS_ASSERT(!Folder.IsEmpty(), Default, "Folder can't be empty");
 
-		Logger = new NxFr::Logger(Debug, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, DebugPath + "logs.txt");
+		NxFr::Directory(Folder).Create();
+
+		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, Folder + "logs.txt");
 		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
 		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
 
-		Stats = new NxFr::Stats(DebugPath + "stats.csv");
+		Stats = new NxFr::Stats(Folder + "stats.csv");
 		Stats->Initialize();
 		Stats->Lock();
-		if (Profile)
+		if (AutoStart)
 		{
 			Stats->StartRecording();
 		}
 
-		Instrumentor = NxFr::Instruments::Create(DebugPath + "instruments.json", false);
-		if (Profile)
+		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
+		if (AutoStart)
 		{
 			Instrumentor->StartRecording();
 		}
@@ -68,7 +38,6 @@ namespace NxEn
 	{
 		Logger->Flush();
 		delete Logger;
-		NxFr::Globals::Logs = nullptr;
 
 		if (Stats->IsRecording())
 		{
@@ -77,14 +46,12 @@ namespace NxEn
 		Stats->Unlock();
 		Stats->Flush();
 		delete Stats;
-		NxFr::Globals::Statistiques = nullptr;
 
 		if (Instrumentor->IsRecording())
 		{
 			Instrumentor->StopRecording();
 		}
 		NxFr::Instruments::Destroy(Instrumentor);
-		NxFr::Globals::Instrumentor = nullptr;
 	}
 
 	void DebugManager::Flush()

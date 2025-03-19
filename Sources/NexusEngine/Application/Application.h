@@ -6,6 +6,9 @@
 #include "NexusEngine/Application/Ticker.h"
 #include "NexusEngine/Systems/SystemManager.h"
 
+#include "NexusEngine/Misc/DebugManager.h"
+#include "NexusEngine/Misc/TimeManager.h"
+
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
 namespace EntryPoint\
 {\
@@ -50,11 +53,13 @@ namespace NxEn
 
 		SystemManager& GetSystems() { return Systems; }
 		Ticker& GetTicker() { return Ticks; }
+		DebugManager& GetDebug() { return *Debug; }
+		TimeManager& GetTime() { return *Time; }
 
 	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems) = 0;
-		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems) = 0;
-		NEXUS_ENGINE_API virtual void OnExecute(Ticker& Ticks, SystemManager& Systems) = 0;
+		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems);
+		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems);
+		NEXUS_ENGINE_API virtual void OnExecute(Ticker& Ticks, SystemManager& Systems);
 
 	private:
 		void Run();
@@ -66,6 +71,9 @@ namespace NxEn
 		SystemManager Systems;
 		Bootstrapper Bootstrap;
 		Ticker Ticks;
+
+		DebugManager* Debug;
+		TimeManager* Time;
 
 		bool WantsToQuit;
 	};

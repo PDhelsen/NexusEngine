@@ -152,7 +152,7 @@ namespace NxEn
 
 	void Ticker::Tick()
 	{
-		float DeltaTime = TimeManager::GetInstance()->GetDeltaTime();
+		float DeltaTime = Application::GetInstance()->GetTime().GetDeltaTime();
 
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
 		{

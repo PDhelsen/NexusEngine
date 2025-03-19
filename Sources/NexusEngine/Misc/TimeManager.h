@@ -6,12 +6,12 @@ namespace NxEn
 {
 	class TimeManager
 	{
-		friend class Application;
-
 	public:
-		NEXUS_ENGINE_API static TimeManager* GetInstance();
-		NEXUS_ENGINE_API static void Initialize();
-		NEXUS_ENGINE_API static void Shutdown();
+		NEXUS_ENGINE_API TimeManager();
+		NEXUS_ENGINE_API ~TimeManager();
+
+		NEXUS_ENGINE_API void Run();
+		NEXUS_ENGINE_API void Tick();
 
 		void SetMultiplier(float Mult) { Multiplier = Mult; }
 
@@ -21,13 +21,6 @@ namespace NxEn
 		float GetTime() const { return (float)Time; }
 		float GetUnscaledTime() const { return (float)UnscaledTime; }
 		float GetMultiplier() const { return Multiplier; }
-
-	private:
-		NEXUS_ENGINE_API TimeManager();
-		NEXUS_ENGINE_API ~TimeManager();
-
-		NEXUS_ENGINE_API void Run();
-		NEXUS_ENGINE_API void Tick();
 
 	private:
 		NxFr::Stopwatch Watch;

@@ -6,18 +6,15 @@ namespace NxEn
 {
 	class DebugManager
 	{
-		friend class Application;
-
 	public:
-		NEXUS_ENGINE_API static DebugManager* GetInstance();
-		NEXUS_ENGINE_API static void Initialize();
-		NEXUS_ENGINE_API static void Shutdown();
-
-	private:
-		NEXUS_ENGINE_API DebugManager();
+		NEXUS_ENGINE_API DebugManager(NxFr::StringView Folder, bool AutoStart = false);
 		NEXUS_ENGINE_API ~DebugManager();
 
 		NEXUS_ENGINE_API void Flush();
+
+		NxFr::Logger* GetLogger() const { return Logger; }
+		NxFr::Stats* GetStats() const { return Stats; };
+		NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }
 
 	private:
 		NxFr::Logger* Logger;
