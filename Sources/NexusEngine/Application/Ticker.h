@@ -62,7 +62,7 @@ namespace NxEn
 
 	private:
 		void Run(const SystemManager& Manager);
-		void Tick();
+		void Tick(float DeltaTime);
 
 		float ComputeTimeStep(SystemInfo& Info, float DeltaTime) const;
 		float ComputeTickRate(float TickRate, bool FixedTimeStep) const;

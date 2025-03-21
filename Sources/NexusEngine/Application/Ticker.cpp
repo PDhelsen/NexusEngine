@@ -150,10 +150,8 @@ namespace NxEn
 		}
 	}
 
-	void Ticker::Tick()
+	void Ticker::Tick(float DeltaTime)
 	{
-		float DeltaTime = Application::GetInstance()->GetTime().GetDeltaTime();
-
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
 		{
 			NxFr::Event<>& OnTickOnce = OnTicksOnce[BucketIndex];

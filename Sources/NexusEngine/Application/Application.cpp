@@ -116,7 +116,8 @@ namespace NxEn
 		Time->Run();
 		while (IsRunning())
 		{
-			Ticks.Tick();
+			float DeltaTime = Time->GetDeltaTime();
+			Ticks.Tick(DeltaTime);
 
 			Debug->Flush();
 			Time->Tick();
