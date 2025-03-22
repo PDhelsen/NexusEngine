@@ -2,7 +2,6 @@
 #include "NexusEngine/Application/Application.h"
 
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
-#include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
 namespace NxEn
 {
@@ -14,7 +13,7 @@ namespace NxEn
 	}
 
 	Application::Application()
-		: Systems(), Bootstrap(), Ticks(), Debug(nullptr), Time(nullptr), WantsToQuit(false)
+		: Systems(), Bootstrap(), Ticks(), Time(nullptr), WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -56,37 +55,19 @@ namespace NxEn
 	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
 	{
 		Bootstrap.AppendStep("Generate Folders", &NxFr::Paths::CreateFrameworkFolders);
-		Bootstrap.AppendStep("Initialize Debug Manager", [&]()
-		{
-			NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
-			bool AutoStart = NxFr::Arguments::HasFlag("Profile", false);
-			Debug = new DebugManager(Folder, AutoStart);
-
-			NxFr::Globals::Logs = Debug->GetLogger();
-			NxFr::Globals::Statistiques = Debug->GetStats();
-			NxFr::Globals::Instrumentor = Debug->GetInstrumentor();
-
-		});
 		Bootstrap.AppendStep("Initialize Time Manager", [&]() { Time = new TimeManager(); });
 	}
 
 	void Application::OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems)
 	{
-		Unbootstrap.AppendStep("Clear Systems", NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems));
 		Unbootstrap.AppendStep("Shutdown Time Manager", [&]() { delete Time; Time = nullptr; });
-		Unbootstrap.AppendStep("Shutdown Debug Manager", [&]()
-		{
-			delete Debug;
-			Debug = nullptr;
-
-			NxFr::Globals::Logs = nullptr;
-			NxFr::Globals::Statistiques = nullptr;
-			NxFr::Globals::Instrumentor = nullptr;
-		});
+		Unbootstrap.AppendStep("Clear Systems", NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems));
 	}
 
 	void Application::OnExecute(Ticker& Ticks, SystemManager& Systems)
 	{
+		Ticks.AppendTickOnceCallback([&]() { Time->Run(); }, Ticker::TickBucket::Input);
+		Ticks.AppendTickCallback([&]() { Time->Tick(); }, Ticker::TickBucket::Cleanup);
 	}
 
 	void Application::Run()
@@ -113,14 +94,10 @@ namespace NxEn
 		OnExecute(Ticks, Systems);
 		Ticks.Run(Systems);
 
-		Time->Run();
 		while (IsRunning())
 		{
 			float DeltaTime = Time->GetDeltaTime();
 			Ticks.Tick(DeltaTime);
-
-			Debug->Flush();
-			Time->Tick();
 		}
 	}
 }

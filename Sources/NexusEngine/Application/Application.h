@@ -4,9 +4,9 @@
 #include "NexusEngine/Application/EntryPoint.h"
 #include "NexusEngine/Application/Bootstrapper.h"
 #include "NexusEngine/Application/Ticker.h"
+
 #include "NexusEngine/Systems/SystemManager.h"
 
-#include "NexusEngine/Misc/DebugManager.h"
 #include "NexusEngine/Misc/TimeManager.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
@@ -53,7 +53,6 @@ namespace NxEn
 
 		SystemManager& GetSystems() { return Systems; }
 		Ticker& GetTicker() { return Ticks; }
-		DebugManager& GetDebug() { return *Debug; }
 		TimeManager& GetTime() { return *Time; }
 
 	protected:
@@ -72,7 +71,6 @@ namespace NxEn
 		Bootstrapper Bootstrap;
 		Ticker Ticks;
 
-		DebugManager* Debug;
 		TimeManager* Time;
 
 		bool WantsToQuit;

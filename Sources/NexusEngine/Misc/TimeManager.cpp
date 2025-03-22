@@ -10,7 +10,6 @@ namespace NxEn
 
 	TimeManager::~TimeManager()
 	{
-		NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)UnscaledTime)
 	}
 
 	void TimeManager::Run()
