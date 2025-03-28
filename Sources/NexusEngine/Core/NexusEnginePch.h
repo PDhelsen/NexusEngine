@@ -7,3 +7,5 @@
 
 #include "NexusEngine/Misc/TimeManager.h"
 #include "NexusEngine/Misc/DebugManager.h"
+#include "NexusEngine/Misc/Memory/MemoryManager.h"
+#include "NexusEngine/Misc/Memory/Allocator.h"

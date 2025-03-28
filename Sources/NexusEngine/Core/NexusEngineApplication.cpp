@@ -8,6 +8,19 @@ namespace NxEn
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
+	static NxFr::Array<uint64, (uint64)AllocatorType::COUNT> MemoryAllocatorSize()
+	{
+		NxFr::Array<uint64, (uint64)AllocatorType::COUNT> Sizes = NxFr::Array<uint64, (uint64)AllocatorType::COUNT>();
+		Sizes[(uint64)AllocatorType::Raw] = 0;
+		Sizes[(uint64)AllocatorType::General] = 1024;
+		Sizes[(uint64)AllocatorType::Temp] = 1024;
+		Sizes[(uint64)AllocatorType::Temp2] = 1024;
+		Sizes[(uint64)AllocatorType::Constant] = 1024;
+		Sizes[(uint64)AllocatorType::Small] = 1024;
+		Sizes[(uint64)AllocatorType::Managed] = 1024;
+		return Sizes;
+	}
+
 	static void Tick()
 	{
 		// TEMP: Avoid looping too fast for now since the app is empty
@@ -18,10 +31,18 @@ namespace NxEn
 			Application::GetInstance()->GetTicker().AppendTickOnceCallback([]() { Application::GetInstance()->GetTime().SetMultiplier(0.1f); });
 		}
 
-		if (Application::GetInstance()->GetTime().GetFrameIndex() > 10)
+		if (Application::GetInstance()->GetTime().GetFrameIndex() > 100)
 		{
 			Application::GetInstance()->Quit();
 		}
+
+
+		NEXUS_LOG(Info, Default, "Memory: %d", NxFr::MemoryTracker::GetInstance()->GetAllocatedAmount());
+
+		NxFr::AllocatorContext Context(MemoryManager::Allocator(AllocatorType::Temp, 512));
+		uint64* Pointer = new uint64[1];
+
+		NxFr::Handle<uint64> Handle = NxFr::Memory::Create<uint64>(MemoryManager::Handles());
 	}
 
 	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
@@ -39,6 +60,7 @@ namespace NxEn
 			NxFr::Globals::Instrumentor = Debug->GetInstrumentor();
 
 		});
+		Bootstrap.AppendStep("Initialize Memory Manager", [&]() { Memory = new MemoryManager(MemoryAllocatorSize(), { 32, 256 }, 1024, 1.0f); });
 
 		Bootstrap.AppendSystem(Systems.CreateSystem<System>());
 	}
@@ -51,6 +73,7 @@ namespace NxEn
 		{
 			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		});
+		Unbootstrap.AppendStep("Shutdown Memory Manager", [&]() { delete Memory; Memory = nullptr; });
 		Unbootstrap.AppendStep("Shutdown Debug Manager", [&]()
 		{
 			delete Debug;
@@ -67,6 +90,9 @@ namespace NxEn
 	void NexusEngineApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
 		Application::OnExecute(Ticks, Systems);
+
+		Ticks.AppendTickCallback({ Debug, &DebugManager::Flush }, Ticker::TickBucket::Cleanup);
+		Ticks.AppendTickCallback({ Memory, &MemoryManager::Tick }, Ticker::TickBucket::Cleanup);
 
 		Ticks.AppendTickCallback(&Tick);
 		Ticks.AppendTickOnceCallback([]() { NEXUS_LOG(Info, Default, "Tick Once Callback"); });
