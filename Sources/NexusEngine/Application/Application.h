@@ -51,8 +51,9 @@ namespace NxEn
 		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
 		NEXUS_ENGINE_API bool IsRunning() const;
 
-		SystemManager& GetSystems() { return Systems; }
+		Bootstrapper& GetBootstrapper() { return Bootstrap; }
 		Ticker& GetTicker() { return Ticks; }
+		SystemManager& GetSystems() { return Systems; }
 		TimeManager& GetTime() { return Time; }
 
 	protected:
@@ -67,9 +68,9 @@ namespace NxEn
 		void Execute();
 
 	private:
-		SystemManager Systems;
 		Bootstrapper Bootstrap;
 		Ticker Ticks;
+		SystemManager Systems;
 		TimeManager Time;
 
 		bool WantsToQuit;

@@ -17,10 +17,6 @@ namespace NxEn
 		{
 			Application::GetInstance()->Quit();
 		}
-
-		NxFr::AllocatorContext Context(MemorySystem::Allocator(AllocatorType::Temp, 512));
-		uint64* Pointer = new uint64[1];
-		NxFr::Handle<uint64> Handle = NxFr::Memory::Create<uint64>(MemorySystem::Handles());
 	}
 
 	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
@@ -35,11 +31,6 @@ namespace NxEn
 	{
 		Unbootstrap.AppendSystem(Systems.GetSystem<MemorySystem>());
 		Unbootstrap.AppendSystem(Systems.GetSystem<DebugSystem>());
-
-		Unbootstrap.AppendStep([&]()
-		{
-			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
-		}, "Application duration");
 
 		Application::OnShutdown(Unbootstrap, Systems);
 	}

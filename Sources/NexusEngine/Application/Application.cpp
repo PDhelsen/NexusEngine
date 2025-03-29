@@ -13,7 +13,7 @@ namespace NxEn
 	}
 
 	Application::Application()
-		: Systems(), Bootstrap(), Ticks(), Time(), WantsToQuit(false)
+		: Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
