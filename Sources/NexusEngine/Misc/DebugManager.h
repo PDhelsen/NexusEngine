@@ -4,6 +4,13 @@
 
 namespace NxEn
 {
+	namespace StatsHeader
+	{
+		NEXUS_ENGINE_API extern const NxFr::StringId MemoryAllocatedId;
+		NEXUS_ENGINE_API extern const NxFr::StringId MemoryAllocationId;
+		NEXUS_ENGINE_API extern const NxFr::StringId PlatformMemoryId;
+	}
+
 	class DebugManager
 	{
 	public:
@@ -22,4 +29,3 @@ namespace NxEn
 		NxFr::Instruments* Instrumentor;
 	};
 }
-

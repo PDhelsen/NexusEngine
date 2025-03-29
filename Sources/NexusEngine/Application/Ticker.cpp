@@ -115,6 +115,8 @@ namespace NxEn
 
 			if (DependenciesPerBucket.GetCount() == 0)
 			{
+				Range.End = SortedIndex;
+				SystemsPerBuckets[BucketIndex] = Range;
 				continue;
 			}
 
@@ -157,6 +159,8 @@ namespace NxEn
 			NxFr::Event<>& OnTickOnce = OnTicksOnce[BucketIndex];
 			if (OnTickOnce)
 			{
+				NEXUS_PROFILE_SCOPE("Tick Once");
+
 				OnTickOnce.Invoke();
 				OnTickOnce.Clear();
 			}
@@ -164,17 +168,26 @@ namespace NxEn
 			NxFr::Event<>& OnTick = OnTicks[BucketIndex];
 			if (OnTick)
 			{
+				NEXUS_PROFILE_SCOPE("Tick");
+
 				OnTick.Invoke();
 			}
 
 			SystemRange Range = SystemsPerBuckets[BucketIndex];
-			for (uint64 SystemIndex = Range.Start; SystemIndex < Range.End; SystemIndex++)
+			if (Range.Start != Range.End)
 			{
-				SystemInfo& Info = Systems[SystemIndex];
-				float TimeStep = ComputeTimeStep(Info, DeltaTime);
-				if (TimeStep > 0.0f)
+				NEXUS_PROFILE_SCOPE("Systems");
+
+				for (uint64 SystemIndex = Range.Start; SystemIndex < Range.End; SystemIndex++)
 				{
-					Info.Target->Tick(TimeStep);
+					SystemInfo& Info = Systems[SystemIndex];
+					float TimeStep = ComputeTimeStep(Info, DeltaTime);
+					if (TimeStep > 0.0f)
+					{
+						NEXUS_PROFILE_SCOPE(Info.Target->GetObjectType().C());
+
+						Info.Target->Tick(TimeStep);
+					}
 				}
 			}
 		}

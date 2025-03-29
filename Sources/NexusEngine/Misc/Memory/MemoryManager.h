@@ -59,6 +59,7 @@ namespace NxEn
 		void ClearHandleManagerContainers(bool Force);
 
 		void Defragment(float Budget, bool All);
+		void RecordMemoryStats();
 
 	private:
 		NxFr::Array<NxFr::List<NxFr::Allocator*>, (uint64)AllocatorType::COUNT> Allocators;

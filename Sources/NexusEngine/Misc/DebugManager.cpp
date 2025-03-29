@@ -9,6 +9,13 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
+	namespace StatsHeader
+	{
+		const NxFr::StringId MemoryAllocatedId = "Memory - Allocated"_Sid;
+		const NxFr::StringId MemoryAllocationId = "Memory - Allocation"_Sid;
+		const NxFr::StringId PlatformMemoryId = "Platform - Memory"_Sid;
+	}
+
 	DebugManager::DebugManager(NxFr::StringView Folder, bool AutoStart)
 	{
 		NEXUS_ASSERT(!Folder.IsEmpty(), Default, "Folder can't be empty");
@@ -20,6 +27,9 @@ namespace NxEn
 		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
 
 		Stats = new NxFr::Stats(Folder + "stats.csv");
+		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::MemoryAllocationId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::PlatformMemoryId, UnsignedInteger, Set);
 		Stats->Initialize();
 		Stats->Lock();
 		if (AutoStart)

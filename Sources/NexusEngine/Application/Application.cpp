@@ -96,6 +96,8 @@ namespace NxEn
 
 		while (IsRunning())
 		{
+			NEXUS_PROFILE_SCOPE("Frame");
+
 			float DeltaTime = Time->GetDeltaTime();
 			Ticks.Tick(DeltaTime);
 		}

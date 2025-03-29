@@ -42,6 +42,7 @@ namespace NxEn
 		}
 
 		Defragment(false);
+		RecordMemoryStats();
 
 		FrameFlag = !FrameFlag;
 	}
@@ -288,5 +289,16 @@ namespace NxEn
 				Budget -= (float)Watch.Peek(NxFr::Time::SecondToMilli);
 			}
 		}
+	}
+
+	void MemoryManager::RecordMemoryStats()
+	{
+		NxFr::MemoryTracker* Tracker = NxFr::MemoryTracker::GetInstance();
+		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());
+		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::MemoryAllocationId, Tracker->GetAllocationCount());
+
+		NxFr::Platform* Platform = NxFr::Platform::GetInstance();
+		NxFr::Platform::MemoryInfo MemoryInfo = Platform->GetMemoryInfo();
+		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::PlatformMemoryId, MemoryInfo.CurrentUsage);
 	}
 }

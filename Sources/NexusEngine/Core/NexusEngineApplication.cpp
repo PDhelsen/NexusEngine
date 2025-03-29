@@ -39,7 +39,7 @@ namespace NxEn
 
 		NEXUS_LOG(Info, Default, "Memory: %d", NxFr::MemoryTracker::GetInstance()->GetAllocatedAmount());
 
-		NxFr::AllocatorContext Context(MemoryManager::Allocator(AllocatorType::Temp, 512));
+		NxFr::AllocatorContext Context(MemoryManager::Allocator(AllocatorType::General, 512));
 		uint64* Pointer = new uint64[1];
 
 		NxFr::Handle<uint64> Handle = NxFr::Memory::Create<uint64>(MemoryManager::Handles());

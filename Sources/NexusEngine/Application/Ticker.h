@@ -39,8 +39,8 @@ namespace NxEn
 		struct SystemRange
 		{
 		public:
-			uint64 Start;
-			uint64 End;
+			uint64 Start = 0;
+			uint64 End = 0;
 		};
 
 	public:
