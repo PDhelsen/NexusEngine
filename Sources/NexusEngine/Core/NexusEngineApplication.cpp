@@ -47,6 +47,5 @@ namespace NxEn
 		Ticks.AppendSystem(Systems.GetSystem<MemorySystem>(), NxEn::Ticker::TickBucket::Cleanup);
 
 		Ticks.AppendTickCallback(&Tick);
-		Ticks.AppendTickOnceCallback([]() { NEXUS_LOG(Info, Default, "Tick Once Callback"); });
 	}
 }
