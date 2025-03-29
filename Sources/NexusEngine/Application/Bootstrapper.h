@@ -15,7 +15,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
-		NEXUS_ENGINE_API Bootstrapper& AppendStep(NxFr::StringView Tag, const Signature& Step);
+		NEXUS_ENGINE_API Bootstrapper& AppendStep(const Signature& Step, NxFr::StringView Tag = "");
 
 		template<typename T, typename D>
 		Bootstrapper& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
@@ -34,7 +34,7 @@ namespace NxEn
 		void ExecuteSystemsShutdown(const SystemManager& Manager);
 
 	private:
-		NxFr::List<NxFr::Tuple<NxFr::StringView, Signature>> Steps;
+		NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>> Steps;
 		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> Systems;
 	};
 }

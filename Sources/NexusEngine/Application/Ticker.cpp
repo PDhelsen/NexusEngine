@@ -21,12 +21,12 @@ namespace NxEn
 
 	void Ticker::AppendTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		OnTicks[(uint64)Bucket].AppendConstruct(Tag, Callback);
+		OnTicks[(uint64)Bucket].AppendConstruct(Callback, Tag);
 	}
 
 	void Ticker::AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		OnTicksOnce[(uint64)Bucket].AppendConstruct(Tag, Callback);
+		OnTicksOnce[(uint64)Bucket].AppendConstruct(Callback, Tag);
 	}
 
 	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
@@ -37,7 +37,7 @@ namespace NxEn
 		auto& Callbacks = OnTicks[(uint64)Bucket];
 		for (auto It = Callbacks.Begin(); It != Callbacks.End(); ++It)
 		{
-			if (It.Get().GetSecond() == Callback)
+			if (It.Get().GetFirst() == Callback)
 			{
 				Found = true;
 				Index = It.Id();
@@ -175,9 +175,9 @@ namespace NxEn
 				NEXUS_PROFILE_SCOPE("Tick Once");
 				for (auto& Function : OnTickOnce)
 				{
-					NEXUS_PROFILE_SCOPE(Function.GetFirst());
+					NEXUS_PROFILE_SCOPE(Function.GetSecond());
 
-					Function.GetSecond().Invoke();
+					Function.GetFirst().Invoke();
 				}
 
 				OnTickOnce.Clear();
@@ -190,9 +190,9 @@ namespace NxEn
 
 				for (auto& Function : OnTick)
 				{
-					NEXUS_PROFILE_SCOPE(Function.GetFirst());
+					NEXUS_PROFILE_SCOPE(Function.GetSecond());
 
-					Function.GetSecond().Invoke();
+					Function.GetFirst().Invoke();
 				}
 			}
 

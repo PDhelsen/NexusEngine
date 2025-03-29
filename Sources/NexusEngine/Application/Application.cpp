@@ -54,14 +54,14 @@ namespace NxEn
 
 	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
 	{
-		Bootstrap.AppendStep("Generate Folders", &NxFr::Paths::CreateFrameworkFolders);
-		Bootstrap.AppendStep("Initialize Time Manager", [&]() { Time = new TimeManager(); });
+		Bootstrap.AppendStep(&NxFr::Paths::CreateFrameworkFolders, "Generate Folders");
+		Bootstrap.AppendStep([&]() { Time = new TimeManager(); }, "Initialize Time Manager");
 	}
 
 	void Application::OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems)
 	{
-		Unbootstrap.AppendStep("Shutdown Time Manager", [&]() { delete Time; Time = nullptr; });
-		Unbootstrap.AppendStep("Clear Systems", NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems));
+		Unbootstrap.AppendStep([&]() { delete Time; Time = nullptr; }, "Shutdown Time Manager");
+		Unbootstrap.AppendStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
 	}
 
 	void Application::OnExecute(Ticker& Ticks, SystemManager& Systems)

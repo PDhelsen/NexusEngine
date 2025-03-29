@@ -11,9 +11,9 @@ namespace NxEn
 	{
 	}
 
-	Bootstrapper& Bootstrapper::AppendStep(NxFr::StringView Tag, const Signature& Step)
+	Bootstrapper& Bootstrapper::AppendStep(const Signature& Step, NxFr::StringView Tag)
 	{
-		Steps.AppendConstruct(Tag, Step);
+		Steps.AppendConstruct(Step, Tag);
 		return *this;
 	}
 
@@ -51,8 +51,8 @@ namespace NxEn
 
 		for (auto It = Steps.Begin(); It != Steps.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Boot - Steps (%i / %i): %s", It.Id() + 1, Steps.GetCount(), It.Get().GetFirst().C());
-			It.Get().GetSecond().Invoke();
+			NEXUS_LOG(Info, Default, "Boot - Steps (%i / %i): %s", It.Id() + 1, Steps.GetCount(), It.Get().GetSecond().C());
+			It.Get().GetFirst().Invoke();
 		}
 
 		Steps.Clear();

@@ -49,7 +49,7 @@ namespace NxEn
 	{
 		Application::OnInitialize(Bootstrap, Systems);
 
-		Bootstrap.AppendStep("Initialize Debug Manager", [&]()
+		Bootstrap.AppendStep([&]()
 		{
 			NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 			bool AutoStart = NxFr::Arguments::HasFlag("Profile", false);
@@ -59,8 +59,8 @@ namespace NxEn
 			NxFr::Globals::Statistiques = Debug->GetStats();
 			NxFr::Globals::Instrumentor = Debug->GetInstrumentor();
 
-		});
-		Bootstrap.AppendStep("Initialize Memory Manager", [&]() { Memory = new MemoryManager(MemoryAllocatorSize(), { 32, 256 }, 1024, 1.0f); });
+		}, "Initialize Debug Manager");
+		Bootstrap.AppendStep([&]() { Memory = new MemoryManager(MemoryAllocatorSize(), { 32, 256 }, 1024, 1.0f); }, "Initialize Memory Manager");
 
 		Bootstrap.AppendSystem(Systems.CreateSystem<System>());
 	}
@@ -69,12 +69,12 @@ namespace NxEn
 	{
 		Unbootstrap.AppendSystem(Systems.GetSystem<System>());
 
-		Unbootstrap.AppendStep("Application duration", [&]()
+		Unbootstrap.AppendStep([&]()
 		{
 			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
-		});
-		Unbootstrap.AppendStep("Shutdown Memory Manager", [&]() { delete Memory; Memory = nullptr; });
-		Unbootstrap.AppendStep("Shutdown Debug Manager", [&]()
+		}, "Application duration");
+		Unbootstrap.AppendStep([&]() { delete Memory; Memory = nullptr; }, "Shutdown Memory Manager");
+		Unbootstrap.AppendStep([&]()
 		{
 			delete Debug;
 			Debug = nullptr;
@@ -82,7 +82,7 @@ namespace NxEn
 			NxFr::Globals::Logs = nullptr;
 			NxFr::Globals::Statistiques = nullptr;
 			NxFr::Globals::Instrumentor = nullptr;
-		});
+		}, "Shutdown Debug Manager");
 
 		Application::OnShutdown(Unbootstrap, Systems);
 	}

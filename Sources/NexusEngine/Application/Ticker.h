@@ -72,7 +72,7 @@ namespace NxEn
 		NxFr::Array<SystemRange> SystemsPerBuckets;
 		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> SystemsDependencies;
 
-		NxFr::Array<NxFr::List<NxFr::Tuple<NxFr::StringView, Signature>>> OnTicks;
-		NxFr::Array<NxFr::List<NxFr::Tuple<NxFr::StringView, Signature>>> OnTicksOnce;
+		NxFr::Array<NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>>> OnTicks;
+		NxFr::Array<NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>>> OnTicksOnce;
 	};
 }
