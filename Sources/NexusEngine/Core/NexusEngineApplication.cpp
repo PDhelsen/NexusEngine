@@ -1,7 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Core/NexusEngineApplication.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
 namespace NxEn
@@ -31,6 +30,11 @@ namespace NxEn
 	{
 		Unbootstrap.AppendSystem(Systems.GetSystem<MemorySystem>());
 		Unbootstrap.AppendSystem(Systems.GetSystem<DebugSystem>());
+
+		Unbootstrap.AppendStep([]()
+		{
+			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
+		}, "Application duration");
 
 		Application::OnShutdown(Unbootstrap, Systems);
 	}

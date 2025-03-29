@@ -1,10 +1,14 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Bootstrapper.h"
 
+#include "NexusFramework/Core/NexusFrameworkGlobals.h"
+
 namespace NxEn
 {
 	Bootstrapper::Bootstrapper()
+		: Logger(true, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE)
 	{
+		Logger.AddChannel(NxFr::LoggerChannel::Default, true);
 	}
 
 	Bootstrapper::~Bootstrapper()
@@ -31,14 +35,22 @@ namespace NxEn
 
 	void Bootstrapper::RunBoot(const SystemManager& Manager)
 	{
+		NxFr::Globals::Logs = &Logger;
+
 		ExecuteSteps();
 		ExecuteSystemsInitialize(Manager);
+
+		if (NxFr::Globals::Logs == &Logger) NxFr::Globals::Logs = nullptr;
 	}
 
 	void Bootstrapper::RunUnboot(const SystemManager& Manager)
 	{
+		NxFr::Globals::Logs = &Logger;
+
 		ExecuteSystemsShutdown(Manager);
 		ExecuteSteps();
+
+		if (NxFr::Globals::Logs == &Logger) NxFr::Globals::Logs = nullptr;
 	}
 
 	void Bootstrapper::ExecuteSteps()

@@ -36,5 +36,6 @@ namespace NxEn
 	private:
 		NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>> Steps;
 		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> Systems;
+		NxFr::Logger Logger;
 	};
 }

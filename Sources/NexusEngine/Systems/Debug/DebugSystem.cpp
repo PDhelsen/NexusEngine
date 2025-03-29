@@ -52,6 +52,7 @@ namespace NxEn
 			Instrumentor->StartRecording();
 		}
 
+		// Push DebugSystem instance to globals
 		NxFr::Globals::Logs = Logger;
 		NxFr::Globals::Statistiques = Stats;
 		NxFr::Globals::Instrumentor = Instrumentor;
@@ -59,6 +60,11 @@ namespace NxEn
 
 	void DebugSystem::OnShutdown()
 	{
+		// Remove DebugSystem instance from globals only if they are still globals
+		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
+		if (NxFr::Globals::Statistiques == Stats) NxFr::Globals::Statistiques = nullptr;
+		if (NxFr::Globals::Instrumentor == Instrumentor) NxFr::Globals::Instrumentor = nullptr;
+
 		Logger->Flush();
 		delete Logger;
 
@@ -75,10 +81,6 @@ namespace NxEn
 			Instrumentor->StopRecording();
 		}
 		NxFr::Instruments::Destroy(Instrumentor);
-
-		NxFr::Globals::Logs = nullptr;
-		NxFr::Globals::Statistiques = nullptr;
-		NxFr::Globals::Instrumentor = nullptr;
 
 		System::OnShutdown();
 	}
