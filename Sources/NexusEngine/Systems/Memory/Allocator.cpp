@@ -1,7 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Misc/Memory/Allocator.h"
-
-#include "NexusEngine/Core/NexusEngineApplication.h"
+#include "NexusEngine/Systems/Memory/Allocator.h"
 
 namespace NxEn
 {
@@ -35,7 +33,7 @@ namespace NxEn
 
 	void* Allocator::Allocate(uint64 Size, uint64 Alignement)
 	{
-		NxFr::Allocator* Alloc = MemoryManager::Allocator(Type, Size, Alignement);
+		NxFr::Allocator* Alloc = MemorySystem::Allocator(Type, Size, Alignement);
 
 		uint64 Marker = Alloc->UsedAmount();
 

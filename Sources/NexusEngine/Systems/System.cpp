@@ -16,6 +16,5 @@ namespace NxEn
 
 	void System::OnTick(float TimeStep)
 	{
-		NEXUS_LOG(Info, Default, "Tick %.2f - %s - %i", TimeStep, GetObjectType().C(), Application::GetInstance()->GetTime().GetFrameIndex());
 	}
 }

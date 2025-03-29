@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Misc/TimeManager.h"
+#include "NexusEngine/Application/TimeManager.h"
 
 namespace NxEn
 {

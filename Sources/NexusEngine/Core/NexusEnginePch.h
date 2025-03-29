@@ -5,7 +5,6 @@
 
 #include "NexusEngine/Systems/System.h"
 
-#include "NexusEngine/Misc/TimeManager.h"
-#include "NexusEngine/Misc/DebugManager.h"
-#include "NexusEngine/Misc/Memory/MemoryManager.h"
-#include "NexusEngine/Misc/Memory/Allocator.h"
+#include "NexusEngine/Systems/Debug/DebugSystem.h"
+#include "NexusEngine/Systems/Memory/MemorySystem.h"
+#include "NexusEngine/Systems/Memory/Allocator.h"

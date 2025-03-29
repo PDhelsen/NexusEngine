@@ -13,7 +13,7 @@ namespace NxEn
 	}
 
 	Application::Application()
-		: Systems(), Bootstrap(), Ticks(), Time(nullptr), WantsToQuit(false)
+		: Systems(), Bootstrap(), Ticks(), Time(), WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -55,19 +55,16 @@ namespace NxEn
 	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
 	{
 		Bootstrap.AppendStep(&NxFr::Paths::CreateFrameworkFolders, "Generate Folders");
-		Bootstrap.AppendStep([&]() { Time = new TimeManager(); }, "Initialize Time Manager");
 	}
 
 	void Application::OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems)
 	{
-		Unbootstrap.AppendStep([&]() { delete Time; Time = nullptr; }, "Shutdown Time Manager");
 		Unbootstrap.AppendStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
 	}
 
 	void Application::OnExecute(Ticker& Ticks, SystemManager& Systems)
 	{
-		Ticks.AppendTickOnceCallback([&]() { Time->Run(); }, Ticker::TickBucket::Input);
-		Ticks.AppendTickCallback([&]() { Time->Tick(); }, Ticker::TickBucket::Cleanup, "Time Manager");
+		Ticks.AppendTickOnceCallback({ &Time, &TimeManager::Run }, Ticker::TickBucket::Input, "Start Ticking");
 	}
 
 	void Application::Run()
@@ -97,9 +94,10 @@ namespace NxEn
 		while (IsRunning())
 		{
 			NEXUS_PROFILE_SCOPE("Frame");
+			float DeltaTime = Time.GetDeltaTime();
 
-			float DeltaTime = Time->GetDeltaTime();
 			Ticks.Tick(DeltaTime);
+			Time.Tick();
 		}
 	}
 }

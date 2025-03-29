@@ -1,25 +1,64 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Misc/Memory/MemoryManager.h"
-
-#include "NexusEngine/Core/NexusEngineApplication.h"
+#include "NexusEngine/Systems/Memory/MemorySystem.h"
 
 namespace NxEn
 {
-	NxFr::Allocator* MemoryManager::Allocator(AllocatorType Type, uint64 Size, uint64 Alignement)
+	// TODO: Convert to SettingsSystem
+	static float DefragmentBudget = 1.0f;
+	static uint64 HandlesPerManager = 1024;
+	static MemorySystem::SmallAllocatorParms SmallParams = { 32, 256 };
+	static uint64 Sizes[(uint64)AllocatorType::COUNT] = { 0, 1024, 1024, 1024, 1024, 1024, 1024, };
+
+	NEXUS_OBJECT_IMPLEMENTATION(MemorySystem)
+
+	NxFr::Allocator* MemorySystem::Allocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
-		MemoryManager& Memory = NexusEngineApplication::GetInstance()->GetMemory();
-		return Memory.GetAllocator(Type, Size, Alignement);
+		MemorySystem* Memory = Application::GetInstance()->GetSystems().GetSystem<MemorySystem>();
+		return Memory->GetAllocator(Type, Size, Alignement);
 	}
 
-	NxFr::HandleManager* MemoryManager::Handles()
+	NxFr::HandleManager* MemorySystem::Handles()
 	{
-		MemoryManager& Memory = NexusEngineApplication::GetInstance()->GetMemory();
-		return Memory.GetHandlesManager();
+		MemorySystem* Memory = Application::GetInstance()->GetSystems().GetSystem<MemorySystem>();
+		return Memory->GetHandlesManager();
 	}
 
-	MemoryManager::MemoryManager(const NxFr::Array<uint64, (uint64)AllocatorType::COUNT>& Sizes, SmallAllocatorParms SmallParams, uint64 HandlesPerManager, float DefragmentBudget)
-		: Allocators(), Sizes(Sizes), HandleManagers(0, nullptr), SmallParams(SmallParams), HandlesPerManager(HandlesPerManager), DefragmentBudget(DefragmentBudget), FrameFlag(false)
+	NxFr::Allocator* MemorySystem::GetAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
+		Size = Type == AllocatorType::Small ? GetSmallAllocationSize(Size) : Size;
+		return FindOrCreateAllocator(Type, Size, Alignement);
+	}
+
+	NxFr::HandleManager* MemorySystem::GetHandlesManager()
+	{
+		return FindOrCreateHandlesManager();
+	}
+
+	void MemorySystem::Clear()
+	{
+		ClearHandleManagerContainers(false);
+		ClearAllocatorContainers(false);
+	}
+
+	void MemorySystem::Defragment(bool Full)
+	{
+		Defragment(DefragmentBudget, Full);
+	}
+
+	float MemorySystem::GetDefragmentBudget() const
+	{
+		return DefragmentBudget;
+	}
+
+	void MemorySystem::SetDefragmentBudget(float Budget)
+	{
+		DefragmentBudget = Budget;
+	}
+
+	void MemorySystem::OnInitialize()
+	{
+		System::OnInitialize();
+
 		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParams.Smallest) && NxFr::Math::IsPowerOfTwo(SmallParams.Largest), Default, "SmallAllocatorParams have to be PowerOfTwo");
 		NEXUS_ASSERT(Sizes[0] == 0, Default, "Can't set the size of the Raw allocator");
 
@@ -27,14 +66,18 @@ namespace NxEn
 		CreateAllocatorContainers();
 	}
 
-	MemoryManager::~MemoryManager()
+	void MemorySystem::OnShutdown()
 	{
 		ClearHandleManagerContainers(true);
 		ClearAllocatorContainers(true);
+
+		System::OnShutdown();
 	}
 
-	void MemoryManager::Tick()
+	void MemorySystem::OnTick(float TimeStep)
 	{
+		System::OnTick(TimeStep);
+
 		EmptyAllocators(AllocatorType::Temp);
 		if (FrameFlag)
 		{
@@ -47,29 +90,7 @@ namespace NxEn
 		FrameFlag = !FrameFlag;
 	}
 
-	void MemoryManager::Clear()
-	{
-		ClearHandleManagerContainers(false);
-		ClearAllocatorContainers(false);
-	}
-
-	void MemoryManager::Defragment(bool Full)
-	{
-		Defragment(DefragmentBudget, Full);
-	}
-
-	NxFr::Allocator* MemoryManager::GetAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
-	{
-		Size = Type == AllocatorType::Small ? GetSmallAllocationSize(Size) : Size;
-		return FindOrCreateAllocator(Type, Size, Alignement);
-	}
-
-	NxFr::HandleManager* MemoryManager::GetHandlesManager()
-	{
-		return FindOrCreateHandlesManager();
-	}
-
-	NxFr::Allocator* MemoryManager::FindOrCreateAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
+	NxFr::Allocator* MemorySystem::FindOrCreateAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
 		if (Type == AllocatorType::Raw)
 		{
@@ -86,7 +107,7 @@ namespace NxEn
 		return Result;
 	}
 
-	NxFr::Allocator* MemoryManager::FindAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
+	NxFr::Allocator* MemorySystem::FindAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
 		NxFr::Allocator* Result = nullptr;
 
@@ -114,7 +135,7 @@ namespace NxEn
 		return Result;
 	}
 
-	NxFr::Allocator* MemoryManager::CreateAllocator(AllocatorType Type, uint64 Size, uint64 Stride)
+	NxFr::Allocator* MemorySystem::CreateAllocator(AllocatorType Type, uint64 Size, uint64 Stride)
 	{
 		NxFr::AllocatorContext Context(nullptr);
 		NxFr::Allocator* Alloc = nullptr;
@@ -137,7 +158,7 @@ namespace NxEn
 		return Alloc;
 	}
 
-	void MemoryManager::CreateAllocatorContainers()
+	void MemorySystem::CreateAllocatorContainers()
 	{
 		NxFr::AllocatorContext Context(nullptr);
 
@@ -147,7 +168,7 @@ namespace NxEn
 		}
 	}
 
-	void MemoryManager::ClearAllocatorContainers(bool Force)
+	void MemorySystem::ClearAllocatorContainers(bool Force)
 	{
 		NxFr::AllocatorContext Context(nullptr);
 		NxFr::Array<NxFr::List<uint64>, (uint64)AllocatorType::COUNT> ToRemove;
@@ -176,7 +197,7 @@ namespace NxEn
 		}
 	}
 
-	void MemoryManager::EmptyAllocators(AllocatorType Type)
+	void MemorySystem::EmptyAllocators(AllocatorType Type)
 	{
 		NxFr::List<NxFr::Allocator*>& Allocs = Allocators[(uint64)Type];
 		for (NxFr::Allocator* Alloc : Allocs)
@@ -185,7 +206,7 @@ namespace NxEn
 		}
 	}
 
-	uint64 MemoryManager::GetSmallAllocationSize(uint64 Size) const
+	uint64 MemorySystem::GetSmallAllocationSize(uint64 Size) const
 	{
 		if (Size > SmallParams.Largest)
 		{
@@ -207,12 +228,12 @@ namespace NxEn
 		return NxFr::Math::NextPowerOfTwo(Size);
 	}
 
-	uint64 MemoryManager::GetAllocatorSize(AllocatorType Type) const
+	uint64 MemorySystem::GetAllocatorSize(AllocatorType Type) const
 	{
 		return Sizes[(uint64)Type];
 	}
 
-	NxFr::HandleManager* MemoryManager::FindOrCreateHandlesManager()
+	NxFr::HandleManager* MemorySystem::FindOrCreateHandlesManager()
 	{
 		NxFr::HandleManager* Result = FindHandleManager();
 		if (Result == nullptr)
@@ -223,7 +244,7 @@ namespace NxEn
 		return Result;
 	}
 
-	NxFr::HandleManager* MemoryManager::FindHandleManager()
+	NxFr::HandleManager* MemorySystem::FindHandleManager()
 	{
 		for (NxFr::HandleManager* Manager : HandleManagers)
 		{
@@ -236,7 +257,7 @@ namespace NxEn
 		return nullptr;
 	}
 
-	NxFr::HandleManager* MemoryManager::CreateHandleManager()
+	NxFr::HandleManager* MemorySystem::CreateHandleManager()
 	{
 		NxFr::AllocatorContext Context(nullptr);
 
@@ -245,7 +266,7 @@ namespace NxEn
 		return Manager;
 	}
 
-	void MemoryManager::ClearHandleManagerContainers(bool Force)
+	void MemorySystem::ClearHandleManagerContainers(bool Force)
 	{
 		NxFr::AllocatorContext Context(nullptr);
 		NxFr::List<uint64> ToRemove(HandleManagers.GetCount());
@@ -267,7 +288,7 @@ namespace NxEn
 	}
 
 	// TODO: Defragmentation might not be full because Handle might be scattered across multiple manager
-	void MemoryManager::Defragment(float Budget, bool All)
+	void MemorySystem::Defragment(float Budget, bool All)
 	{
 		NxFr::Stopwatch Watch(true);
 
@@ -291,7 +312,7 @@ namespace NxEn
 		}
 	}
 
-	void MemoryManager::RecordMemoryStats()
+	void MemorySystem::RecordMemoryStats()
 	{
 		NxFr::MemoryTracker* Tracker = NxFr::MemoryTracker::GetInstance();
 		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());

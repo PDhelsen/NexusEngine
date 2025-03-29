@@ -1,5 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Misc/DebugManager.h"
+#include "NexusEngine/Systems/Debug/DebugSystem.h"
+
+#include "NexusFramework/Core/NexusFrameworkPaths.h"
+#include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
 namespace NxEn
 {
@@ -16,10 +19,16 @@ namespace NxEn
 		const NxFr::StringId PlatformMemoryId = "Platform - Memory"_Sid;
 	}
 
-	DebugManager::DebugManager(NxFr::StringView Folder, bool AutoStart)
-	{
-		NEXUS_ASSERT(!Folder.IsEmpty(), Default, "Folder can't be empty");
+	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 
+	void DebugSystem::OnInitialize()
+	{
+		System::OnInitialize();
+
+		bool AutoStart = NxFr::Arguments::HasFlag("Profile", false);
+
+		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
+		NEXUS_ASSERT(!Folder.Data.IsEmpty(), Default, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
 		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, Folder + "logs.txt");
@@ -42,9 +51,13 @@ namespace NxEn
 		{
 			Instrumentor->StartRecording();
 		}
+
+		NxFr::Globals::Logs = Logger;
+		NxFr::Globals::Statistiques = Stats;
+		NxFr::Globals::Instrumentor = Instrumentor;
 	}
 
-	DebugManager::~DebugManager()
+	void DebugSystem::OnShutdown()
 	{
 		Logger->Flush();
 		delete Logger;
@@ -62,10 +75,18 @@ namespace NxEn
 			Instrumentor->StopRecording();
 		}
 		NxFr::Instruments::Destroy(Instrumentor);
+
+		NxFr::Globals::Logs = nullptr;
+		NxFr::Globals::Statistiques = nullptr;
+		NxFr::Globals::Instrumentor = nullptr;
+
+		System::OnShutdown();
 	}
 
-	void DebugManager::Flush()
+	void DebugSystem::OnTick(float TimeStep)
 	{
+		System::OnTick(TimeStep);
+
 		Stats->Unlock();
 		Stats->Flush();
 		Stats->Lock();

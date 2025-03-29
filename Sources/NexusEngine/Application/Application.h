@@ -4,10 +4,10 @@
 #include "NexusEngine/Application/EntryPoint.h"
 #include "NexusEngine/Application/Bootstrapper.h"
 #include "NexusEngine/Application/Ticker.h"
+#include "NexusEngine/Application/TimeManager.h"
 
 #include "NexusEngine/Systems/SystemManager.h"
 
-#include "NexusEngine/Misc/TimeManager.h"
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
 namespace EntryPoint\
@@ -53,7 +53,7 @@ namespace NxEn
 
 		SystemManager& GetSystems() { return Systems; }
 		Ticker& GetTicker() { return Ticks; }
-		TimeManager& GetTime() { return *Time; }
+		TimeManager& GetTime() { return Time; }
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems);
@@ -70,8 +70,7 @@ namespace NxEn
 		SystemManager Systems;
 		Bootstrapper Bootstrap;
 		Ticker Ticks;
-
-		TimeManager* Time;
+		TimeManager Time;
 
 		bool WantsToQuit;
 	};

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Misc/Memory/MemoryManager.h"
+#include "NexusEngine/Systems/Memory/MemorySystem.h"
 
 namespace NxEn
 {
