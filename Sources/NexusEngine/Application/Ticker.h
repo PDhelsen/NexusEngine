@@ -47,9 +47,9 @@ namespace NxEn
 		NEXUS_ENGINE_API Ticker();
 		NEXUS_ENGINE_API ~Ticker();
 
-		NEXUS_ENGINE_API void AppendTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
-		NEXUS_ENGINE_API void AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
-		NEXUS_ENGINE_API void RemoveTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
+		NEXUS_ENGINE_API void AppendTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project, NxFr::StringView Tag = "");
+		NEXUS_ENGINE_API void AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project, NxFr::StringView Tag = "");
+		NEXUS_ENGINE_API void RemoveTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project, NxFr::StringView Tag = "");
 
 		template<typename T, typename D>
 		Ticker& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
@@ -72,7 +72,7 @@ namespace NxEn
 		NxFr::Array<SystemRange> SystemsPerBuckets;
 		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> SystemsDependencies;
 
-		NxFr::Array<NxFr::Event<>> OnTicks;
-		NxFr::Array<NxFr::Event<>> OnTicksOnce;
+		NxFr::Array<NxFr::List<NxFr::Tuple<NxFr::StringView, Signature>>> OnTicks;
+		NxFr::Array<NxFr::List<NxFr::Tuple<NxFr::StringView, Signature>>> OnTicksOnce;
 	};
 }

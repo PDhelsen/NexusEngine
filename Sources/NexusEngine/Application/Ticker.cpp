@@ -11,11 +11,7 @@ namespace NxEn
 	Ticker::Ticker()
 		: Systems(), SystemsPerBuckets((uint64)TickBucket::COUNT), SystemsDependencies(), OnTicks((uint64)TickBucket::COUNT), OnTicksOnce((uint64)TickBucket::COUNT)
 	{
-		for (uint64 Index = 0; Index < (uint64)TickBucket::COUNT; Index++)
-		{
-			OnTicks[Index] = NxFr::Event<>();
-			OnTicksOnce[Index] = NxFr::Event<>();
-		}
+		
 	}
 
 	Ticker::~Ticker()
@@ -23,19 +19,36 @@ namespace NxEn
 
 	}
 
-	void Ticker::AppendTickCallback(const Signature& Callback, TickBucket Bucket)
+	void Ticker::AppendTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		OnTicks[(uint64)Bucket] += Callback;
+		OnTicks[(uint64)Bucket].AppendConstruct(Tag, Callback);
 	}
 
-	void Ticker::AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket)
+	void Ticker::AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		OnTicksOnce[(uint64)Bucket] += Callback;
+		OnTicksOnce[(uint64)Bucket].AppendConstruct(Tag, Callback);
 	}
 
-	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket)
+	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		OnTicks[(uint64)Bucket] -= Callback;
+		uint64 Index = 0;
+		bool Found = false;
+
+		auto& Callbacks = OnTicks[(uint64)Bucket];
+		for (auto It = Callbacks.Begin(); It != Callbacks.End(); ++It)
+		{
+			if (It.Get().GetSecond() == Callback)
+			{
+				Found = true;
+				Index = It.Id();
+				break;
+			}
+		}
+
+		if (Found)
+		{
+			Callbacks.Remove(Index);
+		}
 	}
 
 	Ticker& Ticker::AppendSystem(System* Target, TickBucket Bucket, float TickRate, bool FixedTimeStep)
@@ -156,21 +169,31 @@ namespace NxEn
 	{
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
 		{
-			NxFr::Event<>& OnTickOnce = OnTicksOnce[BucketIndex];
-			if (OnTickOnce)
+			auto& OnTickOnce = OnTicksOnce[BucketIndex];
+			if (OnTickOnce.GetCount() > 0)
 			{
 				NEXUS_PROFILE_SCOPE("Tick Once");
+				for (auto& Function : OnTickOnce)
+				{
+					NEXUS_PROFILE_SCOPE(Function.GetFirst());
 
-				OnTickOnce.Invoke();
+					Function.GetSecond().Invoke();
+				}
+
 				OnTickOnce.Clear();
 			}
 
-			NxFr::Event<>& OnTick = OnTicks[BucketIndex];
-			if (OnTick)
+			auto& OnTick = OnTicks[BucketIndex];
+			if (OnTick.GetCount() > 0)
 			{
 				NEXUS_PROFILE_SCOPE("Tick");
 
-				OnTick.Invoke();
+				for (auto& Function : OnTick)
+				{
+					NEXUS_PROFILE_SCOPE(Function.GetFirst());
+
+					Function.GetSecond().Invoke();
+				}
 			}
 
 			SystemRange Range = SystemsPerBuckets[BucketIndex];

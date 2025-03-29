@@ -91,8 +91,8 @@ namespace NxEn
 	{
 		Application::OnExecute(Ticks, Systems);
 
-		Ticks.AppendTickCallback({ Debug, &DebugManager::Flush }, Ticker::TickBucket::Cleanup);
-		Ticks.AppendTickCallback({ Memory, &MemoryManager::Tick }, Ticker::TickBucket::Cleanup);
+		Ticks.AppendTickCallback({ Debug, &DebugManager::Flush }, Ticker::TickBucket::Cleanup, "Debug Manager");
+		Ticks.AppendTickCallback({ Memory, &MemoryManager::Tick }, Ticker::TickBucket::Cleanup, "Memory Manager");
 
 		Ticks.AppendTickCallback(&Tick);
 		Ticks.AppendTickOnceCallback([]() { NEXUS_LOG(Info, Default, "Tick Once Callback"); });

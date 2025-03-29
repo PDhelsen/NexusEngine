@@ -67,7 +67,7 @@ namespace NxEn
 	void Application::OnExecute(Ticker& Ticks, SystemManager& Systems)
 	{
 		Ticks.AppendTickOnceCallback([&]() { Time->Run(); }, Ticker::TickBucket::Input);
-		Ticks.AppendTickCallback([&]() { Time->Tick(); }, Ticker::TickBucket::Cleanup);
+		Ticks.AppendTickCallback([&]() { Time->Tick(); }, Ticker::TickBucket::Cleanup, "Time Manager");
 	}
 
 	void Application::Run()
