@@ -9,4 +9,4 @@ if [%Platform%] == [] (set /p Configuration=Enter Platform:)
 
 msbuild %Root%NexusEngine.sln /p:Configuration=%Configuration% /p:Platform=%Platform%
 
-if %errorlevel% NEQ 0 pause
+if errorlevel 1 (pause) else (exit /b 0)

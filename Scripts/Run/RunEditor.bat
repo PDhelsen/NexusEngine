@@ -6,4 +6,4 @@ pushd %Root%
 call %Root%builds\artifacts\NexusEditor\NexusEditor.exe %* DebugFolder=debugeditor
 popd %Current%
 
-if %errorlevel% NEQ 0 pause
+if errorlevel 1 (pause) else (exit /b 0)

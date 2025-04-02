@@ -11,7 +11,7 @@ call :DeleteVisualStudioProject %Root%Sources
 
 del %Root%NexusEngine.sln
 
-if %errorlevel% NEQ 0 pause
+if errorlevel 1 (pause) else (exit /b 0)
 
 ::------------------------------------------------
 :DeleteVisualStudioProject

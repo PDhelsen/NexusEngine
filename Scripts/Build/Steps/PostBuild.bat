@@ -25,4 +25,4 @@ if "%Project%"=="NexusEngine" (
 	robocopy !Framework! %Artifacts% *.lib *.dll *.exe /it /is /e /v
 )
 
-if %errorlevel% NEQ 0 pause
+if errorlevel 1 (pause) else (exit /b 0)
