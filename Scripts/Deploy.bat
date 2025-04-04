@@ -10,26 +10,42 @@ set Deploy=%Target%\NexusEngine\
 if exist %Deploy% rmdir /s /q %Deploy%
 mkdir %Deploy%
 
-set FolderLastIndex=4
+set FolderLastIndex=5
 set Folders[0]=NexusEngine
 set Folders[1]=NexusApp
 set Folders[2]=NexusEditor
 set Folders[3]=NexusStarter
 set Folders[4]=NexusUtility
+set Folders[5]=NexusFramework
 
-call :Copy %Root%Sources %Deploy%Sources "*.h *.cpp *.natvis"
-call :Copy %Root%builds\binaries %Deploy%Builds
+call :CopyFolder %Root%Sources %Deploy%Sources "*.h *.cpp *.natvis"
+call :CopyFolder %Root%builds\binaries %Deploy%Builds "*.dll *.lib *.pdb"
+call :CopyFiles %Root%builds\artifacts\NexusEditor %Deploy%
 
 if errorlevel 1 (pause) else (exit /b 0)
 
 ::------------------------------------------------
-:Copy
+:CopyFolder
 setlocal
 
 for /d %%F in (%1\*) do (
 	call :ContainsSubstring %%~nxF
 	if !Result!==true (
-		robocopy %%F %2\%%~nxF %~3 /e
+		robocopy %%F %2\%%~nxF %~3 /e /s
+	)
+)
+
+endlocal
+exit /b 0
+
+::------------------------------------------------
+:CopyFiles
+setlocal
+
+for %%F in (%1\*) do (
+	call :ContainsSubstring %%~nxF
+	if !Result!==true (
+		robocopy %1\ %2\ %%~nxF /e /s
 	)
 )
 
