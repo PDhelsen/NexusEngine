@@ -54,7 +54,7 @@ namespace NxEn
 
 	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
 	{
-		Bootstrap.AppendStep(&NxFr::Paths::CreateFrameworkFolders, "Generate Folders");
+		Bootstrap.AppendStep(&NxFr::Paths::SetupPathsAndFolders, "Setup Paths & Folders");
 	}
 
 	void Application::OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems)
