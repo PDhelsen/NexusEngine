@@ -20,7 +20,9 @@ set Folders[5]=NexusFramework
 
 call :CopyFolder %Root%Sources %Deploy%Sources "*.h *.cpp *.natvis"
 call :CopyFolder %Root%builds\binaries %Deploy%Builds "*.dll *.lib *.pdb"
-call :CopyFiles %Root%builds\artifacts\NexusEditor %Deploy%
+call :CopyFiles %Root%builds\artifacts %Deploy%
+
+rename %Deploy%NexusStarter.exe NexusEditor.exe
 
 if errorlevel 1 (pause) else (exit /b 0)
 

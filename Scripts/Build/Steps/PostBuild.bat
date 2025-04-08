@@ -12,10 +12,7 @@ for /F "tokens=1-3 delims=_" %%A in ("%1") do (
     set Configuration=%%C
 )
 
-set Target=!Platform:Win64-Editor=NexusEditor!
-set Target=!Target:Win64=NexusApp!
-
-set Artifacts=%Root%builds\artifacts\%Target%\
+set Artifacts=%Root%builds\artifacts\
 set Binaries=%Root%builds\binaries\%Project%_%Platform%_%Configuration%\
 robocopy %Binaries% %Artifacts% *.lib *.dll *.exe /it /is /e /v
 

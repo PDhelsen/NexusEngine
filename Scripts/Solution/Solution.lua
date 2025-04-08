@@ -12,8 +12,7 @@ Editor = "NexusEditor"
 Starter = "NexusStarter"
 Utility = "NexusUtility"
 Project = "NexusProject"
-SandboxApp = "NexusSandbox-App"
-SandboxEditor = "NexusSandbox-Editor"
+Sandbox = "NexusSandbox"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -38,11 +37,8 @@ workspace (Engine)
     configurations { "Debug", "Release", "Distrib" }
 
 	startproject (Starter)
+	debugcommand (Artifacts .. Starter .. ".exe")
 	debugdir (Root)
-	debugcommand (Artifacts .. App .. "/" .. App .. ".exe")
-	filter "platforms:*-Editor"
-		debugcommand (Artifacts .. Editor .. "/" .. Editor .. ".exe")
-	filter {}
 
 	characterset "Unicode"
     flags { "MultiProcessorCompile" }
@@ -78,8 +74,8 @@ workspace (Engine)
 
 group "Libraries"
 group "Tests"
-project (SandboxApp)
-project (SandboxEditor)
+project (Sandbox .. "-App")
+project (Sandbox .. "-Editor")
 group "Misc"
 project (Utility)
 group "Modules"
@@ -231,11 +227,6 @@ project (Starter)
 	targetdir (Target)
 	objdir (Object)
 
-    targetname (App)
-	filter "platforms:*-Editor"
-		targetname (Editor)
-	filter {}
-
     files
     {
         Code .. "**.h",
@@ -280,7 +271,7 @@ project (Utility)
     }
 
 -- ----------------------------------------------------------------------------------
-project (SandboxApp)
+project (Sandbox .. "-App")
     location (Code)
 
     kind "SharedLib"
@@ -326,7 +317,7 @@ project (SandboxApp)
     }
 
 
-project (SandboxEditor)
+project (Sandbox .. "-Editor")
     location (Code)
 
     kind "SharedLib"
