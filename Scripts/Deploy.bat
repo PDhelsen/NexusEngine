@@ -33,7 +33,7 @@ setlocal
 for /d %%F in (%1\*) do (
 	call :ContainsSubstring %%~nxF
 	if !Result!==true (
-		robocopy %%F %2\%%~nxF %~3 /e /s
+		robocopy %%F %2\%%~nxF %~3 /it /is /e /v
 	)
 )
 
@@ -47,7 +47,7 @@ setlocal
 for %%F in (%1\*) do (
 	call :ContainsSubstring %%~nxF
 	if !Result!==true (
-		robocopy %1\ %2\ %%~nxF /e /s
+		robocopy %1\ %2\ %%~nxF /it /is /e /v
 	)
 )
 
