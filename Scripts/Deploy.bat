@@ -18,10 +18,8 @@ set Folders[3]=NexusStarter
 set Folders[4]=NexusUtility
 set Folders[5]=NexusFramework
 
-call :CopyFolder %NexusFramework%\Sources %Deploy%Sources "*.h *.cpp *.natvis"
-call :CopyFolder %NexusFramework%\Builds %Deploy%Builds "*.dll *.lib *.pdb"
 call :CopyFolder %Root%Sources %Deploy%Sources "*.h *.cpp *.natvis"
-call :CopyFolder %Root%builds\binaries %Deploy%Builds "*.dll *.lib *.pdb"
+call :CopyFolder %Root%builds\binaries %Deploy%Builds "*.exe *.dll *.lib *.pdb"
 call :CopyFiles %Root%builds\artifacts %Deploy%
 
 rename %Deploy%NexusStarter.exe NexusEditor.exe
