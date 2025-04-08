@@ -1,12 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/EntryPoint.h"
 
-#if NEXUS_EDITOR
-	#define NEXUS_PROJECT_DLL "NexusProject-Editor"
-#else
-	#define NEXUS_PROJECT_DLL "NexusProject-App"
-#endif
-
 namespace NxEn
 {
 	namespace EntryPoint
@@ -49,8 +43,12 @@ namespace NxEn
 			NxFr::Platform* Platform = NxFr::Platform::GetInstance();
 			NxFr::Arguments::Parse(argc, argv);
 
-			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(NEXUS_PROJECT_DLL, "CreateApplication");
-			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(NEXUS_PROJECT_DLL, "DestroyApplication");
+			NxFr::String Root = NxFr::Arguments::GetValue("Project", "") + "builds/artifacts/";
+			NxFr::String Target = "NexusProject-" + NxFr::Arguments::GetValue("Target", "App") + ".dll";
+			NxFr::String Dll = NxFr::Path::Normalize(Root + Target);
+
+			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(Dll, "CreateApplication");
+			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(Dll, "DestroyApplication");
 
 			do
 			{

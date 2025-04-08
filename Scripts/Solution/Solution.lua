@@ -39,6 +39,11 @@ workspace (Engine)
 	startproject (Starter)
 	debugcommand (Artifacts .. Starter .. ".exe")
 	debugdir (Root)
+	filter "platforms:Win64"
+		debugargs { "Target=App" }
+	filter "platforms:Win64-Editor"
+		debugargs { "Target=Editor" }
+	filter {}
 
 	characterset "Unicode"
     flags { "MultiProcessorCompile" }
