@@ -54,6 +54,7 @@ namespace NxEn
 
 	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
 	{
+		Bootstrap.AppendStep(&NxFr::Arguments::Log, "Console Arguments");
 		Bootstrap.AppendStep([&]()
 		{
 			NEXUS_LOG(Info, Default, "Application starting in %s Mode", NxEn::Enum::ProjectModeToString(ProjectInfo.GetTarget()));
