@@ -1,5 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/EntryPoint.h"
+#include "NexusEngine/Application/Project.h"
 
 namespace NxEn
 {
@@ -43,12 +44,9 @@ namespace NxEn
 			NxFr::Platform* Platform = NxFr::Platform::GetInstance();
 			NxFr::Arguments::Parse(argc, argv);
 
-			NxFr::String Root = NxFr::Arguments::GetValue("Project", "") + "builds/artifacts/";
-			NxFr::String Target = "NexusProject-" + NxFr::Arguments::GetValue("Target", "App") + ".dll";
-			NxFr::String Dll = NxFr::Path::Normalize(Root + Target);
-
-			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(Dll, "CreateApplication");
-			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(Dll, "DestroyApplication");
+			Project Project = CreateProject();
+			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(Project.GetDllPath(), "CreateApplication");
+			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(Project.GetDllPath(), "DestroyApplication");
 
 			do
 			{
