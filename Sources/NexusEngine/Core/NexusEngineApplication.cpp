@@ -18,6 +18,11 @@ namespace NxEn
 		}
 	}
 
+	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
+		: Application(ProjectInfo)
+	{
+	}
+
 	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		Application::OnInitialize(Bootstrap, Systems);

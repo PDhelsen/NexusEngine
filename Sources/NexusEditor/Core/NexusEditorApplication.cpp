@@ -4,6 +4,11 @@ namespace NxEd
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
+	NexusEditorApplication::NexusEditorApplication(const NxEn::Project& ProjectInfo)
+		: NexusEngineApplication(ProjectInfo)
+	{
+	}
+
 	void NexusEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		NexusEngineApplication::OnInitialize(Bootstrap, Systems);

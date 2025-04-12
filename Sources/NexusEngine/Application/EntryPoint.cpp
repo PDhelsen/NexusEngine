@@ -44,15 +44,15 @@ namespace NxEn
 			NxFr::Platform* Platform = NxFr::Platform::GetInstance();
 			NxFr::Arguments::Parse(argc, argv);
 
-			Project Project = CreateProject();
-			auto CreateApplication = Platform->GetFunctionFromDll<Application*>(Project.GetDllPath(), "CreateApplication");
-			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(Project.GetDllPath(), "DestroyApplication");
+			Project ProjectInfo = CreateProject();
+			auto CreateApplication = Platform->GetFunctionFromDll<Application*, const Project&>(ProjectInfo.GetDllPath(), "CreateApplication");
+			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(ProjectInfo.GetDllPath(), "DestroyApplication");
 
 			do
 			{
 				Restart = false;
 
-				Application* Instance = CreateApplication.Invoke();
+				Application* Instance = CreateApplication.Invoke(ProjectInfo);
 				Instance->Run();
 				DestroyApplication.Invoke(Instance);
 

@@ -12,6 +12,9 @@ namespace NxEd
 	public:
 		static NexusEditorApplication* GetInstance() { return (NexusEditorApplication*)Application::GetInstance(); }
 
+		NEXUS_EDITOR_API NexusEditorApplication(const NxEn::Project& ProjectInfo);
+		NEXUS_EDITOR_API virtual ~NexusEditorApplication() = default;
+
 	protected:
 		NEXUS_EDITOR_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems) override;
 		NEXUS_EDITOR_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems) override;

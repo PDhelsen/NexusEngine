@@ -4,6 +4,11 @@ namespace NxSE
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxSE::NexusSandboxEditorApplication)
 
+	NexusSandboxEditorApplication::NexusSandboxEditorApplication(const NxEn::Project& ProjectInfo)
+		: NexusEditorApplication(ProjectInfo)
+	{
+	}
+
 	void NexusSandboxEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		NexusEditorApplication::OnInitialize(Bootstrap, Systems);

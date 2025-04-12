@@ -4,6 +4,11 @@ namespace NxAp
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxAp::NexusAppApplication)
 
+	NexusAppApplication::NexusAppApplication(const NxEn::Project& ProjectInfo)
+		: NexusEngineApplication(ProjectInfo)
+	{
+	}
+
 	void NexusAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		NexusEngineApplication::OnInitialize(Bootstrap, Systems);

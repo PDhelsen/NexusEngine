@@ -4,6 +4,11 @@ namespace NxSA
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxSA::NexusSandboxAppApplication)
 
+	NexusSandboxAppApplication::NexusSandboxAppApplication(const NxEn::Project& ProjectInfo)
+		: NexusAppApplication(ProjectInfo)
+	{
+	}
+
 	void NexusSandboxAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		NexusAppApplication::OnInitialize(Bootstrap, Systems);

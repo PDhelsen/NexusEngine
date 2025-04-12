@@ -12,8 +12,8 @@ namespace NxEn
 		return Instance;
 	}
 
-	Application::Application()
-		: Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
+	Application::Application(const Project& ProjectInfo)
+		: ProjectInfo(ProjectInfo), Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
 	{
 		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
 		Instance = this;
@@ -54,6 +54,11 @@ namespace NxEn
 
 	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
 	{
+		Bootstrap.AppendStep([&]()
+		{
+			NEXUS_LOG(Info, Default, "Application starting in %s Mode", NxEn::Enum::ProjectModeToString(ProjectInfo.GetTarget()));
+			NxFr::Platform::GetInstance()->SetWorkingDirectory(ProjectInfo.GetRootPath());
+		}, "Setup Project");
 		Bootstrap.AppendStep(&NxFr::Paths::SetupPathsAndFolders, "Setup Paths & Folders");
 	}
 
