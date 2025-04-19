@@ -2,7 +2,8 @@ Root = os.realpath(os.getcwd() .. "/../../"):gsub("\\", "/")
 NexusFramework = os.getenv('NexusFramework') .. "/"
 
 Name = "%{prj.name}"
-Output = "%{prj.name}_%{cfg.platform}_%{cfg.buildcfg}"
+OutputDirectory = "%{prj.name}_%{cfg.platform}_%{cfg.buildcfg}"
+OutputName = "%{cfg.buildtarget.basename}%{cfg.buildtarget.extension}"
 Link = "_%{cfg.platform:gsub('-Editor', '')}_%{cfg.buildcfg}"
 
 Framework = "NexusFramework"
@@ -13,6 +14,7 @@ Starter = "NexusStarter"
 Utility = "NexusUtility"
 Project = "NexusProject"
 Sandbox = "NexusSandbox"
+Yaml = "yaml-cpp"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -25,10 +27,10 @@ Binaries = Builds .. "binaries/"
 Intermediates = Builds .. "intermediates/"
 Code = Sources .. Name .. "/"
 External = Libraries .. Name .. "/"
-Target = Binaries .. Output .. "/"
-Object = Intermediates .. Output .. "/"
+Target = Binaries .. OutputDirectory .. "/"
+Object = Intermediates .. OutputDirectory .. "/"
 
-PostBuild = Scripts .. "Build/Steps/PostBuild.bat " .. Output
+PostBuild = Scripts .. "Build/Steps/PostBuild.bat " .. OutputDirectory .. " " .. OutputName
 
 workspace (Engine)
     location (Root)
@@ -111,17 +113,20 @@ project (Engine)
     includedirs
     {
         Sources,
-		NexusFramework .. "Sources/"
+		NexusFramework .. "Sources/",
+		NexusFramework .. "Libraries/"
     }
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. Link
+		NexusFramework .. "Builds/NexusFramework" .. Link,
+		NexusFramework .. "Builds/yaml-cpp" .. Link
 	}
 
 	links
 	{
-		Framework
+		Framework,
+		Yaml
 	}
 
 	defines
@@ -154,7 +159,8 @@ project (App)
     includedirs
     {
         Sources,
-		NexusFramework .. "Sources/"
+		NexusFramework .. "Sources/",
+		NexusFramework .. "Libraries/"
     }
 
 	libdirs
@@ -197,7 +203,8 @@ project (Editor)
     includedirs
     {
         Sources,
-		NexusFramework .. "Sources/"
+		NexusFramework .. "Sources/",
+		NexusFramework .. "Libraries/"
     }
 
 	libdirs
@@ -241,7 +248,8 @@ project (Starter)
     includedirs
     {
         Sources,
-		NexusFramework .. "Sources/"
+		NexusFramework .. "Sources/",
+		NexusFramework .. "Libraries/"
     }
 
 	libdirs
@@ -296,7 +304,8 @@ project (Sandbox .. "-App")
     includedirs
     {
         Sources,
-		NexusFramework .. "Sources/"
+		NexusFramework .. "Sources/",
+		NexusFramework .. "Libraries/"
     }
 
 	libdirs
@@ -342,7 +351,8 @@ project (Sandbox .. "-Editor")
     includedirs
     {
         Sources,
-		NexusFramework .. "Sources/"
+		NexusFramework .. "Sources/",
+		NexusFramework .. "Libraries/"
     }
 
 	libdirs

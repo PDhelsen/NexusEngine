@@ -37,7 +37,6 @@ namespace NxEn
 		void GenerateDefault();
 		void LoadFromFile(bool UseModeFromFile);
 
-		NxFr::Dictionary<NxFr::String, NxFr::String> ReadFile();
 		NxFr::String ComputeDllName();
 
 	private:

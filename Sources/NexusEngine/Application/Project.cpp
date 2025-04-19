@@ -122,30 +122,12 @@ namespace NxEn
 
 	void Project::LoadFromFile(bool UseModeFromFile)
 	{
-		NxFr::Dictionary<NxFr::String, NxFr::String> File = ReadFile();
+		YAML::Node File = YAML::LoadFile(Path);
 
-		Mode = UseModeFromFile ? ModeFromString(File["Mode"]) : Mode;
+		Mode = UseModeFromFile ? ModeFromString(File["Mode"].as<NxFr::String>()) : Mode;
 
-		Name = File["Name"];
-		Dll = Root + File["Dll"] + ComputeDllName();
-	}
-
-	NxFr::Dictionary<NxFr::String, NxFr::String> Project::ReadFile()
-	{
-		NxFr::Stream File(Path);
-		File.Open(NxFr::File::Mode::Read);
-
-		NxFr::Dictionary<NxFr::String, NxFr::String> Data;
-		NxFr::StringView Line;
-
-		while ((Line = File.Read()) != "")
-		{
-			NxFr::List<NxFr::StringView> KeyValue = Line.SplitAll("=");
-			Data.AppendConstruct(KeyValue[0].ToString(), KeyValue[1].ToString());
-		}
-
-		File.Close();
-		return Data;
+		Name = File["Name"].as<NxFr::String>();
+		Dll = Root + File["Dll"].as<NxFr::String>() + ComputeDllName();
 	}
 
 	NxFr::String Project::ComputeDllName()

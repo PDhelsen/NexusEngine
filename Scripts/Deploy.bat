@@ -10,14 +10,16 @@ set Deploy=%Target%\NexusEngine\
 if exist %Deploy% rmdir /s /q %Deploy%
 mkdir %Deploy%
 
-set FolderLastIndex=5
+set FolderLastIndex=6
 set Folders[0]=NexusEngine
 set Folders[1]=NexusApp
 set Folders[2]=NexusEditor
 set Folders[3]=NexusStarter
 set Folders[4]=NexusUtility
 set Folders[5]=NexusFramework
+set Folders[6]=yaml-cpp
 
+call :CopyFolder %Root%Libraries %Deploy%Libraries "*.h *.hpp *.cpp *.cc *.natvis"
 call :CopyFolder %Root%Sources %Deploy%Sources "*.h *.cpp *.natvis"
 call :CopyFolder %Root%builds\binaries %Deploy%Builds "*.exe *.dll *.lib *.pdb"
 call :CopyFiles %Root%builds\artifacts %Deploy%
