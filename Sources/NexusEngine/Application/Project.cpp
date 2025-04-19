@@ -122,7 +122,7 @@ namespace NxEn
 
 	void Project::LoadFromFile(bool UseModeFromFile)
 	{
-		YAML::Node File = YAML::LoadFile(Path);
+		NxFr::Yaml::Node File = NxFr::Yaml::LoadFile(Path);
 
 		Mode = UseModeFromFile ? ModeFromString(File["Mode"].as<NxFr::String>()) : Mode;
 
