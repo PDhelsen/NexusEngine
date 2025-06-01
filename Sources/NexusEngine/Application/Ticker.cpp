@@ -9,7 +9,7 @@ namespace NxEn
 	}
 
 	Ticker::Ticker()
-		: Systems(), SystemsPerBuckets((uint64)TickBucket::COUNT), SystemsDependencies(), OnTicks((uint64)TickBucket::COUNT), OnTicksOnce((uint64)TickBucket::COUNT)
+		: Systems(), SystemsPerBuckets((uint64)TickBucket::COUNT), SystemsDependencies(), OnTicks((uint64)TickBucket::COUNT), OnTicksOnce((uint64)TickBucket::COUNT), CallbacksBuffer()
 	{
 		
 	}
@@ -21,34 +21,17 @@ namespace NxEn
 
 	void Ticker::AppendTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		OnTicks[(uint64)Bucket].AppendConstruct(Callback, Tag);
+		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, false, false);
 	}
 
 	void Ticker::AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		OnTicksOnce[(uint64)Bucket].AppendConstruct(Callback, Tag);
+		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, true, false);
 	}
 
 	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
 	{
-		uint64 Index = 0;
-		bool Found = false;
-
-		auto& Callbacks = OnTicks[(uint64)Bucket];
-		for (auto It = Callbacks.Begin(); It != Callbacks.End(); ++It)
-		{
-			if (It.Get().GetFirst() == Callback)
-			{
-				Found = true;
-				Index = It.Id();
-				break;
-			}
-		}
-
-		if (Found)
-		{
-			Callbacks.Remove(Index);
-		}
+		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, true, true);
 	}
 
 	Ticker& Ticker::AppendSystem(System* Target, TickBucket Bucket, float TickRate, bool FixedTimeStep)
@@ -167,6 +150,8 @@ namespace NxEn
 
 	void Ticker::Tick(float DeltaTime)
 	{
+		FlushCallbackBuffer();
+
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
 		{
 			auto& OnTickOnce = OnTicksOnce[BucketIndex];
@@ -234,5 +219,46 @@ namespace NxEn
 	{
 		NEXUS_ASSERT(!FixedTimeStep || (FixedTimeStep && TickRate > 0.0f), Default, "The system has to either no require a fixed timestep or provide a tick rate greater than 0");
 		return TickRate > 0.0f ? 1.0f / TickRate * (float)NxFr::Time::SecondToMilli : 0.0f;
+	}
+
+	void Ticker::FlushCallbackBuffer()
+	{
+		for (auto& Info : CallbacksBuffer)
+		{
+			if (Info.Remove)
+			{
+				uint64 Index = 0;
+				bool Found = false;
+
+				auto& Callbacks = OnTicks[(uint64)Info.Bucket];
+				for (auto It = Callbacks.Begin(); It != Callbacks.End(); ++It)
+				{
+					if (It.Get().GetFirst() == Info.Callback)
+					{
+						Found = true;
+						Index = It.Id();
+						break;
+					}
+				}
+
+				if (Found)
+				{
+					Callbacks.Remove(Index);
+				}
+			}
+			else
+			{
+				if (Info.Once)
+				{
+					OnTicksOnce[(uint64)Info.Bucket].AppendConstruct(Info.Callback, Info.Tag);
+				}
+				else
+				{
+					OnTicks[(uint64)Info.Bucket].AppendConstruct(Info.Callback, Info.Tag);
+				}
+			}
+		}
+
+		CallbacksBuffer.Clear();
 	}
 }

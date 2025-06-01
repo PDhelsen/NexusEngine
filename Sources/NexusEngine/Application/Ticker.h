@@ -43,6 +43,15 @@ namespace NxEn
 			uint64 End = 0;
 		};
 
+		struct CallbackInfo
+		{
+			TickBucket Bucket;
+			Signature Callback;
+			NxFr::StringView Tag;
+			bool Once;
+			bool Remove;
+		};
+
 	public:
 		NEXUS_ENGINE_API Ticker();
 		NEXUS_ENGINE_API ~Ticker();
@@ -66,6 +75,7 @@ namespace NxEn
 
 		float ComputeTimeStep(SystemInfo& Info, float DeltaTime) const;
 		float ComputeTickRate(float TickRate, bool FixedTimeStep) const;
+		void FlushCallbackBuffer();
 
 	private:
 		NxFr::List<SystemInfo> Systems;
@@ -74,5 +84,6 @@ namespace NxEn
 
 		NxFr::Array<NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>>> OnTicks;
 		NxFr::Array<NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>>> OnTicksOnce;
+		NxFr::List<CallbackInfo> CallbacksBuffer;
 	};
 }
