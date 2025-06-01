@@ -66,6 +66,7 @@ namespace NxEn
 	void Application::OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems)
 	{
 		Unbootstrap.AppendStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
+		Unbootstrap.AppendStep(&NxFr::Paths::CleanupFolders, "Cleanup Folders");
 	}
 
 	void Application::OnExecute(Ticker& Ticks, SystemManager& Systems)
