@@ -15,6 +15,7 @@ Utility = "NexusUtility"
 Project = "NexusProject"
 Sandbox = "NexusSandbox"
 Yaml = "yaml-cpp"
+Glfw = "Glfw"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -26,7 +27,7 @@ Artifacts = Builds .. "artifacts/"
 Binaries = Builds .. "binaries/"
 Intermediates = Builds .. "intermediates/"
 Code = Sources .. Name .. "/"
-External = Libraries .. Name .. "/"
+Lib = Libraries .. Name .. "/"
 Target = Binaries .. OutputDirectory .. "/"
 Object = Intermediates .. OutputDirectory .. "/"
 
@@ -80,6 +81,7 @@ workspace (Engine)
         optimize "On"
 
 group "Libraries"
+project (Glfw)
 group "Tests"
 project (Sandbox .. "-App")
 project (Sandbox .. "-Editor")
@@ -113,6 +115,7 @@ project (Engine)
     includedirs
     {
         Sources,
+		Libraries,
 		NexusFramework .. "Sources/",
 		NexusFramework .. "Libraries/"
     }
@@ -126,7 +129,8 @@ project (Engine)
 	links
 	{
 		Framework,
-		Yaml
+		Yaml,
+		Glfw
 	}
 
 	defines
@@ -375,6 +379,74 @@ project (Sandbox .. "-Editor")
 	}
 
     postbuildcommands
+    {
+        PostBuild
+    }
+
+
+-- ----------------------------------------------------------------------------------
+project (Glfw)
+    location (Lib)
+
+    kind "StaticLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+	files
+    {
+        Lib .. "include/GLFW/glfw3.h",
+		Lib .. "include/GLFW/glfw3native.h",
+
+		Lib .. "src/context.c",
+		Lib .. "src/init.c",
+		Lib .. "src/input.c",
+		Lib .. "src/internal.h",
+		Lib .. "src/monitor.c",
+		Lib .. "src/platform.c",
+		Lib .. "src/vulkan.c",
+		Lib .. "src/window.c",
+
+		Lib .. "src/null_init.c",
+		Lib .. "src/null_joystick.c",
+		Lib .. "src/null_monitor.c",
+		Lib .. "src/null_platform.h",
+		Lib .. "src/null_window.c",
+    }
+
+	filter "system:windows"
+		files
+		{
+			Lib .. "src/win32_init.c",
+			Lib .. "src/win32_joystick.c",
+			Lib .. "src/win32_joystick.h",
+			Lib .. "src/win32_module.c",
+			Lib .. "src/win32_monitor.c",
+			Lib .. "src/win32_platform.h",
+			Lib .. "src/win32_time.c",
+			Lib .. "src/win32_time.h",
+			Lib .. "src/win32_thread.c",
+			Lib .. "src/win32_thread.h",
+			Lib .. "src/win32_window.c",
+			Lib .. "src/wgl_context.c",
+			Lib .. "src/egl_context.c",
+			Lib .. "src/osmesa_context.c",
+		}
+
+		defines
+		{
+			"_GLFW_WIN32",
+		}
+
+	filter "toolset:msc"
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS"
+		}
+
+	postbuildcommands
     {
         PostBuild
     }
