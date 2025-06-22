@@ -5,6 +5,14 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(System)
 
+	System::System()
+	{
+	}
+
+	System::~System()
+	{
+	}
+
 	void System::OnInitialize()
 	{
 		SetTickable(true);

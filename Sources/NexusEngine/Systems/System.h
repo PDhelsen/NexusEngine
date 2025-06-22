@@ -9,6 +9,9 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, System)
 
+		NEXUS_ENGINE_API System();
+		NEXUS_ENGINE_API virtual ~System();
+
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize() override;
 		NEXUS_ENGINE_API virtual void OnShutdown() override;
