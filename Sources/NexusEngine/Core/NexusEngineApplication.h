@@ -15,9 +15,14 @@ namespace NxEn
 		NEXUS_ENGINE_API NexusEngineApplication(const NxEn::Project& ProjectInfo);
 		NEXUS_ENGINE_API virtual ~NexusEngineApplication() = default;
 
+		NEXUS_ENGINE_API bool IsHeadless() const { return Headless; }
+
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems) override;
 		NEXUS_ENGINE_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems) override;
 		NEXUS_ENGINE_API virtual void OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems) override;
+
+	private:
+		bool Headless;
 	};
 }
