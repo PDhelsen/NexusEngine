@@ -8,12 +8,6 @@ namespace NxEn
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
-	static void Tick()
-	{
-		TimeManager& Time = Application::GetInstance()->GetTime();
-		NEXUS_LOG(Info, Default, "Tick - %.2f", Time.GetDeltaTime());
-	}
-
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
 		: Application(ProjectInfo), Headless(NxFr::Arguments::HasFlag("Headless"))
 	{
@@ -63,7 +57,5 @@ namespace NxEn
 		{
 			Ticks.AppendSystem(Systems.GetSystem<WindowSystem>(), NxEn::Ticker::TickBucket::Output);
 		}
-
-		Ticks.AppendTickCallback(&Tick);
 	}
 }

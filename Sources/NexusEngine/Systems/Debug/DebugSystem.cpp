@@ -25,7 +25,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		bool AutoStart = NxFr::Arguments::HasFlag("Profile", false);
+		bool AutoStart = NxFr::Arguments::HasFlag("Profile");
 
 		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 		NEXUS_ASSERT(!Folder.Data.IsEmpty(), Default, "Folder can't be empty");
