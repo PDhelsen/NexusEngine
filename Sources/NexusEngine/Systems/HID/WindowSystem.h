@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Systems/System.h"
+#include "NexusEngine/Systems/HID/Screen.h"
 
 namespace NxEn
 {
@@ -24,36 +25,33 @@ namespace NxEn
 		NEXUS_ENGINE_API void Hide();
 		NEXUS_ENGINE_API void Focus();
 
-		NEXUS_ENGINE_API void SetPosition(NxFr::Vector2i Position);
-		NEXUS_ENGINE_API void SetResolution(NxFr::Vector2i Size);
-		NEXUS_ENGINE_API void SetTitle(NxFr::StringView Title);
-		NEXUS_ENGINE_API void SetIcon(void* Icon);
-		NEXUS_ENGINE_API void SetVSync(bool VSync);
+		NEXUS_ENGINE_API WindowSystem& SetWindowMode(Window::Mode Mode);
+		NEXUS_ENGINE_API WindowSystem& SetWindowMonitor(uint8 MonitorIndex);
+		NEXUS_ENGINE_API WindowSystem& SetWindowPosition(NxFr::Vector2i Position);
+		NEXUS_ENGINE_API WindowSystem& SetWindowResolution(NxFr::Vector2i Resolution);
+		NEXUS_ENGINE_API WindowSystem& SetWindowTitle(NxFr::StringView Title);
+		NEXUS_ENGINE_API WindowSystem& SetWindowIcon(void* Icon);
+		NEXUS_ENGINE_API WindowSystem& SetWindowVSync(bool VSync);
 
-		NxFr::Vector2i GetPosition() { return Position; }
-		NxFr::Vector2i GetResolution() { return Resolution; }
-		NxFr::StringView GetTitle() { return Title; }
-		const void* GetIcon() { return Icon; }
-		bool GetVSync() { return VSync; }
-		bool IsFocused() { return Focused; }
+		Window& GetWindow() { return Target; }
+		Monitor& GetMonitor(uint8 Index = 0) { return Monitors[Index]; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
-
 		NEXUS_ENGINE_API void OnFocused(bool Focus);
 		NEXUS_ENGINE_API void OnMoved(NxFr::Vector2i Position);
 		NEXUS_ENGINE_API void OnResized(NxFr::Vector2i Size);
 
-	private:
-		NxFr::Vector2i Position;
-		NxFr::Vector2i Resolution;
-		NxFr::String Title;
-		void* Icon;
-		bool VSync;
-		bool Focused;
+		NEXUS_ENGINE_API void FetchMonitors();
+		NEXUS_ENGINE_API void CreateWindow();
+		NEXUS_ENGINE_API void DestroyWindow();
+		NEXUS_ENGINE_API void TickWindow();
 
-		void* Window;
+	private:
+		NxFr::Array<Monitor> Monitors;
+		Window Target;
+		bool Focused;
 	};
 }

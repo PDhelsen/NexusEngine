@@ -8,8 +8,9 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(WindowSystem)
 
 	WindowSystem::WindowSystem()
-		: OnClose(), OnFocus(), OnMove(), OnResize(), Position(50, 50), Resolution(1280, 720), Title("Nexus"), Focused(true), VSync(true), Icon(nullptr), Window(nullptr)
+		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Focused(true)
 	{
+		Target = Window(Window::Mode::Windowed, 1, NxFr::Vector2i(50), NxFr::Vector2i(1920, 1080), "Nexus", nullptr, true);
 		OnFocus += NxFr::Delegate<void(bool)>(this, &WindowSystem::OnFocused);
 		OnMove += NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnMoved);
 		OnResize += NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnResized);
@@ -17,100 +18,176 @@ namespace NxEn
 
 	void WindowSystem::Close()
 	{
-		Glfw::CloseWindow(Window);
+		Glfw::CloseWindow(Target.Instance);
 	}
 
 	void WindowSystem::Minimize()
 	{
-		Glfw::MinimizeWindow(Window);
+		Glfw::MinimizeWindow(Target.Instance);
 	}
 
 	void WindowSystem::Maximize()
 	{
-		Glfw::MaximizeWindow(Window);
+		Glfw::MaximizeWindow(Target.Instance);
 	}
 
 	void WindowSystem::Restore()
 	{
-		Glfw::RestoreWindow(Window);
+		Glfw::RestoreWindow(Target.Instance);
 	}
 
 	void WindowSystem::Show()
 	{
-		Glfw::ShowWindow(Window);
+		Glfw::ShowWindow(Target.Instance);
 	}
 
 	void WindowSystem::Hide()
 	{
-		Glfw::HideWindow(Window);
+		Glfw::HideWindow(Target.Instance);
 	}
 
 	void WindowSystem::Focus()
 	{
-		Glfw::FocusWindow(Window);
+		Glfw::FocusWindow(Target.Instance);
 	}
 
-	void WindowSystem::SetPosition(NxFr::Vector2i Position)
+	WindowSystem& WindowSystem::SetWindowMode(Window::Mode Mode)
 	{
-		Glfw::SetWindowPosition(Window, Position);
+		if (Target.WindowMode == Mode)
+		{
+			return *this;
+		}
+
+		Target.WindowMode = Mode;
+		if (Target.IsValid())
+		{
+			DestroyWindow();
+			CreateWindow();
+		}
+
+		return *this;
 	}
 
-	void WindowSystem::SetResolution(NxFr::Vector2i Size)
+	WindowSystem& WindowSystem::SetWindowMonitor(uint8 MonitorIndex)
 	{
-		Glfw::SetWindowSize(Window, Size);
+		if (Target.WindowMode == Window::Mode::Windowed || Target.Monitor == MonitorIndex)
+		{
+			return *this;
+		}
+
+		Target.Monitor = MonitorIndex;
+		if (Target.IsValid())
+		{
+			DestroyWindow();
+			CreateWindow();
+		}
+
+		return *this;
 	}
 
-	void WindowSystem::SetTitle(NxFr::StringView Title)
+	WindowSystem& WindowSystem::SetWindowPosition(NxFr::Vector2i Position)
 	{
-		this->Title = Title.ToString();
-		Glfw::SetWindowTitle(Window, Title);
+		if (Target.WindowMode != Window::Mode::Windowed)
+		{
+			return *this;
+		}
+
+		Target.Position = Position;
+		Glfw::SetWindowPosition(Target.Instance, Position);
+		return *this;
 	}
 
-	void WindowSystem::SetIcon(void* Icon)
+	WindowSystem& WindowSystem::SetWindowResolution(NxFr::Vector2i Resolution)
 	{
-		this->Icon = Icon;
-		Glfw::SetWindowIcon(Window, Icon);
+		if (Target.WindowMode != Window::Mode::Windowed)
+		{
+			return *this;
+		}
+
+		Target.Resolution = Resolution;
+		Glfw::SetWindowSize(Target.Instance, Resolution);
+		return *this;
 	}
 
-	void WindowSystem::SetVSync(bool VSync)
+	WindowSystem& WindowSystem::SetWindowTitle(NxFr::StringView Title)
 	{
-		this->VSync = VSync;
+		Target.Title = Title.ToString();
+		Glfw::SetWindowTitle(Target.Instance, Title);
+		return *this;
+	}
+
+	WindowSystem& WindowSystem::SetWindowIcon(void* Icon)
+	{
+		Target.Icon = Icon;
+		Glfw::SetWindowIcon(Target.Instance, Icon);
+		return *this;
+	}
+
+	WindowSystem& WindowSystem::SetWindowVSync(bool VSync)
+	{
+		Target.VSync = VSync;
 		Glfw::SetSwapInterval(VSync);
+		return *this;
 	}
 
 	void WindowSystem::OnInitialize()
 	{
 		System::OnInitialize();
-
-		Window = Glfw::CreateWindow(Position, Resolution, Title.C(), VSync);
+		FetchMonitors();
+		CreateWindow();
 	}
 
 	void WindowSystem::OnShutdown()
 	{
-		Glfw::DestroyWindow(Window);
-
+		DestroyWindow();
 		System::OnShutdown();
 	}
 
 	void WindowSystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);
-
-		Glfw::TickWindow(Window);
+		TickWindow();
 	}
 
 	void WindowSystem::OnFocused(bool Focus)
 	{
-		this->Focused = Focus;
+		Focused = Focus;
 	}
 
 	void WindowSystem::OnMoved(NxFr::Vector2i Position)
 	{
-		this->Position = Position;
+		Target.Position = Position;
 	}
 
 	void WindowSystem::OnResized(NxFr::Vector2i Size)
 	{
-		this->Resolution = Size;
+		Target.Resolution = Size;
+	}
+
+	void WindowSystem::FetchMonitors()
+	{
+		NxFr::Array<void*> Instances = Glfw::GetMonitors();
+
+		Monitors = NxFr::Array<Monitor>(Instances.GetCount());
+		for (uint64 Index = 0; Index < Instances.GetCount(); ++Index)
+		{
+			Monitors[Index].Instance = Instances[Index];
+			Glfw::GetMonitorSettings(Monitors[Index].Instance, Monitors[Index].Resolution.x, Monitors[Index].Resolution.y, Monitors[Index].RefreshRate);
+		}
+	}
+
+	void WindowSystem::CreateWindow()
+	{
+		Target.Instance = Glfw::CreateWindow((uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr, Target.Position, Target.Resolution, Target.Title, Target.VSync);
+	}
+
+	void WindowSystem::DestroyWindow()
+	{
+		Glfw::DestroyWindow(Target.Instance);
+	}
+
+	void WindowSystem::TickWindow()
+	{
+		Glfw::TickWindow(Target.Instance);
 	}
 }

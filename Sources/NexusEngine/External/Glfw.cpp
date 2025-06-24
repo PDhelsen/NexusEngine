@@ -1,12 +1,14 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
+#include "NexusEngine/External/Glfw.h"
+
 #include "glfw/include/GLFW/glfw3.h"
-#include "Glfw.h"
 
 namespace NxEn
 {
 	namespace Glfw
 	{
-		#define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
+	#define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
+	#define NEXUS_MONITOR(Monitor) static_cast<GLFWmonitor*>(Monitor)
 
 #pragma region Callback
 
@@ -58,30 +60,87 @@ namespace NxEn
 
 #pragma region Window
 
-		void* CreateWindow(NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval)
+		NxFr::Array<void*> GetMonitors()
 		{
-			GLFWwindow* Window = glfwCreateWindow(Size.x, Size.y, Title.C(), NULL, NULL);
-			if (!Window)
+			int Count;
+			GLFWmonitor** Instances = glfwGetMonitors(&Count);
+
+			NxFr::Array<void*> Monitors(Count);
+			for (uint8 Index = 0; Index < Count; ++Index)
+			{
+				Monitors[Index] = Instances[Index];
+			}
+			return Monitors;
+		}
+
+		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate)
+		{
+			const GLFWvidmode* Mode = glfwGetVideoMode(NEXUS_MONITOR(Monitor));
+			Width = Mode->width;
+			Height = Mode->height;
+			RefreshRate = Mode->refreshRate;
+		}
+
+		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval)
+		{
+			GLFWwindow* Instance = nullptr;
+			switch (Mode)
+			{
+				// Windowed
+				case 0:
+				{
+					Instance = glfwCreateWindow(Size.x, Size.y, Title.C(), nullptr, nullptr);
+					SetWindowPosition(Instance, Position);
+				}
+				break;
+				// Borderless
+				case 1:
+				{
+					GLFWmonitor* Target = NEXUS_MONITOR(Monitor);
+					const GLFWvidmode* VideoMode = glfwGetVideoMode(Target);
+					glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
+					Instance = glfwCreateWindow(VideoMode->width, VideoMode->height, Title.C(), nullptr, nullptr);
+					glfwSetWindowMonitor(Instance, Target, 0, 0, VideoMode->width, VideoMode->height, VideoMode->refreshRate);
+				}
+				break;
+				// FullScreen
+				case 2:
+				{
+					GLFWmonitor* Target = NEXUS_MONITOR(Monitor);
+					const GLFWvidmode* VideoMode = glfwGetVideoMode(Target);
+					glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
+					Instance = glfwCreateWindow(VideoMode->width, VideoMode->height, Title.C(), Target, nullptr);
+				}
+				break;
+			}
+
+			if (!Instance)
 			{
 				NEXUS_LOG(Error, Default, "Failed to create window");
 				return nullptr;
 			}
 
-			SetWindowPosition(Window, Position);
-
-			glfwMakeContextCurrent(Window);
+			glfwMakeContextCurrent(Instance);
 			SetSwapInterval(Interval);
 
-			glfwSetWindowCloseCallback(Window, CloseCallback);
-			glfwSetWindowFocusCallback(Window, FocusCallback);
-			glfwSetWindowPosCallback(Window, MoveCallback);
-			glfwSetWindowSizeCallback(Window, ResizeCallback);
-			return Window;
+			glfwSetWindowCloseCallback(Instance, CloseCallback);
+			glfwSetWindowFocusCallback(Instance, FocusCallback);
+			glfwSetWindowPosCallback(Instance, MoveCallback);
+			glfwSetWindowSizeCallback(Instance, ResizeCallback);
+
+			return Instance;
 		}
 
 		void DestroyWindow(void* Window)
 		{
-			glfwDestroyWindow(NEXUS_WINDOW(Window));
+			GLFWwindow* Instance = NEXUS_WINDOW(Window);
+
+			glfwSetWindowCloseCallback(Instance, nullptr);
+			glfwSetWindowFocusCallback(Instance, nullptr);
+			glfwSetWindowPosCallback(Instance, nullptr);
+			glfwSetWindowSizeCallback(Instance, nullptr);
+
+			glfwDestroyWindow(Instance);
 		}
 
 		void TickWindow(void* Window)

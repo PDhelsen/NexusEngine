@@ -12,6 +12,12 @@ namespace NxAp
 	void NexusAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		NexusEngineApplication::OnInitialize(Bootstrap, Systems);
+
+		if (!IsHeadless())
+		{
+			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
+			Window->SetWindowMode(NxEn::Window::Mode::FullScreen);
+		}
 	}
 
 	void NexusAppApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)

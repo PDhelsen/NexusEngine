@@ -19,7 +19,7 @@ namespace NxEn
 
 		Bootstrap.AppendSystem(Systems.CreateSystem<DebugSystem>());
 		Bootstrap.AppendSystem(Systems.CreateSystem<MemorySystem>());
-		if (!Headless)
+		if (!IsHeadless())
 		{
 			WindowSystem* Window = Systems.CreateSystem<WindowSystem>();
 			Window->OnClose += NxFr::Delegate<void()>(this, &Application::Quit);
@@ -33,7 +33,7 @@ namespace NxEn
 	{
 		Unbootstrap.AppendSystem(Systems.GetSystem<MemorySystem>());
 		Unbootstrap.AppendSystem(Systems.GetSystem<DebugSystem>());
-		if (!Headless)
+		if (!IsHeadless())
 		{
 			Unbootstrap.AppendSystem(Systems.GetSystem<WindowSystem>());
 		}
@@ -53,7 +53,7 @@ namespace NxEn
 
 		Ticks.AppendSystem(Systems.GetSystem<DebugSystem>(), NxEn::Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 		Ticks.AppendSystem(Systems.GetSystem<MemorySystem>(), NxEn::Ticker::TickBucket::Cleanup);
-		if (!Headless)
+		if (!IsHeadless())
 		{
 			Ticks.AppendSystem(Systems.GetSystem<WindowSystem>(), NxEn::Ticker::TickBucket::Output);
 		}

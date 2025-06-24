@@ -9,7 +9,10 @@ namespace NxEn
 		void Initialize();
 		void Shutdown();
 
-		void* CreateWindow(NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval = 1);
+		NxFr::Array<void*> GetMonitors();
+		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate);
+
+		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval);
 		void DestroyWindow(void* Window);
 		void TickWindow(void* Window);
 

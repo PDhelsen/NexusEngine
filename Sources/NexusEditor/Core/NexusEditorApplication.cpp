@@ -12,6 +12,12 @@ namespace NxEd
 	void NexusEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
 	{
 		NexusEngineApplication::OnInitialize(Bootstrap, Systems);
+
+		if (!IsHeadless())
+		{
+			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
+			Window->SetWindowMode(NxEn::Window::Mode::Windowed);
+		}
 	}
 
 	void NexusEditorApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
