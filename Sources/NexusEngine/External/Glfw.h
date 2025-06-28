@@ -8,6 +8,7 @@ namespace NxEn
 	{
 		void Initialize();
 		void Shutdown();
+		void PollInput();
 
 		NxFr::Array<void*> GetMonitors();
 		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate);

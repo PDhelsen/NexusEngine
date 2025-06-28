@@ -19,6 +19,7 @@ namespace NxEn
 
 		Bootstrap.AppendSystem(Systems.CreateSystem<DebugSystem>());
 		Bootstrap.AppendSystem(Systems.CreateSystem<MemorySystem>());
+		Bootstrap.AppendSystem(Systems.CreateSystem<InputSystem>());
 		if (!IsHeadless())
 		{
 			WindowSystem* Window = Systems.CreateSystem<WindowSystem>();
@@ -33,6 +34,7 @@ namespace NxEn
 	{
 		Unbootstrap.AppendSystem(Systems.GetSystem<MemorySystem>());
 		Unbootstrap.AppendSystem(Systems.GetSystem<DebugSystem>());
+		Unbootstrap.AppendSystem(Systems.GetSystem<InputSystem>());
 		if (!IsHeadless())
 		{
 			Unbootstrap.AppendSystem(Systems.GetSystem<WindowSystem>());
@@ -53,6 +55,7 @@ namespace NxEn
 
 		Ticks.AppendSystem(Systems.GetSystem<DebugSystem>(), NxEn::Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 		Ticks.AppendSystem(Systems.GetSystem<MemorySystem>(), NxEn::Ticker::TickBucket::Cleanup);
+		Ticks.AppendSystem(Systems.GetSystem<InputSystem>(), NxEn::Ticker::TickBucket::Input);
 		if (!IsHeadless())
 		{
 			Ticks.AppendSystem(Systems.GetSystem<WindowSystem>(), NxEn::Ticker::TickBucket::Output);
