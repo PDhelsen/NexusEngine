@@ -27,7 +27,7 @@ namespace NxEn
 
 		NEXUS_ENUM_TO_FLAG(Modifier);
 
-		enum class KeyCode
+		enum class Button
 		{
 			Invalid,
 

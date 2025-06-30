@@ -8,32 +8,32 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(InputSystem)
 
 		InputSystem::InputSystem()
-		: OnKeyChange(), States(), Modifiers(Input::Modifier::None), DirtyFlag(true)
+		: OnButtonChange(), States(), Modifiers(Input::Modifier::None), DirtyFlag(true)
 	{
-		OnKeyChange += NxFr::Delegate<void(Input::KeyCode, Input::State)>(this, &InputSystem::OnKeyChanged);
+		OnButtonChange += NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
 	}
 
 	void InputSystem::Reset()
 	{
-		for (uint64 Index = 0; Index < (uint64)Input::KeyCode::COUNT; ++Index)
+		for (uint64 Index = 0; Index < (uint64)Input::Button::COUNT; ++Index)
 		{
 			States[Index] = Input::State::Up;
 		}
 	}
 
-	Input::State InputSystem::GetState(Input::KeyCode Code) const
+	Input::State InputSystem::GetButton(Input::Button Button) const
 	{
-		return States[(uint64)Code];
+		return States[(uint64)Button];
 	}
 
-	bool InputSystem::IsState(Input::KeyCode Code, Input::State State, Input::Modifier Modifier) const
+	bool InputSystem::IsButton(Input::Button Button, Input::State State, Input::Modifier Modifier) const
 	{
 		if (Modifier == Input::Modifier::Ignore)
 		{
-			return GetState(Code) == State;
+			return GetButton(Button) == State;
 		}
 
-		return GetState(Code) == State && Modifiers == Modifier;
+		return GetButton(Button) == State && Modifiers == Modifier;
 	}
 
 	void InputSystem::OnInitialize()
@@ -56,12 +56,12 @@ namespace NxEn
 
 		Glfw::PollInput();
 
-		NEXUS_ASSERT(GetState(Input::KeyCode::Invalid) == Input::State::Up, Default, "Unsupported key pressed");
+		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, Default, "Unsupported Button pressed");
 	}
 
-	void InputSystem::OnKeyChanged(Input::KeyCode Code, Input::State State)
+	void InputSystem::OnButtonChanged(Input::Button Button, Input::State State)
 	{
-		States[(uint64)Code] = State;
+		States[(uint64)Button] = State;
 		DirtyFlag = true;
 	}
 
@@ -72,7 +72,7 @@ namespace NxEn
 			return;
 		}
 
-		for (uint64 Index = 0; Index < (uint64)Input::KeyCode::COUNT; ++Index)
+		for (uint64 Index = 0; Index < (uint64)Input::Button::COUNT; ++Index)
 		{
 			switch (States[Index])
 			{
@@ -95,8 +95,8 @@ namespace NxEn
 			return;
 		}
 
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Shift, !(GetState(Input::KeyCode::LeftShift) == Input::State::Up && GetState(Input::KeyCode::RightShift) == Input::State::Up));
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Control, !(GetState(Input::KeyCode::LeftControl) == Input::State::Up && GetState(Input::KeyCode::RightControl) == Input::State::Up));
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Alt, !(GetState(Input::KeyCode::LeftAlt) == Input::State::Up && GetState(Input::KeyCode::RightAlt) == Input::State::Up));
+		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Shift, !(GetButton(Input::Button::LeftShift) == Input::State::Up && GetButton(Input::Button::RightShift) == Input::State::Up));
+		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Control, !(GetButton(Input::Button::LeftControl) == Input::State::Up && GetButton(Input::Button::RightControl) == Input::State::Up));
+		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Alt, !(GetButton(Input::Button::LeftAlt) == Input::State::Up && GetButton(Input::Button::RightAlt) == Input::State::Up));
 	}
 }
