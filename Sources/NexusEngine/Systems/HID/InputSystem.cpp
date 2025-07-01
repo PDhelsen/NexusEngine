@@ -7,33 +7,42 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(InputSystem)
 
-		InputSystem::InputSystem()
-		: OnButtonChange(), States(), Modifiers(Input::Modifier::None), DirtyFlag(true)
+	InputSystem::InputSystem()
+		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Buttons(), Axises(), Mouse(-NxFr::Vector2f::One), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{
 		OnButtonChange += NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
+		OnAxisChange += NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);
+		OnMouseChange += NxFr::Delegate<void(NxFr::Vector2f)>(this, &InputSystem::OnMouseChanged);
+
+		Reset();
 	}
 
 	void InputSystem::Reset()
 	{
 		for (uint64 Index = 0; Index < (uint64)Input::Button::COUNT; ++Index)
 		{
-			States[Index] = Input::State::Up;
+			Buttons[Index] = Input::State::Up;
+		}
+
+		for (uint64 Index = 0; Index < (uint64)Input::Axis::COUNT; ++Index)
+		{
+			Axises[Index] = 0.0f;
 		}
 	}
 
 	Input::State InputSystem::GetButton(Input::Button Button) const
 	{
-		return States[(uint64)Button];
+		return Buttons[(uint64)Button];
 	}
 
-	bool InputSystem::IsButton(Input::Button Button, Input::State State, Input::Modifier Modifier) const
+	float InputSystem::GetAxis(Input::Axis Axis) const
 	{
-		if (Modifier == Input::Modifier::Ignore)
-		{
-			return GetButton(Button) == State;
-		}
+		return Axises[(uint64)Axis];
+	}
 
-		return GetButton(Button) == State && Modifiers == Modifier;
+	NxFr::Vector2f InputSystem::GetMouse() const
+	{
+		return Mouse;
 	}
 
 	void InputSystem::OnInitialize()
@@ -50,9 +59,8 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		UpdateState();
-		UpdateModifier();
-		DirtyFlag = false;
+		UpdateButtons();
+		UpdateAxises();
 
 		Glfw::PollInput();
 
@@ -61,42 +69,64 @@ namespace NxEn
 
 	void InputSystem::OnButtonChanged(Input::Button Button, Input::State State)
 	{
-		States[(uint64)Button] = State;
-		DirtyFlag = true;
+		Buttons[(uint64)Button] = State;
+		DirtyFlagButtons = true;
 	}
 
-	void InputSystem::UpdateState()
+	void InputSystem::OnAxisChanged(Input::Axis Axis, float Delta)
 	{
-		if (!DirtyFlag)
+		Axises[(uint64)Axis] = Delta;
+		DirtyFlagAxises = true;
+	}
+
+	void InputSystem::OnMouseChanged(NxFr::Vector2f Position)
+	{
+		NxFr::Vector2f Delta = Position - Mouse;
+		Axises[(uint64)Input::Axis::MouseX] = Delta.x;
+		Axises[(uint64)Input::Axis::MouseY] = Delta.y;
+
+		Mouse = Position;
+		DirtyFlagAxises = true;
+	}
+
+	void InputSystem::UpdateButtons()
+	{
+		if (!DirtyFlagButtons)
 		{
 			return;
 		}
 
 		for (uint64 Index = 0; Index < (uint64)Input::Button::COUNT; ++Index)
 		{
-			switch (States[Index])
+			switch (Buttons[Index])
 			{
 				case Input::State::Up:
 				case Input::State::Released:
-					States[Index] = Input::State::Up;
+					Buttons[Index] = Input::State::Up;
 				break;
+				case Input::State::Down:
 				case Input::State::Pressed:
-					States[Index] = Input::State::Down;
-					States[Index] = Input::State::Down;
+					Buttons[Index] = Input::State::Down;
+					Buttons[Index] = Input::State::Down;
 				break;
 			}
 		}
+
+		DirtyFlagButtons = false;
 	}
 
-	void InputSystem::UpdateModifier()
+	void InputSystem::UpdateAxises()
 	{
-		if (!DirtyFlag)
+		if (!DirtyFlagAxises)
 		{
 			return;
 		}
 
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Shift, !(GetButton(Input::Button::LeftShift) == Input::State::Up && GetButton(Input::Button::RightShift) == Input::State::Up));
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Control, !(GetButton(Input::Button::LeftControl) == Input::State::Up && GetButton(Input::Button::RightControl) == Input::State::Up));
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Alt, !(GetButton(Input::Button::LeftAlt) == Input::State::Up && GetButton(Input::Button::RightAlt) == Input::State::Up));
+		for (uint64 Index = 0; Index < (uint64)Input::Axis::COUNT; ++Index)
+		{
+			Axises[Index] = 0.0f;
+		}
+
+		DirtyFlagAxises = false;
 	}
 }

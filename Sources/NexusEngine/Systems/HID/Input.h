@@ -16,16 +16,15 @@ namespace NxEn
 
 		NEXUS_ENUM_TO_STRING_DEFINITION(NEXUS_ENGINE_API, State);
 
-		enum class Modifier
+		enum class Axis
 		{
-			None	= 0,
-			Ignore	= 1 << 1,
-			Shift	= 1 << 2,
-			Control = 1 << 3,
-			Alt		= 1 << 4,
-		};
+			MouseX,
+			MouseY,
+			ScrollX,
+			ScrollY,
 
-		NEXUS_ENUM_TO_FLAG(Modifier);
+			COUNT
+		};
 
 		enum class Button
 		{
@@ -140,6 +139,15 @@ namespace NxEn
 			PrintScreen,
 			Pause,
 			Menu,
+
+			MouseLeft,
+			MouseRight,
+			MouseMiddle,
+			Mouse1,
+			Mouse2,
+			Mouse3,
+			Mouse4,
+			Mouse5,
 
 			COUNT
 		};

@@ -10,6 +10,7 @@ namespace NxEn
 	#define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
 	#define NEXUS_MONITOR(Monitor) static_cast<GLFWmonitor*>(Monitor)
 	#define NEXUS_KEYCOUNT (GLFW_KEY_LAST + 1)
+	#define NEXUS_MOUSECOUNT (GLFW_MOUSE_BUTTON_LAST + 1)
 
 		static NxFr::Array<Input::Button, NEXUS_KEYCOUNT>& GlfwKeyCodeToNexusButton()
 		{
@@ -136,6 +137,20 @@ namespace NxEn
 			Conversion[GLFW_KEY_MENU]				= Input::Button::Menu;
 			return Conversion;
 		}
+		static NxFr::Array<Input::Button, NEXUS_KEYCOUNT>& GlfwMouseCodeToNexusButton()
+		{
+			static NxFr::Array<Input::Button, NEXUS_KEYCOUNT> Conversion;
+			Conversion[GLFW_MOUSE_BUTTON_1] = Input::Button::MouseLeft;
+			Conversion[GLFW_MOUSE_BUTTON_2] = Input::Button::MouseRight;
+			Conversion[GLFW_MOUSE_BUTTON_3] = Input::Button::MouseMiddle;
+			Conversion[GLFW_MOUSE_BUTTON_4] = Input::Button::Mouse1;
+			Conversion[GLFW_MOUSE_BUTTON_5] = Input::Button::Mouse2;
+			Conversion[GLFW_MOUSE_BUTTON_6] = Input::Button::Mouse3;
+			Conversion[GLFW_MOUSE_BUTTON_7] = Input::Button::Mouse4;
+			Conversion[GLFW_MOUSE_BUTTON_8] = Input::Button::Mouse5;
+			return Conversion;
+		}
+		static bool MouseFocus = true;
 
 #pragma region Callback
 
@@ -149,11 +164,6 @@ namespace NxEn
 			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnClose.Invoke();
 		}
 
-		static void FocusCallback(GLFWwindow* Window, int Focused)
-		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnFocus.Invoke(Focused > 0);
-		}
-
 		static void MoveCallback(GLFWwindow* Window, int X, int Y)
 		{
 			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnMove.Invoke(NxFr::Vector2i(X, Y));
@@ -164,7 +174,7 @@ namespace NxEn
 			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnResize.Invoke(NxFr::Vector2i(Width, Height));
 		}
 
-		static void KeyCallback(GLFWwindow* Window, int KeyCode, int ScanCode, int Action, int Mods)
+		static void KeyButtonCallback(GLFWwindow* Window, int KeyCode, int ScanCode, int Action, int Mods)
 		{
 			if (Action != GLFW_PRESS && Action != GLFW_RELEASE)
 			{
@@ -174,6 +184,48 @@ namespace NxEn
 			Input::Button Button = GlfwKeyCodeToNexusButton()[KeyCode];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
 			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnButtonChange.Invoke(Button, State);
+		}
+
+		static void MouseButtonCallback(GLFWwindow* Window, int Mouse, int Action, int Mods)
+		{
+			if (Action != GLFW_PRESS && Action != GLFW_RELEASE)
+			{
+				return;
+			}
+
+			Input::Button Button = GlfwMouseCodeToNexusButton()[Mouse];
+			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnButtonChange.Invoke(Button, State);
+		}
+
+		static void MouseCallback(GLFWwindow* Window, double X, double Y)
+		{
+			if (!MouseFocus)
+			{
+				return;
+			}
+
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnMouseChange.Invoke(NxFr::Vector2f(X, -Y));
+		}
+
+		static void ScrollCallback(GLFWwindow* Window, double X, double Y)
+		{
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnAxisChange.Invoke(Input::Axis::ScrollX, (float)X);
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnAxisChange.Invoke(Input::Axis::ScrollY, (float)Y);
+		}
+
+		static void WindowFocusCallback(GLFWwindow* Window, int Focused)
+		{
+			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnFocus.Invoke(Focused > 0);
+		}
+
+		static void MouseFocusCallback(GLFWwindow* Window, int Entered)
+		{
+			MouseFocus = Entered;
+			if (!MouseFocus)
+			{
+				Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnMouseChange.Invoke(-NxFr::Vector2f::One);
+			}
 		}
 
 #pragma endregion
@@ -189,7 +241,9 @@ namespace NxEn
 				return;
 			}
 
-			auto& Conversion = GlfwKeyCodeToNexusButton();
+			auto& KeyConversion = GlfwKeyCodeToNexusButton();
+			auto& MouseConversion = GlfwMouseCodeToNexusButton();
+			MouseFocus = false;
 		}
 
 		void Shutdown()
@@ -270,12 +324,18 @@ namespace NxEn
 			SetSwapInterval(Interval);
 
 			glfwSetWindowCloseCallback(Instance, CloseCallback);
-			glfwSetWindowFocusCallback(Instance, FocusCallback);
 			glfwSetWindowPosCallback(Instance, MoveCallback);
 			glfwSetWindowSizeCallback(Instance, ResizeCallback);
 
-			glfwSetKeyCallback(Instance, KeyCallback);
+			glfwSetKeyCallback(Instance, KeyButtonCallback);
+			glfwSetMouseButtonCallback(Instance, MouseButtonCallback);
+			glfwSetCursorPosCallback(Instance, MouseCallback);
+			glfwSetScrollCallback(Instance, ScrollCallback);
 
+			glfwSetWindowFocusCallback(Instance, WindowFocusCallback);
+			glfwSetCursorEnterCallback(Instance, MouseFocusCallback);
+
+			MouseFocus = true;
 			return Instance;
 		}
 
@@ -284,13 +344,19 @@ namespace NxEn
 			GLFWwindow* Instance = NEXUS_WINDOW(Window);
 
 			glfwSetWindowCloseCallback(Instance, nullptr);
-			glfwSetWindowFocusCallback(Instance, nullptr);
 			glfwSetWindowPosCallback(Instance, nullptr);
 			glfwSetWindowSizeCallback(Instance, nullptr);
 
 			glfwSetKeyCallback(Instance, nullptr);
+			glfwSetMouseButtonCallback(Instance, nullptr);
+			glfwSetCursorPosCallback(Instance, nullptr);
+			glfwSetScrollCallback(Instance, nullptr);
+
+			glfwSetWindowFocusCallback(Instance, nullptr);
+			glfwSetCursorEnterCallback(Instance, nullptr);
 
 			glfwDestroyWindow(Instance);
+			MouseFocus = true;
 		}
 
 		void TickWindow(void* Window)
