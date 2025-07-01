@@ -17,6 +17,7 @@ namespace NxAp
 		{
 			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
 			Window->SetWindowMode(NxEn::Window::Mode::FullScreen);
+			Window->SetCursorMode(NxEn::Cursor::Mode::Captured);
 		}
 	}
 

@@ -33,4 +33,18 @@ namespace NxEn
 	Monitor::~Monitor()
 	{
 	}
+
+	Cursor::Cursor()
+		: CursorMode(Mode::Default), CursorIcon(Icon::Default), IconCustom(nullptr), Instance(nullptr)
+	{
+	}
+
+	Cursor::Cursor(Mode CursorMode, Icon CursorIcon, void* IconCustom)
+		: CursorMode(CursorMode), CursorIcon(CursorIcon), IconCustom(IconCustom), Instance(nullptr)
+	{
+	}
+
+	Cursor::~Cursor()
+	{
+	}
 }

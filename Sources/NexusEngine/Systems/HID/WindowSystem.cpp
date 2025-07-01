@@ -8,7 +8,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(WindowSystem)
 
 	WindowSystem::WindowSystem()
-		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Focused(true)
+		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Pointer(), Focused(true)
 	{
 		Target = Window(Window::Mode::Windowed, 1, NxFr::Vector2i(50), NxFr::Vector2i(1920, 1080), "Nexus", nullptr, true);
 		OnFocus += NxFr::Delegate<void(bool)>(this, &WindowSystem::OnFocused);
@@ -49,6 +49,13 @@ namespace NxEn
 	void WindowSystem::Focus()
 	{
 		Glfw::FocusWindow(Target.Instance);
+	}
+
+	WindowSystem& WindowSystem::SetWindowVSync(bool VSync)
+	{
+		Target.VSync = VSync;
+		Glfw::SetSwapInterval(VSync);
+		return *this;
 	}
 
 	WindowSystem& WindowSystem::SetWindowMode(Window::Mode Mode)
@@ -123,10 +130,36 @@ namespace NxEn
 		return *this;
 	}
 
-	WindowSystem& WindowSystem::SetWindowVSync(bool VSync)
+	WindowSystem& WindowSystem::SetCursorMode(Cursor::Mode Mode)
 	{
-		Target.VSync = VSync;
-		Glfw::SetSwapInterval(VSync);
+		if (Pointer.CursorMode == Mode)
+		{
+			return *this;
+		}
+
+		Pointer.CursorMode = Mode;
+		if (Target.IsValid() && Pointer.IsValid())
+		{
+			UpdateCursor();
+		}
+
+		return *this;
+	}
+
+	WindowSystem& WindowSystem::SetCursorIcon(Cursor::Icon Icon, void* IconCustom)
+	{
+		if (Pointer.CursorIcon == Icon && Pointer.IconCustom == IconCustom)
+		{
+			return *this;
+		}
+
+		Pointer.CursorIcon = Icon;
+		Pointer.IconCustom = IconCustom;
+		if (Target.IsValid() && Pointer.IsValid())
+		{
+			UpdateCursor();
+		}
+
 		return *this;
 	}
 
@@ -135,10 +168,12 @@ namespace NxEn
 		System::OnInitialize();
 		FetchMonitors();
 		CreateWindow();
+		UpdateCursor();
 	}
 
 	void WindowSystem::OnShutdown()
 	{
+		SetCursorIcon(Cursor::Icon::Default);
 		DestroyWindow();
 		System::OnShutdown();
 	}
@@ -189,5 +224,11 @@ namespace NxEn
 	void WindowSystem::TickWindow()
 	{
 		Glfw::TickWindow(Target.Instance);
+	}
+
+	void WindowSystem::UpdateCursor()
+	{
+		Pointer.Instance = Glfw::UpdateCursorIcon(Target.Instance, Pointer.Instance, (uint8)Pointer.CursorIcon, Pointer.IconCustom);
+		Glfw::SetCursorMode(Target.Instance, (uint32)Pointer.CursorMode);
 	}
 }

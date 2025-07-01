@@ -9,6 +9,7 @@ namespace NxEn
 		void Initialize();
 		void Shutdown();
 		void PollInput();
+		void SetSwapInterval(uint8 Interval);
 
 		NxFr::Array<void*> GetMonitors();
 		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate);
@@ -30,6 +31,7 @@ namespace NxEn
 		void SetWindowTitle(void* Window, NxFr::StringView Title);
 		void SetWindowIcon(void* Window, void* Icon);
 
-		void SetSwapInterval(uint8 Interval);
+		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom);
+		void SetCursorMode(void* Window, uint32 Mode);
 	}
 }

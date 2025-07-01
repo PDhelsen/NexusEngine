@@ -9,6 +9,7 @@ namespace NxEn
 	{
 	#define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
 	#define NEXUS_MONITOR(Monitor) static_cast<GLFWmonitor*>(Monitor)
+	#define NEXUS_CURSOR(Cursor) static_cast<GLFWcursor*>(Cursor)
 	#define NEXUS_KEYCOUNT (GLFW_KEY_LAST + 1)
 	#define NEXUS_MOUSECOUNT (GLFW_MOUSE_BUTTON_LAST + 1)
 
@@ -256,6 +257,11 @@ namespace NxEn
 			glfwPollEvents();
 		}
 
+		void SetSwapInterval(uint8 Interval)
+		{
+			glfwSwapInterval(Interval);
+		}
+
 #pragma endregion
 
 #pragma region Window
@@ -419,9 +425,40 @@ namespace NxEn
 			glfwSetWindowIcon(NEXUS_WINDOW(Window), 1, nullptr);
 		}
 
-		void SetSwapInterval(uint8 Interval)
+		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom)
 		{
-			glfwSwapInterval(Interval);
+			if (Cursor != nullptr)
+			{
+				glfwDestroyCursor(NEXUS_CURSOR(Cursor));
+			}
+
+			switch (Icon)
+			{
+			case 0: Cursor = nullptr; break;
+			case 1: Cursor = glfwCreateCursor(nullptr, 0, 0); break;
+			case 2: Cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR); break;
+			case 3: Cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR); break;
+			case 4: Cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR); break;
+			case 5: Cursor = glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR); break;
+			case 6: Cursor = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR); break;
+			case 7: Cursor = glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR); break;
+			}
+
+			glfwSetCursor(NEXUS_WINDOW(Window), NEXUS_CURSOR(Cursor));
+			return Cursor;
+		}
+
+		void SetCursorMode(void* Window, uint32 Mode)
+		{
+			switch (Mode)
+			{
+			case 0: Mode = (uint32)GLFW_CURSOR_NORMAL; break;
+			case 1: Mode = (uint32)GLFW_CURSOR_CAPTURED; break;
+			case 2: Mode = (uint32)GLFW_CURSOR_HIDDEN; break;
+			case 3: Mode = (uint32)GLFW_CURSOR_DISABLED; break;
+			}
+
+			glfwSetInputMode(NEXUS_WINDOW(Window), GLFW_CURSOR, Mode);
 		}
 
 #pragma endregion

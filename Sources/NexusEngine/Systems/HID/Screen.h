@@ -60,4 +60,37 @@ namespace NxEn
 
 		void* Instance;
 	};
+
+	class Cursor
+	{
+		friend class WindowSystem;
+
+	public:
+		enum class Mode : uint8
+		{
+			Default, Captured, Hidden, Disabled
+		};
+
+		enum class Icon : uint8
+		{
+			Default, Custom, Arrow, IBeam, CrossHair, Hand, Resize, NotAllowed
+		};
+
+		NEXUS_ENGINE_API Cursor();
+		NEXUS_ENGINE_API Cursor(Mode CursorMode, Icon CursorIcon, void* IconCustom = nullptr);
+		NEXUS_ENGINE_API ~Cursor();
+
+		NEXUS_ENGINE_API Mode GetMode() const { return CursorMode; }
+		NEXUS_ENGINE_API Icon GetIcon() const { return CursorIcon; }
+		NEXUS_ENGINE_API void* GetIconCustom() const { return IconCustom; }
+
+		NEXUS_ENGINE_API bool IsValid() const { return Instance; }
+
+	private:
+		Mode CursorMode;
+		Icon CursorIcon;
+		void* IconCustom;
+
+		void* Instance;
+	};
 }

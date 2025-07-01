@@ -17,6 +17,7 @@ namespace NxEd
 		{
 			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
 			Window->SetWindowMode(NxEn::Window::Mode::Windowed);
+			Window->SetCursorMode(NxEn::Cursor::Mode::Default);
 		}
 	}
 
