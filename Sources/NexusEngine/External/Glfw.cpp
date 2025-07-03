@@ -206,7 +206,7 @@ namespace NxEn
 				return;
 			}
 
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnMouseChange.Invoke(NxFr::Vector2f(X, -Y));
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnMouseChange.Invoke(NxFr::Vector2f(X, Y));
 		}
 
 		static void ScrollCallback(GLFWwindow* Window, double X, double Y)

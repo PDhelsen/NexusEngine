@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Systems/System.h"
 #include "NexusEngine/Systems/HID/Input.h"
+#include "NexusEngine/Systems/HID/Schema.h"
 
 namespace NxEn
 {
@@ -17,9 +18,16 @@ namespace NxEn
 		NEXUS_ENGINE_API InputSystem();
 
 		NEXUS_ENGINE_API void Reset();
+
+		NEXUS_ENGINE_API void AddSchema(NxFr::StringId Id, Input::Schema* Schema);
+		NEXUS_ENGINE_API void UpdateSchema(NxFr::StringId Id, Input::Schema* Schema);
+		NEXUS_ENGINE_API void RemoveSchema(NxFr::StringId Id);
+		NEXUS_ENGINE_API Input::Schema* GetSchema(NxFr::StringId Id);
+
 		NEXUS_ENGINE_API Input::State GetButton(Input::Button Button) const;
 		NEXUS_ENGINE_API float GetAxis(Input::Axis Axis) const;
 		NEXUS_ENGINE_API NxFr::Vector2f GetMouse() const;
+		NEXUS_ENGINE_API Input::Modifier GetModifiers() const;
 
 		bool IsMouseOverWindow() const { return Mouse != -NxFr::Vector2f::One; }
 
@@ -33,11 +41,18 @@ namespace NxEn
 
 		NEXUS_ENGINE_API void UpdateButtons();
 		NEXUS_ENGINE_API void UpdateAxises();
+		NEXUS_ENGINE_API void UpdateModifiers();
+
+		NEXUS_ENGINE_API void TriggerActions();
 
 	private:
+		NxFr::Dictionary<NxFr::StringId, Input::Schema*> Schemas;
+
 		NxFr::Array<Input::State, (uint64)Input::Button::COUNT> Buttons;
 		NxFr::Array<float, (uint64)Input::Axis::COUNT> Axises;
 		NxFr::Vector2f Mouse;
+		NxEn::Input::Modifier Modifiers;
+
 		bool DirtyFlagButtons;
 		bool DirtyFlagAxises;
 	};

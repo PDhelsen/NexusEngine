@@ -16,6 +16,27 @@ namespace NxEn
 
 		NEXUS_ENUM_TO_STRING_DEFINITION(NEXUS_ENGINE_API, State);
 
+		enum class Mode
+		{
+			Button,
+			Axis,
+			Mouse
+		};
+
+		NEXUS_ENUM_TO_STRING_DEFINITION(NEXUS_ENGINE_API, Mode);
+
+		enum class Modifier
+		{
+			None = 0,
+			Ignore = 1 << 0,
+
+			Control = 1 << 1,
+			Shift = 1 << 2,
+			Alt = 1 << 3,
+		};
+
+		NEXUS_ENUM_TO_FLAG(Modifier);
+
 		enum class Axis
 		{
 			MouseX,
