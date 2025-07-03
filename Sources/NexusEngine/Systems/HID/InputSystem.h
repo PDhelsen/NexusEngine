@@ -2,7 +2,6 @@
 
 #include "NexusEngine/Systems/System.h"
 #include "NexusEngine/Systems/HID/Input.h"
-#include "NexusEngine/Systems/HID/Schema.h"
 
 namespace NxEn
 {
