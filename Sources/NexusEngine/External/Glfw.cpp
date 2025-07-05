@@ -162,17 +162,17 @@ namespace NxEn
 
 		static void CloseCallback(GLFWwindow* Window)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnClose.Invoke();
+			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnClose().Invoke();
 		}
 
 		static void MoveCallback(GLFWwindow* Window, int X, int Y)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnMove.Invoke(NxFr::Vector2i(X, Y));
+			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnMove().Invoke(NxFr::Vector2i(X, Y));
 		}
 
 		static void ResizeCallback(GLFWwindow* Window, int Width, int Height)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnResize.Invoke(NxFr::Vector2i(Width, Height));
+			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnResize().Invoke(NxFr::Vector2i(Width, Height));
 		}
 
 		static void KeyButtonCallback(GLFWwindow* Window, int KeyCode, int ScanCode, int Action, int Mods)
@@ -184,7 +184,7 @@ namespace NxEn
 
 			Input::Button Button = GlfwKeyCodeToNexusButton()[KeyCode];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnButtonChange.Invoke(Button, State);
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
 		}
 
 		static void MouseButtonCallback(GLFWwindow* Window, int Mouse, int Action, int Mods)
@@ -196,7 +196,7 @@ namespace NxEn
 
 			Input::Button Button = GlfwMouseCodeToNexusButton()[Mouse];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnButtonChange.Invoke(Button, State);
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
 		}
 
 		static void MouseCallback(GLFWwindow* Window, double X, double Y)
@@ -206,18 +206,18 @@ namespace NxEn
 				return;
 			}
 
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnMouseChange.Invoke(NxFr::Vector2f(X, Y));
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnMouseChange().Invoke(NxFr::Vector2f(X, Y));
 		}
 
 		static void ScrollCallback(GLFWwindow* Window, double X, double Y)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnAxisChange.Invoke(Input::Axis::ScrollX, (float)X);
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnAxisChange.Invoke(Input::Axis::ScrollY, (float)Y);
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollX, (float)X);
+			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollY, (float)Y);
 		}
 
 		static void WindowFocusCallback(GLFWwindow* Window, int Focused)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->OnFocus.Invoke(Focused > 0);
+			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnFocus().Invoke(Focused > 0);
 		}
 
 		static void MouseFocusCallback(GLFWwindow* Window, int Entered)
@@ -225,7 +225,7 @@ namespace NxEn
 			MouseFocus = Entered;
 			if (!MouseFocus)
 			{
-				Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->OnMouseChange.Invoke(-NxFr::Vector2f::One);
+				Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnMouseChange().Invoke(-NxFr::Vector2f::One);
 			}
 		}
 
@@ -235,6 +235,8 @@ namespace NxEn
 
 		void Initialize()
 		{
+			NxFr::AllocatorContext Context(nullptr);
+
 			glfwSetErrorCallback(ErrorCallback);
 			if (!glfwInit())
 			{
@@ -249,6 +251,8 @@ namespace NxEn
 
 		void Shutdown()
 		{
+			NxFr::AllocatorContext Context(nullptr);
+
 			glfwTerminate();
 		}
 
@@ -268,6 +272,8 @@ namespace NxEn
 
 		NxFr::Array<void*> GetMonitors()
 		{
+			NxFr::AllocatorContext Context(nullptr);
+
 			int Count;
 			GLFWmonitor** Instances = glfwGetMonitors(&Count);
 
@@ -289,6 +295,8 @@ namespace NxEn
 
 		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval)
 		{
+			NxFr::AllocatorContext Context(nullptr);
+
 			GLFWwindow* Instance = nullptr;
 			switch (Mode)
 			{
@@ -347,6 +355,8 @@ namespace NxEn
 
 		void DestroyWindow(void* Window)
 		{
+			NxFr::AllocatorContext Context(nullptr);
+
 			GLFWwindow* Instance = NEXUS_WINDOW(Window);
 
 			glfwSetWindowCloseCallback(Instance, nullptr);
@@ -427,6 +437,8 @@ namespace NxEn
 
 		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom)
 		{
+			NxFr::AllocatorContext Context(nullptr);
+
 			if (Cursor != nullptr)
 			{
 				glfwDestroyCursor(NEXUS_CURSOR(Cursor));

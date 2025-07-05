@@ -23,7 +23,7 @@ namespace NxEn
 		if (!IsHeadless())
 		{
 			WindowSystem* Window = Systems.CreateSystem<WindowSystem>();
-			Window->OnClose += NxFr::Delegate<void()>(this, &Application::Quit);
+			Window->GetOnClose() += NxFr::Delegate<void()>(this, &Application::Quit);
 			Bootstrap.AppendSystem(Window);
 		}
 

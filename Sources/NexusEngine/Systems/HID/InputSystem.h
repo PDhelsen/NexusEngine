@@ -10,10 +10,6 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, InputSystem)
 
-		NxFr::Event<Input::Button, Input::State> OnButtonChange;
-		NxFr::Event<Input::Axis, float> OnAxisChange;
-		NxFr::Event<NxFr::Vector2f> OnMouseChange;
-
 		NEXUS_ENGINE_API InputSystem();
 
 		NEXUS_ENGINE_API void Reset();
@@ -28,7 +24,11 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Vector2f GetMouse() const;
 		NEXUS_ENGINE_API Input::Modifier GetModifiers() const;
 
-		bool IsMouseOverWindow() const { return Mouse != -NxFr::Vector2f::One; }
+		NEXUS_ENGINE_API NxFr::Event<Input::Button, Input::State>& GetOnButtonChange() { return OnButtonChange; }
+		NEXUS_ENGINE_API NxFr::Event<Input::Axis, float>& GetOnAxisChange() { return OnAxisChange; }
+		NEXUS_ENGINE_API NxFr::Event<NxFr::Vector2f>& GetOnMouseChange() { return OnMouseChange; }
+
+		NEXUS_ENGINE_API bool IsMouseOverWindow() const { return Mouse != -NxFr::Vector2f::One; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -45,6 +45,10 @@ namespace NxEn
 		NEXUS_ENGINE_API void TriggerActions();
 
 	private:
+		NxFr::Event<Input::Button, Input::State> OnButtonChange;
+		NxFr::Event<Input::Axis, float> OnAxisChange;
+		NxFr::Event<NxFr::Vector2f> OnMouseChange;
+
 		NxFr::Dictionary<NxFr::StringId, Input::Schema*> Schemas;
 
 		NxFr::Array<Input::State, (uint64)Input::Button::COUNT> Buttons;

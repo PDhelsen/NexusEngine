@@ -10,11 +10,6 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, WindowSystem)
 
-		NxFr::Event<> OnClose;
-		NxFr::Event<bool> OnFocus;
-		NxFr::Event<NxFr::Vector2i> OnMove;
-		NxFr::Event<NxFr::Vector2i> OnResize;
-
 		NEXUS_ENGINE_API WindowSystem();
 
 		NEXUS_ENGINE_API void Close();
@@ -35,8 +30,13 @@ namespace NxEn
 		NEXUS_ENGINE_API WindowSystem& SetCursorMode(Cursor::Mode Mode);
 		NEXUS_ENGINE_API WindowSystem& SetCursorIcon(Cursor::Icon Icon, void* IconCustom = nullptr);
 
-		Window& GetWindow() { return Target; }
-		Monitor& GetMonitor(uint8 Index = 0) { return Monitors[Index]; }
+		NEXUS_ENGINE_API NxFr::Event<>& GetOnClose() { return OnClose; }
+		NEXUS_ENGINE_API NxFr::Event<bool>& GetOnFocus() { return OnFocus; }
+		NEXUS_ENGINE_API NxFr::Event<NxFr::Vector2i>& GetOnMove() { return OnMove; }
+		NEXUS_ENGINE_API NxFr::Event<NxFr::Vector2i>& GetOnResize() { return OnResize; }
+
+		NEXUS_ENGINE_API Window& GetWindow() { return Target; }
+		NEXUS_ENGINE_API Monitor& GetMonitor(uint8 Index = 0) { return Monitors[Index]; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -53,6 +53,11 @@ namespace NxEn
 		NEXUS_ENGINE_API void UpdateCursor();
 
 	private:
+		NxFr::Event<> OnClose;
+		NxFr::Event<bool> OnFocus;
+		NxFr::Event<NxFr::Vector2i> OnMove;
+		NxFr::Event<NxFr::Vector2i> OnResize;
+
 		NxFr::Array<Monitor> Monitors;
 		Window Target;
 		Cursor Pointer;

@@ -22,5 +22,13 @@ namespace NxSE
 	void NexusSandboxEditorApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
 	{
 		NexusEditorApplication::OnExecute(Ticks, Systems);
+
+		Ticks.AppendTickCallback([]()
+		{
+			if (Application::GetInstance()->GetSystems().GetSystem<NxEn::InputSystem>()->GetButton(NxEn::Input::Button::Space) == NxEn::Input::State::Pressed)
+			{
+				NEXUS_LOG(Info, Default, "Pressed");
+			}
+		});
 	}
 }

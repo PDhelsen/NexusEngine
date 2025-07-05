@@ -175,14 +175,14 @@ namespace NxEn
 
 		union Binding
 		{
-			Binding(Button ButtonInput, State ButtonState);
-			Binding(Axis InputAxis);
-			Binding(NxFr::Rectangle InputMouse);
-			~Binding();
+			NEXUS_ENGINE_API Binding(Button ButtonInput, State ButtonState);
+			NEXUS_ENGINE_API Binding(Axis InputAxis);
+			NEXUS_ENGINE_API Binding(NxFr::Rectangle InputMouse);
+			NEXUS_ENGINE_API ~Binding();
 
 			struct BindingButton
 			{
-				BindingButton(Button ButtonInput, State ButtonState);
+				NEXUS_ENGINE_API BindingButton(Button ButtonInput, State ButtonState);
 
 				Button ButtonInput;
 				State ButtonState;
