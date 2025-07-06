@@ -28,16 +28,10 @@ namespace NxEn
 		return Target;
 	}
 
-	System* SystemManager::PatchSystem(System* Target, bool Destroy)
+	System* SystemManager::PatchSystem(System* Target)
 	{
 		System* Instance = Systems[Target->GetObjectType()];
-
-		if (Destroy)
-		{
-			delete Instance;
-			return nullptr;
-		}
-
+		Systems[Target->GetObjectType()] = Target;
 		return Instance;
 	}
 

@@ -31,7 +31,7 @@ namespace NxEn
 		NEXUS_ENGINE_API System* GetSystem(NxFr::StringId Type) const;
 		NEXUS_ENGINE_API System* RegisterSystem(System* Target);
 		NEXUS_ENGINE_API System* UnregisterSystem(System* Target);
-		NEXUS_ENGINE_API System* PatchSystem(System* Target, bool Destroy = true);
+		NEXUS_ENGINE_API System* PatchSystem(System* Target);
 		NEXUS_ENGINE_API void ClearSystems();
 
 		NEXUS_ENGINE_API NxFr::Array<System*> SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const;
