@@ -52,7 +52,7 @@ namespace NxEn
 		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
 	}
 
-	void Application::OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems)
+	void Application::OnInitialize()
 	{
 		Bootstrap.AppendStep(&NxFr::Arguments::Log, "Console Arguments");
 		Bootstrap.AppendStep([&]()
@@ -61,15 +61,23 @@ namespace NxEn
 			NxFr::Platform::GetInstance()->SetWorkingDirectory(ProjectInfo.GetRootPath());
 		}, "Setup Project");
 		Bootstrap.AppendStep(&NxFr::Paths::SetupPathsAndFolders, "Setup Paths & Folders");
+		Bootstrap.AppendStep([&]()
+			{
+				Systems.GetOnSystemChanged() += { &Ticks, & Ticker::PatchSystem };
+			}, "Connect Ticker to SystemManager");
 	}
 
-	void Application::OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems)
+	void Application::OnShutdown()
 	{
-		Unbootstrap.AppendStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
-		Unbootstrap.AppendStep(&NxFr::Paths::CleanupFolders, "Cleanup Folders");
+		Bootstrap.AppendStep([&]()
+			{
+				Systems.GetOnSystemChanged() -= { &Ticks, & Ticker::PatchSystem };
+			}, "Disconnect Ticker from SystemManager");
+		Bootstrap.AppendStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
+		Bootstrap.AppendStep(&NxFr::Paths::CleanupFolders, "Cleanup Folders");
 	}
 
-	void Application::OnExecute(Ticker& Ticks, SystemManager& Systems)
+	void Application::OnExecute()
 	{
 		Ticks.AppendTickOnceCallback({ &Time, &TimeManager::Run }, Ticker::TickBucket::Input, "Start Ticking");
 	}
@@ -83,20 +91,20 @@ namespace NxEn
 
 	void Application::Initialize()
 	{
-		OnInitialize(Bootstrap, Systems);
-		Bootstrap.RunBoot(Systems);
+		OnInitialize();
+		Bootstrap.RunBoot();
 	}
 
 	void Application::Shutdown()
 	{
-		OnShutdown(Bootstrap, Systems);
-		Bootstrap.RunUnboot(Systems);
+		OnShutdown();
+		Bootstrap.RunUnboot();
 	}
 
 	void Application::Execute()
 	{
-		OnExecute(Ticks, Systems);
-		Ticks.Run(Systems);
+		OnExecute();
+		Ticks.Run();
 
 		while (IsRunning())
 		{

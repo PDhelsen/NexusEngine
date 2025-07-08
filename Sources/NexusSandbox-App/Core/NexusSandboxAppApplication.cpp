@@ -9,18 +9,18 @@ namespace NxSA
 	{
 	}
 
-	void NexusSandboxAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
+	void NexusSandboxAppApplication::OnInitialize()
 	{
-		NexusAppApplication::OnInitialize(Bootstrap, Systems);
+		NexusAppApplication::OnInitialize();
 	}
 
-	void NexusSandboxAppApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
+	void NexusSandboxAppApplication::OnShutdown()
 	{
-		NexusAppApplication::OnShutdown(Unbootstrap, Systems);
+		NexusAppApplication::OnShutdown();
 	}
 
-	void NexusSandboxAppApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
+	void NexusSandboxAppApplication::OnExecute()
 	{
-		NexusAppApplication::OnExecute(Ticks, Systems);
+		NexusAppApplication::OnExecute();
 	}
 }

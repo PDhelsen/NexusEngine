@@ -3,9 +3,15 @@
 
 namespace NxEn
 {
-	Ticker::SystemInfo::SystemInfo(System* Target, TickBucket Bucket, float TickRate, bool FixedTimeStep)
-		: Target(Target), Bucket(Bucket), Timer(0), TickRate(TickRate), FixedTimeStep(FixedTimeStep)
+	Ticker::SystemInfo::SystemInfo(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
+		: Instance(nullptr), Bucket(Bucket), Timer(0), TickRate(TickRate), FixedTimeStep(FixedTimeStep)
 	{
+		Patch(Type);
+	}
+
+	void Ticker::SystemInfo::Patch(NxFr::StringId Type)
+	{
+		Instance = Application::GetInstance()->GetSystems().GetSystem(Type);
 	}
 
 	Ticker::Ticker()
@@ -16,7 +22,7 @@ namespace NxEn
 
 	Ticker::~Ticker()
 	{
-
+		
 	}
 
 	void Ticker::AppendTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
@@ -29,29 +35,29 @@ namespace NxEn
 		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, true, false);
 	}
 
-	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
+	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket)
 	{
-		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, true, true);
+		CallbacksBuffer.AppendConstruct(Bucket, Callback, "", true, true);
 	}
 
-	Ticker& Ticker::AppendSystem(System* Target, TickBucket Bucket, float TickRate, bool FixedTimeStep)
+	Ticker& Ticker::AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
 	{
-		Systems.AppendConstruct(Target, Bucket, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
-		SystemsDependencies.Append(Target->GetObjectType(), SystemDependencies());
+		Systems.AppendConstruct(Type, Bucket, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
+		SystemsDependencies.Append(Type, SystemDependencies());
 		return *this;
 	}
 
-	Ticker& Ticker::AppendDependency(NxFr::StringId Target, NxFr::StringId Dependency)
+	Ticker& Ticker::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
 	{
-		SystemsDependencies[Target].Dependencies.Append(Dependency);
+		SystemsDependencies[Type].Dependencies.Append(Dependency);
 		return *this;
 	}
 
-	void Ticker::SetTickRate(System* Target, float TickRate, bool FixedTimeStep)
+	void Ticker::SetTickRate(NxFr::StringId Type, float TickRate, bool FixedTimeStep)
 	{
 		for (auto& Info : Systems)
 		{
-			if (Info.Target == Target)
+			if (Info.Instance->GetObjectType() == Type)
 			{
 				Info.TickRate = ComputeTickRate(TickRate, FixedTimeStep);
 				break;
@@ -59,7 +65,7 @@ namespace NxEn
 		}
 	}
 
-	void Ticker::Run(const SystemManager& Manager)
+	void Ticker::Run()
 	{
 		if (GetSystemsCount() == 0)
 		{
@@ -82,7 +88,7 @@ namespace NxEn
 			{
 				if (It->Bucket == Bucket)
 				{
-					NxFr::StringId Type = It->Target->GetObjectType();
+					NxFr::StringId Type = It->Instance->GetObjectType();
 
 					// Validate dependencies
 					SystemDependencies& RawDependencies = SystemsDependencies[Type];
@@ -91,7 +97,7 @@ namespace NxEn
 					{
 						for (auto& S : Systems)
 						{
-							if (D == S.Target->GetObjectType())
+							if (D == S.Instance->GetObjectType())
 							{
 								if (Bucket == S.Bucket)
 								{
@@ -117,13 +123,14 @@ namespace NxEn
 			}
 
 			// Sort System in Array
+			SystemManager& Manager = Application::GetInstance()->GetSystems();
 			NxFr::Array<System*> SortedSystemsPerBucket = Manager.SortSystems(DependenciesPerBucket);
 			for (auto It = SortedSystemsPerBucket.Begin(); It != SortedSystemsPerBucket.End(); ++It)
 			{
 				uint64 UnsortedIndex = 0;
 				for (UnsortedIndex = 0; UnsortedIndex < Systems.GetCount(); ++UnsortedIndex)
 				{
-					if (It.Get() == Systems[UnsortedIndex].Target)
+					if (It.Get()->GetObjectType() == Systems[UnsortedIndex].Instance->GetObjectType())
 					{
 						break;
 					}
@@ -144,7 +151,7 @@ namespace NxEn
 		NEXUS_LOG(Info, Default, "Tick order:")
 		for (auto& Info : Systems)
 		{
-			NEXUS_LOG(Info, Default, "- %s", Info.Target->GetObjectType().C());
+			NEXUS_LOG(Info, Default, "- %s", Info.Instance->GetObjectType().C());
 		}
 	}
 
@@ -192,9 +199,9 @@ namespace NxEn
 					float TimeStep = ComputeTimeStep(Info, DeltaTime);
 					if (TimeStep > 0.0f)
 					{
-						NEXUS_PROFILE_SCOPE(Info.Target->GetObjectType().C());
+						NEXUS_PROFILE_SCOPE(Info.Instance->GetObjectType().C());
 
-						Info.Target->Tick(TimeStep);
+						Info.Instance->Tick(TimeStep);
 					}
 				}
 			}
@@ -260,5 +267,17 @@ namespace NxEn
 		}
 
 		CallbacksBuffer.Clear();
+	}
+
+	void Ticker::PatchSystem(NxFr::StringId Type)
+	{
+		for (auto& Info : Systems)
+		{
+			if (Info.Instance->GetObjectType() == Type)
+			{
+				Info.Patch(Type);
+				return;
+			}
+		}
 	}
 }

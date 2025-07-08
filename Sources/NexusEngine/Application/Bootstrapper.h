@@ -15,23 +15,25 @@ namespace NxEn
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
-		NEXUS_ENGINE_API Bootstrapper& AppendStep(const Signature& Step, NxFr::StringView Tag = "");
+		NEXUS_ENGINE_API Bootstrapper& AppendStep(const Signature& Step, NxFr::StringView Tag = "Step");
 
+		template<typename T>
+		Bootstrapper& AppendSystem() { return AppendSystem(T::GetClassType()); }
 		template<typename T, typename D>
 		Bootstrapper& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
-		NEXUS_ENGINE_API Bootstrapper& AppendSystem(System* Target);
-		NEXUS_ENGINE_API Bootstrapper& AppendDependency(NxFr::StringId Target, NxFr::StringId Dependency);
+
+		NEXUS_ENGINE_API Bootstrapper& AppendSystem(NxFr::StringId Type);
+		NEXUS_ENGINE_API Bootstrapper& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
 
 		uint64 GetStepsCount() const { return Steps.GetCount(); }
 		uint64 GetSystemsCount() const { return Systems.GetCount(); }
 
 	private:
-		void RunBoot(const SystemManager& Manager);
-		void RunUnboot(const SystemManager& Manager);
+		void RunBoot();
+		void RunUnboot();
 
-		void ExecuteSteps();
-		void ExecuteSystemsInitialize(const SystemManager& Manager);
-		void ExecuteSystemsShutdown(const SystemManager& Manager);
+		void ExecuteSteps(bool Boot);
+		void ExecuteSystems(bool Boot);
 
 	private:
 		NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>> Steps;

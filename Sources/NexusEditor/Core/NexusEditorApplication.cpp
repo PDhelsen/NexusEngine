@@ -7,11 +7,7 @@ namespace NxEd
 	NexusEditorApplication::NexusEditorApplication(const NxEn::Project& ProjectInfo)
 		: NexusEngineApplication(ProjectInfo)
 	{
-	}
-
-	void NexusEditorApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
-	{
-		NexusEngineApplication::OnInitialize(Bootstrap, Systems);
+		NxEn::SystemManager& Systems = GetSystems();
 
 		if (!IsHeadless())
 		{
@@ -21,13 +17,18 @@ namespace NxEd
 		}
 	}
 
-	void NexusEditorApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
+	void NexusEditorApplication::OnInitialize()
 	{
-		NexusEngineApplication::OnShutdown(Unbootstrap, Systems);
+		NexusEngineApplication::OnInitialize();
 	}
 
-	void NexusEditorApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
+	void NexusEditorApplication::OnShutdown()
 	{
-		NexusEngineApplication::OnExecute(Ticks, Systems);
+		NexusEngineApplication::OnShutdown();
+	}
+
+	void NexusEditorApplication::OnExecute()
+	{
+		NexusEngineApplication::OnExecute();
 	}
 }

@@ -21,86 +21,76 @@ namespace NxEn
 		return *this;
 	}
 
-	Bootstrapper& Bootstrapper::AppendSystem(System* Target)
+	Bootstrapper& Bootstrapper::AppendSystem(NxFr::StringId Type)
 	{
-		Systems.Append(Target->GetObjectType(), SystemDependencies());
+		Systems.Append(Type, SystemDependencies());
 		return *this;
 	}
 
-	Bootstrapper& Bootstrapper::AppendDependency(NxFr::StringId Target, NxFr::StringId Dependency)
+	Bootstrapper& Bootstrapper::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
 	{
-		Systems[Target].Dependencies.Append(Dependency);
+		Systems[Type].Dependencies.Append(Dependency);
 		return *this;
 	}
 
-	void Bootstrapper::RunBoot(const SystemManager& Manager)
+	void Bootstrapper::RunBoot()
 	{
 		NxFr::Globals::Logs = &Logger;
 
-		ExecuteSteps();
-		ExecuteSystemsInitialize(Manager);
+		ExecuteSteps(true);
+		ExecuteSystems(true);
 
 		if (NxFr::Globals::Logs == &Logger) NxFr::Globals::Logs = nullptr;
 	}
 
-	void Bootstrapper::RunUnboot(const SystemManager& Manager)
+	void Bootstrapper::RunUnboot()
 	{
 		NxFr::Globals::Logs = &Logger;
 
-		ExecuteSystemsShutdown(Manager);
-		ExecuteSteps();
+		ExecuteSystems(false);
+		ExecuteSteps(false);
 
 		if (NxFr::Globals::Logs == &Logger) NxFr::Globals::Logs = nullptr;
 	}
 
-	void Bootstrapper::ExecuteSteps()
+	void Bootstrapper::ExecuteSteps(bool Boot)
 	{
 		if (GetStepsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Default, "There is no boot steps");
+			NEXUS_LOG(Warning, Default, "Bootstrap - There is no steps to execute");
 			return;
 		}
 
 		for (auto It = Steps.Begin(); It != Steps.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Boot - Steps (%i / %i): %s", It.Id() + 1, Steps.GetCount(), It.Get().GetSecond().C());
+			NEXUS_LOG(Info, Default, "Bootstrap - Steps (%i / %i): %s", Boot ? It.Id() + 1 : Steps.GetCount() - It.Id(), Steps.GetCount(), It.Get().GetSecond().C());
 			It.Get().GetFirst().Invoke();
 		}
 
 		Steps.Clear();
 	}
 
-	void Bootstrapper::ExecuteSystemsInitialize(const SystemManager& Manager)
+	void Bootstrapper::ExecuteSystems(bool Boot)
 	{
 		if (GetSystemsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Default, "There is no systems to initialize");
+			NEXUS_LOG(Warning, Default, "Bootstrap - There is no systems to execute");
 			return;
 		}
 
+		SystemManager& Manager = Application::GetInstance()->GetSystems();
 		NxFr::Array<System*> Instances = Manager.SortSystems(Systems);
 		for (auto It = Instances.Begin(); It != Instances.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Initializing - Systems (%i / %i): %s", It.Id() + 1, Instances.GetCount(), It.Get()->GetObjectType().C());
-			It.Get()->Initialize();
-		}
-
-		Systems.Clear();
-	}
-
-	void Bootstrapper::ExecuteSystemsShutdown(const SystemManager& Manager)
-	{
-		if (GetSystemsCount() == 0)
-		{
-			NEXUS_LOG(Warning, Default, "There is no systems to shutdown");
-			return;
-		}
-
-		NxFr::Array<System*> Instances = Manager.SortSystems(Systems);
-		for (auto It = Instances.Begin(); It != Instances.End(); ++It)
-		{
-			NEXUS_LOG(Info, Default, "Shutdowning - Systems (%i / %i): %s", Instances.GetCount() - It.Id(), Instances.GetCount(), It.Get()->GetObjectType().C());
-			It.Get()->Shutdown();
+			NEXUS_LOG(Info, Default, "Bootstrap - Systems (%i / %i): %s", Boot ? It.Id() + 1 : Instances.GetCount() - It.Id(), Instances.GetCount(), It.Get()->GetObjectType().C());
+			if (Boot)
+			{
+				It.Get()->Initialize();
+			}
+			else
+			{
+				It.Get()->Shutdown();
+			}
 		}
 
 		Systems.Clear();

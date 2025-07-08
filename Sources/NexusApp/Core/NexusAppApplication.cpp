@@ -7,11 +7,7 @@ namespace NxAp
 	NexusAppApplication::NexusAppApplication(const NxEn::Project& ProjectInfo)
 		: NexusEngineApplication(ProjectInfo)
 	{
-	}
-
-	void NexusAppApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
-	{
-		NexusEngineApplication::OnInitialize(Bootstrap, Systems);
+		NxEn::SystemManager& Systems = GetSystems();
 
 		if (!IsHeadless())
 		{
@@ -21,13 +17,18 @@ namespace NxAp
 		}
 	}
 
-	void NexusAppApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
+	void NexusAppApplication::OnInitialize()
 	{
-		NexusEngineApplication::OnShutdown(Unbootstrap, Systems);
+		NexusEngineApplication::OnInitialize();
 	}
 
-	void NexusAppApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
+	void NexusAppApplication::OnShutdown()
 	{
-		NexusEngineApplication::OnExecute(Ticks, Systems);
+		NexusEngineApplication::OnShutdown();
+	}
+
+	void NexusAppApplication::OnExecute()
+	{
+		NexusEngineApplication::OnExecute();
 	}
 }

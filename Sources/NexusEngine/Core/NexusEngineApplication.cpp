@@ -11,33 +11,44 @@ namespace NxEn
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
 		: Application(ProjectInfo), Headless(NxFr::Arguments::HasFlag("Headless"))
 	{
-	}
+		SystemManager& Systems = GetSystems();
 
-	void NexusEngineApplication::OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems)
-	{
-		Application::OnInitialize(Bootstrap, Systems);
-
-		Bootstrap.AppendSystem(Systems.CreateSystem<DebugSystem>());
-		Bootstrap.AppendSystem(Systems.CreateSystem<MemorySystem>());
-		Bootstrap.AppendSystem(Systems.CreateSystem<InputSystem>());
+		Systems.CreateSystem<DebugSystem>();
+		Systems.CreateSystem<MemorySystem>();
+		Systems.CreateSystem<InputSystem>();
 		if (!IsHeadless())
 		{
 			WindowSystem* Window = Systems.CreateSystem<WindowSystem>();
 			Window->GetOnClose() += NxFr::Delegate<void()>(this, &Application::Quit);
-			Bootstrap.AppendSystem(Window);
 		}
-
-		Bootstrap.AppendStep(Glfw::Initialize, "Glfw - Initialize");
 	}
 
-	void NexusEngineApplication::OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems)
+	void NexusEngineApplication::OnInitialize()
 	{
-		Unbootstrap.AppendSystem(Systems.GetSystem<MemorySystem>());
-		Unbootstrap.AppendSystem(Systems.GetSystem<DebugSystem>());
-		Unbootstrap.AppendSystem(Systems.GetSystem<InputSystem>());
+		Application::OnInitialize();
+		Bootstrapper& Bootstrap = GetBootstrapper();
+
+		Bootstrap.AppendStep(Glfw::Initialize, "Glfw - Initialize");
+
+		Bootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, MemorySystem>();
+		Bootstrap.AppendSystem<MemorySystem>();
+		Bootstrap.AppendSystem<InputSystem>().AppendDependency<InputSystem, DebugSystem>();
 		if (!IsHeadless())
 		{
-			Unbootstrap.AppendSystem(Systems.GetSystem<WindowSystem>());
+			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>().AppendDependency<WindowSystem, DebugSystem>();
+		}
+	}
+
+	void NexusEngineApplication::OnShutdown()
+	{
+		Bootstrapper& Unbootstrap = GetBootstrapper();
+
+		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
+		Unbootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, InputSystem>();
+		Unbootstrap.AppendSystem<InputSystem>();
+		if (!IsHeadless())
+		{
+			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
 		}
 
 		Unbootstrap.AppendStep([]()
@@ -46,19 +57,28 @@ namespace NxEn
 		}, "Application duration");
 		Unbootstrap.AppendStep(Glfw::Shutdown, "Glfw - Shutdown");
 
-		Application::OnShutdown(Unbootstrap, Systems);
+		Application::OnShutdown();
 	}
 
-	void NexusEngineApplication::OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems)
+	void NexusEngineApplication::OnExecute()
 	{
-		Application::OnExecute(Ticks, Systems);
+		Application::OnExecute();
+		Ticker& Ticks = GetTicker();
 
-		Ticks.AppendSystem(Systems.GetSystem<DebugSystem>(), NxEn::Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
-		Ticks.AppendSystem(Systems.GetSystem<MemorySystem>(), NxEn::Ticker::TickBucket::Cleanup);
-		Ticks.AppendSystem(Systems.GetSystem<InputSystem>(), NxEn::Ticker::TickBucket::Input);
+		Ticks.AppendSystem<DebugSystem>(NxEn::Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
+		Ticks.AppendSystem<MemorySystem>(NxEn::Ticker::TickBucket::Cleanup);
+		Ticks.AppendSystem<InputSystem>(NxEn::Ticker::TickBucket::Input);
 		if (!IsHeadless())
 		{
-			Ticks.AppendSystem(Systems.GetSystem<WindowSystem>(), NxEn::Ticker::TickBucket::Output);
+			Ticks.AppendSystem<WindowSystem>(NxEn::Ticker::TickBucket::Output);
 		}
+
+		Ticks.AppendTickCallback([]()
+		{
+			if (Application::GetInstance()->GetSystems().GetSystem<NxEn::InputSystem>()->GetButton(NxEn::Input::Button::Space) == NxEn::Input::State::Pressed)
+			{
+				NEXUS_LOG(Info, Default, "Pressed");
+			}
+		});
 	}
 }

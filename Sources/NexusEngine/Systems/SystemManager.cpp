@@ -13,32 +13,40 @@ namespace NxEn
 
 	System* SystemManager::GetSystem(NxFr::StringId Type) const
 	{
-		return Systems[Type];
+		auto Instance = Systems.TryGet(Type);
+		return Instance ? *Instance : nullptr;
 	}
 
-	System* SystemManager::RegisterSystem(System* Target)
+	System* SystemManager::RegisterSystem(System* Instance)
 	{
-		Systems.Append(Target->GetObjectType(), { Target });
-		return Target;
-	}
-
-	System* SystemManager::UnregisterSystem(System* Target)
-	{
-		Systems.Remove(Target->GetObjectType());
-		return Target;
-	}
-
-	System* SystemManager::PatchSystem(System* Target)
-	{
-		System* Instance = Systems[Target->GetObjectType()];
-		Systems[Target->GetObjectType()] = Target;
+		NxFr::StringId Type = Instance->GetObjectType();
+		Systems.Append(Type, Instance);
+		OnSystemChanged.Invoke(Type);
 		return Instance;
+	}
+
+	System* SystemManager::UnregisterSystem(System* Instance)
+	{
+		NxFr::StringId Type = Instance->GetObjectType();
+		Systems.Remove(Type);
+		OnSystemChanged.Invoke(Type);
+		return Instance;
+	}
+
+	System* SystemManager::PatchSystem(System* Instance)
+	{
+		NxFr::StringId Type = Instance->GetObjectType();
+		System* Previous = Systems[Type];
+		Systems[Type] = Instance;
+		OnSystemChanged.Invoke(Type);
+		return Previous;
 	}
 
 	void SystemManager::ClearSystems()
 	{
 		for (auto& Info : Systems)
 		{
+			OnSystemChanged.Invoke(Info.Key);
 			delete Info.Value;
 		}
 

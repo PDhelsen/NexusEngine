@@ -16,8 +16,8 @@ namespace NxAp
 		NEXUS_APP_API virtual ~NexusAppApplication() = default;
 
 	protected:
-		NEXUS_APP_API virtual void OnInitialize(NxEn::Bootstrapper& Bootstrap, NxEn::SystemManager& Systems) override;
-		NEXUS_APP_API virtual void OnShutdown(NxEn::Bootstrapper& Unbootstrap, NxEn::SystemManager& Systems) override;
-		NEXUS_APP_API virtual void OnExecute(NxEn::Ticker& Ticks, NxEn::SystemManager& Systems) override;
+		NEXUS_APP_API virtual void OnInitialize() override;
+		NEXUS_APP_API virtual void OnShutdown() override;
+		NEXUS_APP_API virtual void OnExecute() override;
 	};
 }

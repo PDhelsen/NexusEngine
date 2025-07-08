@@ -58,9 +58,9 @@ namespace NxEn
 		TimeManager& GetTime() { return Time; }
 
 	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize(Bootstrapper& Bootstrap, SystemManager& Systems);
-		NEXUS_ENGINE_API virtual void OnShutdown(Bootstrapper& Unbootstrap, SystemManager& Systems);
-		NEXUS_ENGINE_API virtual void OnExecute(Ticker& Ticks, SystemManager& Systems);
+		NEXUS_ENGINE_API virtual void OnInitialize();
+		NEXUS_ENGINE_API virtual void OnShutdown();
+		NEXUS_ENGINE_API virtual void OnExecute();
 
 	private:
 		void Run();
