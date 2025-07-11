@@ -1,21 +1,11 @@
 #pragma once
 
-#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/System.h"
+#include "NexusEngine/Systems/Memory/Allocator.h"
 
 namespace NxEn
 {
-	enum class AllocatorType
-	{
-		Raw,
-		General,
-		Temp,
-		Temp2,
-		Constant,
-		Small,
-		Managed,
-		COUNT
-	};
+
 
 	class MemorySystem : public System
 	{

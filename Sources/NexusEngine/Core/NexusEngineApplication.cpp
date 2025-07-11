@@ -30,26 +30,20 @@ namespace NxEn
 
 		Bootstrap.AppendStep(Glfw::Initialize, "Glfw - Initialize");
 
-		Bootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, MemorySystem>();
 		Bootstrap.AppendSystem<MemorySystem>();
-		Bootstrap.AppendSystem<InputSystem>().AppendDependency<InputSystem, DebugSystem>();
-		if (!IsHeadless())
-		{
-			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>().AppendDependency<WindowSystem, DebugSystem>();
-		}
+		Bootstrap.AppendSystem<DebugSystem>();
+		Bootstrap.AppendSystem<InputSystem>();
+		if (!IsHeadless()) Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
 	}
 
 	void NexusEngineApplication::OnShutdown()
 	{
 		Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
-		Unbootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, InputSystem>();
+		Unbootstrap.AppendSystem<DebugSystem>();
+		Unbootstrap.AppendSystem<MemorySystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
-		if (!IsHeadless())
-		{
-			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
-		}
+		if (!IsHeadless()) Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
 
 		Unbootstrap.AppendStep([]()
 		{
@@ -65,13 +59,10 @@ namespace NxEn
 		Application::OnExecute();
 		Ticker& Ticks = GetTicker();
 
-		Ticks.AppendSystem<DebugSystem>(NxEn::Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
-		Ticks.AppendSystem<MemorySystem>(NxEn::Ticker::TickBucket::Cleanup);
 		Ticks.AppendSystem<InputSystem>(NxEn::Ticker::TickBucket::Input);
-		if (!IsHeadless())
-		{
-			Ticks.AppendSystem<WindowSystem>(NxEn::Ticker::TickBucket::Output);
-		}
+		if (!IsHeadless()) Ticks.AppendSystem<WindowSystem>(NxEn::Ticker::TickBucket::Output);
+		Ticks.AppendSystem<MemorySystem>(NxEn::Ticker::TickBucket::Cleanup);
+		Ticks.AppendSystem<DebugSystem>(NxEn::Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 
 		Ticks.AppendTickCallback([]()
 		{
