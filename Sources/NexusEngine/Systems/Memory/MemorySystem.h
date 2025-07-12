@@ -23,6 +23,9 @@ namespace NxEn
 		NEXUS_ENGINE_API static NxFr::Allocator* Allocator(AllocatorType Type, uint64 Size = DefaultAllocationRequestSize, uint64 Alignement = NxFr::Memory::DefaultAlignement);
 		NEXUS_ENGINE_API static NxFr::HandleManager* Handles();
 
+		NEXUS_ENGINE_API MemorySystem();
+		NEXUS_ENGINE_API ~MemorySystem();
+
 		NEXUS_ENGINE_API NxFr::Allocator* GetAllocator(AllocatorType Type, uint64 Size = DefaultAllocationRequestSize, uint64 Alignement = NxFr::Memory::DefaultAlignement);
 		NEXUS_ENGINE_API NxFr::HandleManager* GetHandlesManager();
 

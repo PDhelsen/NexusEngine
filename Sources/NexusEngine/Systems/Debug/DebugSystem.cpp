@@ -21,6 +21,15 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 
+	DebugSystem::DebugSystem()
+		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr)
+	{
+	}
+
+	DebugSystem::~DebugSystem()
+	{
+	}
+
 	void DebugSystem::OnInitialize()
 	{
 		System::OnInitialize();

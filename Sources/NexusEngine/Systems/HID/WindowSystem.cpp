@@ -16,6 +16,13 @@ namespace NxEn
 		OnResize += NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnResized);
 	}
 
+	WindowSystem::~WindowSystem()
+	{
+		OnFocus -= NxFr::Delegate<void(bool)>(this, &WindowSystem::OnFocused);
+		OnMove -= NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnMoved);
+		OnResize -= NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnResized);
+	}
+
 	void WindowSystem::Close()
 	{
 		Glfw::CloseWindow(Target.Instance);

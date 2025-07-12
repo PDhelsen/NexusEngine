@@ -11,6 +11,7 @@ namespace NxEn
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, WindowSystem)
 
 		NEXUS_ENGINE_API WindowSystem();
+		NEXUS_ENGINE_API ~WindowSystem();
 
 		NEXUS_ENGINE_API void Close();
 		NEXUS_ENGINE_API void Minimize();

@@ -17,6 +17,13 @@ namespace NxEn
 		Reset();
 	}
 
+	InputSystem::~InputSystem()
+	{
+		OnButtonChange -= NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
+		OnAxisChange -= NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);
+		OnMouseChange -= NxFr::Delegate<void(NxFr::Vector2f)>(this, &InputSystem::OnMouseChanged);
+	}
+
 	void InputSystem::Reset()
 	{
 		NxFr::ContainersUtils::Fill(Buttons, Input::State::Up);

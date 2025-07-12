@@ -23,6 +23,15 @@ namespace NxEn
 		return Memory->GetHandlesManager();
 	}
 
+	MemorySystem::MemorySystem()
+		: Allocators(), HandleManagers(), DefragmentAllocatorIndex(0), DefragmentHandleManagerIndex(0), FrameFlag(false)
+	{
+	}
+
+	MemorySystem::~MemorySystem()
+	{
+	}
+
 	NxFr::Allocator* MemorySystem::GetAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
 		Size = Type == AllocatorType::Small ? GetSmallAllocationSize(Size) : Size;

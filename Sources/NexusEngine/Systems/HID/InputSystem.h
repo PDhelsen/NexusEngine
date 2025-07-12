@@ -11,6 +11,7 @@ namespace NxEn
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, InputSystem)
 
 		NEXUS_ENGINE_API InputSystem();
+		NEXUS_ENGINE_API ~InputSystem();
 
 		NEXUS_ENGINE_API void Reset();
 
