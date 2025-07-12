@@ -19,12 +19,12 @@ namespace NxEn
 
 	void TimeManager::Tick()
 	{
-		UnscaledDeltaTime = Watch.Stop(NxFr::Time::SecondToMilli);
-		UnscaledTime += UnscaledDeltaTime * NxFr::Time::MilliToSecond;
+		UnscaledDeltaTime = Watch.Stop();
+		UnscaledTime += UnscaledDeltaTime;
 		Watch.Start();
 
 		DeltaTime = UnscaledDeltaTime * Multiplier;
-		Time += DeltaTime * NxFr::Time::MilliToSecond;
+		Time += DeltaTime;
 
 		FrameIndex++;
 	}

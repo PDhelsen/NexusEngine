@@ -225,7 +225,7 @@ namespace NxEn
 	float Ticker::ComputeTickRate(float TickRate, bool FixedTimeStep) const
 	{
 		NEXUS_ASSERT(!FixedTimeStep || (FixedTimeStep && TickRate > 0.0f), Default, "The system has to either no require a fixed timestep or provide a tick rate greater than 0");
-		return TickRate > 0.0f ? 1.0f / TickRate * (float)NxFr::Time::SecondToMilli : 0.0f;
+		return TickRate > 0.0f ? 1.0f / TickRate : 0.0f;
 	}
 
 	void Ticker::FlushCallbackBuffer()
