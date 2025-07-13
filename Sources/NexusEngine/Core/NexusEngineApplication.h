@@ -22,6 +22,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnShutdown() override;
 		NEXUS_ENGINE_API virtual void OnExecute() override;
 
+		void ParseCommands();
+
 	private:
 		bool Headless;
 	};
