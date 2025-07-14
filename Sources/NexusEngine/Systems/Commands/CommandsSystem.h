@@ -7,13 +7,6 @@ namespace NxEn
 {
 	class CommandsSystem : public System
 	{
-	private:
-		struct CommandInfo
-		{
-			NxFr::StringId Id;
-			float Delay;
-		};
-
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, CommandsSystem)
 
@@ -21,14 +14,19 @@ namespace NxEn
 		NEXUS_ENGINE_API static void RegisterCommand(Command* Instance);
 		NEXUS_ENGINE_API static void UnregisterCommand(Command* Instance);
 
+		NEXUS_ENGINE_API static CommandInfo ParseCommand(NxFr::StringView Cmd);
+		NEXUS_ENGINE_API static NxFr::List<CommandInfo> ParseCommands(NxFr::StringView Cmds);
+		NEXUS_ENGINE_API static NxFr::List<NxFr::StringView> ParseArguments(NxFr::StringView Args);
+
 		NEXUS_ENGINE_API CommandsSystem();
 		NEXUS_ENGINE_API ~CommandsSystem();
 
-		NEXUS_ENGINE_API void Run(NxFr::StringId Id, float Delay = 0.0f);
-		NEXUS_ENGINE_API void Execute(NxFr::StringId Id);
+		NEXUS_ENGINE_API void Run(const CommandInfo& Info);
+		NEXUS_ENGINE_API void Execute(const CommandInfo& Info);
 
-		NEXUS_ENGINE_API bool IsExecutingCommand() const;
-		NEXUS_ENGINE_API NxFr::StringId GetCurrentCommand() const;
+		NEXUS_ENGINE_API bool IsExecutingCommand() const { return Current != nullptr; }
+		NEXUS_ENGINE_API uint64 GetQueuedCommandCount() const { return Queue.GetCount(); }
+		NEXUS_ENGINE_API const CommandInfo& GetCurrentCommand() const { return IsExecutingCommand() ? *Current : CommandInfo::Dummy; };
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -39,6 +37,6 @@ namespace NxEn
 
 	private:
 		NxFr::Queue<CommandInfo> Queue;
-		Command* Current;
+		const CommandInfo* Current;
 	};
 }

@@ -26,6 +26,44 @@ namespace NxEn
 		GetCommands().Remove(Instance->GetId());
 	}
 
+	CommandInfo CommandsSystem::ParseCommand(NxFr::StringView Cmd)
+	{
+		NxFr::StringView IdAndDelay = Cmd.Split(",", 0);
+		NxFr::StringId Id = NxFr::StringId(IdAndDelay.Split(":", 0));
+		float Delay = (float)NxFr::StringUtility::ToDouble(IdAndDelay.Split(":", 1));
+
+		NxFr::StringView Args = Cmd.Find(",");
+		if (!Args.IsEmpty())
+		{
+			Args = Args.ToView(1, Args.GetCount() - 1);
+		}
+
+		return CommandInfo
+		{
+			.Id = Id,
+			.Args = NxFr::Move(Args.ToString()),
+			.Delay = Delay
+		};
+	}
+
+	NxFr::List<CommandInfo> CommandsSystem::ParseCommands(NxFr::StringView Cmds)
+	{
+		NxFr::List<NxFr::StringView> Commands = Cmds.SplitAll(";");
+		NxFr::List<CommandInfo> Infos(Commands.GetCount());
+		for (auto Cmd : Commands)
+		{
+			CommandInfo Info = ParseCommand(Cmd);
+			Infos.AppendConstruct(Info);
+
+		}
+		return Infos;
+	}
+
+	NxFr::List<NxFr::StringView> CommandsSystem::ParseArguments(NxFr::StringView Args)
+	{
+		return Args.SplitAll(",");
+	}
+
 	CommandsSystem::CommandsSystem()
 		: Queue(), Current(nullptr)
 	{
@@ -35,26 +73,16 @@ namespace NxEn
 	{
 	}
 
-	void CommandsSystem::Run(NxFr::StringId Id, float Delay)
+	void CommandsSystem::Run(const CommandInfo& Info)
 	{
-		Queue.AppendConstruct(Id, Delay);
+		Queue.AppendConstruct(Info);
 	}
 
-	void CommandsSystem::Execute(NxFr::StringId Id)
+	void CommandsSystem::Execute(const CommandInfo& Info)
 	{
-		Current = GetCommand(Id);
-		Current->Invoke();
+		Current = &Info;
+		GetCommand(Info.Id)->Invoke(Info.Args);
 		Current = nullptr;
-	}
-
-	bool CommandsSystem::IsExecutingCommand() const
-	{
-		return Current != nullptr;
-	}
-
-	NxFr::StringId CommandsSystem::GetCurrentCommand() const
-	{
-		return IsExecutingCommand() ? Current->GetId() : NxFr::StringId(0);
 	}
 
 	void CommandsSystem::OnInitialize()
@@ -86,8 +114,17 @@ namespace NxEn
 				break;
 			}
 
-			Execute(Info.Id);
+			Execute(Info);
 			Queue.Remove();
 		}
 	}
+
+	const static Command CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
+	{
+		NxFr::Dictionary<NxFr::StringId, Command*>& Commands = GetCommands();
+		for (auto& [Id, Cmd] : Commands)
+		{
+			NEXUS_LOG(Info, Default, "Command: %s - %s", Id.C(), Cmd->GetTooltip().C());
+		}
+	}));
 }

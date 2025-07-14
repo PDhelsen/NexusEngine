@@ -8,8 +8,6 @@ namespace NxEn
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
-	const static Command CmdQuit = Command("Quit"_Sid, NxFr::Delegate<void()>(Application::GetInstance(), &Application::Quit));
-
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
 		: Application(ProjectInfo), Headless(NxFr::Arguments::HasFlag("Headless"))
 	{
@@ -82,14 +80,13 @@ namespace NxEn
 		}
 
 		CommandsSystem* CmdSystem = GetSystems().GetSystem<CommandsSystem>();
-		NxFr::List<NxFr::StringView> Commands = CommandsList.SplitAll(";");
+		NxFr::List<CommandInfo> Commands = CommandsSystem::ParseCommands(CommandsList);
+
 		for (auto Cmd : Commands)
 		{
-			NxFr::List<NxFr::StringView> Parts = Cmd.SplitAll(":");
-			NxFr::StringId Id = NxFr::StringId(Parts[0]);
-			float Delay = Parts.GetCount() > 1 ? (float)NxFr::StringUtility::ToDouble(Parts[1]) : 0.0f;
-
-			CmdSystem->Run(Id, Delay);
+			CmdSystem->Run(Cmd);
 		}
 	}
+
+	const static Command CmdQuit = Command::Create("Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>(Application::GetInstance(), &Application::Quit));
 }

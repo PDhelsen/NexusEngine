@@ -3,22 +3,46 @@
 
 namespace NxEn
 {
-	const static Command TestFirst = Command("TestFirst"_Sid, []() { NEXUS_LOG(Info, Default, "First"); });
-	const static Command TestSecond = Command("TestSecond"_Sid, []() { NEXUS_LOG(Info, Default, "Second"); });
+	const CommandInfo CommandInfo::Dummy = CommandInfo { .Id = 0, .Args = "", .Delay = 0 };
 
-	Command::Command(NxFr::StringId Id, NxFr::Delegate<void()> Callback)
-		: Id(Id), Callback(Callback)
+	Command::Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback, bool AutoRegister)
+		: Id(Id), Tooltip(Tooltip.ToString()), Callback(Callback), Registered(false)
 	{
-		CommandsSystem::RegisterCommand(this);
+		if (AutoRegister)
+		{
+			Register();
+		}
 	}
 
 	Command::~Command()
 	{
-		CommandsSystem::UnregisterCommand(this);
+		Unregister();
 	}
 
-	void Command::Invoke()
+	void Command::Register()
 	{
-		Callback.Invoke();
+		if (Registered)
+		{
+			return;
+		}
+
+		CommandsSystem::RegisterCommand(this);
+		Registered = true;
+	}
+
+	void Command::Unregister()
+	{
+		if (!Registered)
+		{
+			return;
+		}
+
+		CommandsSystem::UnregisterCommand(this);
+		Registered = false;
+	}
+
+	void Command::Invoke(NxFr::StringView Args) const
+	{
+		Callback.Invoke(Args);
 	}
 }
