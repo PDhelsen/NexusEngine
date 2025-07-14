@@ -88,5 +88,5 @@ namespace NxEn
 		}
 	}
 
-	const static Command CmdQuit = Command::Create("Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>(Application::GetInstance(), &Application::Quit));
+	const static Command CmdQuit = Command::Create("Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]() {Application::GetInstance()->Quit(); }));
 }

@@ -18,29 +18,8 @@ namespace NxEn
 	class Command
 	{
 	public:
-		template<uint8 C = 0, typename... Args>
-		static Command Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback, bool AutoRegister = true)
-		{
-			NEXUS_ASSERT_STATIC(C <= 5, "Command support up to 5 arguments");
-			return Command(Id, Tooltip, [=](NxFr::StringView Args)
-			{
-				NxFr::List<NxFr::StringView> Arguments = CommandsSystem::ParseArguments(Args);
-				if constexpr (C == 0)
-					Callback.Invoke();
-				else if constexpr (C == 1)
-					Callback.Invoke(Arguments[0]);
-				else if constexpr (C == 2)
-					Callback.Invoke(Arguments[0], Arguments[1]);
-				else if constexpr (C == 3)
-					Callback.Invoke(Arguments[0], Arguments[1], Arguments[2]);
-				else if constexpr (C == 4)
-					Callback.Invoke(Arguments[0], Arguments[1], Arguments[2], Arguments[3]);
-				else if constexpr (C == 5)
-					Callback.Invoke(Arguments[0], Arguments[1], Arguments[2], Arguments[3], Arguments[4]);
-				else
-					NEXUS_LOG(Error, Default, "Commands arguments not supported");
-			}, AutoRegister);
-		}
+		template<typename... Args>
+		static Command Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback, bool AutoRegister = true);
 
 		NEXUS_ENGINE_API Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback, bool AutoRegister = true);
 		NEXUS_ENGINE_API ~Command();
@@ -54,9 +33,29 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::StringView GetTooltip() const { return Tooltip; }
 
 	private:
+		template<typename Func, uint64... Indices>
+		static void InvokeWithArguments(Func&& Callback, const NxFr::List<NxFr::StringView>& Args, NxFr::IndexSequence<Indices...>);
+
+	private:
 		bool Registered;
 		NxFr::StringId Id;
 		NxFr::String Tooltip;
 		NxFr::Delegate<void(NxFr::StringView)> Callback;
 	};
+
+	template<typename ...Args>
+	inline Command Command::Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback, bool AutoRegister)
+	{
+		return Command(Id, Tooltip, [=](NxFr::StringView ArgsLine)
+		{
+			NxFr::List<NxFr::StringView> Arguments = CommandsSystem::ParseArguments(ArgsLine);
+			InvokeWithArguments(Callback, Arguments, NxFr::MakeIndexSequence<sizeof...(Args)>{});
+		}, AutoRegister);
+	}
+
+	template<typename Func, uint64 ...Indices>
+	inline void Command::InvokeWithArguments(Func&& Callback, const NxFr::List<NxFr::StringView>& Args, NxFr::IndexSequence<Indices...>)
+	{
+		Callback.Invoke(Args[Indices]...);
+	}
 }
