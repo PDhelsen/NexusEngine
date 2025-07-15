@@ -54,6 +54,12 @@ namespace NxEn
 		};
 
 	public:
+		inline static const float HighFrequency = 60.0f;
+		inline static const float MediumFrequency = 30.0f;
+		inline static const float LowFrequency = 10.0f;
+		inline static const float TwicePerSecond = 2.0f;
+		inline static const float OncePerSecond = 1.0f;
+
 		NEXUS_ENGINE_API Ticker();
 		NEXUS_ENGINE_API ~Ticker();
 

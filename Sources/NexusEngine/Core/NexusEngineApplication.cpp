@@ -63,7 +63,7 @@ namespace NxEn
 		Ticker& Ticks = GetTicker();
 
 		Ticks.AppendSystem<InputSystem>(Ticker::TickBucket::Input);
-		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, 10.0f).AppendDependency<CommandsSystem, InputSystem>();
+		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, Ticker::LowFrequency).AppendDependency<CommandsSystem, InputSystem>();
 		if (!IsHeadless()) Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output);
 		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
 		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
