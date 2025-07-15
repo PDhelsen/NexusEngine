@@ -10,8 +10,6 @@ namespace NxEd
 	class NexusEditorApplication : public NxEn::NexusEngineApplication
 	{
 	public:
-		static NexusEditorApplication* GetInstance() { return (NexusEditorApplication*)Application::GetInstance(); }
-
 		NEXUS_EDITOR_API NexusEditorApplication(const NxEn::Project& ProjectInfo);
 		NEXUS_EDITOR_API virtual ~NexusEditorApplication() = default;
 

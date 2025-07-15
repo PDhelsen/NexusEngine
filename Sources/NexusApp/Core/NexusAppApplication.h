@@ -10,8 +10,6 @@ namespace NxAp
 	class NexusAppApplication : public NxEn::NexusEngineApplication
 	{
 	public:
-		static NexusAppApplication* GetInstance() { return (NexusAppApplication*)Application::GetInstance(); }
-
 		NEXUS_APP_API NexusAppApplication(const NxEn::Project& ProjectInfo);
 		NEXUS_APP_API virtual ~NexusAppApplication() = default;
 

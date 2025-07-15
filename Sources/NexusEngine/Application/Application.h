@@ -42,6 +42,8 @@ namespace NxEn
 		friend int EntryPoint::Main(int argc, char* argv[]);
 
 	public:
+		template<typename T>
+		static T* GetInstanceAs() { return (T*)GetInstance(); }
 		NEXUS_ENGINE_API static Application* GetInstance();
 
 		NEXUS_ENGINE_API Application(const Project& ProjectInfo);

@@ -10,8 +10,6 @@ namespace NxSE
 	class NexusSandboxEditorApplication : public NxEd::NexusEditorApplication
 	{
 	public:
-		static NexusSandboxEditorApplication* GetInstance() { return (NexusSandboxEditorApplication*)Application::GetInstance(); }
-
 		NEXUS_SANDBOX_EDITOR_API NexusSandboxEditorApplication(const NxEn::Project& ProjectInfo);
 		NEXUS_SANDBOX_EDITOR_API virtual ~NexusSandboxEditorApplication() = default;
 

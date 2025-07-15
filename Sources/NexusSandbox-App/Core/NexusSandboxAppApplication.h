@@ -10,8 +10,6 @@ namespace NxSA
 	class NexusSandboxAppApplication : public NxAp::NexusAppApplication
 	{
 	public:
-		static NexusSandboxAppApplication* GetInstance() { return (NexusSandboxAppApplication*)Application::GetInstance(); }
-
 		NEXUS_SANDBOX_APP_API NexusSandboxAppApplication(const NxEn::Project& ProjectInfo);
 		NEXUS_SANDBOX_APP_API virtual ~NexusSandboxAppApplication() = default;
 
