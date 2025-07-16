@@ -25,7 +25,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void Execute(const CommandInfo& Info);
 
 		NEXUS_ENGINE_API bool IsExecutingCommand() const { return Current != nullptr; }
-		NEXUS_ENGINE_API uint64 GetQueuedCommandCount() const { return Queue.GetCount(); }
+		NEXUS_ENGINE_API uint64 GetQueuedCommandCount() const { return Queue->GetCount(); }
 		NEXUS_ENGINE_API const CommandInfo& GetCurrentCommand() const { return IsExecutingCommand() ? *Current : CommandInfo::Dummy; };
 
 	protected:
@@ -36,7 +36,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void FlushCommands(float TimeStep);
 
 	private:
-		NxFr::Queue<CommandInfo> Queue;
+		NxFr::Queue<CommandInfo>* Queue;
 		const CommandInfo* Current;
 	};
 }

@@ -65,7 +65,7 @@ namespace NxEn
 	}
 
 	CommandsSystem::CommandsSystem()
-		: Queue(), Current(nullptr)
+		: Queue(nullptr), Current(nullptr)
 	{
 	}
 
@@ -75,7 +75,7 @@ namespace NxEn
 
 	void CommandsSystem::Run(const CommandInfo& Info)
 	{
-		Queue.AppendConstruct(Info);
+		Queue->AppendConstruct(Info);
 	}
 
 	void CommandsSystem::Execute(const CommandInfo& Info)
@@ -88,11 +88,17 @@ namespace NxEn
 	void CommandsSystem::OnInitialize()
 	{
 		System::OnInitialize();
+
+		NxFr::Allocator* Alloc = Application::GetSystem<MemorySystem>()->GetAllocator(AllocatorType::Small, sizeof(CommandInfo));
+		Queue = new NxFr::Queue<CommandInfo>(Alloc);
 	}
 
 	void CommandsSystem::OnShutdown()
 	{
 		System::OnShutdown();
+
+		delete Queue;
+		Queue = nullptr;
 	}
 
 	void CommandsSystem::OnTick(float TimeStep)
@@ -104,9 +110,9 @@ namespace NxEn
 
 	void CommandsSystem::FlushCommands(float TimeStep)
 	{
-		while (Queue.GetCount() > 0)
+		while (Queue->GetCount() > 0)
 		{
-			CommandInfo& Info = Queue.Get();
+			CommandInfo& Info = Queue->Get();
 
 			Info.Delay -= TimeStep;
 			if (Info.Delay > 0.0f)
@@ -115,7 +121,7 @@ namespace NxEn
 			}
 
 			Execute(Info);
-			Queue.Remove();
+			Queue->Remove();
 		}
 	}
 

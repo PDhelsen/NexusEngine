@@ -33,7 +33,7 @@ namespace NxEn
 
 	void* Allocator::Allocate(uint64 Size, uint64 Alignement)
 	{
-		NxFr::Allocator* Alloc = MemorySystem::Allocator(Type, Size, Alignement);
+		NxFr::Allocator* Alloc = Application::GetSystem<MemorySystem>()->GetAllocator(Type, Size, Alignement);
 
 		uint64 Marker = Alloc->UsedAmount();
 

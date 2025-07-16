@@ -162,17 +162,17 @@ namespace NxEn
 
 		static void CloseCallback(GLFWwindow* Window)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnClose().Invoke();
+			Application::GetSystem<WindowSystem>()->GetOnClose().Invoke();
 		}
 
 		static void MoveCallback(GLFWwindow* Window, int X, int Y)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnMove().Invoke(NxFr::Vector2i(X, Y));
+			Application::GetSystem<WindowSystem>()->GetOnMove().Invoke(NxFr::Vector2i(X, Y));
 		}
 
 		static void ResizeCallback(GLFWwindow* Window, int Width, int Height)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnResize().Invoke(NxFr::Vector2i(Width, Height));
+			Application::GetSystem<WindowSystem>()->GetOnResize().Invoke(NxFr::Vector2i(Width, Height));
 		}
 
 		static void KeyButtonCallback(GLFWwindow* Window, int KeyCode, int ScanCode, int Action, int Mods)
@@ -184,7 +184,7 @@ namespace NxEn
 
 			Input::Button Button = GlfwKeyCodeToNexusButton()[KeyCode];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
+			Application::GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
 		}
 
 		static void MouseButtonCallback(GLFWwindow* Window, int Mouse, int Action, int Mods)
@@ -196,7 +196,7 @@ namespace NxEn
 
 			Input::Button Button = GlfwMouseCodeToNexusButton()[Mouse];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
+			Application::GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
 		}
 
 		static void MouseCallback(GLFWwindow* Window, double X, double Y)
@@ -206,18 +206,18 @@ namespace NxEn
 				return;
 			}
 
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnMouseChange().Invoke(NxFr::Vector2f(X, Y));
+			Application::GetSystem<InputSystem>()->GetOnMouseChange().Invoke(NxFr::Vector2f(X, Y));
 		}
 
 		static void ScrollCallback(GLFWwindow* Window, double X, double Y)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollX, (float)X);
-			Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollY, (float)Y);
+			Application::GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollX, (float)X);
+			Application::GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollY, (float)Y);
 		}
 
 		static void WindowFocusCallback(GLFWwindow* Window, int Focused)
 		{
-			Application::GetInstance()->GetSystems().GetSystem<WindowSystem>()->GetOnFocus().Invoke(Focused > 0);
+			Application::GetSystem<WindowSystem>()->GetOnFocus().Invoke(Focused > 0);
 		}
 
 		static void MouseFocusCallback(GLFWwindow* Window, int Entered)
@@ -225,7 +225,7 @@ namespace NxEn
 			MouseFocus = Entered;
 			if (!MouseFocus)
 			{
-				Application::GetInstance()->GetSystems().GetSystem<InputSystem>()->GetOnMouseChange().Invoke(-NxFr::Vector2f::One);
+				Application::GetSystem<InputSystem>()->GetOnMouseChange().Invoke(-NxFr::Vector2f::One);
 			}
 		}
 

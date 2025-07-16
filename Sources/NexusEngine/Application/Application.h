@@ -43,7 +43,10 @@ namespace NxEn
 
 	public:
 		template<typename T>
-		static T* GetInstanceAs() { return (T*)GetInstance(); }
+		static T* GetInstance() { return (T*)GetInstance(); }
+		template<typename T>
+		static T* GetSystem() { return GetInstance()->GetSystems().GetSystem<T>(); }
+
 		NEXUS_ENGINE_API static Application* GetInstance();
 
 		NEXUS_ENGINE_API Application(const Project& ProjectInfo);

@@ -35,7 +35,7 @@ namespace NxEn
 		Bootstrap.AppendSystem<DebugSystem>();
 		Bootstrap.AppendSystem<InputSystem>();
 		if (!IsHeadless()) Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
-		Bootstrap.AppendSystem<CommandsSystem>();
+		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
 	}
 
 	void NexusEngineApplication::OnShutdown()
@@ -43,7 +43,7 @@ namespace NxEn
 		Bootstrapper& Unbootstrap = GetBootstrapper();
 
 		Unbootstrap.AppendSystem<DebugSystem>();
-		Unbootstrap.AppendSystem<MemorySystem>();
+		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
 		if (!IsHeadless()) Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
 		Unbootstrap.AppendSystem<CommandsSystem>();

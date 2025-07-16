@@ -11,18 +11,6 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(MemorySystem)
 
-	NxFr::Allocator* MemorySystem::Allocator(AllocatorType Type, uint64 Size, uint64 Alignement)
-	{
-		MemorySystem* Memory = Application::GetInstance()->GetSystems().GetSystem<MemorySystem>();
-		return Memory->GetAllocator(Type, Size, Alignement);
-	}
-
-	NxFr::HandleManager* MemorySystem::Handles()
-	{
-		MemorySystem* Memory = Application::GetInstance()->GetSystems().GetSystem<MemorySystem>();
-		return Memory->GetHandlesManager();
-	}
-
 	MemorySystem::MemorySystem()
 		: Allocators(), HandleManagers(), DefragmentAllocatorIndex(0), DefragmentHandleManagerIndex(0), FrameFlag(false)
 	{
