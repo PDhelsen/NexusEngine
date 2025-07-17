@@ -38,5 +38,6 @@ namespace NxEn
 	private:
 		NxFr::Queue<CommandInfo>* Queue;
 		const CommandInfo* Current;
+		Allocator* Alloc;
 	};
 }

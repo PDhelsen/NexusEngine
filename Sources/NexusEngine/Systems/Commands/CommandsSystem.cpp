@@ -65,7 +65,7 @@ namespace NxEn
 	}
 
 	CommandsSystem::CommandsSystem()
-		: Queue(nullptr), Current(nullptr)
+		: Queue(nullptr), Current(nullptr), Alloc(nullptr)
 	{
 	}
 
@@ -89,7 +89,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NxFr::Allocator* Alloc = Application::GetSystem<MemorySystem>()->GetAllocator(AllocatorType::Small, sizeof(CommandInfo));
+		Alloc = new Allocator(AllocatorType::General);
 		Queue = new NxFr::Queue<CommandInfo>(Alloc);
 	}
 
@@ -98,7 +98,7 @@ namespace NxEn
 		System::OnShutdown();
 
 		delete Queue;
-		Queue = nullptr;
+		delete Alloc;
 	}
 
 	void CommandsSystem::OnTick(float TimeStep)
