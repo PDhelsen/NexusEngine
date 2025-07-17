@@ -48,6 +48,11 @@ namespace NxEn
 
 	void* Allocator::Reallocate(void* Pointer, uint64 Size, uint64 Alignement)
 	{
+		if (!Pointer)
+		{
+			return nullptr;
+		}
+
 		NxFr::Allocator* Alloc = GetAllocator(Pointer);
 		NEXUS_ASSERT(Alloc, Default, "Memory was not allocated from this allocator");
 
@@ -71,6 +76,11 @@ namespace NxEn
 
 	void Allocator::Free(void* Pointer)
 	{
+		if (!Pointer)
+		{
+			return;
+		}
+
 		NxFr::Allocator* Alloc = GetAllocator(Pointer);
 		NEXUS_ASSERT(Alloc, Default, "Memory was not allocated from this allocator");
 
