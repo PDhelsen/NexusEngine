@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NexusEngine/External/imgui/imgui.h"
+
 #include "NexusEngine/Application/Object.h"
 #include "NexusEngine/Application/Application.h"
 #include "NexusEngine/Application/Project.h"

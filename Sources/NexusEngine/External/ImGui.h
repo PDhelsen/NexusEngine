@@ -4,7 +4,7 @@
 
 namespace NxEn
 {
-	namespace Imgui
+	namespace ImGui
 	{
 		void Initialize(void* Window);
 		void Shutdown();

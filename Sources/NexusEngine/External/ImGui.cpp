@@ -1,21 +1,21 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/External/ImGui.h"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
-#include "imgui/imgui_impl_opengl3_loader.h"
+#include "NexusEngine/External/imgui/imgui.h"
+#include "NexusEngine/External/imgui/imgui_impl_glfw.h"
+#include "NexusEngine/External/imgui/imgui_impl_opengl3.h"
+#include "NexusEngine/External/imgui/imgui_impl_opengl3_loader.h"
 
 namespace NxEn
 {
-	namespace Imgui
+	namespace ImGui
 	{
 #define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
 
 		void Initialize(void* Window)
 		{
-			IMGUI_CHECKVERSION();
-			ImGui::CreateContext();
+			::IMGUI_CHECKVERSION();
+			::ImGui::CreateContext();
 			ImGuiIO& io = ::ImGui::GetIO();
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
@@ -27,22 +27,22 @@ namespace NxEn
 		{
 			ImGui_ImplOpenGL3_Shutdown();
 			ImGui_ImplGlfw_Shutdown();
-			ImGui::DestroyContext();
+			::ImGui::DestroyContext();
 		}
 
 		void Frame()
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-			ImGui::ShowDemoWindow();
+			::ImGui::NewFrame();
+			::ImGui::ShowDemoWindow();
 		}
 
 		void Render()
 		{
-			ImGui::Render();
+			::ImGui::Render();
 			glClear(GL_COLOR_BUFFER_BIT);
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
 		}
 	}
 }

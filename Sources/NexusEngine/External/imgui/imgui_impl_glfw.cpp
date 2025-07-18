@@ -101,14 +101,18 @@
 #endif
 
 // GLFW
-#include <GLFW/glfw3.h>
+// NEXUS: Begin
+#include "glfw/include/GLFW/glfw3.h"
+// NEXUS: End
 
 #ifdef _WIN32
 #undef APIENTRY
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #endif
-#include <GLFW/glfw3native.h>   // for glfwGetWin32Window()
+// NEXUS: Begin
+#include "glfw/include/GLFW/glfw3native.h"   // for glfwGetWin32Window()
+// NEXUS: End
 #endif
 #ifdef __APPLE__
 #ifndef GLFW_EXPOSE_NATIVE_COCOA

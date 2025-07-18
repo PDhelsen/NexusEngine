@@ -20,12 +20,12 @@ namespace NxEn
 		System::OnInitialize();
 
 		void* Window = Application::GetSystem<WindowSystem>()->GetNativeWindow();
-		Imgui::Initialize(Window);
+		ImGui::Initialize(Window);
 	}
 
 	void GUISystem::OnShutdown()
 	{
-		Imgui::Shutdown();
+		ImGui::Shutdown();
 		
 		System::OnShutdown();
 	}
@@ -34,7 +34,7 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		Imgui::Frame();
-		Imgui::Render();
+		ImGui::Frame();
+		ImGui::Render();
 	}
 }
