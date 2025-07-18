@@ -2,12 +2,14 @@
 #include "NexusEngine/Systems/GUI/GUISystem.h"
 
 #include "NexusEngine/External/ImGui.h"
+#include "NexusFramework/Core/NexusFrameworkPaths.h"
 
 namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUISystem::GUISystem()
+		: Config("")
 	{
 	}
 
@@ -19,8 +21,9 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
+		Config = NxFr::Paths::Configs + "imgui.ini";
 		void* Window = Application::GetSystem<WindowSystem>()->GetNativeWindow();
-		ImGui::Initialize(Window);
+		ImGui::Initialize(Window, Config);
 	}
 
 	void GUISystem::OnShutdown()

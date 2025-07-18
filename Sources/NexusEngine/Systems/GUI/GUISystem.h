@@ -16,5 +16,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+
+	private:
+		NxFr::Path Config;
 	};
 }

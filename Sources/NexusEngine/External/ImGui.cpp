@@ -12,11 +12,12 @@ namespace NxEn
 	{
 #define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
 
-		void Initialize(void* Window)
+		void Initialize(void* Window, NxFr::StringView ConfigPath)
 		{
 			::IMGUI_CHECKVERSION();
 			::ImGui::CreateContext();
 			ImGuiIO& io = ::ImGui::GetIO();
+			io.IniFilename = ConfigPath.C();
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
 			ImGui_ImplGlfw_InitForOpenGL(NEXUS_WINDOW(Window), true);
