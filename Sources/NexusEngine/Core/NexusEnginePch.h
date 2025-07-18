@@ -11,4 +11,5 @@
 #include "NexusEngine/Systems/Memory/MemorySystem.h"
 #include "NexusEngine/Systems/HID/InputSystem.h"
 #include "NexusEngine/Systems/HID/WindowSystem.h"
+#include "NexusEngine/Systems/GUI/GUISystem.h"
 #include "NexusEngine/Systems/Commands/CommandsSystem.h"

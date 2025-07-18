@@ -7,6 +7,8 @@ namespace NxEn
 {
 	class WindowSystem : public System
 	{
+		friend class GUISystem;
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, WindowSystem)
 
@@ -36,8 +38,8 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Event<NxFr::Vector2i>& GetOnMove() { return OnMove; }
 		NEXUS_ENGINE_API NxFr::Event<NxFr::Vector2i>& GetOnResize() { return OnResize; }
 
-		NEXUS_ENGINE_API Window& GetWindow() { return Target; }
-		NEXUS_ENGINE_API Monitor& GetMonitor(uint8 Index = 0) { return Monitors[Index]; }
+		NEXUS_ENGINE_API const Window& GetWindow() const { return Target; }
+		NEXUS_ENGINE_API const Monitor& GetMonitor(uint8 Index = 0) const { return Monitors[Index]; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -52,6 +54,10 @@ namespace NxEn
 		NEXUS_ENGINE_API void DestroyWindow();
 		NEXUS_ENGINE_API void TickWindow();
 		NEXUS_ENGINE_API void UpdateCursor();
+
+		NEXUS_ENGINE_API void* GetNativeWindow() { return Target.Instance; }
+		NEXUS_ENGINE_API void* GetNativeMonitor(uint8 Index = 0) { return Monitors[Index].Instance; }
+		NEXUS_ENGINE_API void* GetNativeCursor() { return Pointer.Instance; }
 
 	private:
 		NxFr::Event<> OnClose;

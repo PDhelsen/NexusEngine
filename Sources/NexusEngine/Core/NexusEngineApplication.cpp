@@ -20,6 +20,8 @@ namespace NxEn
 		{
 			WindowSystem* Window = Systems.CreateSystem<WindowSystem>();
 			Window->GetOnClose() += NxFr::Delegate<void()>(this, &Application::Quit);
+
+			Systems.CreateSystem<GUISystem>();
 		}
 		Systems.CreateSystem<CommandsSystem>();
 	}
@@ -34,7 +36,11 @@ namespace NxEn
 		Bootstrap.AppendSystem<MemorySystem>();
 		Bootstrap.AppendSystem<DebugSystem>();
 		Bootstrap.AppendSystem<InputSystem>();
-		if (!IsHeadless()) Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
+		if (!IsHeadless())
+		{
+			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
+			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>();
+		}
 		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
 	}
 
@@ -45,7 +51,11 @@ namespace NxEn
 		Unbootstrap.AppendSystem<DebugSystem>();
 		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
-		if (!IsHeadless()) Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
+		if (!IsHeadless())
+		{
+			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
+			Unbootstrap.AppendSystem<GUISystem>().AppendDependency<WindowSystem, GUISystem>();
+		}
 		Unbootstrap.AppendSystem<CommandsSystem>();
 
 		Unbootstrap.AppendStep([]()
@@ -64,7 +74,11 @@ namespace NxEn
 
 		Ticks.AppendSystem<InputSystem>(Ticker::TickBucket::Input);
 		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, Ticker::LowFrequency).AppendDependency<CommandsSystem, InputSystem>();
-		if (!IsHeadless()) Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output);
+		if (!IsHeadless())
+		{
+			Ticks.AppendSystem<GUISystem>(Ticker::TickBucket::Output);
+			Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output).AppendDependency<WindowSystem, GUISystem>();
+		}
 		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
 		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 
