@@ -19,6 +19,7 @@ namespace NxEn
 			ImGuiIO& io = ::ImGui::GetIO();
 			io.IniFilename = ConfigPath.C();
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 			ImGui_ImplGlfw_InitForOpenGL(NEXUS_WINDOW(Window), true);
 			ImGui_ImplOpenGL3_Init();
