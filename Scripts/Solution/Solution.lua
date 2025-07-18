@@ -16,6 +16,7 @@ Project = "NexusProject"
 Sandbox = "NexusSandbox"
 Yaml = "yaml-cpp"
 Glfw = "Glfw"
+ImGui = "ImGui"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -82,6 +83,7 @@ workspace (Engine)
 
 group "Libraries"
 project (Glfw)
+project (ImGui)
 group "Tests"
 project (Sandbox .. "-App")
 project (Sandbox .. "-Editor")
@@ -130,7 +132,8 @@ project (Engine)
 	{
 		Framework,
 		Yaml,
-		Glfw
+		Glfw,
+		ImGui
 	}
 
 	defines
@@ -175,7 +178,8 @@ project (App)
 	links
 	{
 		Framework,
-		Engine
+		Engine,
+		ImGui
 	}
 
 	defines
@@ -220,7 +224,8 @@ project (Editor)
 	{
 		Framework,
 		Engine,
-		App
+		App,
+		ImGui
 	}
 
 	defines
@@ -445,6 +450,38 @@ project (Glfw)
 		{
 			"_CRT_SECURE_NO_WARNINGS"
 		}
+
+	postbuildcommands
+    {
+        PostBuild
+    }
+
+project (ImGui)
+    location (Lib)
+
+    kind "StaticLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+	files
+    {
+        Lib .. "**.h",
+        Lib .. "**.cpp",
+        Lib .. "debuggers/*",
+    }
+
+	includedirs
+    {
+        Libraries .. "glfw/include/",
+    }
+
+	links
+	{
+		Glfw
+	}
 
 	postbuildcommands
     {
