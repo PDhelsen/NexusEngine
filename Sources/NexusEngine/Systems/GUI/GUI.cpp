@@ -9,6 +9,36 @@ namespace NxEn
 
 		NEXUS_OBJECT_IMPLEMENTATION(Element)
 
+		Element::Element(bool Manual)
+			: Manual(Manual)
+		{
+		}
+
+		Element::~Element()
+		{
+		}
+
+		void Element::Show()
+		{
+			SetEnabled(true);
+		}
+
+		void Element::Hide()
+		{
+			SetEnabled(false);
+		}
+
+		void Element::Close()
+		{
+			Hide();
+			Application::GetInstance()->GetTicker().AppendTickOnceCallback([=]() { Object::Destroy(this); }, Ticker::TickBucket::Cleanup);
+		}
+
+		void Element::OnInitialize()
+		{
+			SetTickable(true);
+		}
+
 		void Element::OnTick(float TimeStep)
 		{
 			OnGui(TimeStep);
@@ -16,12 +46,22 @@ namespace NxEn
 
 		void Element::OnEnable()
 		{
-			Application::GetSystem<GUISystem>()->GetOnGui() += NxFr::Delegate<void(float)>(this, &Element::OnTick);
+			if (Manual)
+			{
+				return;
+			}
+
+			Application::GetSystem<GUISystem>()->GetOnGui() += NxFr::Delegate<void(float)>(this, &Element::Tick);
 		}
 
 		void Element::OnDisable()
 		{
-			Application::GetSystem<GUISystem>()->GetOnGui() -= NxFr::Delegate<void(float)>(this, &Element::OnTick);
+			if (Manual)
+			{
+				return;
+			}
+
+			Application::GetSystem<GUISystem>()->GetOnGui() -= NxFr::Delegate<void(float)>(this, &Element::Tick);
 		}
 
 #pragma endregion
@@ -31,7 +71,7 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Panel)
 
 		Panel::Panel()
-			: Title(""), PanelFlags(0)
+			: Element(false), Title(""), PanelFlags(0)
 		{
 		}
 
@@ -53,6 +93,8 @@ namespace NxEn
 
 		void Panel::OnInitialize()
 		{
+			Element::OnInitialize();
+
 			SetTitle(GetObjectType().C());
 			SetPanelFlag(ImGuiWindowFlags_NoCollapse);
 		}
@@ -69,8 +111,12 @@ namespace NxEn
 
 			if (!IsOpen)
 			{
-				SetEnabled(false);
+				Hide();
 			}
+		}
+
+		void Panel::OnGui(float TimeStep)
+		{
 		}
 
 #pragma endregion
@@ -80,7 +126,7 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Popup)
 
 		Popup::Popup()
-			: PanelFlags(0), Title(""), Message(""), Callbacks()
+			: Element(false), PanelFlags(0), Title(""), Message(""), Callbacks()
 		{
 		}
 
@@ -108,6 +154,8 @@ namespace NxEn
 
 		void Popup::OnInitialize()
 		{
+			Element::OnInitialize();
+
 			PanelFlags |= ImGuiWindowFlags_NoCollapse;
 			PanelFlags |= ImGuiWindowFlags_NoDocking;
 		}
@@ -117,7 +165,6 @@ namespace NxEn
 			ImGui::OpenPopup(Title.C());
 			if (ImGui::BeginPopupModal(Title.C(), nullptr, PanelFlags))
 			{
-				ImGui::Text(Message.C());
 				OnGui(TimeStep);
 
 				for (auto& Button : Callbacks)
@@ -135,9 +182,92 @@ namespace NxEn
 			}
 		}
 
-		void Popup::Close()
+		void Popup::OnGui(float TimeStep)
 		{
-			Application::GetInstance()->GetTicker().AppendTickOnceCallback([=]() { Object::Destroy(this); }, Ticker::TickBucket::Cleanup);
+			ImGui::Text(Message.C());
+		}
+
+#pragma endregion
+
+#pragma region Progress
+
+		NEXUS_OBJECT_IMPLEMENTATION(ProgressBar)
+
+		ProgressBar::ProgressBar()
+			: Element(false), PanelFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
+		{
+		}
+
+		ProgressBar::~ProgressBar()
+		{
+		}
+
+		ProgressBar& ProgressBar::SetTitle(NxFr::StringView Title)
+		{
+			this->Title = Title.ToString();
+			return *this;
+		}
+
+		ProgressBar& ProgressBar::SetMessage(NxFr::StringView Message)
+		{
+			this->Message = Message.ToString();
+			return *this;
+		}
+
+		ProgressBar& ProgressBar::SetCallback(NxFr::Delegate<void()> Callback)
+		{
+			this->Callback = Callback;
+			return *this;
+		}
+
+		ProgressBar& ProgressBar::SetProgress(float Progress)
+		{
+			this->Progress = Progress;
+			return *this;
+		}
+
+		void ProgressBar::OnInitialize()
+		{
+			Element::OnInitialize();
+
+			PanelFlags |= ImGuiWindowFlags_NoCollapse;
+			PanelFlags |= ImGuiWindowFlags_NoDocking;
+		}
+
+		void ProgressBar::OnTick(float TimeStep)
+		{
+			if (ImGui::Begin(GetTitle().C(), nullptr, PanelFlags))
+			{
+				OnGui(TimeStep);
+
+				float Percentag = ComputePercentage(TimeStep);
+				ImGui::ProgressBar(Percentag);
+				ImGui::End();
+			}
+
+			if (Progress >= 1.0f)
+			{
+				Callback.Invoke();
+				Hide();
+			}
+		}
+
+		void ProgressBar::OnGui(float TimeStep)
+		{
+			ImGui::Text(Message.C());
+		}
+
+		float ProgressBar::ComputePercentage(float TimeStep)
+		{
+			if (Progress >= 0.0f)
+			{
+				return Progress;
+			}
+
+			Progress -= TimeStep;
+			Progress = NxFr::Math::FMod(Progress, 1.0f);
+
+			return NxFr::Math::Abs(Progress);
 		}
 
 #pragma endregion
