@@ -61,9 +61,11 @@ namespace NxEn
 		{
 			bool IsOpen = true;
 
-			ImGui::Begin(GetTitle().C(), &IsOpen, PanelFlags);
-			OnGui(TimeStep);
-			ImGui::End();
+			if (ImGui::Begin(GetTitle().C(), &IsOpen, PanelFlags))
+			{
+				OnGui(TimeStep);
+				ImGui::End();
+			}
 
 			if (!IsOpen)
 			{
@@ -112,20 +114,25 @@ namespace NxEn
 
 		void Popup::OnTick(float TimeStep)
 		{
-			ImGui::Begin(Title.C(), nullptr, PanelFlags);
-
-			ImGui::Text(Message.C());
-			OnGui(TimeStep);
-			for (auto& Button : Callbacks)
+			ImGui::OpenPopup(Title.C());
+			if (ImGui::BeginPopupModal(Title.C(), nullptr, PanelFlags))
 			{
-				if (ImGui::Button(Button.GetFirst().C(), { 100, 50 } ))
-				{
-					Button.GetSecond().Invoke();
-					Close();
-				}
-			}
+				ImGui::Text(Message.C());
+				OnGui(TimeStep);
 
-			ImGui::End();
+				for (auto& Button : Callbacks)
+				{
+					if (ImGui::Button(Button.GetFirst().C(), { 100, 50 }))
+					{
+						Button.GetSecond().Invoke();
+						Close();
+
+						ImGui::CloseCurrentPopup();
+					}
+				}
+
+				ImGui::EndPopup();
+			}
 		}
 
 		void Popup::Close()
