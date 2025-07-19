@@ -38,6 +38,9 @@ namespace NxEn
 		System::OnTick(TimeStep);
 
 		ImGui::Frame();
+
+		::ImGui::ShowDemoWindow();
+
 		ImGui::Render();
 	}
 }

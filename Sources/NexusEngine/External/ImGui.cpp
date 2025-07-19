@@ -16,6 +16,7 @@ namespace NxEn
 		{
 			::IMGUI_CHECKVERSION();
 			::ImGui::CreateContext();
+
 			ImGuiIO& io = ::ImGui::GetIO();
 			io.IniFilename = ConfigPath.C();
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -37,14 +38,16 @@ namespace NxEn
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			::ImGui::NewFrame();
-			::ImGui::ShowDemoWindow();
 		}
 
 		void Render()
 		{
-			::ImGui::Render();
+			//TODO: Move to RenderingSystem
 			glClear(GL_COLOR_BUFFER_BIT);
-			ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
+
+			::ImGui::Render();
+			auto Data = ::ImGui::GetDrawData();
+			ImGui_ImplOpenGL3_RenderDrawData(Data);
 		}
 	}
 }
