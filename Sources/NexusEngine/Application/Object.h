@@ -43,11 +43,11 @@ namespace NxEn
 		}
 
 		template<typename T>
-		static void Destroy(T** Instance)
+		static T* Destroy(T* Instance)
 		{
-			(*Instance)->Shutdown();
-			delete *Instance;
-			*Instance = nullptr;
+			Instance->Shutdown();
+			delete Instance;
+			return nullptr;
 		}
 
 		NEXUS_ENGINE_API Object();

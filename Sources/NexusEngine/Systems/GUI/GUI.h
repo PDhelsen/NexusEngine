@@ -39,8 +39,34 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) = 0;
 
 		protected:
-			NxFr::String Title;
 			ImGuiWindowFlags PanelFlags;
+			NxFr::String Title;
+		};
+
+		class Popup : public Element
+		{
+		public:
+			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Popup)
+
+			NEXUS_ENGINE_API Popup();
+			NEXUS_ENGINE_API virtual ~Popup();
+
+			NEXUS_ENGINE_API Popup& SetTitle(NxFr::StringView Title);
+			NEXUS_ENGINE_API Popup& SetMessage(NxFr::StringView Message);
+			NEXUS_ENGINE_API Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
+
+		protected:
+			NEXUS_ENGINE_API virtual void OnInitialize() override;
+			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
+			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
+
+			NEXUS_ENGINE_API void Close();
+
+		protected:
+			ImGuiWindowFlags PanelFlags;
+			NxFr::String Title;
+			NxFr::String Message;
+			NxFr::List<NxFr::Tuple<NxFr::String, NxFr::Delegate<void()>>> Callbacks;
 		};
 	}
 }

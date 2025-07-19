@@ -53,16 +53,86 @@ namespace NxEn
 
 		void Panel::OnInitialize()
 		{
-			Title = GetObjectType().C();
+			SetTitle(GetObjectType().C());
+			SetPanelFlag(ImGuiWindowFlags_NoCollapse);
 		}
 
 		void Panel::OnTick(float TimeStep)
 		{
-			ImGui::Begin(GetTitle().C(), nullptr, PanelFlags);
-			Element::OnTick(TimeStep);
+			bool IsOpen = true;
+
+			ImGui::Begin(GetTitle().C(), &IsOpen, PanelFlags);
+			OnGui(TimeStep);
 			ImGui::End();
+
+			if (!IsOpen)
+			{
+				SetEnabled(false);
+			}
 		}
-	}
 
 #pragma endregion
+
+#pragma region Popup
+
+		NEXUS_OBJECT_IMPLEMENTATION(Popup)
+
+		Popup::Popup()
+			: PanelFlags(0), Title(""), Message(""), Callbacks()
+		{
+		}
+
+		Popup::~Popup()
+		{
+		}
+
+		Popup& Popup::SetTitle(NxFr::StringView Title)
+		{
+			this->Title = Title.ToString();
+			return *this;
+		}
+
+		Popup& Popup::SetMessage(NxFr::StringView Message)
+		{
+			this->Message = Message.ToString();
+			return *this;
+		}
+
+		Popup& Popup::AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback)
+		{
+			Callbacks.AppendConstruct(NxFr::Tuple<NxFr::String, NxFr::Delegate<void()>>(Label.ToString(), Callback));
+			return *this;
+		}
+
+		void Popup::OnInitialize()
+		{
+			PanelFlags |= ImGuiWindowFlags_NoCollapse;
+			PanelFlags |= ImGuiWindowFlags_NoDocking;
+		}
+
+		void Popup::OnTick(float TimeStep)
+		{
+			ImGui::Begin(Title.C(), nullptr, PanelFlags);
+
+			ImGui::Text(Message.C());
+			OnGui(TimeStep);
+			for (auto& Button : Callbacks)
+			{
+				if (ImGui::Button(Button.GetFirst().C(), { 100, 50 } ))
+				{
+					Button.GetSecond().Invoke();
+					Close();
+				}
+			}
+
+			ImGui::End();
+		}
+
+		void Popup::Close()
+		{
+			Application::GetInstance()->GetTicker().AppendTickOnceCallback([=]() { Object::Destroy(this); }, Ticker::TickBucket::Cleanup);
+		}
+
+#pragma endregion
+	}
 }
