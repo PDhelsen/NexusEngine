@@ -14,7 +14,7 @@ namespace NxEn
 	{
 	}
 
-	void Object::Initialize()
+	void Object::Initialize(bool Enable)
 	{
 		if (IsInitialized())
 		{
@@ -23,7 +23,7 @@ namespace NxEn
 		}
 
 		OnInitialize();
-		OnEnable();
+		SetEnabled(Enable);
 
 		SetFlag(ObjectFlags::Initialized, true);
 	}
@@ -36,7 +36,7 @@ namespace NxEn
 			return;
 		}
 
-		OnDisable();
+		SetEnabled(false);
 		OnShutdown();
 
 		SetFlag(ObjectFlags::Initialized, false);
@@ -64,6 +64,11 @@ namespace NxEn
 
 	void Object::SetEnabled(bool Enabled)
 	{
+		if (IsEnabled() == Enabled)
+		{
+			return;
+		}
+
 		SetFlag(ObjectFlags::Enabled, Enabled);
 
 		if (IsEnabled())

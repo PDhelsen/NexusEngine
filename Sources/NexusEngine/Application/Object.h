@@ -34,10 +34,26 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Object)
 
+		template<typename T>
+		static T* Create(bool Enable = true)
+		{
+			T* Instance = new T();
+			Instance->Initialize(Enable);
+			return Instance;
+		}
+
+		template<typename T>
+		static void Destroy(T** Instance)
+		{
+			(*Instance)->Shutdown();
+			delete *Instance;
+			*Instance = nullptr;
+		}
+
 		NEXUS_ENGINE_API Object();
 		NEXUS_ENGINE_API virtual ~Object();
 
-		NEXUS_ENGINE_API void Initialize();
+		NEXUS_ENGINE_API void Initialize(bool Enable = true);
 		NEXUS_ENGINE_API void Shutdown();
 		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f);
 

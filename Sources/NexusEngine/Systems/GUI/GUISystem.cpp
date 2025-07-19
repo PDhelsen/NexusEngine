@@ -9,8 +9,9 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUISystem::GUISystem()
-		: Config("")
+		: OnGui(), Config("")
 	{
+
 	}
 
 	GUISystem::~GUISystem()
@@ -38,9 +39,7 @@ namespace NxEn
 		System::OnTick(TimeStep);
 
 		ImGui::Frame();
-
-		::ImGui::ShowDemoWindow();
-
+		OnGui.Invoke(TimeStep);
 		ImGui::Render();
 	}
 }

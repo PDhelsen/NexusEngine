@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Systems/System.h"
+#include "NexusEngine/Systems/GUI/GUI.h"
 
 namespace NxEn
 {
@@ -12,12 +13,15 @@ namespace NxEn
 		NEXUS_ENGINE_API GUISystem();
 		NEXUS_ENGINE_API ~GUISystem();
 
+		NEXUS_ENGINE_API NxFr::Event<float>& GetOnGui() { return OnGui; }
+
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
+		NxFr::Event<float> OnGui;
 		NxFr::Path Config;
 	};
 }
