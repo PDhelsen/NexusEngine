@@ -29,12 +29,12 @@ namespace NxEn
 
 	void GUISystem::LoadConfig(NxFr::StringView Name)
 	{
-		ImGui::LoadConfig(GetConfigPath(Name));
+		Imgui::LoadConfig(GetConfigPath(Name));
 	}
 
 	void GUISystem::SaveConfig(NxFr::StringView Name)
 	{
-		ImGui::SaveConfig(GetConfigPath(Name));
+		Imgui::SaveConfig(GetConfigPath(Name));
 	}
 
 	NxFr::Path GUISystem::GetConfigPath(NxFr::StringView Name)
@@ -65,14 +65,14 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		ImGui::Initialize();
+		Imgui::Initialize();
 		LoadConfig();
 	}
 
 	void GUISystem::OnShutdown()
 	{
 		SaveConfig();
-		ImGui::Shutdown();
+		Imgui::Shutdown();
 		
 		System::OnShutdown();
 	}
@@ -81,7 +81,7 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		ImGui::Frame();
+		Imgui::Frame();
 
 		for (auto& Element : Elements)
 		{
@@ -93,6 +93,6 @@ namespace NxEn
 			Element->Tick(TimeStep);
 		}
 
-		ImGui::Render();
+		Imgui::Render();
 	}
 }
