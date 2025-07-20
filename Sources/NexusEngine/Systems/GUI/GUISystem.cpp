@@ -9,13 +9,22 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUISystem::GUISystem()
-		: OnGui()
 	{
 
 	}
 
 	GUISystem::~GUISystem()
 	{
+	}
+
+	void GUISystem::RegisterElement(GUI::Element* Element)
+	{
+		Elements.Append(Element);
+	}
+
+	void GUISystem::UnregisterElement(GUI::Element* Element)
+	{
+		Elements.Remove(Element);
 	}
 
 	void GUISystem::LoadConfig(NxFr::StringView Name)
@@ -54,9 +63,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		void* Window = Application::GetSystem<WindowSystem>()->GetNativeWindow();
-
-		ImGui::Initialize(Window);
+		ImGui::Initialize();
 		LoadConfig();
 	}
 
@@ -73,7 +80,17 @@ namespace NxEn
 		System::OnTick(TimeStep);
 
 		ImGui::Frame();
-		OnGui.Invoke(TimeStep);
+
+		for (auto& Element : Elements)
+		{
+			if (Element->IsManual())
+			{
+				continue;
+			}
+
+			Element->Tick(TimeStep);
+		}
+
 		ImGui::Render();
 	}
 }

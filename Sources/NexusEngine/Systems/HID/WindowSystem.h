@@ -55,10 +55,6 @@ namespace NxEn
 		NEXUS_ENGINE_API void TickWindow();
 		NEXUS_ENGINE_API void UpdateCursor();
 
-		NEXUS_ENGINE_API void* GetNativeWindow() { return Target.Instance; }
-		NEXUS_ENGINE_API void* GetNativeMonitor(uint8 Index = 0) { return Monitors[Index].Instance; }
-		NEXUS_ENGINE_API void* GetNativeCursor() { return Pointer.Instance; }
-
 	private:
 		NxFr::Event<> OnClose;
 		NxFr::Event<bool> OnFocus;

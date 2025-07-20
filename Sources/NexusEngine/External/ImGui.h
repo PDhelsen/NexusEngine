@@ -6,7 +6,7 @@ namespace NxEn
 {
 	namespace ImGui
 	{
-		void Initialize(void* Window);
+		void Initialize();
 		void Shutdown();
 		void Frame();
 		void Render();

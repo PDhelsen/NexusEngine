@@ -9,6 +9,8 @@ namespace NxEn
 	{
 		class Element : public Object
 		{
+			friend class GUISystem;
+
 		public:
 			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Element)
 
