@@ -27,6 +27,8 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) = 0;
 
 			NEXUS_ENGINE_API bool IsManual() const { return Manual; }
+			NEXUS_ENGINE_API NxFr::String GetDefaultTile() const { return GetObjectType().ToString(); }
+			NEXUS_ENGINE_API ImGuiWindowFlags GetDefaultFlags() const { return ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking; }
 
 		private:
 			bool Manual;
@@ -40,50 +42,91 @@ namespace NxEn
 			NEXUS_ENGINE_API Panel();
 			NEXUS_ENGINE_API virtual ~Panel();
 
+			NEXUS_ENGINE_API Panel& SetGuiFlag(ImGuiWindowFlags_ GuiFlags);
 			NEXUS_ENGINE_API Panel& SetTitle(NxFr::StringView Title);
-			NEXUS_ENGINE_API Panel& SetPanelFlag(ImGuiWindowFlags_ PanelFlags);
 
-			NEXUS_ENGINE_API ImGuiWindowFlags GetPanelFlags() const { return PanelFlags; }
+			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
 			NEXUS_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
 
 		protected:
 			NEXUS_ENGINE_API virtual void OnInitialize() override;
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NEXUS_ENGINE_API virtual void OnGui(float TimeStep);
+			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
 		protected:
-			ImGuiWindowFlags PanelFlags;
+			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
+		};
+
+		class Menu : public Element
+		{
+			struct Item
+			{
+				NxFr::Delegate<void()> Callback;
+				NxFr::String Path;
+				NxFr::String Shortcut;
+				int64 Priority;
+
+				bool operator<=(const Item& Other) const;
+			};
+
+		public:
+			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Menu)
+
+			NEXUS_ENGINE_API Menu();
+			NEXUS_ENGINE_API virtual ~Menu();
+
+			NEXUS_ENGINE_API Menu& AddMenuItem(NxFr::Delegate<void()> Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0);
+
+			NEXUS_ENGINE_API NxFr::StringView GetMenuItem(uint64 Index = 0) const { return Items[Index].Path; }
+			NEXUS_ENGINE_API uint64 GetMenuItemCount() const { return Items.GetCount(); }
+
+		protected:
+			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
+			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
+
+			void DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const;
+
+		protected:
+			NxFr::List<Item> Items;
+			NxFr::Dictionary<NxFr::GUID, NxFr::String> Labels;
 		};
 
 		class Popup : public Element
 		{
+			struct Item
+			{
+				NxFr::Delegate<void()> Callback;
+				NxFr::String Label;
+			};
+
 		public:
 			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Popup)
 
 			NEXUS_ENGINE_API Popup();
 			NEXUS_ENGINE_API virtual ~Popup();
 
+			NEXUS_ENGINE_API Popup& SetGuiFlag(ImGuiWindowFlags_ GuiFlags);
 			NEXUS_ENGINE_API Popup& SetTitle(NxFr::StringView Title);
 			NEXUS_ENGINE_API Popup& SetMessage(NxFr::StringView Message);
 			NEXUS_ENGINE_API Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
 
-			NEXUS_ENGINE_API ImGuiWindowFlags GetPanelFlags() const { return PanelFlags; }
+			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
 			NEXUS_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
 			NEXUS_ENGINE_API NxFr::StringView GetMessage() const { return Message; }
-			NEXUS_ENGINE_API NxFr::StringView GetButton(uint64 Index = 0) const { return Callbacks[Index].GetFirst(); }
+			NEXUS_ENGINE_API NxFr::StringView GetButton(uint64 Index = 0) const { return Callbacks[Index].Label; }
 			NEXUS_ENGINE_API uint64 GetButtonCount() const { return Callbacks.GetCount(); }
 
 		protected:
 			NEXUS_ENGINE_API virtual void OnInitialize() override;
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NEXUS_ENGINE_API virtual void OnGui(float TimeStep);
+			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
 		protected:
-			ImGuiWindowFlags PanelFlags;
+			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
 			NxFr::String Message;
-			NxFr::List<NxFr::Tuple<NxFr::String, NxFr::Delegate<void()>>> Callbacks;
+			NxFr::List<Item> Callbacks;
 		};
 
 		class ProgressBar : public Element
@@ -94,12 +137,13 @@ namespace NxEn
 			NEXUS_ENGINE_API ProgressBar();
 			NEXUS_ENGINE_API virtual ~ProgressBar();
 
+			NEXUS_ENGINE_API ProgressBar& SetGuiFlag(ImGuiWindowFlags_ GuiFlags);
 			NEXUS_ENGINE_API ProgressBar& SetTitle(NxFr::StringView Title);
 			NEXUS_ENGINE_API ProgressBar& SetMessage(NxFr::StringView Message);
 			NEXUS_ENGINE_API ProgressBar& SetCallback(NxFr::Delegate<void()> Callback);
 			NEXUS_ENGINE_API ProgressBar& SetProgress(float Progress);
 
-			NEXUS_ENGINE_API ImGuiWindowFlags GetPanelFlags() const { return PanelFlags; }
+			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
 			NEXUS_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
 			NEXUS_ENGINE_API NxFr::StringView GetMessage() const { return Message; }
 			NEXUS_ENGINE_API float GetProgress() const { return Progress; }
@@ -107,12 +151,12 @@ namespace NxEn
 		protected:
 			NEXUS_ENGINE_API virtual void OnInitialize() override;
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NEXUS_ENGINE_API virtual void OnGui(float TimeStep);
+			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
-			NEXUS_ENGINE_API float ComputePercentage(float TimeStep);
+			float ComputePercentage(float TimeStep);
 
 		protected:
-			ImGuiWindowFlags PanelFlags;
+			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
 			NxFr::String Message;
 			NxFr::Delegate<void()> Callback;

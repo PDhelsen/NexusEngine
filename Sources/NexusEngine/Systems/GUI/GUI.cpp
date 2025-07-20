@@ -71,12 +71,18 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Panel)
 
 		Panel::Panel()
-			: Element(false), Title(""), PanelFlags(0)
+			: Element(false), GuiFlags(0), Title("")
 		{
 		}
 
 		Panel::~Panel()
 		{
+		}
+
+		Panel& Panel::SetGuiFlag(ImGuiWindowFlags_ GuiFlags)
+		{
+			this->GuiFlags |= GuiFlags;
+			return *this;
 		}
 
 		Panel& Panel::SetTitle(NxFr::StringView Title)
@@ -85,25 +91,19 @@ namespace NxEn
 			return *this;
 		}
 
-		Panel& Panel::SetPanelFlag(ImGuiWindowFlags_ PanelFlags)
-		{
-			this->PanelFlags |= PanelFlags;
-			return *this;
-		}
-
 		void Panel::OnInitialize()
 		{
 			Element::OnInitialize();
 
-			SetTitle(GetObjectType().C());
-			SetPanelFlag(ImGuiWindowFlags_NoCollapse);
+			GuiFlags = GetDefaultFlags();
+			Title = GetDefaultTile();
 		}
 
 		void Panel::OnTick(float TimeStep)
 		{
 			bool IsOpen = true;
 
-			if (ImGui::Begin(GetTitle().C(), &IsOpen, PanelFlags))
+			if (ImGui::Begin(Title.C(), &IsOpen, GuiFlags))
 			{
 				OnGui(TimeStep);
 				ImGui::End();
@@ -115,8 +115,77 @@ namespace NxEn
 			}
 		}
 
-		void Panel::OnGui(float TimeStep)
+#pragma endregion
+
+#pragma region Menu
+
+		NEXUS_OBJECT_IMPLEMENTATION(Menu)
+
+		bool Menu::Item::operator<=(const Item& Other) const
 		{
+			return Priority != Other.Priority ? Priority <= Other.Priority : Path <= Other.Path;
+		}
+
+		Menu::Menu()
+			: Element(true), Items(), Labels()
+		{
+		}
+
+		Menu::~Menu()
+		{
+		}
+
+		Menu& Menu::AddMenuItem(NxFr::Delegate<void()> Callback, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority)
+		{
+			Items.AppendConstruct(Callback, Path.ToString(), Shortcut.ToString(), Priority);
+			Items.Sort();
+
+			NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Path);
+			for (auto& Section : Sections)
+			{
+				NxFr::GUID Id = NxFr::Hash<>::HashObject(Section);
+				Labels.Append(Id, Section.ToString());
+			}
+
+			return *this;
+		}
+
+		void Menu::OnTick(float TimeStep)
+		{
+			if (ImGui::BeginMenuBar())
+			{
+				for (auto& Item : Items)
+				{
+					NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Item.Path);
+					DrawItem(Item, Sections, 0);
+				}
+
+				OnGui(TimeStep);
+
+				ImGui::EndMenuBar();
+			}
+		}
+
+		void Menu::DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const
+		{
+			NxFr::GUID Id = NxFr::Hash<>::HashObject(Sections[Depth]);
+			const NxFr::String& Lbl = Labels[Id];
+
+			if (Depth == Sections.GetCount() - 1)
+			{
+				if (ImGui::MenuItem(Lbl.C(), It.Shortcut.C()))
+				{
+					It.Callback.Invoke();
+				}
+
+				return;
+			}
+
+			if (ImGui::BeginMenu(Lbl.C()))
+			{
+				DrawItem(It, Sections, ++Depth);
+				ImGui::EndMenu();
+			}
 		}
 
 #pragma endregion
@@ -126,12 +195,18 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Popup)
 
 		Popup::Popup()
-			: Element(false), PanelFlags(0), Title(""), Message(""), Callbacks()
+			: Element(false), GuiFlags(0), Title(""), Message(""), Callbacks()
 		{
 		}
 
 		Popup::~Popup()
 		{
+		}
+
+		Popup& Popup::SetGuiFlag(ImGuiWindowFlags_ GuiFlags)
+		{
+			this->GuiFlags |= GuiFlags;
+			return *this;
 		}
 
 		Popup& Popup::SetTitle(NxFr::StringView Title)
@@ -148,7 +223,7 @@ namespace NxEn
 
 		Popup& Popup::AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback)
 		{
-			Callbacks.AppendConstruct(NxFr::Tuple<NxFr::String, NxFr::Delegate<void()>>(Label.ToString(), Callback));
+			Callbacks.AppendConstruct(Callback, Label.ToString());
 			return *this;
 		}
 
@@ -156,22 +231,24 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			PanelFlags |= ImGuiWindowFlags_NoCollapse;
-			PanelFlags |= ImGuiWindowFlags_NoDocking;
+			GuiFlags = GetDefaultFlags();
+			Title = GetDefaultTile();
 		}
 
 		void Popup::OnTick(float TimeStep)
 		{
 			ImGui::OpenPopup(Title.C());
-			if (ImGui::BeginPopupModal(Title.C(), nullptr, PanelFlags))
+			if (ImGui::BeginPopupModal(Title.C(), nullptr, GuiFlags))
 			{
+				ImGui::Text(Message.C());
+
 				OnGui(TimeStep);
 
 				for (auto& Button : Callbacks)
 				{
-					if (ImGui::Button(Button.GetFirst().C(), { 100, 50 }))
+					if (ImGui::Button(Button.Label.C()))
 					{
-						Button.GetSecond().Invoke();
+						Button.Callback.Invoke();
 						Close();
 
 						ImGui::CloseCurrentPopup();
@@ -182,11 +259,6 @@ namespace NxEn
 			}
 		}
 
-		void Popup::OnGui(float TimeStep)
-		{
-			ImGui::Text(Message.C());
-		}
-
 #pragma endregion
 
 #pragma region Progress
@@ -194,12 +266,18 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(ProgressBar)
 
 		ProgressBar::ProgressBar()
-			: Element(false), PanelFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
+			: Element(false), GuiFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
 		{
 		}
 
 		ProgressBar::~ProgressBar()
 		{
+		}
+
+		ProgressBar& ProgressBar::SetGuiFlag(ImGuiWindowFlags_ GuiFlags)
+		{
+			this->GuiFlags = GuiFlags;
+			return *this;
 		}
 
 		ProgressBar& ProgressBar::SetTitle(NxFr::StringView Title)
@@ -230,14 +308,16 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			PanelFlags |= ImGuiWindowFlags_NoCollapse;
-			PanelFlags |= ImGuiWindowFlags_NoDocking;
+			GuiFlags = GetDefaultFlags();
+			Title = GetDefaultTile();
 		}
 
 		void ProgressBar::OnTick(float TimeStep)
 		{
-			if (ImGui::Begin(GetTitle().C(), nullptr, PanelFlags))
+			if (ImGui::Begin(Title.C(), nullptr, GuiFlags))
 			{
+				ImGui::Text(Message.C());
+
 				OnGui(TimeStep);
 
 				float Percentag = ComputePercentage(TimeStep);
@@ -250,11 +330,6 @@ namespace NxEn
 				Callback.Invoke();
 				Hide();
 			}
-		}
-
-		void ProgressBar::OnGui(float TimeStep)
-		{
-			ImGui::Text(Message.C());
 		}
 
 		float ProgressBar::ComputePercentage(float TimeStep)
@@ -271,5 +346,6 @@ namespace NxEn
 		}
 
 #pragma endregion
+
 	}
 }
