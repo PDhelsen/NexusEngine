@@ -40,8 +40,9 @@ namespace NxEn
 	NxFr::Path GUISystem::GetConfigPath(NxFr::StringView Name)
 	{
 		NxFr::String FullName = Name.ToString();
+		NxFr::String Directory = NxFr::Paths::Configs.ToString();
 
-		if (FullName.IsEmpty())
+		if (Name.IsEmpty())
 		{
 			FullName = "imgui";
 #if NEXUS_EDITOR
@@ -49,13 +50,14 @@ namespace NxEn
 #else
 			FullName += "_app";
 #endif
+
+			Directory = NxFr::Paths::Saved.ToString();
 		}
 
 		FullName += ".ini";
+		Directory = NxFr::Path::Combine(Directory.ToView(), "ImGui");
 
-		NxFr::String Directory = NxFr::Path::Combine(NxFr::Paths::Configs, "ImGui");
 		NxFr::Directory(Directory).Create();
-
 		return NxFr::Path(Directory) + FullName;
 	}
 
