@@ -1,6 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/External/ImGui.h"
 
+#include "NexusEngine/External/Glfw.h"
 #include "NexusEngine/External/imgui/imgui.h"
 #include "NexusEngine/External/imgui/imgui_impl_glfw.h"
 #include "NexusEngine/External/imgui/imgui_impl_opengl3.h"
@@ -12,15 +13,15 @@ namespace NxEn
 	{
 #define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
 
-		void Initialize(void* Window, NxFr::StringView ConfigPath)
+		void Initialize(void* Window)
 		{
 			::IMGUI_CHECKVERSION();
 			::ImGui::CreateContext();
 
 			ImGuiIO& io = ::ImGui::GetIO();
-			io.IniFilename = ConfigPath.C();
-			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+			io.IniFilename = nullptr;
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 			ImGui_ImplGlfw_InitForOpenGL(NEXUS_WINDOW(Window), true);
 			ImGui_ImplOpenGL3_Init();
@@ -48,6 +49,25 @@ namespace NxEn
 			::ImGui::Render();
 			auto Data = ::ImGui::GetDrawData();
 			ImGui_ImplOpenGL3_RenderDrawData(Data);
+
+			ImGuiIO& io = ::ImGui::GetIO();
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				void* Context = Glfw::GetContext();
+				::ImGui::UpdatePlatformWindows();
+				::ImGui::RenderPlatformWindowsDefault();
+				Glfw::SetContext(Context);
+			}
+		}
+
+		void LoadConfig(NxFr::StringView ConfigPath)
+		{
+			::ImGui::LoadIniSettingsFromDisk(ConfigPath.C());
+		}
+
+		void SaveConfig(NxFr::StringView ConfigPath)
+		{
+			::ImGui::SaveIniSettingsToDisk(ConfigPath.C());
 		}
 	}
 }

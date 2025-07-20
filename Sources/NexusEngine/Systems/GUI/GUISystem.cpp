@@ -9,7 +9,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUISystem::GUISystem()
-		: OnGui(), Config("")
+		: OnGui()
 	{
 
 	}
@@ -18,17 +18,51 @@ namespace NxEn
 	{
 	}
 
+	void GUISystem::LoadConfig(NxFr::StringView Name)
+	{
+		ImGui::LoadConfig(GetConfigPath(Name));
+	}
+
+	void GUISystem::SaveConfig(NxFr::StringView Name)
+	{
+		ImGui::SaveConfig(GetConfigPath(Name));
+	}
+
+	NxFr::Path GUISystem::GetConfigPath(NxFr::StringView Name)
+	{
+		NxFr::String FullName = Name.ToString();
+
+		if (FullName.IsEmpty())
+		{
+			FullName = "imgui";
+#if NEXUS_EDITOR
+			FullName += "_editor";
+#else
+			FullName += "_app";
+#endif
+		}
+
+		FullName += ".ini";
+
+		NxFr::String Directory = NxFr::Path::Combine(NxFr::Paths::Configs, "ImGui");
+		NxFr::Directory(Directory).Create();
+
+		return NxFr::Path(Directory) + FullName;
+	}
+
 	void GUISystem::OnInitialize()
 	{
 		System::OnInitialize();
 
-		Config = NxFr::Paths::Configs + "imgui.ini";
 		void* Window = Application::GetSystem<WindowSystem>()->GetNativeWindow();
-		ImGui::Initialize(Window, Config);
+
+		ImGui::Initialize(Window);
+		LoadConfig();
 	}
 
 	void GUISystem::OnShutdown()
 	{
+		SaveConfig();
 		ImGui::Shutdown();
 		
 		System::OnShutdown();

@@ -11,6 +11,9 @@ namespace NxEn
 		void PollInput();
 		void SetSwapInterval(uint8 Interval);
 
+		void* GetContext();
+		void SetContext(void* Context);
+
 		NxFr::Array<void*> GetMonitors();
 		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate);
 

@@ -13,6 +13,10 @@ namespace NxEn
 		NEXUS_ENGINE_API GUISystem();
 		NEXUS_ENGINE_API ~GUISystem();
 
+		NEXUS_ENGINE_API void LoadConfig(NxFr::StringView Name = "");
+		NEXUS_ENGINE_API void SaveConfig(NxFr::StringView Name = "");
+		NEXUS_ENGINE_API NxFr::Path GetConfigPath(NxFr::StringView Name = "");
+
 		NEXUS_ENGINE_API NxFr::Event<float>& GetOnGui() { return OnGui; }
 
 	protected:
@@ -22,6 +26,5 @@ namespace NxEn
 
 	private:
 		NxFr::Event<float> OnGui;
-		NxFr::Path Config;
 	};
 }

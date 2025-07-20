@@ -266,6 +266,16 @@ namespace NxEn
 			glfwSwapInterval(Interval);
 		}
 
+		void* GetContext()
+		{
+			return glfwGetCurrentContext();
+		}
+
+		void SetContext(void* Context)
+		{
+			glfwMakeContextCurrent(NEXUS_WINDOW(Context));
+		}
+
 #pragma endregion
 
 #pragma region Window
