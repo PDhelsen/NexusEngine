@@ -19,8 +19,5 @@ namespace NxEn
 		void Shutdown();
 		void Frame();
 		void Render();
-
-		void LoadConfig(NxFr::StringView ConfigPath);
-		void SaveConfig(NxFr::StringView ConfigPath);
 	}
 }

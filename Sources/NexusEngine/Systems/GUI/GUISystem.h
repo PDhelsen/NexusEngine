@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Systems/System.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
+#include "NexusEngine/Systems/GUI/Styles.h"
 
 namespace NxEn
 {
@@ -18,14 +19,27 @@ namespace NxEn
 
 		NEXUS_ENGINE_API void LoadConfig(NxFr::StringView Name = "");
 		NEXUS_ENGINE_API void SaveConfig(NxFr::StringView Name = "");
-		NEXUS_ENGINE_API NxFr::Path GetConfigPath(NxFr::StringView Name = "");
+		NEXUS_ENGINE_API void LoadTheme(NxFr::StringView Name = "");
+		NEXUS_ENGINE_API void SaveTheme(NxFr::StringView Name = "");
+
+		NEXUS_ENGINE_API void AppendStyle(NxFr::StringId Id, const GUI::Style& Style);
+		NEXUS_ENGINE_API void AssignStyle(NxFr::StringId Id, const GUI::Style& Style);
+		NEXUS_ENGINE_API void RemoveStyle(NxFr::StringId Id);
+		NEXUS_ENGINE_API const GUI::Style& GetStyle(NxFr::StringId Id);
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
+		NEXUS_ENGINE_API NxFr::Path GetSettingsPath(NxFr::StringView Name, NxFr::StringView Saved, NxFr::StringView Extension);
+		NEXUS_ENGINE_API void LoadThemeNexus(const YAML::Node& Node);
+		NEXUS_ENGINE_API void LoadThemeImGui(const YAML::Node& Node);
+		NEXUS_ENGINE_API void SaveThemeNexus(YAML::Emitter& Emitter);
+		NEXUS_ENGINE_API void SaveThemeImGui(YAML::Emitter& Emitter);
+
 	private:
 		NxFr::Set<GUI::Element*> Elements;
+		NxFr::Dictionary<NxFr::StringId, GUI::Style> Styles;
 	};
 }

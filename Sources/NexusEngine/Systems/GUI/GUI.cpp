@@ -243,6 +243,8 @@ namespace NxEn
 
 						ImGui::CloseCurrentPopup();
 					}
+
+					ImGui::SameLine();
 				}
 
 				ImGui::EndPopup();

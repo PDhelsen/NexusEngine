@@ -17,10 +17,10 @@ namespace NxEn
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
 
-			ImGuiIO& io = ImGui::GetIO();
-			io.IniFilename = nullptr;
-			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+			ImGuiIO& IO = ImGui::GetIO();
+			IO.IniFilename = nullptr;
+			IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			IO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 			void* Context = Glfw::GetContext();
 			ImGui_ImplGlfw_InitForOpenGL(NEXUS_WINDOW(Context), true);
@@ -50,24 +50,14 @@ namespace NxEn
 			auto Data = ImGui::GetDrawData();
 			ImGui_ImplOpenGL3_RenderDrawData(Data);
 
-			ImGuiIO& io = ImGui::GetIO();
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			ImGuiIO& IO = ImGui::GetIO();
+			if (IO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 			{
 				void* Context = Glfw::GetContext();
 				ImGui::UpdatePlatformWindows();
 				ImGui::RenderPlatformWindowsDefault();
 				Glfw::SetContext(Context);
 			}
-		}
-
-		void LoadConfig(NxFr::StringView ConfigPath)
-		{
-			ImGui::LoadIniSettingsFromDisk(ConfigPath.C());
-		}
-
-		void SaveConfig(NxFr::StringView ConfigPath)
-		{
-			ImGui::SaveIniSettingsToDisk(ConfigPath.C());
 		}
 	}
 }
