@@ -33,10 +33,10 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 		NEXUS_ENGINE_API NxFr::Path GetSettingsPath(NxFr::StringView Name, NxFr::StringView Saved, NxFr::StringView Extension);
-		NEXUS_ENGINE_API void LoadThemeNexus(const YAML::Node& Node);
 		NEXUS_ENGINE_API void LoadThemeImGui(const YAML::Node& Node);
-		NEXUS_ENGINE_API void SaveThemeNexus(YAML::Emitter& Emitter);
+		NEXUS_ENGINE_API void LoadThemeNexus(const YAML::Node& Node);
 		NEXUS_ENGINE_API void SaveThemeImGui(YAML::Emitter& Emitter);
+		NEXUS_ENGINE_API void SaveThemeNexus(YAML::Emitter& Emitter);
 
 	private:
 		NxFr::Set<GUI::Element*> Elements;

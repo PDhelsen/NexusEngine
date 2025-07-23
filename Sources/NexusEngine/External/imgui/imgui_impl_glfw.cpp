@@ -113,7 +113,7 @@
 #endif
 
 // GLFW
-//NEXUS - Beging
+//NEXUS - Begin
 #include "glfw/include/GLFW/glfw3.h"
 //NEXUS - End
 
@@ -122,7 +122,7 @@
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #endif
-//NEXUS - Beging
+//NEXUS - Begin
 #include  "glfw/include/GLFW/glfw3native.h"   // for glfwGetWin32Window()
 //NEXUS - End
 #endif
@@ -130,7 +130,7 @@
 #ifndef GLFW_EXPOSE_NATIVE_COCOA
 #define GLFW_EXPOSE_NATIVE_COCOA
 #endif
-//NEXUS - Beging
+//NEXUS - Begin
 #include "glfw/include/GLFW/glfw3native.h"   // for glfwGetCocoaWindow()
 //NEXUS - End
 #endif

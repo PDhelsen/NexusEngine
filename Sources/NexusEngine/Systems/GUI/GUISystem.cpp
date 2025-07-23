@@ -61,8 +61,8 @@ namespace NxEn
 
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
 
-		LoadThemeNexus(Data["Nexus"]);
 		LoadThemeImGui(Data["ImGui"]);
+		LoadThemeNexus(Data["Nexus"]);
 	}
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
@@ -151,38 +151,6 @@ namespace NxEn
 
 		NxFr::Directory(Path.GetDirectoryPath()).Create();
 		return Path;
-	}
-
-	void GUISystem::LoadThemeNexus(const YAML::Node& Node)
-	{
-		for (YAML::const_iterator It = Node.begin(); It != Node.end(); ++It)
-		{
-			const YAML::Node NodeId = It->first;
-			const YAML::Node NodeProperties = It->second;
-
-			NxFr::StringId Id(NodeId.as<NxFr::String>());
-			GUI::Style Style;
-
-			for (uint64 Index = 0; Index < NodeProperties.size(); ++Index)
-			{
-				const YAML::Node NodeProperty = NodeProperties[Index];
-
-				uint32 ImGuiId = NodeProperty["id"].as<int32>();
-				GUI::Style::Type Type = (GUI::Style::Type)NodeProperty["type"].as<int32>();
-				NxFr::Vector4f Data = NodeProperty["data"].as<NxFr::Vector4f>();
-
-				switch (Type)
-				{
-				case NxEn::GUI::Style::Type::Color:	Style.AppendColor(ImGuiId, Data);	break;
-				case NxEn::GUI::Style::Type::Var:	Style.AppendVar(ImGuiId, Data.x);	break;
-				case NxEn::GUI::Style::Type::VarX:	Style.AppendVarX(ImGuiId, Data.x);	break;
-				case NxEn::GUI::Style::Type::VarY:	Style.AppendVarY(ImGuiId, Data.y);	break;
-				case NxEn::GUI::Style::Type::VarXY: Style.AppendColor(ImGuiId, Data);	break;
-				}
-			}
-
-			Styles.Append(Id, Style);
-		}
 	}
 
 	void GUISystem::LoadThemeImGui(const YAML::Node& Node)
@@ -316,24 +284,36 @@ namespace NxEn
 		}
 	}
 
-	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter)
+	void GUISystem::LoadThemeNexus(const YAML::Node& Node)
 	{
-		Emitter << YAML::BeginMap;
-		for (auto& [Id, Style] : Styles)
+		for (YAML::const_iterator It = Node.begin(); It != Node.end(); ++It)
 		{
-			Emitter << YAML::Key << Id;
-			Emitter << YAML::Value << YAML::BeginSeq;
-			for (auto& [Index, Property] : Style.Properties)
+			const YAML::Node NodeId = It->first;
+			const YAML::Node NodeProperties = It->second;
+
+			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
+			GUI::Style Style;
+
+			for (uint64 Index = 0; Index < NodeProperties.size(); ++Index)
 			{
-				Emitter << YAML::BeginMap;
-				Emitter << YAML::Key << "id"	<< YAML::Value << Index;
-				Emitter << YAML::Key << "type"	<< YAML::Value << (int32)Property.Flag;
-				Emitter << YAML::Key << "data"	<< YAML::Value << Property.Data;
-				Emitter << YAML::EndMap;
+				const YAML::Node NodeProperty = NodeProperties[Index];
+
+				uint32 ImGuiId = NodeProperty["id"].as<int32>();
+				GUI::Style::Type Type = (GUI::Style::Type)NodeProperty["type"].as<int32>();
+				NxFr::Vector4f Data = NodeProperty["data"].as<NxFr::Vector4f>();
+
+				switch (Type)
+				{
+				case NxEn::GUI::Style::Type::Color:	Style.AppendColor(ImGuiId, Data);	break;
+				case NxEn::GUI::Style::Type::Var:	Style.AppendVar(ImGuiId, Data.x);	break;
+				case NxEn::GUI::Style::Type::VarX:	Style.AppendVarX(ImGuiId, Data.x);	break;
+				case NxEn::GUI::Style::Type::VarY:	Style.AppendVarY(ImGuiId, Data.y);	break;
+				case NxEn::GUI::Style::Type::VarXY: Style.AppendColor(ImGuiId, Data);	break;
+				}
 			}
-			Emitter << YAML::EndSeq;
+
+			Styles.Append(Id, Style);
 		}
-		Emitter << YAML::EndMap;
 	}
 
 	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter)
@@ -470,6 +450,26 @@ namespace NxEn
 		}
 		Emitter << YAML::EndMap;
 
+		Emitter << YAML::EndMap;
+	}
+
+	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter)
+	{
+		Emitter << YAML::BeginMap;
+		for (auto& [Id, Style] : Styles)
+		{
+			Emitter << YAML::Key << Id;
+			Emitter << YAML::Value << YAML::BeginSeq;
+			for (auto& [Index, Property] : Style.Properties)
+			{
+				Emitter << YAML::BeginMap;
+				Emitter << YAML::Key << "id"	<< YAML::Value << Index;
+				Emitter << YAML::Key << "type"	<< YAML::Value << (int32)Property.Flag;
+				Emitter << YAML::Key << "data"	<< YAML::Value << Property.Data;
+				Emitter << YAML::EndMap;
+			}
+			Emitter << YAML::EndSeq;
+		}
 		Emitter << YAML::EndMap;
 	}
 }
