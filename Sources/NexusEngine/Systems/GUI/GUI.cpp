@@ -85,8 +85,8 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			GuiFlags = GetDefaultFlags();
-			Title = GetDefaultTile();
+			GuiFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
+			Title = GetObjectType().ToString();
 		}
 
 		void Panel::OnTick(float TimeStep)
@@ -221,8 +221,7 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			GuiFlags = GetDefaultFlags();
-			Title = GetDefaultTile();
+			GuiFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 		}
 
 		void Popup::OnTick(float TimeStep)
@@ -300,8 +299,7 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			GuiFlags = GetDefaultFlags();
-			Title = GetDefaultTile();
+			GuiFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 		}
 
 		void ProgressBar::OnTick(float TimeStep)

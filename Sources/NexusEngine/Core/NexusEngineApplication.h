@@ -13,6 +13,7 @@ namespace NxEn
 		NEXUS_ENGINE_API NexusEngineApplication(const NxEn::Project& ProjectInfo);
 		NEXUS_ENGINE_API virtual ~NexusEngineApplication() = default;
 
+		NEXUS_ENGINE_API Input::Schema& GetInputSchema() { return InputSchema; }
 		NEXUS_ENGINE_API bool IsHeadless() const { return Headless; }
 
 	protected:
@@ -23,6 +24,7 @@ namespace NxEn
 		void ParseCommands();
 
 	private:
+		Input::Schema InputSchema;
 		bool Headless;
 	};
 }

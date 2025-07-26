@@ -9,13 +9,14 @@ namespace NxEn
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
-		: Application(ProjectInfo), Headless(NxFr::Arguments::HasFlag("Headless"))
+		: Application(ProjectInfo), InputSchema(), Headless(NxFr::Arguments::HasFlag("Headless"))
 	{
 		SystemManager& Systems = GetSystems();
 
 		Systems.CreateSystem<DebugSystem>();
 		Systems.CreateSystem<MemorySystem>();
-		Systems.CreateSystem<InputSystem>();
+		InputSystem* Inputs = Systems.CreateSystem<InputSystem>();
+		Inputs->AddSchema("Application"_Sid, &InputSchema);
 		if (!IsHeadless())
 		{
 			WindowSystem* Window = Systems.CreateSystem<WindowSystem>();

@@ -29,8 +29,6 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) = 0;
 
 			NEXUS_ENGINE_API bool IsManual() const { return Manual; }
-			NEXUS_ENGINE_API NxFr::String GetDefaultTile() const { return GetObjectType().ToString(); }
-			NEXUS_ENGINE_API ImGuiWindowFlags GetDefaultFlags() const { return ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking; }
 
 		private:
 			bool Manual;
