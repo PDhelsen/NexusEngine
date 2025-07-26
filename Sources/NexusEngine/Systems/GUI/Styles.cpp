@@ -73,7 +73,7 @@ namespace NxEn
 		{
 			switch (Flag)
 			{
-			case Type::Color: ImGui::PushStyleColor(Id, Data); break;
+			case Type::Color: ImGui::PushStyleColor(Id, NxFr::Color(Data)); break;
 			case Type::Var: ImGui::PushStyleVar(Id, Data.x); break;
 			case Type::VarX: ImGui::PushStyleVarX(Id, Data.x); break;
 			case Type::VarY: ImGui::PushStyleVarY(Id, Data.y); break;
@@ -84,7 +84,7 @@ namespace NxEn
 
 		namespace Scope
 		{
-			Color::Color(ImGuiCol Id, NxFr::Vector4f Value)
+			Color::Color(ImGuiCol Id, NxFr::Color Value)
 			{
 				ImGui::PushStyleColor(Id, Value);
 			}

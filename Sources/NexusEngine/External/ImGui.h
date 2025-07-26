@@ -6,8 +6,8 @@
     ImVec2(const NxFr::Vector2f& V) { x = V.x; y = V.y; } \
     operator NxFr::Vector2f() const { return NxFr::Vector2f(x, y); }
 #define IM_VEC4_CLASS_EXTRA \
-    ImVec4(const NxFr::Vector4f& V) { x = V.x; y = V.y; z = V.z; w = V.w; } \
-    operator NxFr::Vector4f() const { return NxFr::Vector4f(x, y, z, w); } \
+    ImVec4(const NxFr::Color& C) { x = C.r; y = C.g; z = C.b; w = C.a; } \
+    operator NxFr::Color() const { return NxFr::Color(x, y, z, w); } \
 
 #include "NexusEngine/External/imgui/imgui.h"
 

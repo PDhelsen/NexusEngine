@@ -28,7 +28,7 @@ namespace NxEn
 			NEXUS_ENGINE_API void Push() const;
 			NEXUS_ENGINE_API void Pop() const;
 
-			NEXUS_ENGINE_API Style& AppendColor(int32 Id, NxFr::Vector4f Data) { Append(Id, Type::Color, Data); return *this; }
+			NEXUS_ENGINE_API Style& AppendColor(int32 Id, NxFr::Color Data) { Append(Id, Type::Color, Data.ToVector4f()); return *this; }
 			NEXUS_ENGINE_API Style& AppendVar(int32 Id, float Data) { Append(Id, Type::Var, NxFr::Vector4f(Data)); return *this; }
 			NEXUS_ENGINE_API Style& AppendVarX(int32 Id, float Data) { Append(Id, Type::VarX, NxFr::Vector4f(Data, 0.0f)); return *this; }
 			NEXUS_ENGINE_API Style& AppendVarY(int32 Id, float Data) { Append(Id, Type::VarY, NxFr::Vector4f(0.0f, Data)); return *this; }
@@ -54,7 +54,7 @@ namespace NxEn
 		{
 			struct Color
 			{
-				NEXUS_ENGINE_API Color(ImGuiCol Id, NxFr::Vector4f Value);
+				NEXUS_ENGINE_API Color(ImGuiCol Id, NxFr::Color Value);
 				NEXUS_ENGINE_API ~Color();
 			};
 
