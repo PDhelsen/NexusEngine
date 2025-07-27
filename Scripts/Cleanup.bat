@@ -5,6 +5,7 @@ set Root=%~dp0..\
 call :DeleteFolder %Root%builds
 call :DeleteFolder %Root%cooked
 call :DeleteFolder %Root%saved
+call :DeleteFolder %Root%temp
 
 call :DeleteVisualStudioProject %Root%Libraries
 call :DeleteVisualStudioProject %Root%Sources
