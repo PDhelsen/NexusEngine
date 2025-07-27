@@ -9,7 +9,7 @@
     ImVec4(const NxFr::Color& C) { x = C.r; y = C.g; z = C.b; w = C.a; } \
     operator NxFr::Color() const { return NxFr::Color(x, y, z, w); } \
 
-#include "NexusEngine/External/imgui/imgui.h"
+#include "imgui/imgui.h"
 
 namespace NxEn
 {

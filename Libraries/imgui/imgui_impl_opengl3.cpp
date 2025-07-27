@@ -787,6 +787,11 @@ void ImGui_ImplOpenGL3_UpdateTexture(ImTextureData* tex)
         ImGui_ImplOpenGL3_DestroyTexture(tex);
 }
 
+void ImGui_ImplOpenGL3_Clear()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 // If you get an error please report on github. You may try different GL context version or GLSL version. See GL<>GLSL version table at the top of this file.
 static bool CheckShader(GLuint handle, const char* desc)
 {

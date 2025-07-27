@@ -2,9 +2,9 @@
 #include "NexusEngine/External/ImGui.h"
 
 #include "NexusEngine/External/Glfw.h"
-#include "NexusEngine/External/imgui/imgui_impl_glfw.h"
-#include "NexusEngine/External/imgui/imgui_impl_opengl3.h"
-#include "NexusEngine/External/imgui/imgui_impl_opengl3_loader.h"
+
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 namespace NxEn
 {
@@ -44,7 +44,7 @@ namespace NxEn
 		void Render()
 		{
 			//TODO: Move to RenderingSystem
-			glClear(GL_COLOR_BUFFER_BIT);
+			ImGui_ImplOpenGL3_Clear();
 
 			ImGui::Render();
 			auto Data = ImGui::GetDrawData();

@@ -16,6 +16,7 @@ Project = "NexusProject"
 Sandbox = "NexusSandbox"
 Yaml = "yaml-cpp"
 Glfw = "Glfw"
+ImGui = "ImGui"
 
 Builds = Root .. "builds/"
 Configs = Root .. "Configs/"
@@ -82,6 +83,7 @@ workspace (Engine)
 
 group "Libraries"
 project (Glfw)
+project (ImGui)
 group "Tests"
 project (Sandbox .. "-App")
 project (Sandbox .. "-Editor")
@@ -131,22 +133,19 @@ project (Engine)
 		Framework,
 		Yaml,
 		Glfw,
+		ImGui
 	}
 
 	defines
 	{
-		"NEXUS_ENGINE_DLL"
+		"NEXUS_ENGINE_DLL",
+		"GLFW_DLL"
 	}
 
     postbuildcommands
     {
         PostBuild
     }
-
-	filter "files:**/External/imgui/**.cpp"
-        flags { "NoPCH" }
-
-    filter {}
 
 -- ----------------------------------------------------------------------------------
 project (App)
@@ -168,6 +167,7 @@ project (App)
     includedirs
     {
         Sources,
+		Libraries,
 		NexusFramework .. "Sources/",
 		NexusFramework .. "Libraries/"
     }
@@ -181,6 +181,7 @@ project (App)
 	{
 		Framework,
 		Engine,
+		ImGui
 	}
 
 	defines
@@ -212,6 +213,7 @@ project (Editor)
     includedirs
     {
         Sources,
+		Libraries,
 		NexusFramework .. "Sources/",
 		NexusFramework .. "Libraries/"
     }
@@ -226,6 +228,7 @@ project (Editor)
 		Framework,
 		Engine,
 		App,
+		ImGui
 	}
 
 	defines
@@ -257,6 +260,7 @@ project (Starter)
     includedirs
     {
         Sources,
+		Libraries,
 		NexusFramework .. "Sources/",
 		NexusFramework .. "Libraries/"
     }
@@ -313,6 +317,7 @@ project (Sandbox .. "-App")
     includedirs
     {
         Sources,
+		Libraries,
 		NexusFramework .. "Sources/",
 		NexusFramework .. "Libraries/"
     }
@@ -326,7 +331,8 @@ project (Sandbox .. "-App")
 	{
 		Framework,
 		Engine,
-		App
+		App,
+		ImGui
 	}
 
 	defines
@@ -360,6 +366,7 @@ project (Sandbox .. "-Editor")
     includedirs
     {
         Sources,
+		Libraries,
 		NexusFramework .. "Sources/",
 		NexusFramework .. "Libraries/"
     }
@@ -375,7 +382,8 @@ project (Sandbox .. "-Editor")
 		Engine,
 		App,
 		Editor,
-		SandboxApp
+		SandboxApp,
+		ImGui
 	}
 
 	defines
@@ -393,7 +401,7 @@ project (Sandbox .. "-Editor")
 project (Glfw)
     location (Lib)
 
-    kind "StaticLib"
+    kind "SharedLib"
     language "C++"
 	cppdialect "C++20"
 
@@ -419,6 +427,16 @@ project (Glfw)
 		Lib .. "src/null_monitor.c",
 		Lib .. "src/null_platform.h",
 		Lib .. "src/null_window.c",
+    }
+
+	defines
+	{
+		"_GLFW_BUILD_DLL"
+	}
+
+	postbuildcommands
+    {
+        PostBuild
     }
 
 	filter "system:windows"
@@ -450,6 +468,39 @@ project (Glfw)
 		{
 			"_CRT_SECURE_NO_WARNINGS"
 		}
+
+project (ImGui)
+    location (Lib)
+
+    kind "SharedLib"
+    language "C++"
+	cppdialect "C++20"
+
+	targetdir (Target)
+	objdir (Object)
+
+	files
+    {
+        Lib .. "**.h",
+		Lib .. "**.cpp",
+		Lib .. "**.natvis",
+    }
+
+	includedirs
+	{
+		Libraries
+	}
+
+	links
+	{
+		Glfw
+	}
+
+	defines
+	{
+		"IMGUI_DLL",
+		"GLFW_DLL"
+	}
 
 	postbuildcommands
     {
