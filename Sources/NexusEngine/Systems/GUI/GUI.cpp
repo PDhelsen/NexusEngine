@@ -116,8 +116,8 @@ namespace NxEn
 			return Priority != Other.Priority ? Priority <= Other.Priority : Path <= Other.Path;
 		}
 
-		Menu::Menu()
-			: Element(true), Items(), Labels()
+		Menu::Menu(bool Main)
+			: Element(true), Items(), Labels(), Main(Main)
 		{
 		}
 
@@ -125,16 +125,33 @@ namespace NxEn
 		{
 		}
 
-		Menu& Menu::AddMenuItem(NxFr::Delegate<void()> Callback, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority)
+		Menu& Menu::AddMenuItem(const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			Items.AppendConstruct(Callback, Path.ToString(), Shortcut.ToString(), Priority);
-			Items.Sort();
+			AppendItem(Callback, Validate, Path, Shortcut, Priority, ItemMode::Callback, 0, nullptr);
+			return *this;
+		}
 
-			NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Path);
-			for (auto& Section : Sections)
+		Menu& Menu::AddMenuItem(void* Toggle, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		{
+			return AddMenuItem(Toggle, nullptr, Path, Shortcut, Priority, Validate);
+		}
+
+		Menu& Menu::AddMenuItem(void* Toggle, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		{
+			AppendItem(Callback, Validate, Path, Shortcut, Priority, ItemMode::Toggle, 0, Toggle);
+			return *this;
+		}
+
+		Menu& Menu::AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		{
+			return AddMenuItem(Enum, Labels, nullptr, Path, Shortcut, Priority, Validate);
+		}
+
+		Menu& Menu::AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		{
+			for (uint64 Index = 0; Index < Labels.GetCount(); ++Index)
 			{
-				NxFr::GUID Id = NxFr::Hash<>::HashObject(Section);
-				Labels.Append(Id, Section.ToString());
+				AppendItem(Callback, Validate, Path + NxFr::Path::SeparatorDirectory + Labels[Index], Shortcut, Priority, ItemMode::Enum, Index, Enum);
 			}
 
 			return *this;
@@ -142,18 +159,51 @@ namespace NxEn
 
 		void Menu::OnTick(float TimeStep)
 		{
-			if (ImGui::BeginMenuBar())
+			if (Main)
 			{
-				for (auto& Item : Items)
+				if (ImGui::BeginMainMenuBar())
 				{
-					NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Item.Path);
-					DrawItem(Item, Sections, 0);
+					DrawMenu(TimeStep);
+
+					ImGui::EndMainMenuBar();
 				}
-
-				OnGui(TimeStep);
-
-				ImGui::EndMenuBar();
 			}
+			else
+			{
+				if (ImGui::BeginMenuBar())
+				{
+					DrawMenu(TimeStep);
+
+					ImGui::EndMenuBar();
+				}
+			}
+		}
+
+		void Menu::AppendItem(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
+		{
+			Items.AppendConstruct(Callback, Validate, Path.ToString(), Shortcut.ToString(), Priority, Mode, Index, Data);
+			Items.Sort();
+
+			NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Path);
+			for (auto& Section : Sections)
+			{
+				NxFr::GUID Id = NxFr::Hash<>::HashObject(Section);
+				if (!Labels.ContainsKey(Id))
+				{
+					Labels.Append(Id, Section.ToString());
+				}
+			}
+		}
+
+		void Menu::DrawMenu(float TimeStep)
+		{
+			for (auto& Item : Items)
+			{
+				NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Item.Path);
+				DrawItem(Item, Sections, 0);
+			}
+
+			OnGui(TimeStep);
 		}
 
 		void Menu::DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const
@@ -163,7 +213,38 @@ namespace NxEn
 
 			if (Depth == Sections.GetCount() - 1)
 			{
-				if (ImGui::MenuItem(Lbl.C(), It.Shortcut.C()))
+				bool Call = false;
+				bool Enabled = !It.Validate.IsNull() ? It.Validate.Invoke() : true;
+
+				switch (It.Mode)
+				{
+				case ItemMode::Callback: Call = ImGui::MenuItem(Lbl.C(), It.Shortcut.C(), false, Enabled); break;
+				case ItemMode::Enum:
+					{
+						int64& Current = *reinterpret_cast<int64*>(It.Data);
+						Call = ImGui::MenuItem(Lbl.C(), It.Shortcut.C(), Current == It.Index, Enabled);
+						if (Call)
+						{
+							Current = It.Index;
+						}
+					}
+					break;
+				case ItemMode::Toggle:
+					{
+						if (!Enabled)
+						{
+							ImGui::BeginDisabled();
+						}
+						Call = ImGui::Checkbox(Lbl.C(), reinterpret_cast<bool*>(It.Data));
+						if (!Enabled)
+						{
+							ImGui::EndDisabled();
+						}
+					}
+					break;
+				}
+
+				if (Call && !It.Callback.IsNull() && Enabled)
 				{
 					It.Callback.Invoke();
 				}
@@ -283,7 +364,7 @@ namespace NxEn
 			return *this;
 		}
 
-		ProgressBar& ProgressBar::SetCallback(NxFr::Delegate<void()> Callback)
+		ProgressBar& ProgressBar::SetCallback(const NxFr::Delegate<void()>& Callback)
 		{
 			this->Callback = Callback;
 			return *this;

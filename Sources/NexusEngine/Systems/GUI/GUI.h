@@ -60,12 +60,21 @@ namespace NxEn
 
 		class Menu : public Element
 		{
+			enum class ItemMode
+			{
+				Callback, Toggle, Enum
+			};
+
 			struct Item
 			{
 				NxFr::Delegate<void()> Callback;
+				NxFr::Delegate<bool()> Validate;
 				NxFr::String Path;
 				NxFr::String Shortcut;
 				int64 Priority;
+				ItemMode Mode;
+				uint64 Index;
+				void* Data;
 
 				bool operator<=(const Item& Other) const;
 			};
@@ -73,10 +82,14 @@ namespace NxEn
 		public:
 			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Menu)
 
-			NEXUS_ENGINE_API Menu();
+			NEXUS_ENGINE_API Menu(bool Main = false);
 			NEXUS_ENGINE_API virtual ~Menu();
 
-			NEXUS_ENGINE_API Menu& AddMenuItem(NxFr::Delegate<void()> Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0);
+			NEXUS_ENGINE_API Menu& AddMenuItem(const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& AddMenuItem(void* Toggle, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& AddMenuItem(void* Toggle, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 
 			NEXUS_ENGINE_API NxFr::StringView GetMenuItem(uint64 Index = 0) const { return Items[Index].Path; }
 			NEXUS_ENGINE_API uint64 GetMenuItemCount() const { return Items.GetCount(); }
@@ -85,11 +98,14 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
+			void AppendItem(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
+			void DrawMenu(float TimeStep);
 			void DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const;
 
 		protected:
 			NxFr::List<Item> Items;
 			NxFr::Dictionary<NxFr::GUID, NxFr::String> Labels;
+			bool Main;
 		};
 
 		class Popup : public Element
@@ -140,7 +156,7 @@ namespace NxEn
 			NEXUS_ENGINE_API ProgressBar& SetGuiFlag(ImGuiWindowFlags_ GuiFlags);
 			NEXUS_ENGINE_API ProgressBar& SetTitle(NxFr::StringView Title);
 			NEXUS_ENGINE_API ProgressBar& SetMessage(NxFr::StringView Message);
-			NEXUS_ENGINE_API ProgressBar& SetCallback(NxFr::Delegate<void()> Callback);
+			NEXUS_ENGINE_API ProgressBar& SetCallback(const NxFr::Delegate<void()>& Callback);
 			NEXUS_ENGINE_API ProgressBar& SetProgress(float Progress);
 
 			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
