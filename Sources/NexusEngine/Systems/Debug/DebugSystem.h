@@ -19,6 +19,9 @@ namespace NxEn
 		NEXUS_ENGINE_API DebugSystem();
 		NEXUS_ENGINE_API ~DebugSystem();
 
+		NEXUS_ENGINE_API void SetEnableProfilerCmd(NxFr::StringView Enabled);
+		NEXUS_ENGINE_API void SetEnableProfiler(bool Enabled);
+
 		NEXUS_ENGINE_API NxFr::Logger* GetLogger() const { return Logger; }
 		NEXUS_ENGINE_API NxFr::Stats* GetStats() const { return Stats; };
 		NEXUS_ENGINE_API NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }

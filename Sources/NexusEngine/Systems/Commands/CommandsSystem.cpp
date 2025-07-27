@@ -73,14 +73,25 @@ namespace NxEn
 	{
 	}
 
+	void CommandsSystem::Run(NxFr::StringView Cmd)
+	{
+		Run(ParseCommand(Cmd));
+	}
+
 	void CommandsSystem::Run(const CommandInfo& Info)
 	{
 		Queue->AppendConstruct(Info);
 	}
 
+	void CommandsSystem::Execute(NxFr::StringView Cmd)
+	{
+		Execute(ParseCommand(Cmd));
+	}
+
 	void CommandsSystem::Execute(const CommandInfo& Info)
 	{
 		Current = &Info;
+		NEXUS_LOG(Info, Default, "Execute command: %s", Info.Id.C());
 		GetCommand(Info.Id)->Invoke(Info.Args);
 		Current = nullptr;
 	}

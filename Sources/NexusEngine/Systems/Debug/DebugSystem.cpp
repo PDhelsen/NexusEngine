@@ -12,6 +12,8 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
+	const static Command CmdDebugProfiler = Command::Create("Debug.Profiler"_Sid, "Enable/Disable profiler", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled) { Application::GetSystem<DebugSystem>()->SetEnableProfilerCmd(Enabled); }));
+
 	namespace StatsHeader
 	{
 		const NxFr::StringId MemoryAllocatedId = "Memory - Allocated"_Sid;
@@ -28,6 +30,23 @@ namespace NxEn
 
 	DebugSystem::~DebugSystem()
 	{
+	}
+
+	void DebugSystem::SetEnableProfilerCmd(NxFr::StringView Enabled)
+	{
+		SetEnableProfiler(Enabled == "true");
+	}
+
+	void DebugSystem::SetEnableProfiler(bool Enabled)
+	{
+		if (Enabled && !Instrumentor->IsRecording())
+		{
+			Instrumentor->StartRecording();
+		}
+		else if (!Enabled && Instrumentor->IsRecording())
+		{
+			Instrumentor->StopRecording();
+		}
 	}
 
 	void DebugSystem::OnInitialize()
