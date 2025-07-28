@@ -9,6 +9,7 @@ namespace NxEn
 		: Logger(true, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE)
 	{
 		Logger.AddChannel(NxFr::LoggerChannel::Default, true);
+		Logger.AddChannel(NxFr::LoggerChannel::Verbose, false);
 	}
 
 	Bootstrapper::~Bootstrapper()
