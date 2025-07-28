@@ -12,7 +12,19 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
-	const static Command CmdDebugProfiler = Command::Create("Debug.Profiler"_Sid, "Enable/Disable profiler", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled) { Application::GetSystem<DebugSystem>()->SetEnableProfilerCmd(Enabled); }));
+	const static Command CmdDebugProfiler = Command::Create("Debug.Profiler"_Sid, "Enable/Disable profiler", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		NxFr::Instruments* Instrumentor = Application::GetSystem<DebugSystem>()->GetInstrumentor();
+		if (Enabled == "true") Instrumentor->StartRecording(); else Instrumentor->StopRecording();
+	}));
+	const static Command CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
+	{
+		Application::GetSystem<DebugSystem>()->GetLogger()->SetChannel(NxFr::StringId(Channel), Enabled == "true");
+	}));
+	const static Command CmdDebugLoggerAllChannels = Command::Create("Debug.Logger.AllChannels"_Sid, "Enable/Disable all logger channel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		Application::GetSystem<DebugSystem>()->GetLogger()->SetAllChannels(Enabled == "true");
+	}));
 
 	namespace StatsHeader
 	{
@@ -30,23 +42,6 @@ namespace NxEn
 
 	DebugSystem::~DebugSystem()
 	{
-	}
-
-	void DebugSystem::SetEnableProfilerCmd(NxFr::StringView Enabled)
-	{
-		SetEnableProfiler(Enabled == "true");
-	}
-
-	void DebugSystem::SetEnableProfiler(bool Enabled)
-	{
-		if (Enabled && !Instrumentor->IsRecording())
-		{
-			Instrumentor->StartRecording();
-		}
-		else if (!Enabled && Instrumentor->IsRecording())
-		{
-			Instrumentor->StopRecording();
-		}
 	}
 
 	void DebugSystem::OnInitialize()
