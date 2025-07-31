@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	static char FilterBuffer[256] = "";
+	static NxFr::String Filter = 256;
 	static NxFr::StringView FilterExclude[] = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
 
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
@@ -64,11 +64,12 @@ namespace NxEn
 		ImGui::Text("Filter:");
 		ImGui::SameLine();
 		ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::InputText("##Filter", FilterBuffer, IM_ARRAYSIZE(FilterBuffer));
+		ImGui::InputText("##Filter", Filter.C_Buffer(), Filter.GetCapacity());
 		ImGui::PopItemWidth();
 		ImGui::Separator();
 
-		Filters = NxFr::StringUtility::SplitAll(FilterBuffer, ",");
+		Filter.Validate();
+		Filters = NxFr::StringUtility::SplitAll(Filter, ",");
 	}
 
 	void StatsPanel::DrawStats(const NxFr::String& Label) const
