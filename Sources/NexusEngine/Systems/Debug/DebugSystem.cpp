@@ -4,6 +4,8 @@
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
+#include "NexusEngine/Systems/Debug/StatsPanel.h"
+
 namespace NxEn
 {
 #if NEXUS_DEBUG
@@ -12,11 +14,6 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
-	const static Command CmdDebugProfiler = Command::Create("Debug.Profiler"_Sid, "Enable/Disable profiler", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
-	{
-		NxFr::Instruments* Instrumentor = Application::GetSystem<DebugSystem>()->GetInstrumentor();
-		if (Enabled == "true") Instrumentor->StartRecording(); else Instrumentor->StopRecording();
-	}));
 	const static Command CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
 	{
 		Application::GetSystem<DebugSystem>()->GetLogger()->SetChannel(NxFr::StringId(Channel), Enabled == "true");
@@ -24,6 +21,21 @@ namespace NxEn
 	const static Command CmdDebugLoggerAllChannels = Command::Create("Debug.Logger.AllChannels"_Sid, "Enable/Disable all logger channel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
 	{
 		Application::GetSystem<DebugSystem>()->GetLogger()->SetAllChannels(Enabled == "true");
+	}));
+	const static Command CmdDebugProfiler = Command::Create("Debug.Profiler"_Sid, "Enable/Disable profiler", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		NxFr::Instruments* Instrumentor = Application::GetSystem<DebugSystem>()->GetInstrumentor();
+		if (Enabled == "true") Instrumentor->StartRecording(); else Instrumentor->StopRecording();
+	}));
+	const static Command CmdDebugStats = Command::Create("Debug.Stats"_Sid, "Enable/Disable stats", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
+		if (Enabled == "true") Stats->StartRecording(); else Stats->StopRecording();
+	}));
+	const static Command CmdDebugStatsPanel = Command::Create("Debug.Stats.Panel"_Sid, "Show/Hide stats panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		StatsPanel* Stats = Application::GetSystem<DebugSystem>()->GetStatsPanel();
+		if (Enabled == "true") Stats->Show(); else Stats->Hide();
 	}));
 
 	namespace StatsHeader
@@ -36,7 +48,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 
 	DebugSystem::DebugSystem()
-		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr)
+		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr), PanelStats(nullptr)
 	{
 	}
 
@@ -69,6 +81,9 @@ namespace NxEn
 			Stats->StartRecording();
 		}
 
+		PanelStats = Object::Create<StatsPanel>(false);
+		PanelStats->SetStats(Stats);
+
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
 		if (AutoStart)
 		{
@@ -90,6 +105,8 @@ namespace NxEn
 
 		Logger->Flush();
 		delete Logger;
+
+		PanelStats = Object::Destroy<StatsPanel>(PanelStats);
 
 		if (Stats->IsRecording())
 		{
