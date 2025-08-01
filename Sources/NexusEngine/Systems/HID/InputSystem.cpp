@@ -99,6 +99,11 @@ namespace NxEn
 
 	void InputSystem::OnButtonChanged(Input::Button Button, Input::State State)
 	{
+		if (ImGui::GetIO().WantTextInput)
+		{
+			return;
+		}
+
 		Buttons[(uint64)Button] = State;
 		DirtyFlagButtons = true;
 	}
