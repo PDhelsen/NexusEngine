@@ -42,7 +42,7 @@ namespace NxEn
 			NEXUS_ENGINE_API Panel();
 			NEXUS_ENGINE_API virtual ~Panel();
 
-			NEXUS_ENGINE_API Panel& SetGuiFlag(ImGuiWindowFlags_ GuiFlags);
+			NEXUS_ENGINE_API Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			NEXUS_ENGINE_API Panel& SetTitle(NxFr::StringView Title);
 
 			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
@@ -122,7 +122,7 @@ namespace NxEn
 			NEXUS_ENGINE_API Popup();
 			NEXUS_ENGINE_API virtual ~Popup();
 
-			NEXUS_ENGINE_API Popup& SetGuiFlag(ImGuiWindowFlags_ GuiFlags);
+			NEXUS_ENGINE_API Popup& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			NEXUS_ENGINE_API Popup& SetTitle(NxFr::StringView Title);
 			NEXUS_ENGINE_API Popup& SetMessage(NxFr::StringView Message);
 			NEXUS_ENGINE_API Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
@@ -153,7 +153,7 @@ namespace NxEn
 			NEXUS_ENGINE_API ProgressBar();
 			NEXUS_ENGINE_API virtual ~ProgressBar();
 
-			NEXUS_ENGINE_API ProgressBar& SetGuiFlag(ImGuiWindowFlags_ GuiFlags);
+			NEXUS_ENGINE_API ProgressBar& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			NEXUS_ENGINE_API ProgressBar& SetTitle(NxFr::StringView Title);
 			NEXUS_ENGINE_API ProgressBar& SetMessage(NxFr::StringView Message);
 			NEXUS_ENGINE_API ProgressBar& SetCallback(const NxFr::Delegate<void()>& Callback);

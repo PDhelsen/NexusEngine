@@ -69,7 +69,7 @@ namespace NxEn
 		{
 		}
 
-		Panel& Panel::SetGuiFlag(ImGuiWindowFlags_ GuiFlags)
+		Panel& Panel::SetGuiFlag(ImGuiWindowFlags GuiFlags)
 		{
 			this->GuiFlags |= GuiFlags;
 			return *this;
@@ -274,7 +274,7 @@ namespace NxEn
 		{
 		}
 
-		Popup& Popup::SetGuiFlag(ImGuiWindowFlags_ GuiFlags)
+		Popup& Popup::SetGuiFlag(ImGuiWindowFlags GuiFlags)
 		{
 			this->GuiFlags |= GuiFlags;
 			return *this;
@@ -346,7 +346,7 @@ namespace NxEn
 		{
 		}
 
-		ProgressBar& ProgressBar::SetGuiFlag(ImGuiWindowFlags_ GuiFlags)
+		ProgressBar& ProgressBar::SetGuiFlag(ImGuiWindowFlags GuiFlags)
 		{
 			this->GuiFlags = GuiFlags;
 			return *this;
