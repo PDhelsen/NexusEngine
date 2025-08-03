@@ -20,6 +20,7 @@ namespace NxEn
 			ImGuiIO& IO = ImGui::GetIO();
 			IO.IniFilename = nullptr;
 			IO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			// TODO: Fix Multiviewport and Glfw callbacks
 			IO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 			void* Context = Glfw::GetContext();

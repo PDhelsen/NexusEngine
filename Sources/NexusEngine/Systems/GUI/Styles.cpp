@@ -125,7 +125,7 @@ namespace NxEn
 				Value.Push();
 			}
 
-			Style::Style(const::NxEn::GUI::Style Value)
+			Style::Style(const::NxEn::GUI::Style& Value)
 				: Value(Value)
 			{
 				Value.Push();

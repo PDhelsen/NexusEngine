@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
-#include "NexusEngine/Systems/System.h"
+#include "NexusEditor/Systems/Editor/EditorWindow.h"
 
 namespace NxEd
 {
@@ -24,10 +24,12 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void PushInputSchema();
 		NEXUS_EDITOR_API void PopInputSchema();
+		NEXUS_EDITOR_API void RecordActions();
 
 	private:
 		NxFr::Event<> OnSave;
 
 		NxEn::Input::Schema InputSchema;
+		EditorWindow* Window;
 	};
 }

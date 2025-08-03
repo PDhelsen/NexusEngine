@@ -12,7 +12,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)
 
 	EditorSystem::EditorSystem()
-		: OnSave(), InputSchema()
+		: OnSave(), InputSchema(), Window(nullptr)
 	{
 	}
 
@@ -32,12 +32,15 @@ namespace NxEd
 	{
 		System::OnInitialize();
 
+		Window = NxEn::Object::Create<EditorWindow>();
 		PushInputSchema();
+		RecordActions();
 	}
 
 	void EditorSystem::OnShutdown()
 	{
 		PopInputSchema();
+		Window = NxEn::Object::Destroy(Window);
 
 		System::OnShutdown();
 	}
@@ -55,5 +58,16 @@ namespace NxEd
 	void EditorSystem::PopInputSchema()
 	{
 		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema(InputSchemaId);
+	}
+
+	void EditorSystem::RecordActions()
+	{
+		NxEn::GUI::Menu& Menu = Window->GetMenu();
+		NxFr::Dictionary<NxFr::StringId, NxEn::Input::Action>& Inputs = InputSchema.GetMapping();
+
+		NxFr::Delegate<void()> SaveCallback = { this, &EditorSystem::Save };
+		NxFr::StringView SavePath = "File/Save";
+		Menu.AddMenuItem(SaveCallback, SavePath);
+		Inputs.Append(NxFr::StringId(SavePath), NxEn::Input::Action(NxEn::Input::Button::S, NxEn::Input::State::Released, NxEn::Input::Modifier::Control, SaveCallback));
 	}
 }
