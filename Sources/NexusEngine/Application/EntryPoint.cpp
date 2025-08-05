@@ -1,6 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/EntryPoint.h"
-#include "NexusEngine/Application/Project.h"
+#include "NexusEngine/Application/Project/Project.h"
 
 namespace NxEn
 {

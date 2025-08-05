@@ -34,8 +34,7 @@ namespace NxEn
 	}));
 	const static Command CmdDebugStatsPanel = Command::Create("Debug.Stats.Panel"_Sid, "Show/Hide stats panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
 	{
-		StatsPanel* Stats = Application::GetSystem<DebugSystem>()->GetStatsPanel();
-		if (Enabled == "true") Stats->Show(); else Stats->Hide();
+		Application::GetSystem<DebugSystem>()->GetPanelStats(Enabled == "true");
 	}));
 
 	namespace StatsHeader
@@ -54,6 +53,12 @@ namespace NxEn
 
 	DebugSystem::~DebugSystem()
 	{
+	}
+
+	StatsPanel* DebugSystem::GetPanelStats(bool Enable) const
+	{
+		PanelStats->SetEnabled(Enable);
+		return PanelStats;
 	}
 
 	void DebugSystem::OnInitialize()
@@ -81,9 +86,6 @@ namespace NxEn
 			Stats->StartRecording();
 		}
 
-		PanelStats = Object::Create<StatsPanel>(false);
-		PanelStats->SetStats(Stats);
-
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
 		if (AutoStart)
 		{
@@ -94,10 +96,15 @@ namespace NxEn
 		NxFr::Globals::Logs = Logger;
 		NxFr::Globals::Statistiques = Stats;
 		NxFr::Globals::Instrumentor = Instrumentor;
+
+		PanelStats = Object::Create<StatsPanel>(false);
+		PanelStats->SetStats(Stats);
 	}
 
 	void DebugSystem::OnShutdown()
 	{
+		PanelStats = Object::Destroy<StatsPanel>(PanelStats);
+
 		// Remove DebugSystem instance from globals only if they are still globals
 		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
 		if (NxFr::Globals::Statistiques == Stats) NxFr::Globals::Statistiques = nullptr;
@@ -105,8 +112,6 @@ namespace NxEn
 
 		Logger->Flush();
 		delete Logger;
-
-		PanelStats = Object::Destroy<StatsPanel>(PanelStats);
 
 		if (Stats->IsRecording())
 		{

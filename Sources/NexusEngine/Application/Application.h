@@ -2,7 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/EntryPoint.h"
-#include "NexusEngine/Application/Project.h"
+#include "NexusEngine/Application/Project/Project.h"
 #include "NexusEngine/Application/Bootstrapper.h"
 #include "NexusEngine/Application/Ticker.h"
 #include "NexusEngine/Application/TimeManager.h"
@@ -57,6 +57,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
 		NEXUS_ENGINE_API bool IsRunning() const;
 
+		Project& GetProject() { return ProjectInfo; }
 		Bootstrapper& GetBootstrapper() { return Bootstrap; }
 		Ticker& GetTicker() { return Ticks; }
 		SystemManager& GetSystems() { return Systems; }

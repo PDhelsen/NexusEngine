@@ -5,6 +5,8 @@
 namespace NxEn
 {
 	class Project;
+	class ProjectPanel;
+
 	namespace EntryPoint
 	{
 		NEXUS_ENGINE_API Project CreateProject();
@@ -24,6 +26,8 @@ namespace NxEn
 		NEXUS_ENGINE_API Project(NxFr::StringView Path);
 		NEXUS_ENGINE_API Project(ProjectMode Mode, NxFr::StringView Path);
 		NEXUS_ENGINE_API ~Project();
+
+		NEXUS_ENGINE_API ProjectPanel* GetPanel(bool Enable = true);
 
 		NEXUS_ENGINE_API ProjectMode GetTarget() const { return Mode; }
 		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
@@ -47,5 +51,7 @@ namespace NxEn
 
 		NxFr::String Name;
 		NxFr::String Dll;
+
+		ProjectPanel* Panel;
 	};
 }

@@ -45,6 +45,11 @@ namespace NxEn
 		template<typename T>
 		static T* Destroy(T* Instance)
 		{
+			if (Instance == nullptr)
+			{
+				return nullptr;
+			}
+
 			Instance->Shutdown();
 			delete Instance;
 			return nullptr;

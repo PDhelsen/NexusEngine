@@ -4,7 +4,7 @@
 
 #include "NexusEngine/Application/Object.h"
 #include "NexusEngine/Application/Application.h"
-#include "NexusEngine/Application/Project.h"
+#include "NexusEngine/Application/Project/Project.h"
 #include "NexusEngine/Application/TimeManager.h"
 
 #include "NexusEngine/Systems/System.h"

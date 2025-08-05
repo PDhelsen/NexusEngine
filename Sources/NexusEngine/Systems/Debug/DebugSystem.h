@@ -21,10 +21,11 @@ namespace NxEn
 		NEXUS_ENGINE_API DebugSystem();
 		NEXUS_ENGINE_API ~DebugSystem();
 
+		NEXUS_ENGINE_API StatsPanel* GetPanelStats(bool Enable = true) const;
+
 		NEXUS_ENGINE_API NxFr::Logger* GetLogger() const { return Logger; }
 		NEXUS_ENGINE_API NxFr::Stats* GetStats() const { return Stats; };
 		NEXUS_ENGINE_API NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }
-		NEXUS_ENGINE_API StatsPanel* GetStatsPanel() const { return PanelStats; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;

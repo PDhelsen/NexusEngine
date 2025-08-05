@@ -65,6 +65,10 @@ namespace NxEd
 		NxEn::GUI::Menu& Menu = Window->GetMenu();
 		NxFr::Dictionary<NxFr::StringId, NxEn::Input::Action>& Inputs = InputSchema.GetMapping();
 
+		NxFr::Delegate<void()> InfoCallback = []() { NxEn::Application::GetInstance()->GetProject().GetPanel(); };
+		NxFr::StringView InfoPath = "File/Project";
+		Menu.AddMenuItem(InfoCallback, InfoPath);
+
 		NxFr::Delegate<void()> SaveCallback = { this, &EditorSystem::Save };
 		NxFr::StringView SavePath = "File/Save";
 		Menu.AddMenuItem(SaveCallback, SavePath);
