@@ -39,8 +39,21 @@ namespace NxEn
 		public:
 			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Panel)
 
+			template<typename T>
+			static T* Create()
+			{
+				T* Instance = Object::Create<T>(false);
+				Instance->RegisterInstance();
+				return Instance;
+			}
+
 			NEXUS_ENGINE_API Panel();
 			NEXUS_ENGINE_API virtual ~Panel();
+
+			NEXUS_ENGINE_API void ShowWithTarget(bool State, void* Instance);
+
+			NEXUS_ENGINE_API virtual void SetTarget(void* Instance);
+			NEXUS_ENGINE_API void* GetTarget();
 
 			NEXUS_ENGINE_API Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			NEXUS_ENGINE_API Panel& SetTitle(NxFr::StringView Title);
@@ -53,9 +66,13 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
+		private:
+			NEXUS_ENGINE_API void RegisterInstance();
+
 		protected:
 			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
+			void* Target;
 		};
 
 		class Menu : public Element

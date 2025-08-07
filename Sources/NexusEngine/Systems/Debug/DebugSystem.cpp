@@ -4,8 +4,6 @@
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
-#include "NexusEngine/Systems/Debug/StatsPanel.h"
-
 namespace NxEn
 {
 #if NEXUS_DEBUG
@@ -32,10 +30,6 @@ namespace NxEn
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		if (Enabled == "true") Stats->StartRecording(); else Stats->StopRecording();
 	}));
-	const static Command CmdDebugStatsPanel = Command::Create("Debug.Stats.Panel"_Sid, "Show/Hide stats panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
-	{
-		Application::GetSystem<DebugSystem>()->GetPanelStats(Enabled == "true");
-	}));
 
 	namespace StatsHeader
 	{
@@ -47,18 +41,12 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 
 	DebugSystem::DebugSystem()
-		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr), PanelStats(nullptr)
+		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr)
 	{
 	}
 
 	DebugSystem::~DebugSystem()
 	{
-	}
-
-	StatsPanel* DebugSystem::GetPanelStats(bool Enable) const
-	{
-		PanelStats->SetEnabled(Enable);
-		return PanelStats;
 	}
 
 	void DebugSystem::OnInitialize()
@@ -96,15 +84,10 @@ namespace NxEn
 		NxFr::Globals::Logs = Logger;
 		NxFr::Globals::Statistiques = Stats;
 		NxFr::Globals::Instrumentor = Instrumentor;
-
-		PanelStats = Object::Create<StatsPanel>(false);
-		PanelStats->SetStats(Stats);
 	}
 
 	void DebugSystem::OnShutdown()
 	{
-		PanelStats = Object::Destroy<StatsPanel>(PanelStats);
-
 		// Remove DebugSystem instance from globals only if they are still globals
 		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
 		if (NxFr::Globals::Statistiques == Stats) NxFr::Globals::Statistiques = nullptr;

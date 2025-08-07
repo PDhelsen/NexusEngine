@@ -11,6 +11,15 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GUISystem)
 
+		template<typename T>
+		static T* GetPanel()
+		{
+			return (T*)GetPanel(T::GetClassType());
+		}
+		NEXUS_ENGINE_API static GUI::Panel* GetPanel(NxFr::StringId Id);
+		NEXUS_ENGINE_API static void RegisterPanel(GUI::Panel* Instance);
+		NEXUS_ENGINE_API static void UnregisterPanel(GUI::Panel* Instance);
+
 		NEXUS_ENGINE_API GUISystem();
 		NEXUS_ENGINE_API ~GUISystem();
 

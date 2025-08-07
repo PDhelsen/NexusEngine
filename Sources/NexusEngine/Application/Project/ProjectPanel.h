@@ -13,14 +13,8 @@ namespace NxEn
 		NEXUS_ENGINE_API ProjectPanel();
 		NEXUS_ENGINE_API ~ProjectPanel();
 
-		NEXUS_ENGINE_API void SetProject(const Project* Infos);
-		NEXUS_ENGINE_API const Project* GetProject();
-
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
-
-	private:
-		const Project* ProjectInfos;
 	};
 }

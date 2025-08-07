@@ -1,4 +1,5 @@
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEngine/Application/Project/ProjectPanel.h"
 
 namespace NxEd
 {
@@ -65,7 +66,7 @@ namespace NxEd
 		NxEn::GUI::Menu& Menu = Window->GetMenu();
 		NxFr::Dictionary<NxFr::StringId, NxEn::Input::Action>& Inputs = InputSchema.GetMapping();
 
-		NxFr::Delegate<void()> InfoCallback = []() { NxEn::Application::GetInstance()->GetProject().GetPanel(); };
+		NxFr::Delegate<void()> InfoCallback = []() { NxEn::GUISystem::GetPanel<NxEn::ProjectPanel>()->ShowWithTarget(true, &NxEn::Application::GetInstance()->GetProject()); };
 		NxFr::StringView InfoPath = "File/Project";
 		Menu.AddMenuItem(InfoCallback, InfoPath);
 

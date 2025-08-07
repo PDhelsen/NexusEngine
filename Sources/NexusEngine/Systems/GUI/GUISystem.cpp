@@ -19,6 +19,27 @@ namespace NxEn
 	const NxFr::StringView Suffix = "_app";
 #endif
 
+	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
+	{
+		static NxFr::Dictionary<NxFr::StringId, GUI::Panel*> Panels;
+		return Panels;
+	}
+
+	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Id)
+	{
+		return GetPanels()[Id];
+	}
+
+	void GUISystem::RegisterPanel(GUI::Panel* Instance)
+	{
+		GetPanels().Append(Instance->GetObjectType(), Instance);
+	}
+
+	void GUISystem::UnregisterPanel(GUI::Panel* Instance)
+	{
+		GetPanels().Remove(Instance->GetObjectType());
+	}
+
 	GUISystem::GUISystem()
 		: Elements(), Styles()
 	{

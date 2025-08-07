@@ -6,10 +6,17 @@ namespace NxEn
 	static NxFr::String Filter = 256;
 	static NxFr::StringView FilterExclude[] = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
 
+	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
+
+	const static Command CmdDebugStatsPanel = Command::Create("Debug.Stats.Panel"_Sid, "Show/Hide stats panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		GUISystem::GetPanel<StatsPanel>()->ShowWithTarget(Enabled == "true", Application::GetInstance()->GetSystem<DebugSystem>()->GetStats());
+	}));
+
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
 
 	StatsPanel::StatsPanel()
-		: Statistiques(nullptr), Filters(), Ids(), Values()
+		: Filters(), Ids(), Values()
 	{
 	}
 
@@ -17,10 +24,10 @@ namespace NxEn
 	{
 	}
 
-	void StatsPanel::SetStats(const NxFr::Stats* Stats)
+	void StatsPanel::SetTarget(void* Instance)
 	{
-		Statistiques = Stats;
-		Values = Stats->GetAllCurrentStats();
+		NxFr::Stats* Statistiques = reinterpret_cast<NxFr::Stats*>(Instance);
+		Values = Statistiques->GetAllCurrentStats();
 
 		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
 		for (auto& [Id, Value] : Values)
@@ -28,11 +35,6 @@ namespace NxEn
 			Ids.Append(&Id.ToString());
 		}
 		Ids.Sort();
-	}
-
-	const NxFr::Stats* StatsPanel::GetStats()
-	{
-		return Statistiques;
 	}
 
 	void StatsPanel::OnInitialize()

@@ -1,16 +1,10 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Project/Project.h"
-#include "NexusEngine/Application/Project/ProjectPanel.h"
 
 #define NEXUS_PROJECT_DLL "NexusProject-"
 
 namespace NxEn
 {
-	const static Command CmdProjectPanel = Command::Create("Project.Panel"_Sid, "Show/Hide project panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
-	{
-		Application::GetInstance()->GetProject().GetPanel(Enabled == "true");
-	}));
-
 	NEXUS_ENUM_TO_STRING_IMPLEMENTATION_COUNT(ProjectMode, 2, "App", "Editor")
 
 	static ProjectMode ModeFromString(NxFr::StringView Mode)
@@ -114,19 +108,10 @@ namespace NxEn
 	{
 	}
 
-	ProjectPanel* Project::GetPanel(bool Enable)
-	{
-		Panel->SetEnabled(Enable);
-		return Panel;
-	}
-
 	void Project::Initialize()
 	{
 		Root = !Path.IsEmpty() ? NxFr::Path::GetDirectoryPath(Path).ToString() : NxFr::Platform::GetInstance()->GetWorkingDirectory();
 		Executable = NxFr::Path::Normalize(NxFr::Arguments::GetValue(NxFr::Arguments::KeyProgram));
-
-		Panel = NxEn::Object::Create<ProjectPanel>(false);
-		Panel->SetProject(this);
 	}
 
 	void Project::GenerateDefault()

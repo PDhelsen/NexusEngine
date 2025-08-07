@@ -4,8 +4,6 @@
 
 namespace NxEn
 {
-	class StatsPanel;
-
 	namespace StatsHeader
 	{
 		NEXUS_ENGINE_API extern const NxFr::StringId MemoryAllocatedId;
@@ -21,8 +19,6 @@ namespace NxEn
 		NEXUS_ENGINE_API DebugSystem();
 		NEXUS_ENGINE_API ~DebugSystem();
 
-		NEXUS_ENGINE_API StatsPanel* GetPanelStats(bool Enable = true) const;
-
 		NEXUS_ENGINE_API NxFr::Logger* GetLogger() const { return Logger; }
 		NEXUS_ENGINE_API NxFr::Stats* GetStats() const { return Stats; };
 		NEXUS_ENGINE_API NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }
@@ -36,7 +32,5 @@ namespace NxEn
 		NxFr::Logger* Logger;
 		NxFr::Stats* Stats;
 		NxFr::Instruments* Instrumentor;
-
-		StatsPanel* PanelStats;
 	};
 }

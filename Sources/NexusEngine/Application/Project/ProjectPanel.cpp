@@ -3,25 +3,21 @@
 
 namespace NxEn
 {
+	static ProjectPanel* Panel = GUI::Panel::Create<ProjectPanel>();
+
+	const static Command CmdProjectPanel = Command::Create("Project.Panel"_Sid, "Show/Hide project panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		GUISystem::GetPanel<ProjectPanel>()->ShowWithTarget(Enabled == "true", &Application::GetInstance()->GetProject());
+	}));
+
 	NEXUS_OBJECT_IMPLEMENTATION(ProjectPanel)
 
 	ProjectPanel::ProjectPanel()
-		: ProjectInfos(nullptr)
 	{
 	}
 
 	ProjectPanel::~ProjectPanel()
 	{
-	}
-
-	void ProjectPanel::SetProject(const Project* Infos)
-	{
-		ProjectInfos = Infos;
-	}
-
-	const Project* ProjectPanel::GetProject()
-	{
-		return ProjectInfos;
 	}
 
 	void ProjectPanel::OnInitialize()
@@ -34,6 +30,8 @@ namespace NxEn
 
 	void ProjectPanel::OnGui(float TimeStep)
 	{
+		Project* ProjectInfos = reinterpret_cast<Project*>(Target);
+
 		ImGui::Text("Mode: %s", Enum::ProjectModeToString(ProjectInfos->GetTarget()));
 		ImGui::Separator();
 		ImGui::Text("Name: %s", ProjectInfos->GetName().C());

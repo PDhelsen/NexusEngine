@@ -12,8 +12,7 @@ namespace NxEn
 		NEXUS_ENGINE_API StatsPanel();
 		NEXUS_ENGINE_API ~StatsPanel();
 
-		NEXUS_ENGINE_API void SetStats(const NxFr::Stats* Stats);
-		NEXUS_ENGINE_API const NxFr::Stats* GetStats();
+		NEXUS_ENGINE_API void SetTarget(void* Instance) override;
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -24,7 +23,6 @@ namespace NxEn
 		bool FilterStats(const NxFr::String& Label);
 
 	private:
-		const NxFr::Stats* Statistiques;
 		NxFr::List<const NxFr::String*> Ids;
 		NxFr::Dictionary<NxFr::StringId, const NxFr::Stats::Stat*> Values;
 		NxFr::List<NxFr::StringView> Filters;
