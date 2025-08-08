@@ -5,6 +5,11 @@ namespace NxEd
 {
 	const static NxFr::StringId InputSchemaId = NxFr::StringId("Editor");
 
+	const static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", "Ctrl+S", 0, NxEn::GUI::Menu::ItemMode::Callback, 0, nullptr, NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditorSystem>()->Save();
+	}));
+
 	const static NxEn::Command CmdEditorSave = NxEn::Command::Create("Editor.Save"_Sid, "Save project", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditorSystem>()->Save();
@@ -35,7 +40,6 @@ namespace NxEd
 
 		Window = NxEn::Object::Create<EditorWindow>();
 		PushInputSchema();
-		RecordActions();
 	}
 
 	void EditorSystem::OnShutdown()
@@ -59,20 +63,5 @@ namespace NxEd
 	void EditorSystem::PopInputSchema()
 	{
 		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema(InputSchemaId);
-	}
-
-	void EditorSystem::RecordActions()
-	{
-		NxEn::GUI::Menu& Menu = Window->GetMenu();
-		NxFr::Dictionary<NxFr::StringId, NxEn::Input::Action>& Inputs = InputSchema.GetMapping();
-
-		NxFr::Delegate<void()> InfoCallback = []() { NxEn::GUISystem::GetPanel<NxEn::ProjectPanel>()->ShowWithTarget(true, &NxEn::Application::GetInstance()->GetProject()); };
-		NxFr::StringView InfoPath = "File/Project";
-		Menu.AddMenuItem(InfoCallback, InfoPath);
-
-		NxFr::Delegate<void()> SaveCallback = { this, &EditorSystem::Save };
-		NxFr::StringView SavePath = "File/Save";
-		Menu.AddMenuItem(SaveCallback, SavePath);
-		Inputs.Append(NxFr::StringId(SavePath), NxEn::Input::Action(NxEn::Input::Button::S, NxEn::Input::State::Released, NxEn::Input::Modifier::Control, SaveCallback));
 	}
 }

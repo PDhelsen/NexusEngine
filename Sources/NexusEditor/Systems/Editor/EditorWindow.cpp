@@ -5,7 +5,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(EditorWindow)
 
 	EditorWindow::EditorWindow()
-		: Element(false), GuiFlags(0), Menu(true), Style()
+		: GuiFlags(0), Style()
 	{
 	}
 
@@ -22,16 +22,16 @@ namespace NxEd
 			ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing |
 			ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings;
 
-		Menu.Initialize();
-
 		Style.AppendVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		Style.AppendVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		Style.AppendVarXY(ImGuiStyleVar_WindowPadding, NxFr::Vector2f(0.0f));
+
+		NxEn::GUISystem::GetMenu()->Show();
 	}
 
 	void EditorWindow::OnShutdown()
 	{
-		Menu.Shutdown();
+		NxEn::GUISystem::GetMenu()->Hide();
 
 		Element::OnShutdown();
 	}
@@ -55,7 +55,6 @@ namespace NxEd
 	void EditorWindow::OnGui(float TimeStep)
 	{
 		ImGui::DockSpace(ImGui::GetID("Editor"));
-		Menu.Tick(TimeStep);
 	}
 
 }

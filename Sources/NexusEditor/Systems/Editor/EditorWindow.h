@@ -12,8 +12,6 @@ namespace NxEd
 		NEXUS_EDITOR_API EditorWindow();
 		NEXUS_EDITOR_API ~EditorWindow();
 
-		NEXUS_EDITOR_API NxEn::GUI::Menu& GetMenu() { return Menu; }
-
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
 		NEXUS_EDITOR_API void OnShutdown() override;
@@ -22,7 +20,6 @@ namespace NxEd
 
 	private:
 		ImGuiWindowFlags GuiFlags;
-		NxEn::GUI::Menu Menu;
 		NxEn::GUI::Style Style;
 	};
 }

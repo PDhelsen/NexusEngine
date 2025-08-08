@@ -9,8 +9,8 @@ namespace NxEn
 
 		NEXUS_OBJECT_IMPLEMENTATION(Element)
 
-		Element::Element(bool Manual)
-			: Manual(Manual)
+		Element::Element()
+			: Manual(false)
 		{
 		}
 
@@ -61,7 +61,7 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Panel)
 
 		Panel::Panel()
-			: Element(false), GuiFlags(0), Title(""), Target(nullptr)
+			: GuiFlags(0), Title(""), Target(nullptr)
 		{
 		}
 
@@ -132,14 +132,33 @@ namespace NxEn
 
 		NEXUS_OBJECT_IMPLEMENTATION(Menu)
 
+		Menu::Item Menu::Item::Create(NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data, const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate)
+		{
+			Item It(Callback, Validate, Path, Shortcut, Priority, Mode, Index, Data);
+			It.RegisterInstance();
+			return It;
+		}
+
+		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
+			: Callback(Callback), Validate(Validate), Path(Path.ToString()), Shortcut(Shortcut.ToString()), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
+		{
+			
+		}
+
 		bool Menu::Item::operator<=(const Item& Other) const
 		{
 			return Priority != Other.Priority ? Priority <= Other.Priority : Path <= Other.Path;
 		}
 
-		Menu::Menu(bool Main)
-			: Element(true), Items(), Labels(), Main(Main)
+		void Menu::Item::RegisterInstance() const
 		{
+			GUISystem::RegisterMenuItem(this);
+		}
+
+		Menu::Menu(bool Main)
+			: Items(), Labels(), Main(Main)
+		{
+			SetManual(true);
 		}
 
 		Menu::~Menu()
@@ -148,7 +167,7 @@ namespace NxEn
 
 		Menu& Menu::AddMenuItem(const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			AppendItem(Callback, Validate, Path, Shortcut, Priority, ItemMode::Callback, 0, nullptr);
+			AppendItem(Item(Callback, Validate, Path, Shortcut, Priority, ItemMode::Callback, 0, nullptr));
 			return *this;
 		}
 
@@ -159,7 +178,7 @@ namespace NxEn
 
 		Menu& Menu::AddMenuItem(void* Toggle, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			AppendItem(Callback, Validate, Path, Shortcut, Priority, ItemMode::Toggle, 0, Toggle);
+			AppendItem(Item(Callback, Validate, Path, Shortcut, Priority, ItemMode::Toggle, 0, Toggle));
 			return *this;
 		}
 
@@ -172,7 +191,7 @@ namespace NxEn
 		{
 			for (uint64 Index = 0; Index < Labels.GetCount(); ++Index)
 			{
-				AppendItem(Callback, Validate, Path + NxFr::Path::SeparatorDirectory + Labels[Index], Shortcut, Priority, ItemMode::Enum, Index, Enum);
+				AppendItem(Item(Callback, Validate, Path + NxFr::Path::SeparatorDirectory + Labels[Index], Shortcut, Priority, ItemMode::Enum, Index, Enum));
 			}
 
 			return *this;
@@ -200,12 +219,12 @@ namespace NxEn
 			}
 		}
 
-		void Menu::AppendItem(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
+		void Menu::AppendItem(const Item& It)
 		{
-			Items.AppendConstruct(Callback, Validate, Path.ToString(), Shortcut.ToString(), Priority, Mode, Index, Data);
+			Items.AppendConstruct(It);
 			Items.Sort();
 
-			NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Path);
+			NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(It.Path);
 			for (auto& Section : Sections)
 			{
 				NxFr::GUID Id = NxFr::Hash<>::HashObject(Section);
@@ -287,7 +306,7 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Popup)
 
 		Popup::Popup()
-			: Element(false), GuiFlags(0), Title(""), Message(""), Callbacks()
+			: GuiFlags(0), Title(""), Message(""), Callbacks()
 		{
 		}
 
@@ -359,7 +378,7 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(ProgressBar)
 
 		ProgressBar::ProgressBar()
-			: Element(false), GuiFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
+			: GuiFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
 		{
 		}
 

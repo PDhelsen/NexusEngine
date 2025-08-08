@@ -44,7 +44,7 @@ namespace NxEn
 
 	void Object::Tick(float TimeStep)
 	{
-		if (!IsTickable())
+		if (!IsTickable() || !IsEnabled())
 		{
 			return;
 		}

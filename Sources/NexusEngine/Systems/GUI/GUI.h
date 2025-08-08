@@ -14,7 +14,7 @@ namespace NxEn
 		public:
 			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Element)
 
-			NEXUS_ENGINE_API Element(bool Manual);
+			NEXUS_ENGINE_API Element();
 			NEXUS_ENGINE_API ~Element();
 
 			NEXUS_ENGINE_API void Show();
@@ -29,6 +29,7 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) = 0;
 
 			NEXUS_ENGINE_API bool IsManual() const { return Manual; }
+			NEXUS_ENGINE_API void SetManual(bool Manual) { this->Manual = Manual; }
 
 		private:
 			bool Manual;
@@ -77,6 +78,9 @@ namespace NxEn
 
 		class Menu : public Element
 		{
+			friend class GUISystem;
+
+		public:
 			enum class ItemMode
 			{
 				Callback, Toggle, Enum
@@ -84,6 +88,26 @@ namespace NxEn
 
 			struct Item
 			{
+				friend class Menu;
+
+			public:
+				NEXUS_ENGINE_API static Item Create(NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data, const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate = nullptr);
+
+				NEXUS_ENGINE_API bool operator<=(const Item& Other) const;
+
+				NEXUS_ENGINE_API const NxFr::Delegate<void()>& GetCallback() const { return Callback; }
+				NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
+				NEXUS_ENGINE_API NxFr::String& GetShortcut() { return Shortcut; }
+				NEXUS_ENGINE_API int64 GetPriority() const { return Priority; }
+				NEXUS_ENGINE_API ItemMode GetMode() const { return Mode; }
+
+			private:
+				NEXUS_ENGINE_API Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
+
+
+				NEXUS_ENGINE_API void RegisterInstance() const;
+
+			private:
 				NxFr::Delegate<void()> Callback;
 				NxFr::Delegate<bool()> Validate;
 				NxFr::String Path;
@@ -92,11 +116,8 @@ namespace NxEn
 				ItemMode Mode;
 				uint64 Index;
 				void* Data;
-
-				bool operator<=(const Item& Other) const;
 			};
 
-		public:
 			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Menu)
 
 			NEXUS_ENGINE_API Menu(bool Main = false);
@@ -108,14 +129,14 @@ namespace NxEn
 			NEXUS_ENGINE_API Menu& AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			NEXUS_ENGINE_API Menu& AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 
-			NEXUS_ENGINE_API NxFr::StringView GetMenuItem(uint64 Index = 0) const { return Items[Index].Path; }
+			NEXUS_ENGINE_API const Item& GetMenuItem(uint64 Index = 0) const { return Items[Index]; }
 			NEXUS_ENGINE_API uint64 GetMenuItemCount() const { return Items.GetCount(); }
 
 		protected:
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
-			void AppendItem(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
+			void AppendItem(const Item& It);
 			void DrawMenu(float TimeStep);
 			void DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const;
 

@@ -5,6 +5,11 @@ namespace NxEn
 {
 	static ProjectPanel* Panel = GUI::Panel::Create<ProjectPanel>();
 
+	const static GUI::Menu::Item MenuItemProject = GUI::Menu::Item::Create("File/Project", "", 0, GUI::Menu::ItemMode::Callback, 0, nullptr, NxFr::Delegate<void()>([]()
+	{
+		GUISystem::GetPanel<ProjectPanel>()->ShowWithTarget(true, &Application::GetInstance()->GetProject());
+	}));
+
 	const static Command CmdProjectPanel = Command::Create("Project.Panel"_Sid, "Show/Hide project panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
 	{
 		GUISystem::GetPanel<ProjectPanel>()->ShowWithTarget(Enabled == "true", &Application::GetInstance()->GetProject());

@@ -24,7 +24,6 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void PushInputSchema();
 		NEXUS_EDITOR_API void PopInputSchema();
-		NEXUS_EDITOR_API void RecordActions();
 
 	private:
 		NxFr::Event<> OnSave;

@@ -25,6 +25,12 @@ namespace NxEn
 		return Panels;
 	}
 
+	static GUI::Menu& GetMainMenu()
+	{
+		static GUI::Menu Menu(true);
+		return Menu;
+	}
+
 	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Id)
 	{
 		return GetPanels()[Id];
@@ -35,9 +41,14 @@ namespace NxEn
 		GetPanels().Append(Instance->GetObjectType(), Instance);
 	}
 
-	void GUISystem::UnregisterPanel(GUI::Panel* Instance)
+	GUI::Menu* GUISystem::GetMenu()
 	{
-		GetPanels().Remove(Instance->GetObjectType());
+		return &GetMainMenu();
+	}
+
+	void GUISystem::RegisterMenuItem(const GUI::Menu::Item* Instance)
+	{
+		GetMainMenu().AppendItem(*Instance);
 	}
 
 	GUISystem::GUISystem()
@@ -128,10 +139,17 @@ namespace NxEn
 		Imgui::Initialize();
 		LoadConfig();
 		LoadTheme();
+
+		GUI::Menu& Menu = GetMainMenu();
+		Menu.Initialize(false);
+		Menu.SetManual(false);
 	}
 
 	void GUISystem::OnShutdown()
 	{
+		GUI::Menu& Menu = GetMainMenu();
+		Menu.Shutdown();
+
 		SaveTheme();
 		SaveConfig();
 		Imgui::Shutdown();
