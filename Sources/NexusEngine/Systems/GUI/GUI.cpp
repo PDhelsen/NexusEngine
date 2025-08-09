@@ -71,6 +71,11 @@ namespace NxEn
 
 		void Panel::ShowWithTarget(bool State, void* Instance)
 		{
+			if (Instance == nullptr)
+			{
+				Instance = FetchDefaultTarget();
+			}
+
 			SetEnabled(State);
 			SetTarget(Instance);
 		}
@@ -119,6 +124,11 @@ namespace NxEn
 			{
 				Hide();
 			}
+		}
+
+		void* Panel::FetchDefaultTarget() const
+		{
+			return nullptr;
 		}
 
 		void Panel::RegisterInstance()

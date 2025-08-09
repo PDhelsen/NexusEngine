@@ -26,7 +26,9 @@ namespace NxEd
 		Style.AppendVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		Style.AppendVarXY(ImGuiStyleVar_WindowPadding, NxFr::Vector2f(0.0f));
 
-		NxEn::GUISystem::GetMenu()->Show();
+		NxEn::GUI::Menu* Menu = NxEn::GUISystem::GetMenu();
+		RecordPanels(*Menu);
+		Menu->Show();
 	}
 
 	void EditorWindow::OnShutdown()
@@ -55,6 +57,17 @@ namespace NxEd
 	void EditorWindow::OnGui(float TimeStep)
 	{
 		ImGui::DockSpace(ImGui::GetID("Editor"));
+	}
+
+	void EditorWindow::RecordPanels(NxEn::GUI::Menu& Menu) const
+	{
+		auto Panels = NxEn::GUISystem::GetAllPanels();
+		for (auto& It = Panels.Reset(); It != Panels.End(); ++It)
+		{
+			NxEn::GUI::Panel* Panel = It->Value;
+			NxFr::Delegate<void()> Callback = [=]() { Panel->ShowWithTarget(true); };
+			Menu.AddMenuItem(Callback, "Window/Panels/" + Panel->GetTitle());
+		}
 	}
 
 }

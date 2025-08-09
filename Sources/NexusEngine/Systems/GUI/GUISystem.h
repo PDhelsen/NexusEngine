@@ -17,6 +17,7 @@ namespace NxEn
 			return (T*)GetPanel(T::GetClassType());
 		}
 		NEXUS_ENGINE_API static GUI::Panel* GetPanel(NxFr::StringId Id);
+		NEXUS_ENGINE_API static NxFr::Collection<NxFr::KeyValuePair<const NxFr::StringId, GUI::Panel*>> GetAllPanels();
 		NEXUS_ENGINE_API static void RegisterPanel(GUI::Panel* Instance);
 		NEXUS_ENGINE_API static GUI::Menu* GetMenu();
 		NEXUS_ENGINE_API static void RegisterMenuItem(const GUI::Menu::Item* Instance);

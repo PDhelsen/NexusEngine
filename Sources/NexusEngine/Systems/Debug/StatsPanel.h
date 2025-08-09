@@ -18,6 +18,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
+		NEXUS_ENGINE_API void* FetchDefaultTarget() const override;
+
 		void DrawFilter();
 		void DrawStats(const NxFr::String& Label) const;
 		bool FilterStats(const NxFr::String& Label);

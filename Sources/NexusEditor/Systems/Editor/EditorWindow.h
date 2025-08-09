@@ -18,6 +18,8 @@ namespace NxEd
 		NEXUS_EDITOR_API void OnTick(float TimeStep) override;
 		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
+		void RecordPanels(NxEn::GUI::Menu& Menu) const;
+
 	private:
 		ImGuiWindowFlags GuiFlags;
 		NxEn::GUI::Style Style;

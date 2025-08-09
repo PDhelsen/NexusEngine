@@ -51,7 +51,7 @@ namespace NxEn
 			NEXUS_ENGINE_API Panel();
 			NEXUS_ENGINE_API virtual ~Panel();
 
-			NEXUS_ENGINE_API void ShowWithTarget(bool State, void* Instance);
+			NEXUS_ENGINE_API void ShowWithTarget(bool State, void* Instance = nullptr);
 
 			NEXUS_ENGINE_API virtual void SetTarget(void* Instance);
 			NEXUS_ENGINE_API void* GetTarget();
@@ -66,6 +66,8 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnInitialize() override;
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
+
+			NEXUS_ENGINE_API virtual void* FetchDefaultTarget() const;
 
 		private:
 			NEXUS_ENGINE_API void RegisterInstance();

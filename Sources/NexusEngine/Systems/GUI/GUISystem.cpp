@@ -36,6 +36,11 @@ namespace NxEn
 		return GetPanels()[Id];
 	}
 
+	NxFr::Collection<NxFr::KeyValuePair<const NxFr::StringId, GUI::Panel*>> GUISystem::GetAllPanels()
+	{
+		return GetPanels();
+	}
+
 	void GUISystem::RegisterPanel(GUI::Panel* Instance)
 	{
 		GetPanels().Append(Instance->GetObjectType(), Instance);

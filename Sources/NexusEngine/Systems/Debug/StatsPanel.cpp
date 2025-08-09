@@ -10,7 +10,7 @@ namespace NxEn
 
 	const static Command CmdDebugStatsPanel = Command::Create("Debug.Stats.Panel"_Sid, "Show/Hide stats panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
 	{
-		GUISystem::GetPanel<StatsPanel>()->ShowWithTarget(Enabled == "true", Application::GetInstance()->GetSystem<DebugSystem>()->GetStats());
+		GUISystem::GetPanel<StatsPanel>()->ShowWithTarget(Enabled == "true");
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
@@ -58,6 +58,11 @@ namespace NxEn
 
 			DrawStats(*Label);
 		}
+	}
+
+	void* StatsPanel::FetchDefaultTarget() const
+	{
+		return Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
 	}
 
 	void StatsPanel::DrawFilter()

@@ -16,5 +16,8 @@ namespace NxEn
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
+
+		NEXUS_ENGINE_API void* FetchDefaultTarget() const override;
+
 	};
 }
