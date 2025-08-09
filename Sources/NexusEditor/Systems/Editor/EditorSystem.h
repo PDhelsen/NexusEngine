@@ -17,6 +17,10 @@ namespace NxEd
 
 		NEXUS_EDITOR_API NxFr::Event<>& GetOnSave() { return OnSave; }
 
+		NEXUS_EDITOR_API NxEn::Input::Schema& GetInputsSchema() { return InputSchema; }
+		NEXUS_EDITOR_API EditorWindow& GetWindow() { return *Window; }
+
+
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
 		NEXUS_EDITOR_API void OnShutdown() override;

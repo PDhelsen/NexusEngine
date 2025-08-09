@@ -231,7 +231,7 @@ namespace NxEn
 
 		void Menu::AppendItem(const Item& It)
 		{
-			Items.AppendConstruct(It);
+			Items.Append(It);
 			Items.Sort();
 
 			NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(It.Path);
