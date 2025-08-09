@@ -6,18 +6,67 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
+#pragma region LayoutPopup
+
+	 class LayoutPopup : public GUI::Popup
+	 {
+	 public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, LayoutPopup)
+			
+		LayoutPopup()
+			: Name(64)
+		{
+		}
+		
+	 protected:
+		void OnInitialize() override
+		{
+			Popup::OnInitialize();
+			
+			Title = "Save Layout";
+			Message = "Please enter layout name";
+
+			AddButton("Save", { this, &LayoutPopup::Save });
+		}
+		
+		void OnGui(float TimeStep) override
+		{
+			ImGui::InputText("##Name", Name.C_Buffer(), Name.GetCapacity());
+		}
+		
+		void Save()
+		{
+			Name.Validate();
+			NxEn::Application::GetInstance()->GetSystem<GUISystem>()->SaveLayout(Name);
+		}
+		
+	private:
+		NxFr::String Name;
+	};
+	
+	NEXUS_OBJECT_IMPLEMENTATION(LayoutPopup)
+		
+
+#pragma endregion
+
+#pragma region Constants
 
 	const NxFr::StringView SavedConfigName = "imgui";
 	const NxFr::StringView SavedStyleName = "style";
+	const NxFr::StringView SavedLayoutName = "layout";
 	const NxFr::StringView ConfigExtension = ".ini";
 	const NxFr::StringView StyleExtension = ".yaml";
-	const NxFr::StringView ImGuiFolder = "imgui";
+	const NxFr::StringView LayoutExtension = ".layout";
+	const NxFr::StringView Folder = "imgui";
 #if NEXUS_EDITOR
 	const NxFr::StringView Suffix = "_editor";
 #else
 	const NxFr::StringView Suffix = "_app";
 #endif
+
+#pragma endregion
+
+	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
 	{
@@ -34,11 +83,6 @@ namespace NxEn
 	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Id)
 	{
 		return GetPanels()[Id];
-	}
-
-	NxFr::Collection<NxFr::KeyValuePair<const NxFr::StringId, GUI::Panel*>> GUISystem::GetAllPanels()
-	{
-		return GetPanels();
 	}
 
 	void GUISystem::RegisterPanel(GUI::Panel* Instance)
@@ -76,22 +120,38 @@ namespace NxEn
 		Elements.Remove(Element);
 	}
 
-	void GUISystem::LoadConfig(NxFr::StringView Name)
+	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
 		NxFr::Path Path = GetSettingsPath(Name, SavedConfigName, ConfigExtension);
-		ImGui::LoadIniSettingsFromDisk(Path.C());
+		if (Path.Exist())
+		{
+			LoadLayoutImGui(Path);
+		}
+
+		Path = GetSettingsPath(Name, SavedLayoutName, LayoutExtension);
+		if (Path.Exist())
+		{
+			LoadLayoutNexus(Path);
+		}
 	}
 
-	void GUISystem::SaveConfig(NxFr::StringView Name)
+	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
 		NxFr::Path Path = GetSettingsPath(Name, SavedConfigName, ConfigExtension);
-		ImGui::SaveIniSettingsToDisk(Path.C());
+		SaveLayoutImGui(Path);
+
+		Path = GetSettingsPath(Name, SavedLayoutName, LayoutExtension);
+		if (!Name.IsEmpty() && !Path.Exist())
+		{
+			AddMenuWindowLayouts(Name.ToString());
+		}
+		SaveLayoutNexus(Path);
 	}
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
 		NxFr::Path Path = GetSettingsPath(Name, SavedStyleName, StyleExtension);
-		if (!NxFr::File(Path).Exists())
+		if (!Path.Exist())
 		{
 			return;
 		}
@@ -142,12 +202,15 @@ namespace NxEn
 		System::OnInitialize();
 
 		Imgui::Initialize();
-		LoadConfig();
+		LoadLayout();
 		LoadTheme();
 
 		GUI::Menu& Menu = GetMainMenu();
 		Menu.Initialize(false);
 		Menu.SetManual(false);
+
+		AddMenuWindowPanels();
+		AddMenuWindowLayouts();
 	}
 
 	void GUISystem::OnShutdown()
@@ -156,7 +219,7 @@ namespace NxEn
 		Menu.Shutdown();
 
 		SaveTheme();
-		SaveConfig();
+		SaveLayout();
 		Imgui::Shutdown();
 		
 		System::OnShutdown();
@@ -181,23 +244,114 @@ namespace NxEn
 		Imgui::Render();
 	}
 
-	NxFr::Path GUISystem::GetSettingsPath(NxFr::StringView Name, NxFr::StringView Saved, NxFr::StringView Extension)
+	void GUISystem::AddMenuWindowPanels() const
 	{
-		NxFr::Path Path = NxFr::Path("");
-		if (!Name.IsEmpty())
+		auto& Panels = GetPanels();
+		for (auto& It : Panels)
 		{
-			Path = NxFr::Path(NxFr::Paths::Configs.ToView()) + ImGuiFolder + (Name + Extension);
+			AddMenuWindowPanels(It.Value);
 		}
-		else
-		{
-			Path = NxFr::Path(NxFr::Paths::Saved.ToView()) + ImGuiFolder + (Saved + Suffix + Extension);
-		}
-
-		NxFr::Directory(Path.GetDirectoryPath()).Create();
-		return Path;
 	}
 
-	void GUISystem::LoadThemeImGui(const YAML::Node& Node)
+	void GUISystem::AddMenuWindowPanels(NxEn::GUI::Panel* Panel) const
+	{
+		auto& Menu = GetMainMenu();
+
+		NxFr::Delegate<void()> Callback = [=]() { Panel->ShowWithTarget(true); };
+		Menu.AddMenuItem(Callback, "Window/Panels/" + Panel->GetTitle(), "");
+	}
+
+	void GUISystem::AddMenuWindowLayouts() const
+	{
+		auto& Menu = GetMainMenu();
+
+		NxFr::Delegate<void()> Callback = []() { Object::Create<LayoutPopup>(); };
+		Menu.AddMenuItem(Callback, "Window/Layouts/Save");
+
+		NxFr::Path Path = GetSettingsPath("Layout", SavedLayoutName, LayoutExtension);
+		NxFr::Directory Folder(Path.GetDirectoryPath());
+		NxFr::List<NxFr::String> Layouts = Folder.GetFiles();
+
+		for (auto& Layout : Layouts)
+		{
+			if (!NxFr::Path::HasExtension(Layout, LayoutExtension))
+			{
+				continue;
+			}
+
+			NxFr::String Name = NxFr::Path::GetFileName(Layout).ToString();
+			AddMenuWindowLayouts(Name);
+		}
+	}
+
+	void GUISystem::AddMenuWindowLayouts(const NxFr::String& Name) const
+	{
+		auto& Menu = GetMainMenu();
+
+		NxFr::String Path = "Window/Layouts/" + Name;
+		Menu.AddMenuItem([=]() { NxEn::Application::GetInstance()->GetSystem<GUISystem>()->LoadLayout(Name); }, Path);
+	}
+
+	NxFr::Path GUISystem::GetSettingsPath(NxFr::StringView Name, NxFr::StringView Default, NxFr::StringView Extension) const
+	{
+		NxFr::Path Directory = !Name.IsEmpty() ? NxFr::Paths::Configs : NxFr::Paths::Saved;
+		Directory += Folder;
+		NxFr::Directory(Directory).Create();
+
+		NxFr::String File = !Name.IsEmpty() ? Name.ToString() : (Default + Suffix);
+		File += Extension;
+
+		return Directory + File;
+	}
+
+	void GUISystem::LoadLayoutImGui(const NxFr::Path& Path) const
+	{
+		ImGui::LoadIniSettingsFromDisk(Path.C());
+	}
+
+	void GUISystem::LoadLayoutNexus(const NxFr::Path& Path) const
+	{
+		NxFr::TextStream Stream(Path);
+		Stream.Open(NxFr::File::Mode::Read, false);
+
+		NxFr::Set<NxFr::StringId> Ids;
+		while (!Stream.IsAtTheEnd())
+		{
+			Ids.Append(NxFr::StringId(Stream.Read()));
+		}
+
+		auto& Panels = GetPanels();
+		for (auto& It : Panels)
+		{
+			It.Value->ShowWithTarget(Ids.Contains(It.Key));
+		}
+
+		Stream.Close();
+	}
+
+	void GUISystem::SaveLayoutImGui(const NxFr::Path& Path) const
+	{
+		ImGui::SaveIniSettingsToDisk(Path.C());
+	}
+
+	void GUISystem::SaveLayoutNexus(const NxFr::Path& Path) const
+	{
+		NxFr::TextStream Stream(Path);
+		Stream.Open(NxFr::File::Mode::Write, true);
+
+		auto& Panels = GetPanels();
+		for (auto& It : Panels)
+		{
+			if (It.Value->IsEnabled())
+			{
+				Stream.Write(It.Key.C());
+			}
+		}
+
+		Stream.Close();
+	}
+
+	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
 	{
 		ImGuiStyle& Style = ImGui::GetStyle();
 
@@ -360,7 +514,7 @@ namespace NxEn
 		}
 	}
 
-	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter)
+	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
 	{
 		ImGuiStyle& Style = ImGui::GetStyle();
 
@@ -497,7 +651,7 @@ namespace NxEn
 		Emitter << YAML::EndMap;
 	}
 
-	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter)
+	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter) const
 	{
 		Emitter << YAML::BeginMap;
 		for (auto& [Id, Style] : Styles)
