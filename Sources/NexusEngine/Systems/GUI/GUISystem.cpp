@@ -27,6 +27,7 @@ namespace NxEn
 			Message = "Please enter layout name";
 
 			AddButton("Save", { this, &LayoutPopup::Save });
+			AddButton("Cancel");
 		}
 		
 		void OnGui(float TimeStep) override

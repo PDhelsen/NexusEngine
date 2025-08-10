@@ -33,6 +33,7 @@ namespace NxEn
 
 		private:
 			bool Manual;
+			bool WillClose;
 		};
 
 		class Panel : public Element
@@ -162,6 +163,7 @@ namespace NxEn
 			NEXUS_ENGINE_API Popup& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			NEXUS_ENGINE_API Popup& SetTitle(NxFr::StringView Title);
 			NEXUS_ENGINE_API Popup& SetMessage(NxFr::StringView Message);
+			NEXUS_ENGINE_API Popup& AddButton(NxFr::StringView Label);
 			NEXUS_ENGINE_API Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
 
 			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }

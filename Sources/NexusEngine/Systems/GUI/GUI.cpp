@@ -10,7 +10,7 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Element)
 
 		Element::Element()
-			: Manual(false)
+			: Manual(false), WillClose(false)
 		{
 		}
 
@@ -30,6 +30,12 @@ namespace NxEn
 
 		void Element::Close()
 		{
+			if (WillClose)
+			{
+				return;
+			}
+
+			WillClose = true;
 			Hide();
 			Application::GetInstance()->GetTicker().AppendTickOnceCallback([=]() { Object::Destroy(this); }, Ticker::TickBucket::Cleanup);
 		}
@@ -362,6 +368,12 @@ namespace NxEn
 			return *this;
 		}
 
+		Popup& Popup::AddButton(NxFr::StringView Label)
+		{
+			AddButton(Label, nullptr);
+			return *this;
+		}
+
 		Popup& Popup::AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback)
 		{
 			Callbacks.AppendConstruct(Callback, Label.ToString());
@@ -391,7 +403,11 @@ namespace NxEn
 				{
 					if (ImGui::Button(Button.Label.C()))
 					{
-						Button.Callback.Invoke();
+						if (!Button.Callback.IsNull())
+						{
+							Button.Callback.Invoke();
+						}
+
 						Close();
 
 						ImGui::CloseCurrentPopup();
@@ -474,7 +490,10 @@ namespace NxEn
 
 			if (Progress >= 1.0f)
 			{
-				Callback.Invoke();
+				if (!Callback.IsNull())
+				{
+					Callback.Invoke();
+				}
 				Hide();
 			}
 		}
