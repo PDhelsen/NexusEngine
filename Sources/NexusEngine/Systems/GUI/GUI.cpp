@@ -526,6 +526,5 @@ namespace NxEn
 		}
 
 #pragma endregion
-
 	}
 }
