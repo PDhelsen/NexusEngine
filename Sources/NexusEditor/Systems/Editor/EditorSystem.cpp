@@ -5,7 +5,7 @@ namespace NxEd
 {
 	const static NxFr::StringId InputSchemaId = NxFr::StringId("Editor");
 
-	const static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", "Ctrl+S", 0, NxEn::GUI::Menu::ItemMode::Callback, 0, nullptr, NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditorSystem>()->Save();
 	}));

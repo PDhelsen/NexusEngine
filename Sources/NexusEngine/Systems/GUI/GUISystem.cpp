@@ -238,7 +238,7 @@ namespace NxEn
 
 		Imgui::Frame();
 
-		ImGui::ShowDemoWindow();
+		// ImGui::ShowDemoWindow();
 
 		for (auto& Element : Elements)
 		{
@@ -266,16 +266,14 @@ namespace NxEn
 	{
 		auto& Menu = GetMainMenu();
 
-		NxFr::Delegate<void()> Callback = [=]() { Panel->ShowWithTarget(true); };
-		Menu.AddMenuItem(Callback, "Window/Panels/" + Panel->GetTitle(), "");
+		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]() { Panel->ShowWithTarget(true); });
 	}
 
 	void GUISystem::AddMenuWindowLayouts() const
 	{
 		auto& Menu = GetMainMenu();
 
-		NxFr::Delegate<void()> Callback = []() { Object::Create<LayoutPopup>(); };
-		Menu.AddMenuItem(Callback, "Window/Layouts/Save");
+		Menu.AddMenuItem("Window/Layouts/Save", []() { Object::Create<LayoutPopup>(); }, "", 1);
 
 		NxFr::Path Path = GetSettingsPath("Layout", SavedLayoutName, LayoutExtension);
 		NxFr::Directory Folder(Path.GetDirectoryPath());
@@ -297,8 +295,7 @@ namespace NxEn
 	{
 		auto& Menu = GetMainMenu();
 
-		NxFr::String Path = "Window/Layouts/" + Name;
-		Menu.AddMenuItem([=]() { NxEn::Application::GetInstance()->GetSystem<GUISystem>()->LoadLayout(Name); }, Path);
+		Menu.AddMenuItem("Window/Layouts/" + Name, [=]() { NxEn::Application::GetInstance()->GetSystem<GUISystem>()->LoadLayout(Name); });
 	}
 
 	NxFr::Path GUISystem::GetSettingsPath(NxFr::StringView Name, NxFr::StringView Default, NxFr::StringView Extension) const
@@ -681,5 +678,4 @@ namespace NxEn
 	}
 
 #pragma endregion
-
 }

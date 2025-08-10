@@ -5,7 +5,7 @@ namespace NxEn
 {
 	static ProjectPanel* Panel = GUI::Panel::Create<ProjectPanel>();
 
-	const static GUI::Menu::Item MenuItemProject = GUI::Menu::Item::Create("File/Project", "", 0, GUI::Menu::ItemMode::Callback, 0, nullptr, NxFr::Delegate<void()>([]()
+	const static GUI::Menu::Item MenuItemProject = GUI::Menu::Item::Create("File/Project", NxFr::Delegate<void()>([]()
 	{
 		GUISystem::GetPanel<ProjectPanel>()->ShowWithTarget(true);
 	}));
