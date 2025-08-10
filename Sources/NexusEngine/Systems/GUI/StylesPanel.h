@@ -7,8 +7,6 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, StylePanel)
 
-		NEXUS_ENGINE_API void SetTarget(void* Instance) override;
-
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
