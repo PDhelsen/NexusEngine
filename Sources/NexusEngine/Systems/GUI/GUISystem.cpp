@@ -46,7 +46,6 @@ namespace NxEn
 	
 	NEXUS_OBJECT_IMPLEMENTATION(LayoutPopup)
 		
-
 #pragma endregion
 
 #pragma region Constants
@@ -65,6 +64,8 @@ namespace NxEn
 #endif
 
 #pragma endregion
+
+#pragma region GUISystem
 
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
@@ -187,24 +188,19 @@ namespace NxEn
 		NxFr::Yaml::SerializeFile(Data, Path);
 	}
 
-	void GUISystem::AppendStyle(NxFr::StringId Id, const GUI::Style& Style)
+	const GUI::Style& GUISystem::GetStyle(NxFr::StringId Id)
 	{
-		Styles.Append(Id, Style);
+		return Styles[Id];
 	}
 
-	void GUISystem::AssignStyle(NxFr::StringId Id, const GUI::Style& Style)
+	void GUISystem::AppendStyle(NxFr::StringId Id, const GUI::Style& Style)
 	{
-		Styles[Id] = Style;
+		Styles.AppendOrAssign(Id, Style);
 	}
 
 	void GUISystem::RemoveStyle(NxFr::StringId Id)
 	{
 		Styles.Remove(Id);
-	}
-
-	const GUI::Style& GUISystem::GetStyle(NxFr::StringId Id)
-	{
-		return Styles[Id];
 	}
 
 	void GUISystem::OnInitialize()
@@ -240,6 +236,8 @@ namespace NxEn
 		System::OnTick(TimeStep);
 
 		Imgui::Frame();
+
+		ImGui::ShowDemoWindow();
 
 		for (auto& Element : Elements)
 		{
@@ -520,7 +518,7 @@ namespace NxEn
 				}
 			}
 
-			Styles.Append(Id, Style);
+			AppendStyle(Id, Style);
 		}
 	}
 
@@ -680,4 +678,7 @@ namespace NxEn
 		}
 		Emitter << YAML::EndMap;
 	}
+
+#pragma endregion
+
 }

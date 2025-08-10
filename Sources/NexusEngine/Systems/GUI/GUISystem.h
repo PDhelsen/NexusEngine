@@ -8,6 +8,8 @@ namespace NxEn
 {
 	class GUISystem : public System
 	{
+		friend class StylesPanel;
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GUISystem)
 
@@ -34,10 +36,9 @@ namespace NxEn
 		NEXUS_ENGINE_API void LoadTheme(NxFr::StringView Name = "");
 		NEXUS_ENGINE_API void SaveTheme(NxFr::StringView Name = "");
 
-		NEXUS_ENGINE_API void AppendStyle(NxFr::StringId Id, const GUI::Style& Style);
-		NEXUS_ENGINE_API void AssignStyle(NxFr::StringId Id, const GUI::Style& Style);
-		NEXUS_ENGINE_API void RemoveStyle(NxFr::StringId Id);
 		NEXUS_ENGINE_API const GUI::Style& GetStyle(NxFr::StringId Id);
+		NEXUS_ENGINE_API void AppendStyle(NxFr::StringId Id, const GUI::Style& Style);
+		NEXUS_ENGINE_API void RemoveStyle(NxFr::StringId Id);
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;

@@ -380,7 +380,10 @@ namespace NxEn
 			ImGui::OpenPopup(Title.C());
 			if (ImGui::BeginPopupModal(Title.C(), nullptr, GuiFlags))
 			{
-				ImGui::Text(Message.C());
+				if (!Message.IsEmpty())
+				{
+					ImGui::Text(Message.C());
+				}
 
 				OnGui(TimeStep);
 
@@ -457,7 +460,10 @@ namespace NxEn
 		{
 			if (ImGui::Begin(Title.C(), nullptr, GuiFlags))
 			{
-				ImGui::Text(Message.C());
+				if (!Message.IsEmpty())
+				{
+					ImGui::Text(Message.C());
+				}
 
 				OnGui(TimeStep);
 
