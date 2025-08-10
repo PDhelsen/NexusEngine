@@ -90,14 +90,24 @@ namespace NxEn
 		GetPanels().Append(Instance->GetObjectType(), Instance);
 	}
 
+	void GUISystem::UnregisterPanel(GUI::Panel* Instance)
+	{
+		GetPanels().Remove(Instance->GetObjectType());
+	}
+
 	GUI::Menu* GUISystem::GetMenu()
 	{
 		return &GetMainMenu();
 	}
 
-	void GUISystem::RegisterMenuItem(const GUI::Menu::Item* Instance)
+	void GUISystem::RegisterMenuItem(GUI::Menu::Item* Instance)
 	{
 		GetMainMenu().AppendItem(*Instance);
+	}
+
+	void GUISystem::UnregisterMenuItem(GUI::Menu::Item* Instance)
+	{
+		GetMainMenu().RemoveItem(*Instance);
 	}
 
 	GUISystem::GUISystem()

@@ -44,7 +44,7 @@ namespace NxEn
 			static T* Create()
 			{
 				T* Instance = Object::Create<T>(false);
-				Instance->RegisterInstance();
+				GUISystem::RegisterPanel(Instance);
 				return Instance;
 			}
 
@@ -69,9 +69,6 @@ namespace NxEn
 
 			NEXUS_ENGINE_API virtual void* FetchDefaultTarget() const;
 
-		private:
-			NEXUS_ENGINE_API void RegisterInstance();
-
 		protected:
 			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
@@ -95,6 +92,7 @@ namespace NxEn
 			public:
 				NEXUS_ENGINE_API static Item Create(NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data, const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate = nullptr);
 
+				NEXUS_ENGINE_API bool operator==(const Item& Other) const;
 				NEXUS_ENGINE_API bool operator<=(const Item& Other) const;
 
 				NEXUS_ENGINE_API const NxFr::Delegate<void()>& GetCallback() const { return Callback; }
@@ -105,9 +103,6 @@ namespace NxEn
 
 			private:
 				NEXUS_ENGINE_API Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
-
-
-				NEXUS_ENGINE_API void RegisterInstance() const;
 
 			private:
 				NxFr::Delegate<void()> Callback;
@@ -130,6 +125,7 @@ namespace NxEn
 			NEXUS_ENGINE_API Menu& AddMenuItem(void* Toggle, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			NEXUS_ENGINE_API Menu& AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			NEXUS_ENGINE_API Menu& AddMenuItem(void* Enum, const NxFr::Array<NxFr::StringView>& Labels, const NxFr::Delegate<void()>& Callback, NxFr::StringView Path, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& RemoveMenuItem(NxFr::StringView Path);
 
 			NEXUS_ENGINE_API const Item& GetMenuItem(uint64 Index = 0) const { return Items[Index]; }
 			NEXUS_ENGINE_API uint64 GetMenuItemCount() const { return Items.GetCount(); }
@@ -139,6 +135,7 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
 			void AppendItem(const Item& It);
+			void RemoveItem(const Item& It);
 			void DrawMenu(float TimeStep);
 			void DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const;
 

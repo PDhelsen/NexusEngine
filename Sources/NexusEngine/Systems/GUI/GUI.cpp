@@ -131,11 +131,6 @@ namespace NxEn
 			return nullptr;
 		}
 
-		void Panel::RegisterInstance()
-		{
-			GUISystem::RegisterPanel(this);
-		}
-
 #pragma endregion
 
 #pragma region Menu
@@ -145,7 +140,7 @@ namespace NxEn
 		Menu::Item Menu::Item::Create(NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data, const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate)
 		{
 			Item It(Callback, Validate, Path, Shortcut, Priority, Mode, Index, Data);
-			It.RegisterInstance();
+			GUISystem::RegisterMenuItem(&It);
 			return It;
 		}
 
@@ -155,14 +150,14 @@ namespace NxEn
 			
 		}
 
+		bool Menu::Item::operator==(const Item& Other) const
+		{
+			return Path == Other.Path;
+		}
+
 		bool Menu::Item::operator<=(const Item& Other) const
 		{
 			return Priority != Other.Priority ? Priority <= Other.Priority : Path <= Other.Path;
-		}
-
-		void Menu::Item::RegisterInstance() const
-		{
-			GUISystem::RegisterMenuItem(this);
 		}
 
 		Menu::Menu(bool Main)
@@ -207,6 +202,25 @@ namespace NxEn
 			return *this;
 		}
 
+		Menu& Menu::RemoveMenuItem(NxFr::StringView Path)
+		{
+			Item* Instance = nullptr;
+			for (auto& Item : Items)
+			{
+				if (Item.Path == Path)
+				{
+					Instance = &Item;
+				}
+			}
+
+			if (Instance)
+			{
+				RemoveItem(*Instance);
+			}
+
+			return *this;
+		}
+
 		void Menu::OnTick(float TimeStep)
 		{
 			if (Main)
@@ -243,6 +257,12 @@ namespace NxEn
 					Labels.Append(Id, Section.ToString());
 				}
 			}
+		}
+
+		void Menu::RemoveItem(const Item& It)
+		{
+			auto Iterator = Items.Find(It);
+			Items.Remove(Iterator.Id());
 		}
 
 		void Menu::DrawMenu(float TimeStep)

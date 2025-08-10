@@ -19,16 +19,13 @@ namespace NxEn
 	{
 	public:
 		template<typename... Args>
-		static Command Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback, bool AutoRegister = true);
+		static Command Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback);
 
-		NEXUS_ENGINE_API Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback, bool AutoRegister = true);
+		NEXUS_ENGINE_API Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback);
 		NEXUS_ENGINE_API ~Command();
 
-		NEXUS_ENGINE_API void Register();
-		NEXUS_ENGINE_API void Unregister();
 		NEXUS_ENGINE_API void Invoke(NxFr::StringView Args) const;
 
-		NEXUS_ENGINE_API bool IsRegistered() const { return Registered; }
 		NEXUS_ENGINE_API NxFr::StringId GetId() const { return Id; }
 		NEXUS_ENGINE_API NxFr::StringView GetTooltip() const { return Tooltip; }
 
@@ -37,20 +34,21 @@ namespace NxEn
 		static void InvokeWithArguments(Func&& Callback, const NxFr::List<NxFr::StringView>& Args, NxFr::IndexSequence<Indices...>);
 
 	private:
-		bool Registered;
 		NxFr::StringId Id;
 		NxFr::String Tooltip;
 		NxFr::Delegate<void(NxFr::StringView)> Callback;
 	};
 
 	template<typename ...Args>
-	inline Command Command::Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback, bool AutoRegister)
+	inline Command Command::Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback)
 	{
-		return Command(Id, Tooltip, [=](NxFr::StringView ArgsLine)
+		Command Instance = Command(Id, Tooltip, [=](NxFr::StringView ArgsLine)
 		{
 			NxFr::List<NxFr::StringView> Arguments = CommandsSystem::ParseArguments(ArgsLine);
 			InvokeWithArguments(Callback, Arguments, NxFr::MakeIndexSequence<sizeof...(Args)>{});
-		}, AutoRegister);
+		});
+		CommandsSystem::RegisterCommand(&Instance);
+		return Instance;
 	}
 
 	template<typename Func, uint64 ...Indices>
