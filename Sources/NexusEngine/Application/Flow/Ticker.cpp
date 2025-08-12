@@ -157,6 +157,8 @@ namespace NxEn
 
 	void Ticker::Tick(float DeltaTime)
 	{
+		NEXUS_STAT_DECIMAL(StatsHeader::TimerMainId, DeltaTime);
+
 		FlushCallbackBuffer();
 
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)

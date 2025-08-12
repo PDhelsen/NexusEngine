@@ -109,7 +109,9 @@ namespace NxEn
 		while (IsRunning())
 		{
 			NEXUS_PROFILE_SCOPE("Frame");
+
 			float DeltaTime = Time.GetDeltaTime();
+			NEXUS_STAT_DECIMAL(StatsHeader::FpsId, 1.0f / DeltaTime);
 
 			Ticks.Tick(DeltaTime);
 			Time.Tick();

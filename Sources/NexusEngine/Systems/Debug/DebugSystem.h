@@ -6,6 +6,8 @@ namespace NxEn
 {
 	namespace StatsHeader
 	{
+		NEXUS_ENGINE_API extern const NxFr::StringId FpsId;
+		NEXUS_ENGINE_API extern const NxFr::StringId TimerMainId;
 		NEXUS_ENGINE_API extern const NxFr::StringId GuiElementsId;
 		NEXUS_ENGINE_API extern const NxFr::StringId MemoryAllocatedId;
 		NEXUS_ENGINE_API extern const NxFr::StringId MemoryAllocationId;
