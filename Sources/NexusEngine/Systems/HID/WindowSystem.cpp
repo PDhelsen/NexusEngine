@@ -208,6 +208,8 @@ namespace NxEn
 
 	void WindowSystem::FetchMonitors()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::Array<void*> Instances = Glfw::GetMonitors();
 
 		Monitors = NxFr::Array<Monitor>(Instances.GetCount());
@@ -215,26 +217,40 @@ namespace NxEn
 		{
 			Monitors[Index].Instance = Instances[Index];
 			Glfw::GetMonitorSettings(Monitors[Index].Instance, Monitors[Index].Resolution.x, Monitors[Index].Resolution.y, Monitors[Index].RefreshRate);
+
+			NEXUS_LOG(Info, Default, "Monitor found with resolution %d-%d", Monitors[Index].Resolution.x, Monitors[Index].Resolution.y);
 		}
 	}
 
 	void WindowSystem::CreateWindow()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		Target.Instance = Glfw::CreateWindow((uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr, Target.Position, Target.Resolution, Target.Title, Target.VSync);
+
+		NEXUS_LOG(Info, Default, "Window created with resolution %d-%d", Target.Resolution.x, Target.Resolution.y);
 	}
 
 	void WindowSystem::DestroyWindow()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		Glfw::DestroyWindow(Target.Instance);
+
+		NEXUS_LOG(Info, Default, "Window destroyed");
 	}
 
 	void WindowSystem::TickWindow()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		Glfw::TickWindow(Target.Instance);
 	}
 
 	void WindowSystem::UpdateCursor()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		Pointer.Instance = Glfw::UpdateCursorIcon(Target.Instance, Pointer.Instance, (uint8)Pointer.CursorIcon, Pointer.IconCustom);
 		Glfw::SetCursorMode(Target.Instance, (uint32)Pointer.CursorMode);
 	}

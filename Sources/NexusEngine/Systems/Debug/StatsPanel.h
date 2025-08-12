@@ -24,6 +24,8 @@ namespace NxEn
 		void DrawStats(const NxFr::String& Label) const;
 		bool FilterStats(const NxFr::String& Label);
 
+		NxFr::Stats* GetStats() const { return reinterpret_cast<NxFr::Stats*>(Target); }
+
 	private:
 		NxFr::List<const NxFr::String*> Ids;
 		NxFr::Dictionary<NxFr::StringId, const NxFr::Stats::Stat*> Values;

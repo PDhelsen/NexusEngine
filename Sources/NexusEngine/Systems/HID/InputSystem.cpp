@@ -86,9 +86,7 @@ namespace NxEn
 		DirtyFlagButtons = false;
 		DirtyFlagAxises = false;
 
-		Glfw::PollInput();
-		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, Default, "Unsupported Button pressed");
-
+		PollInputs();
 		TriggerActions();
 	}
 
@@ -168,8 +166,18 @@ namespace NxEn
 		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Alt, GetButton(Input::Button::LeftAlt) != Input::State::Up || GetButton(Input::Button::RightAlt) != Input::State::Up);
 	}
 
+	void InputSystem::PollInputs()
+	{
+		NEXUS_PROFILE_FUNCTION();
+
+		Glfw::PollInput();
+		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, Default, "Unsupported Button pressed");
+	}
+
 	void InputSystem::TriggerActions()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		for (auto& [Id, Schema] : Schemas)
 		{
 			for (auto& [Tag, Action] : Schema->GetMapping())

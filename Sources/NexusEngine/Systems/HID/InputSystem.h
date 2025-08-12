@@ -42,6 +42,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void UpdateAxises();
 		NEXUS_ENGINE_API void UpdateModifiers();
 
+		NEXUS_ENGINE_API void PollInputs();
 		NEXUS_ENGINE_API void TriggerActions();
 
 	private:

@@ -106,6 +106,8 @@ namespace NxEn
 
 	NxFr::Allocator* MemorySystem::FindAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::Allocator* Result = nullptr;
 
 		NxFr::List<NxFr::Allocator*>& Allocs = Allocators[(uint64)Type];
@@ -134,6 +136,8 @@ namespace NxEn
 
 	NxFr::Allocator* MemorySystem::CreateAllocator(AllocatorType Type, uint64 Size, uint64 Stride)
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::AllocatorContext Context(nullptr);
 		NxFr::Allocator* Alloc = nullptr;
 
@@ -196,6 +200,8 @@ namespace NxEn
 
 	void MemorySystem::EmptyAllocators(AllocatorType Type)
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::List<NxFr::Allocator*>& Allocs = Allocators[(uint64)Type];
 		for (NxFr::Allocator* Alloc : Allocs)
 		{
@@ -243,6 +249,8 @@ namespace NxEn
 
 	NxFr::HandleManager* MemorySystem::FindHandleManager()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		for (NxFr::HandleManager* Manager : HandleManagers)
 		{
 			if (Manager->GetCount() < Manager->GetCapacity())
@@ -256,6 +264,8 @@ namespace NxEn
 
 	NxFr::HandleManager* MemorySystem::CreateHandleManager()
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::AllocatorContext Context(nullptr);
 
 		NxFr::HandleManager* Manager = new NxFr::HandleManager(HandlesPerManager);
@@ -287,6 +297,8 @@ namespace NxEn
 	// TODO: Defragmentation might not be full because Handle might be scattered across multiple manager
 	void MemorySystem::Defragment(float Budget, bool All)
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::Stopwatch Watch(true);
 
 		DefragmentAllocatorIndex = All ? 0 : DefragmentAllocatorIndex;

@@ -14,6 +14,7 @@ namespace NxEn
 
 	namespace StatsHeader
 	{
+		const NxFr::StringId GuiElementsId = "GUI - Elements"_Sid;
 		const NxFr::StringId MemoryAllocatedId = "Memory - Allocated"_Sid;
 		const NxFr::StringId MemoryAllocationId = "Memory - Allocation"_Sid;
 		const NxFr::StringId PlatformMemoryId = "Platform - Memory"_Sid;
@@ -64,6 +65,7 @@ namespace NxEn
 		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
 
 		Stats = new NxFr::Stats(Folder + "stats.csv");
+		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::GuiElementsId, UnsignedInteger, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::MemoryAllocationId, UnsignedInteger, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::PlatformMemoryId, UnsignedInteger, Set);

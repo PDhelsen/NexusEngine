@@ -21,7 +21,9 @@ namespace NxEn
 
 	void StatsPanel::SetTarget(void* Instance)
 	{
-		NxFr::Stats* Statistiques = reinterpret_cast<NxFr::Stats*>(Instance);
+		Panel::SetTarget(Instance);
+
+		NxFr::Stats* Statistiques = GetStats();
 		Values = Statistiques->GetAllCurrentStats();
 
 		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
@@ -42,6 +44,18 @@ namespace NxEn
 
 	void StatsPanel::OnGui(float TimeStep)
 	{
+		NxFr::Stats* Statistiques = GetStats();
+
+		if (ImGui::Button("Start"))
+		{
+			Statistiques->StartRecording();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Stop"))
+		{
+			Statistiques->StopRecording();
+		}
+
 		DrawFilter();
 
 		for (auto Label : Ids)

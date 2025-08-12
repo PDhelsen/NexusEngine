@@ -140,6 +140,8 @@ namespace NxEn
 		{
 			LoadLayoutNexus(Path);
 		}
+
+		NEXUS_LOG(Info, Default, "GUI layout %s loaded", Name.C());
 	}
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
@@ -153,6 +155,8 @@ namespace NxEn
 			AddMenuWindowLayouts(Name.ToString());
 		}
 		SaveLayoutNexus(Path);
+
+		NEXUS_LOG(Info, Default, "GUI layout %s saved", Name.C());
 	}
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
@@ -167,6 +171,8 @@ namespace NxEn
 
 		LoadThemeImGui(Data["ImGui"]);
 		LoadThemeNexus(Data["Nexus"]);
+
+		NEXUS_LOG(Info, Default, "GUI style %s loaded", Name.C());
 	}
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
@@ -182,6 +188,8 @@ namespace NxEn
 		Data << YAML::EndMap;
 
 		NxFr::Yaml::SerializeFile(Data, Path);
+
+		NEXUS_LOG(Info, Default, "GUI style %s saved", Name.C());
 	}
 
 	const GUI::Style& GUISystem::GetStyle(NxFr::StringId Id)
@@ -230,6 +238,8 @@ namespace NxEn
 	void GUISystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);
+
+		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::GuiElementsId, Elements.GetCount());
 
 		Imgui::Frame();
 
@@ -307,11 +317,15 @@ namespace NxEn
 
 	void GUISystem::LoadLayoutImGui(const NxFr::Path& Path) const
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		ImGui::LoadIniSettingsFromDisk(Path.C());
 	}
 
 	void GUISystem::LoadLayoutNexus(const NxFr::Path& Path) const
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Read, false);
 
@@ -332,11 +346,15 @@ namespace NxEn
 
 	void GUISystem::SaveLayoutImGui(const NxFr::Path& Path) const
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		ImGui::SaveIniSettingsToDisk(Path.C());
 	}
 
 	void GUISystem::SaveLayoutNexus(const NxFr::Path& Path) const
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Write, true);
 
@@ -354,6 +372,8 @@ namespace NxEn
 
 	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		ImGuiStyle& Style = ImGui::GetStyle();
 
 		Style.FontSizeBase = Node["FontSizeBase"].as<float>();
@@ -485,6 +505,8 @@ namespace NxEn
 
 	void GUISystem::LoadThemeNexus(const YAML::Node& Node)
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		for (YAML::const_iterator It = Node.begin(); It != Node.end(); ++It)
 		{
 			const YAML::Node NodeId = It->first;
@@ -517,6 +539,8 @@ namespace NxEn
 
 	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		ImGuiStyle& Style = ImGui::GetStyle();
 
 		Emitter << YAML::BeginMap;
@@ -654,6 +678,8 @@ namespace NxEn
 
 	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter) const
 	{
+		NEXUS_PROFILE_FUNCTION();
+
 		Emitter << YAML::BeginMap;
 		for (auto& [Id, Style] : Styles)
 		{

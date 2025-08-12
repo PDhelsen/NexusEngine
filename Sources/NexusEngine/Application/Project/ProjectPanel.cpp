@@ -30,7 +30,7 @@ namespace NxEn
 
 	void ProjectPanel::OnGui(float TimeStep)
 	{
-		Project* ProjectInfos = reinterpret_cast<Project*>(Target);
+		Project* ProjectInfos = GetProject();
 
 		ImGui::Text("Mode: %s", Enum::ProjectModeToString(ProjectInfos->GetTarget()));
 		ImGui::Separator();
