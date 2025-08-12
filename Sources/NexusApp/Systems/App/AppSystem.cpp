@@ -17,11 +17,6 @@ namespace NxAp
 		System::OnInitialize();
 
 		PushInputSchema();
-
-		InputSchema.GetMapping().Append("Test"_Sid, NxEn::Input::Action(NxEn::Input::Button::Space, NxEn::Input::State::Released, NxEn::Input::Modifier::None, []()
-			{
-				NEXUS_LOG(Info, Default, "Test");
-			}));
 	}
 
 	void AppSystem::OnShutdown()

@@ -173,6 +173,9 @@ namespace NxEn
 	void WindowSystem::OnInitialize()
 	{
 		System::OnInitialize();
+
+		Glfw::Initialize();
+
 		FetchMonitors();
 		CreateWindow();
 		UpdateCursor();
@@ -182,6 +185,9 @@ namespace NxEn
 	{
 		SetCursorIcon(Cursor::Icon::Default);
 		DestroyWindow();
+
+		Glfw::Shutdown();
+
 		System::OnShutdown();
 	}
 

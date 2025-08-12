@@ -34,8 +34,6 @@ namespace NxEn
 		Application::OnInitialize();
 		Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(Glfw::Initialize, "Glfw - Initialize");
-
 		Bootstrap.AppendSystem<MemorySystem>();
 		Bootstrap.AppendSystem<DebugSystem>();
 		Bootstrap.AppendSystem<InputSystem>();
@@ -65,7 +63,6 @@ namespace NxEn
 		{
 			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		}, "Application duration");
-		Unbootstrap.AppendStep(Glfw::Shutdown, "Glfw - Shutdown");
 
 		Application::OnShutdown();
 	}
