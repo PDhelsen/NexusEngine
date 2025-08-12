@@ -1,0 +1,28 @@
+#pragma once
+
+#include "NexusApp/Core/NexusAppCore.h"
+
+namespace NxAp
+{
+	class AppSystem : public NxEn::System
+	{
+	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_APP_API, AppSystem)
+
+		NEXUS_APP_API AppSystem();
+		NEXUS_APP_API ~AppSystem();
+
+		NEXUS_APP_API NxEn::Input::Schema& GetInputsSchema() { return InputSchema; }
+
+	protected:
+		NEXUS_APP_API void OnInitialize() override;
+		NEXUS_APP_API void OnShutdown() override;
+		NEXUS_APP_API void OnTick(float TimeStep = 0.0f) override;
+
+		NEXUS_APP_API void PushInputSchema();
+		NEXUS_APP_API void PopInputSchema();
+
+	private:
+		NxEn::Input::Schema InputSchema;
+	};
+}
