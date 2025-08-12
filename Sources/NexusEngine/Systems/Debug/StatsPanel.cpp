@@ -8,11 +8,6 @@ namespace NxEn
 
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
 
-	const static Command CmdDebugStatsPanel = Command::Create("Debug.Stats.Panel"_Sid, "Show/Hide stats panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
-	{
-		GUISystem::GetPanel<StatsPanel>()->ShowWithTarget(Enabled == "true");
-	}));
-
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
 
 	StatsPanel::StatsPanel()

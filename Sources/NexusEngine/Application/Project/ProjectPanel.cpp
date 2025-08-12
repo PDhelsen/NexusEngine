@@ -10,11 +10,6 @@ namespace NxEn
 		GUISystem::GetPanel<ProjectPanel>()->ShowWithTarget(true);
 	}));
 
-	const static Command CmdProjectPanel = Command::Create("Project.Panel"_Sid, "Show/Hide project panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
-	{
-		GUISystem::GetPanel<ProjectPanel>()->ShowWithTarget(Enabled == "true");
-	}));
-
 	NEXUS_OBJECT_IMPLEMENTATION(ProjectPanel)
 
 	ProjectPanel::ProjectPanel()

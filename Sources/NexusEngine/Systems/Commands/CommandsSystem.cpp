@@ -3,13 +3,22 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(CommandsSystem)
-
 	static NxFr::Dictionary<NxFr::StringId, Command*>& GetCommands()
 	{
 		static NxFr::Dictionary<NxFr::StringId, Command*> Commands;
 		return Commands;
 	}
+
+	const static Command CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
+	{
+		NxFr::Dictionary<NxFr::StringId, Command*>& Commands = GetCommands();
+		for (auto& [Id, Cmd] : Commands)
+		{
+			NEXUS_LOG(Info, Default, "Command: %s - %s", Id.C(), Cmd->GetTooltip().C());
+		}
+	}));
+
+	NEXUS_OBJECT_IMPLEMENTATION(CommandsSystem)
 
 	Command* CommandsSystem::GetCommand(NxFr::StringId Id)
 	{
@@ -135,13 +144,4 @@ namespace NxEn
 			Queue->Remove();
 		}
 	}
-
-	const static Command CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
-	{
-		NxFr::Dictionary<NxFr::StringId, Command*>& Commands = GetCommands();
-		for (auto& [Id, Cmd] : Commands)
-		{
-			NEXUS_LOG(Info, Default, "Command: %s - %s", Id.C(), Cmd->GetTooltip().C());
-		}
-	}));
 }

@@ -3,8 +3,6 @@
 
 namespace NxEd
 {
-	const static NxFr::StringId InputSchemaId = NxFr::StringId("Editor");
-
 	const static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditorSystem>()->Save();
@@ -57,11 +55,11 @@ namespace NxEd
 
 	void EditorSystem::PushInputSchema()
 	{
-		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema(InputSchemaId, &InputSchema);
+		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, &InputSchema);
 	}
 
 	void EditorSystem::PopInputSchema()
 	{
-		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema(InputSchemaId);
+		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
 	}
 }

@@ -32,12 +32,7 @@ namespace NxEn
 
 	void InputSystem::AddSchema(NxFr::StringId Id, Input::Schema* Schema)
 	{
-		Schemas.Append(Id, Schema);
-	}
-
-	void InputSystem::UpdateSchema(NxFr::StringId Id, Input::Schema* Schema)
-	{
-		Schemas.Assign(Id, Schema);
+		Schemas.AppendOrAssign(Id, Schema);
 	}
 
 	void InputSystem::RemoveSchema(NxFr::StringId Id)

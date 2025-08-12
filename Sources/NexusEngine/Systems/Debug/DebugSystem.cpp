@@ -12,6 +12,13 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
+	namespace StatsHeader
+	{
+		const NxFr::StringId MemoryAllocatedId = "Memory - Allocated"_Sid;
+		const NxFr::StringId MemoryAllocationId = "Memory - Allocation"_Sid;
+		const NxFr::StringId PlatformMemoryId = "Platform - Memory"_Sid;
+	}
+
 	const static Command CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
 	{
 		Application::GetSystem<DebugSystem>()->GetLogger()->SetChannel(NxFr::StringId(Channel), Enabled == "true");
@@ -30,13 +37,6 @@ namespace NxEn
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		if (Enabled == "true") Stats->StartRecording(); else Stats->StopRecording();
 	}));
-
-	namespace StatsHeader
-	{
-		const NxFr::StringId MemoryAllocatedId = "Memory - Allocated"_Sid;
-		const NxFr::StringId MemoryAllocationId = "Memory - Allocation"_Sid;
-		const NxFr::StringId PlatformMemoryId = "Platform - Memory"_Sid;
-	}
 
 	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 

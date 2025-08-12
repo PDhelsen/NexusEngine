@@ -16,7 +16,6 @@ namespace NxEn
 		NEXUS_ENGINE_API void Reset();
 
 		NEXUS_ENGINE_API void AddSchema(NxFr::StringId Id, Input::Schema* Schema);
-		NEXUS_ENGINE_API void UpdateSchema(NxFr::StringId Id, Input::Schema* Schema);
 		NEXUS_ENGINE_API void RemoveSchema(NxFr::StringId Id);
 		NEXUS_ENGINE_API Input::Schema* GetSchema(NxFr::StringId Id);
 

@@ -49,7 +49,11 @@ namespace NxEn
 		
 #pragma endregion
 
-#pragma region Constants
+#if NEXUS_EDITOR
+	const NxFr::StringView Suffix = "_editor";
+#else
+	const NxFr::StringView Suffix = "_app";
+#endif
 
 	const NxFr::StringView SavedConfigName = "imgui";
 	const NxFr::StringView SavedStyleName = "style";
@@ -58,17 +62,6 @@ namespace NxEn
 	const NxFr::StringView StyleExtension = ".yaml";
 	const NxFr::StringView LayoutExtension = ".layout";
 	const NxFr::StringView Folder = "imgui";
-#if NEXUS_EDITOR
-	const NxFr::StringView Suffix = "_editor";
-#else
-	const NxFr::StringView Suffix = "_app";
-#endif
-
-#pragma endregion
-
-#pragma region GUISystem
-
-	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
 	{
@@ -81,6 +74,8 @@ namespace NxEn
 		static GUI::Menu Menu(true);
 		return Menu;
 	}
+
+	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Id)
 	{
@@ -676,6 +671,4 @@ namespace NxEn
 		}
 		Emitter << YAML::EndMap;
 	}
-
-#pragma endregion
 }
