@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Systems/System.h"
+#include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Memory/Allocator.h"
 
 namespace NxEn

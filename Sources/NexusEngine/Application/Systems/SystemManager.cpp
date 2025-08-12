@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/SystemManager.h"
+#include "NexusEngine/Application/Systems/SystemManager.h"
 
 namespace NxEn
 {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NexusEngine/Systems/GUI/GUI.h"
+
 namespace NxEn
 {
 	class StylesPanel : public GUI::Panel

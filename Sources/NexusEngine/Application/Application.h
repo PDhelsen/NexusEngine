@@ -1,13 +1,12 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Application/EntryPoint.h"
 #include "NexusEngine/Application/Project/Project.h"
-#include "NexusEngine/Application/Bootstrapper.h"
-#include "NexusEngine/Application/Ticker.h"
-#include "NexusEngine/Application/TimeManager.h"
-
-#include "NexusEngine/Systems/SystemManager.h"
+#include "NexusEngine/Application/Flow/EntryPoint.h"
+#include "NexusEngine/Application/Flow/Bootstrapper.h"
+#include "NexusEngine/Application/Flow/Ticker.h"
+#include "NexusEngine/Application/Systems/TimeManager.h"
+#include "NexusEngine/Application/Systems/SystemManager.h"
 
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\

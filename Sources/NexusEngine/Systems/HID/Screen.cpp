@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/HID/Screen.h"
 
-#include "NexusEngine/External/Glfw.h"
-
 namespace NxEn
 {
 	Window::Window()
