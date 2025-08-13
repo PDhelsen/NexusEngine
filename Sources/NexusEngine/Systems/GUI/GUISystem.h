@@ -24,6 +24,8 @@ namespace NxEn
 		NEXUS_ENGINE_API static GUI::Menu* GetMenu();
 		NEXUS_ENGINE_API static void RegisterMenuItem(GUI::Menu::Item* Instance);
 		NEXUS_ENGINE_API static void UnregisterMenuItem(GUI::Menu::Item* Instance);
+		NEXUS_ENGINE_API static GUI::Element* GetWindow();
+		NEXUS_ENGINE_API static void SetWindow(GUI::Element* Instance);
 
 		NEXUS_ENGINE_API GUISystem();
 		NEXUS_ENGINE_API ~GUISystem();

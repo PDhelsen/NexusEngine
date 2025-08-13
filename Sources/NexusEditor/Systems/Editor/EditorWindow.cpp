@@ -10,6 +10,7 @@ namespace NxEd
 	EditorWindow::EditorWindow()
 		: GuiFlags(0), Style()
 	{
+		SetManual(true);
 	}
 
 	EditorWindow::~EditorWindow()
@@ -29,12 +30,14 @@ namespace NxEd
 		Style.AppendVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		Style.AppendVarXY(ImGuiStyleVar_WindowPadding, NxFr::Vector2f(0.0f));
 
+		NxEn::GUISystem::SetWindow(this);
 		NxEn::GUISystem::GetMenu()->Show();
 	}
 
 	void EditorWindow::OnShutdown()
 	{
 		NxEn::GUISystem::GetMenu()->Hide();
+		NxEn::GUISystem::SetWindow(nullptr);
 
 		Element::OnShutdown();
 	}

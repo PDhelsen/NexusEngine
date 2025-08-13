@@ -20,6 +20,8 @@ namespace NxEn
 	const NxFr::StringView LayoutExtension = ".layout";
 	const NxFr::StringView Folder = "imgui";
 
+	static GUI::Element* Window = nullptr;
+
 	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
 	{
 		static NxFr::Dictionary<NxFr::StringId, GUI::Panel*> Panels;
@@ -62,6 +64,16 @@ namespace NxEn
 	void GUISystem::UnregisterMenuItem(GUI::Menu::Item* Instance)
 	{
 		GetMainMenu().RemoveItem(*Instance);
+	}
+
+	GUI::Element* GUISystem::GetWindow()
+	{
+		return Window;
+	}
+
+	void GUISystem::SetWindow(GUI::Element* Instance)
+	{
+		Window = Instance;
 	}
 
 	GUISystem::GUISystem()
@@ -174,7 +186,7 @@ namespace NxEn
 
 		GUI::Menu& Menu = GetMainMenu();
 		Menu.Initialize(false);
-		Menu.SetManual(false);
+		Menu.SetManual(true);
 
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
@@ -200,7 +212,10 @@ namespace NxEn
 
 		Imgui::Frame();
 
-		// ImGui::ShowDemoWindow();
+		GetWindow()->Tick(TimeStep);
+		GetMenu()->Tick(TimeStep);
+
+		//ImGui::ShowDemoWindow();
 
 		for (auto& Element : Elements)
 		{
