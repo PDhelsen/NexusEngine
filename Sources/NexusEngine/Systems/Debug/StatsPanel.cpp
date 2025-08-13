@@ -31,7 +31,7 @@ namespace NxEn
 		{
 			Ids.Append(&Id.ToString());
 		}
-		Ids.Sort();
+		Ids.Sort([](const NxFr::String* A, const NxFr::String* B) { return *A <= *B; });
 	}
 
 	void StatsPanel::OnInitialize()

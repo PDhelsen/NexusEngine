@@ -6,49 +6,6 @@
 
 namespace NxEn
 {
-#pragma region LayoutPopup
-
-	 class LayoutPopup : public GUI::Popup
-	 {
-	 public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, LayoutPopup)
-			
-		LayoutPopup()
-			: Name(64)
-		{
-		}
-		
-	 protected:
-		void OnInitialize() override
-		{
-			Popup::OnInitialize();
-			
-			Title = "Save Layout";
-			Message = "Please enter layout name";
-
-			AddButton("Save", { this, &LayoutPopup::Save });
-			AddButton("Cancel");
-		}
-		
-		void OnGui(float TimeStep) override
-		{
-			ImGui::InputText("##Name", Name.C_Buffer(), Name.GetCapacity());
-		}
-		
-		void Save()
-		{
-			Name.Validate();
-			NxEn::Application::GetInstance()->GetSystem<GUISystem>()->SaveLayout(Name);
-		}
-		
-	private:
-		NxFr::String Name;
-	};
-	
-	NEXUS_OBJECT_IMPLEMENTATION(LayoutPopup)
-		
-#pragma endregion
-
 #if NEXUS_EDITOR
 	const NxFr::StringView Suffix = "_editor";
 #else
@@ -156,7 +113,7 @@ namespace NxEn
 		}
 		SaveLayoutNexus(Path);
 
-		NEXUS_LOG(Info, Default, "GUI layout %s saved", Name.C());
+		NEXUS_LOG(Info, Default, "GUI layout %s saved", Name.ToString().C());
 	}
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
@@ -278,7 +235,11 @@ namespace NxEn
 	{
 		auto& Menu = GetMainMenu();
 
-		Menu.AddMenuItem("Window/Layouts/Save", []() { Object::Create<LayoutPopup>(); }, "", 1);
+		Menu.AddMenuItem("Window/Layouts/Save", []()
+		{
+			NxFr::Path Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Paths::Configs + Folder);
+			NxEn::Application::GetInstance()->GetSystem<GUISystem>()->SaveLayout(NxFr::Path::GetFileName(Path));
+		}, "", 1);
 
 		NxFr::Path Path = GetSettingsPath("Layout", SavedLayoutName, LayoutExtension);
 		NxFr::Directory Folder(Path.GetDirectoryPath());
