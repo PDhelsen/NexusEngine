@@ -51,8 +51,8 @@ namespace NxEd
 			Style.Pop();
 
 			OnGui(TimeStep);
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 
 	void EditorWindow::OnGui(float TimeStep)

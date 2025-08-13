@@ -123,8 +123,8 @@ namespace NxEn
 			if (ImGui::Begin(Title.C(), &IsOpen, GuiFlags))
 			{
 				OnGui(TimeStep);
-				ImGui::End();
 			}
+			ImGui::End();
 
 			if (!IsOpen)
 			{
@@ -248,18 +248,16 @@ namespace NxEn
 				if (ImGui::BeginMainMenuBar())
 				{
 					DrawMenu(TimeStep);
-
-					ImGui::EndMainMenuBar();
 				}
+				ImGui::EndMainMenuBar();
 			}
 			else
 			{
 				if (ImGui::BeginMenuBar())
 				{
 					DrawMenu(TimeStep);
-
-					ImGui::EndMenuBar();
 				}
+				ImGui::EndMenuBar();
 			}
 		}
 
@@ -429,9 +427,8 @@ namespace NxEn
 
 					ImGui::SameLine();
 				}
-
-				ImGui::EndPopup();
 			}
+			ImGui::EndPopup();
 		}
 
 #pragma endregion
@@ -499,8 +496,8 @@ namespace NxEn
 
 				float Percentag = ComputePercentage(TimeStep);
 				ImGui::ProgressBar(Percentag);
-				ImGui::End();
 			}
+			ImGui::End();
 
 			if (Progress >= 1.0f)
 			{
