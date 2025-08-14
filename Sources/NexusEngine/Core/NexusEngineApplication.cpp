@@ -6,7 +6,12 @@
 
 namespace NxEn
 {
-	const static Command CmdQuit = Command::Create("Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]() {Application::GetInstance()->Quit(); }));
+	const static Command CmdQuit = Command::Create("Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]() { Application::GetInstance()->Quit(); }));
+
+	const static GUI::Menu::Item MenuItemQuit = GUI::Menu::Item::Create("File/Quit", NxFr::Delegate<void()>([]()
+	{
+		Application::GetInstance()->Quit();
+	}), "", 2);
 
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
