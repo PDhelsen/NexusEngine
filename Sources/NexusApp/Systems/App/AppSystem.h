@@ -13,6 +13,7 @@ namespace NxAp
 		NEXUS_APP_API ~AppSystem();
 
 		NEXUS_APP_API NxEn::Input::Schema& GetInputsSchema() { return InputSchema; }
+		NEXUS_APP_API NxEn::GUI::Window& GetWindow() { return *Window; }
 
 	protected:
 		NEXUS_APP_API void OnInitialize() override;
@@ -24,5 +25,6 @@ namespace NxAp
 
 	private:
 		NxEn::Input::Schema InputSchema;
+		NxEn::GUI::Window* Window;
 	};
 }

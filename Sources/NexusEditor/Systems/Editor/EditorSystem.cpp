@@ -36,7 +36,7 @@ namespace NxEd
 	{
 		System::OnInitialize();
 
-		Window = NxEn::Object::Create<EditorWindow>();
+		Window = NxEn::Object::Create<NxEn::GUI::Window>();
 		PushInputSchema();
 	}
 

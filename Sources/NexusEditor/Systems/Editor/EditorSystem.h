@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
-#include "NexusEditor/Systems/Editor/EditorWindow.h"
 
 namespace NxEd
 {
@@ -18,7 +17,7 @@ namespace NxEd
 		NEXUS_EDITOR_API NxFr::Event<>& GetOnSave() { return OnSave; }
 
 		NEXUS_EDITOR_API NxEn::Input::Schema& GetInputsSchema() { return InputSchema; }
-		NEXUS_EDITOR_API EditorWindow& GetWindow() { return *Window; }
+		NEXUS_EDITOR_API NxEn::GUI::Window& GetWindow() { return *Window; }
 
 
 	protected:
@@ -33,6 +32,6 @@ namespace NxEd
 		NxFr::Event<> OnSave;
 
 		NxEn::Input::Schema InputSchema;
-		EditorWindow* Window;
+		NxEn::GUI::Window* Window;
 	};
 }

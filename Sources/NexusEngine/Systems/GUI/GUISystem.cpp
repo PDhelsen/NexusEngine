@@ -20,7 +20,7 @@ namespace NxEn
 	const NxFr::StringView LayoutExtension = ".layout";
 	const NxFr::StringView Folder = "imgui";
 
-	static GUI::Element* Window = nullptr;
+	static GUI::Window* Window = nullptr;
 
 	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
 	{
@@ -35,6 +35,16 @@ namespace NxEn
 	}
 
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
+
+	GUI::Window* GUISystem::GetWindow()
+	{
+		return Window;
+	}
+
+	void GUISystem::SetWindow(GUI::Window* Instance)
+	{
+		Window = Instance;
+	}
 
 	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Id)
 	{
@@ -64,16 +74,6 @@ namespace NxEn
 	void GUISystem::UnregisterMenuItem(GUI::Menu::Item* Instance)
 	{
 		GetMainMenu().RemoveItem(*Instance);
-	}
-
-	GUI::Element* GUISystem::GetWindow()
-	{
-		return Window;
-	}
-
-	void GUISystem::SetWindow(GUI::Element* Instance)
-	{
-		Window = Instance;
 	}
 
 	GUISystem::GUISystem()
@@ -184,19 +184,12 @@ namespace NxEn
 		LoadLayout();
 		LoadTheme();
 
-		GUI::Menu& Menu = GetMainMenu();
-		Menu.Initialize(false);
-		Menu.SetManual(true);
-
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
 	}
 
 	void GUISystem::OnShutdown()
 	{
-		GUI::Menu& Menu = GetMainMenu();
-		Menu.Shutdown();
-
 		SaveTheme();
 		SaveLayout();
 		Imgui::Shutdown();
@@ -212,10 +205,10 @@ namespace NxEn
 
 		Imgui::Frame();
 
-		GetWindow()->Tick(TimeStep);
-		GetMenu()->Tick(TimeStep);
-
-		//ImGui::ShowDemoWindow();
+		if (Window)
+		{
+			Window->Tick(TimeStep);
+		}
 
 		for (auto& Element : Elements)
 		{
@@ -226,6 +219,8 @@ namespace NxEn
 
 			Element->Tick(TimeStep);
 		}
+
+		// ImGui::ShowDemoWindow();
 
 		Imgui::Render();
 	}

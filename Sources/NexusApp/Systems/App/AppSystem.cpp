@@ -5,6 +5,7 @@ namespace NxAp
 	NEXUS_OBJECT_IMPLEMENTATION(AppSystem)
 
 	AppSystem::AppSystem()
+		: InputSchema(), Window(nullptr)
 	{
 	}
 
@@ -16,12 +17,19 @@ namespace NxAp
 	{
 		System::OnInitialize();
 
+		Window = NxEn::Object::Create<NxEn::GUI::Window>(false);
 		PushInputSchema();
+
+		InputSchema.GetMapping().Append("Window"_Sid, NxEn::Input::Action(NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None, [=]()
+		{
+			Window->SetEnabled(!Window->IsEnabled());
+		}));
 	}
 
 	void AppSystem::OnShutdown()
 	{
 		PopInputSchema();
+		Window = NxEn::Object::Destroy(Window);
 
 		System::OnShutdown();
 	}

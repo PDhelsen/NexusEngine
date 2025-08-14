@@ -62,6 +62,81 @@ namespace NxEn
 
 #pragma endregion
 
+#pragma region Window
+
+		NEXUS_OBJECT_IMPLEMENTATION(Window)
+
+		Window::Window()
+			: GuiFlags(0), Style(), MainMenu(nullptr)
+		{
+			MainMenu = GUISystem::GetMenu();
+			SetManual(true);
+		}
+
+		Window::~Window()
+		{
+		}
+
+		void Window::OnInitialize()
+		{
+			Element::OnInitialize();
+
+			MainMenu->Initialize();
+
+			GuiFlags =
+				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
+				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing |
+				ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings;
+
+			Style.AppendVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			Style.AppendVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			Style.AppendVarXY(ImGuiStyleVar_WindowPadding, NxFr::Vector2f(0.0f));
+		}
+
+		void Window::OnShutdown()
+		{
+			MainMenu->Shutdown();
+
+			Element::OnShutdown();
+		}
+
+		void Window::OnTick(float TimeStep)
+		{
+			ImGuiViewport* Viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(Viewport->Pos);
+			ImGui::SetNextWindowSize(Viewport->Size);
+
+			Style.Push();
+			if (ImGui::Begin("Window", nullptr, GuiFlags))
+			{
+				Style.Pop();
+
+				OnGui(TimeStep);
+			}
+			ImGui::End();
+		}
+
+		void Window::OnEnable()
+		{
+			NxEn::GUISystem::SetWindow(this);
+			NxEn::GUISystem::GetMenu()->Show();
+		}
+
+		void Window::OnDisable()
+		{
+			NxEn::GUISystem::GetMenu()->Hide();
+			NxEn::GUISystem::SetWindow(nullptr);
+		}
+
+		void Window::OnGui(float TimeStep)
+		{
+			MainMenu->Tick(TimeStep);
+			ImGui::DockSpace(ImGui::GetID("Window"));
+		}
+
+#pragma endregion
+
+
 #pragma region Panel
 
 		NEXUS_OBJECT_IMPLEMENTATION(Panel)
