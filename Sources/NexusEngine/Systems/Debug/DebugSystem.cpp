@@ -4,6 +4,14 @@
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
+namespace NxFr
+{
+	namespace LoggerChannel
+	{
+		const NxFr::StringId Command = "Command"_Sid;
+	}
+}
+
 namespace NxEn
 {
 #if NEXUS_DEBUG
@@ -65,6 +73,7 @@ namespace NxEn
 		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, Folder + "logs.txt");
 		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
 		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
+		Logger->AddChannel(NxFr::LoggerChannel::Command, true);
 
 		Stats = new NxFr::Stats(Folder + "stats.csv");
 		NEXUS_STAT_HEADER_INSTANCE(Stats, StatsHeader::FpsId, Decimal, Set);

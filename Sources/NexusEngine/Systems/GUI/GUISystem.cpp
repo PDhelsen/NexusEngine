@@ -267,6 +267,7 @@ namespace NxEn
 		Menu.AddMenuItem("Window/Layouts/Save", []()
 		{
 			NxFr::Path Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Paths::Configs + Folder);
+			if (!Path.IsValid()) return;
 			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save,") + NxFr::Path::GetFileName(Path);
 			NxEn::Application::GetInstance()->GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, "", 1);

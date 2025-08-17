@@ -95,11 +95,10 @@ namespace NxEn
 
 	void CommandsSystem::Execute(const CommandInfo& Info)
 	{
-		NxFr::String Tag = NxFr::StringUtility::Format("Execute command: %s", Info.Id.C());
-		NEXUS_PROFILE_SCOPE(Tag.C());
+		NEXUS_PROFILE_SCOPE(Info.Id.C());
 
 		Current = &Info;
-		NEXUS_LOG(Info, Default, "%s", Tag.C());
+		NEXUS_LOG(Info, Command, "%s", Info.Id.C());
 		GetCommand(Info.Id)->Invoke(Info.Args);
 		Current = nullptr;
 	}
