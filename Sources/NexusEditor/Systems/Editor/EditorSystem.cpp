@@ -3,15 +3,15 @@
 
 namespace NxEd
 {
-	const static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditorSystem>()->Save();
-	}), "", 1);
-
 	const static NxEn::Command CmdEditorSave = NxEn::Command::Create("Editor.Save"_Sid, "Save project", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditorSystem>()->Save();
 	}));
+
+	const static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetInstance()->GetSystem<NxEn::CommandsSystem>()->Execute("Editor.Save");
+	}), "", 1);
 
 	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)
 

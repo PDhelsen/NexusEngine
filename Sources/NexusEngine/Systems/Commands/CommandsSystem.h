@@ -25,6 +25,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void Run(const CommandInfo& Info);
 		NEXUS_ENGINE_API void Execute(NxFr::StringView Cmd);
 		NEXUS_ENGINE_API void Execute(const CommandInfo& Info);
+		NEXUS_ENGINE_API void Help();
 
 		NEXUS_ENGINE_API bool IsExecutingCommand() const { return Current != nullptr; }
 		NEXUS_ENGINE_API uint64 GetQueuedCommandCount() const { return Queue->GetCount(); }

@@ -11,11 +11,7 @@ namespace NxEn
 
 	const static Command CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
 	{
-		NxFr::Dictionary<NxFr::StringId, Command*>& Commands = GetCommands();
-		for (auto& [Id, Cmd] : Commands)
-		{
-			NEXUS_LOG(Info, Default, "Command: %s - %s", Id.C(), Cmd->GetTooltip().C());
-		}
+		Application::GetInstance()->GetSystem<CommandsSystem>()->Help();
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(CommandsSystem)
@@ -106,6 +102,15 @@ namespace NxEn
 		NEXUS_LOG(Info, Default, "%s", Tag.C());
 		GetCommand(Info.Id)->Invoke(Info.Args);
 		Current = nullptr;
+	}
+
+	void CommandsSystem::Help()
+	{
+		NxFr::Dictionary<NxFr::StringId, Command*>& Commands = GetCommands();
+		for (auto& [Id, Cmd] : Commands)
+		{
+			NEXUS_LOG(Info, Default, "Command: %s - %s", Id.C(), Cmd->GetTooltip().C());
+		}
 	}
 
 	void CommandsSystem::OnInitialize()

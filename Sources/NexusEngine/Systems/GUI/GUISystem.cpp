@@ -34,6 +34,21 @@ namespace NxEn
 		return Menu;
 	}
 
+	const static Command CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	{
+		GUISystem::GetPanel(NxFr::StringId(Id))->ShowWithTarget(true);
+	}));
+
+	const static Command CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
+	{
+		Application::GetInstance()->GetSystem<GUISystem>()->SaveLayout(Name);
+	}));
+
+	const static Command CmdGuiLayoutLoad = Command::Create("GUI.Layout.Load"_Sid, "Load gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
+	{
+		Application::GetInstance()->GetSystem<GUISystem>()->LoadLayout(Name);
+	}));
+
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUI::Window* GUISystem::GetWindow()
@@ -238,7 +253,11 @@ namespace NxEn
 	{
 		auto& Menu = GetMainMenu();
 
-		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]() { Panel->ShowWithTarget(true); });
+		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]()
+		{
+			NxFr::String Cmd = NxFr::StringView("GUI.Panel,") + Panel->GetObjectType().C();
+			Application::GetInstance()->GetSystem<CommandsSystem>()->Execute(Cmd);
+		});
 	}
 
 	void GUISystem::AddMenuWindowLayouts() const
@@ -248,7 +267,8 @@ namespace NxEn
 		Menu.AddMenuItem("Window/Layouts/Save", []()
 		{
 			NxFr::Path Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Paths::Configs + Folder);
-			NxEn::Application::GetInstance()->GetSystem<GUISystem>()->SaveLayout(NxFr::Path::GetFileName(Path));
+			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save,") + NxFr::Path::GetFileName(Path);
+			NxEn::Application::GetInstance()->GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, "", 1);
 
 		NxFr::Path Path = GetSettingsPath("Layout", SavedLayoutName, LayoutExtension);
@@ -271,7 +291,11 @@ namespace NxEn
 	{
 		auto& Menu = GetMainMenu();
 
-		Menu.AddMenuItem("Window/Layouts/" + Name, [=]() { NxEn::Application::GetInstance()->GetSystem<GUISystem>()->LoadLayout(Name); });
+		Menu.AddMenuItem("Window/Layouts/" + Name, [=]()
+		{
+			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Load,") + Name;
+			NxEn::Application::GetInstance()->GetSystem<CommandsSystem>()->Execute(Cmd);
+		});
 	}
 
 	NxFr::Path GUISystem::GetSettingsPath(NxFr::StringView Name, NxFr::StringView Default, NxFr::StringView Extension) const
