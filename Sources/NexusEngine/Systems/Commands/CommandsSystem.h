@@ -36,6 +36,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
+		NEXUS_ENGINE_API void PollTerminal();
 		NEXUS_ENGINE_API void FlushCommands(float TimeStep);
 
 	private:

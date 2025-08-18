@@ -132,7 +132,19 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
+		PollTerminal();
 		FlushCommands(TimeStep);
+	}
+
+	void CommandsSystem::PollTerminal()
+	{
+		NxFr::String Request = NxFr::Platform::GetInstance()->ReadFromTerminal();
+		if (Request.IsEmpty())
+		{
+			return;
+		}
+
+		Run(Request);
 	}
 
 	void CommandsSystem::FlushCommands(float TimeStep)
