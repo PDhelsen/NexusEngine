@@ -26,7 +26,7 @@ namespace NxEd
 		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendSystem<EditorSystem>().AppendDependency<EditorSystem, NxEn::GUISystem>();
+		Bootstrap.AppendSystem<EditorSystem>();
 	}
 
 	void NexusEditorApplication::OnShutdown()

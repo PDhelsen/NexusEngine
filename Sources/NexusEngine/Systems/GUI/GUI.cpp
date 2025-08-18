@@ -52,11 +52,21 @@ namespace NxEn
 
 		void Element::OnEnable()
 		{
+			if (Manual)
+			{
+				return;
+			}
+
 			Application::GetSystem<GUISystem>()->RegisterElement(this);
 		}
 
 		void Element::OnDisable()
 		{
+			if (Manual)
+			{
+				return;
+			}
+
 			Application::GetSystem<GUISystem>()->UnregisterElement(this);
 		}
 
