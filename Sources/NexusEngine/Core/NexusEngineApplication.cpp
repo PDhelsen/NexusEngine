@@ -81,6 +81,8 @@ namespace NxEn
 			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		}, "Application duration");
 
+		StopDebugTools();
+
 		Application::OnShutdown();
 	}
 
@@ -99,8 +101,9 @@ namespace NxEn
 		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
 		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 
-		StartDebugging();
-		ParseCommands();
+		Ticks.AppendTickOnceCallback({ this, &NexusEngineApplication::ParseCommands }, NxEn::Ticker::TickBucket::Input, "Parse Commands");
+
+		StartDebugTools();
 	}
 
 	void NexusEngineApplication::ParseCommands()
@@ -120,7 +123,7 @@ namespace NxEn
 		}
 	}
 
-	void NexusEngineApplication::StartDebugging()
+	void NexusEngineApplication::StartDebugTools()
 	{
 		DebugSystem* Debug = GetSystem<DebugSystem>();
 
@@ -132,5 +135,11 @@ namespace NxEn
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
 
 		Debug->StartTools();
+	}
+
+	void NexusEngineApplication::StopDebugTools()
+	{
+		DebugSystem* Debug = GetSystem<DebugSystem>();
+		Debug->StopTools();
 	}
 }

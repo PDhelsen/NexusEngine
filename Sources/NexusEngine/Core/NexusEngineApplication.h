@@ -31,7 +31,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnExecute() override;
 
 		void ParseCommands();
-		void StartDebugging();
+		void StartDebugTools();
+		void StopDebugTools();
 
 	private:
 		Input::Schema InputSchema;

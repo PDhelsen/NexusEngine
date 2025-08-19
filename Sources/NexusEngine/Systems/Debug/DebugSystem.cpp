@@ -64,8 +64,6 @@ namespace NxEn
 
 	void DebugSystem::OnShutdown()
 	{
-		StopTools();
-
 		// Remove DebugSystem instance from globals only if they are still globals
 		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
 		if (NxFr::Globals::Statistiques == Stats) NxFr::Globals::Statistiques = nullptr;
