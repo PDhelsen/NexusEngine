@@ -23,9 +23,9 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
-		void Start();
-		void Stop();
-		void Flush();
+		void StartTools();
+		void StopTools();
+		void FlushTools();
 
 	private:
 		NxFr::Logger* Logger;

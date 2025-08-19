@@ -52,12 +52,8 @@ namespace NxEn
 
 		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, Folder + "logs.txt");
 		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
-		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
 
 		Stats = new NxFr::Stats(Folder + "stats.csv");
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
-
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
 		
 		// Push DebugSystem instance to globals
@@ -68,7 +64,7 @@ namespace NxEn
 
 	void DebugSystem::OnShutdown()
 	{
-		Stop();
+		StopTools();
 
 		// Remove DebugSystem instance from globals only if they are still globals
 		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
@@ -86,10 +82,10 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		Flush();
+		FlushTools();
 	}
 
-	void DebugSystem::Start()
+	void DebugSystem::StartTools()
 	{
 		bool AutoStart = NxFr::Arguments::HasFlag("Profile");
 
@@ -106,7 +102,7 @@ namespace NxEn
 		}
 	}
 
-	void DebugSystem::Stop()
+	void DebugSystem::StopTools()
 	{
 		if (Instrumentor->IsRecording())
 		{
@@ -123,7 +119,7 @@ namespace NxEn
 		Logger->Flush();
 	}
 
-	void DebugSystem::Flush()
+	void DebugSystem::FlushTools()
 	{
 		Stats->Unlock();
 		Stats->Flush();

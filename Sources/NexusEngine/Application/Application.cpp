@@ -110,7 +110,14 @@ namespace NxEn
 		{
 			float DeltaTime = Time.GetDeltaTime();
 
-			Ticks.Tick(DeltaTime);
+			{
+				NEXUS_PROFILE_SCOPE("Frame");
+				NEXUS_STAT_DECIMAL(NxFr::StatsHeader::FpsId, 1.0f / DeltaTime);
+				NEXUS_STAT_DECIMAL(NxFr::StatsHeader::TimerMainId, DeltaTime);
+
+				Ticks.Tick(DeltaTime);
+			}
+
 			Time.Tick();
 		}
 	}

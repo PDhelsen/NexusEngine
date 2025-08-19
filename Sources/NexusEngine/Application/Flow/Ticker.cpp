@@ -1,15 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Flow/Ticker.h"
 
-namespace NxFr
-{
-	namespace StatsHeader
-	{
-		const NxFr::StringId FpsId = "FPS"_Sid;
-		const NxFr::StringId TimerMainId = "Timer - Main"_Sid;
-	}
-}
-
 namespace NxEn
 {
 	Ticker::SystemInfo::SystemInfo(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
@@ -166,11 +157,6 @@ namespace NxEn
 
 	void Ticker::Tick(float DeltaTime)
 	{
-		NEXUS_PROFILE_SCOPE("Frame");
-
-		NEXUS_STAT_DECIMAL(NxFr::StatsHeader::FpsId, 1.0f / DeltaTime);
-		NEXUS_STAT_DECIMAL(NxFr::StatsHeader::TimerMainId, DeltaTime);
-
 		FlushCallbackBuffer();
 
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)

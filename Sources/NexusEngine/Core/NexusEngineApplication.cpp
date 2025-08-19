@@ -4,6 +4,15 @@
 #include "NexusEngine/External/Glfw.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
+namespace NxFr
+{
+	namespace StatsHeader
+	{
+		const NxFr::StringId FpsId = "FPS"_Sid;
+		const NxFr::StringId TimerMainId = "Timer - Main"_Sid;
+	}
+}
+
 namespace NxEn
 {
 	const static Command CmdQuit = Command::Create("Application.Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]()
@@ -113,6 +122,15 @@ namespace NxEn
 
 	void NexusEngineApplication::StartDebugging()
 	{
-		GetSystem<DebugSystem>()->Start();
+		DebugSystem* Debug = GetSystem<DebugSystem>();
+
+		NxFr::Logger* Logger = Debug->GetLogger();
+		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
+
+		NxFr::Stats* Stats = Debug->GetStats();
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
+
+		Debug->StartTools();
 	}
 }
