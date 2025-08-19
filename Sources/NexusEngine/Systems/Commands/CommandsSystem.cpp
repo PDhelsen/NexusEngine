@@ -11,6 +11,10 @@ namespace NxFr
 
 namespace NxEn
 {
+	static const char* SplitArgs = ",";
+	static const char* SplitTimer = ":";
+	static const char* SplitCommands = ";";
+
 	static NxFr::Dictionary<NxFr::StringId, Command*>& GetCommands()
 	{
 		static NxFr::Dictionary<NxFr::StringId, Command*> Commands;
@@ -41,11 +45,11 @@ namespace NxEn
 
 	CommandInfo CommandsSystem::ParseCommand(NxFr::StringView Cmd)
 	{
-		NxFr::StringView IdAndDelay = Cmd.Split(",", 0);
-		NxFr::StringId Id = NxFr::StringId(IdAndDelay.Split(":", 0));
-		float Delay = (float)NxFr::StringUtility::ToDouble(IdAndDelay.Split(":", 1));
+		NxFr::StringView IdAndDelay = Cmd.Split(SplitArgs, 0);
+		NxFr::StringId Id = NxFr::StringId(IdAndDelay.Split(SplitTimer, 0));
+		float Delay = (float)NxFr::StringUtility::ToDouble(IdAndDelay.Split(SplitTimer, 1));
 
-		NxFr::StringView Args = Cmd.Find(",");
+		NxFr::StringView Args = Cmd.Find(SplitArgs);
 		if (!Args.IsEmpty())
 		{
 			Args = Args.ToView(1, Args.GetCount() - 1);
@@ -61,7 +65,7 @@ namespace NxEn
 
 	NxFr::List<CommandInfo> CommandsSystem::ParseCommands(NxFr::StringView Cmds)
 	{
-		NxFr::List<NxFr::StringView> Commands = Cmds.SplitAll(";");
+		NxFr::List<NxFr::StringView> Commands = Cmds.SplitAll(SplitCommands);
 		NxFr::List<CommandInfo> Infos(Commands.GetCount());
 		for (auto Cmd : Commands)
 		{
@@ -74,7 +78,7 @@ namespace NxEn
 
 	NxFr::List<NxFr::StringView> CommandsSystem::ParseArguments(NxFr::StringView Args)
 	{
-		return Args.SplitAll(",");
+		return Args.SplitAll(SplitArgs);
 	}
 
 	CommandsSystem::CommandsSystem()
