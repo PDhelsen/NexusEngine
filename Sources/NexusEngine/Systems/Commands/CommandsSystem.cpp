@@ -11,9 +11,9 @@ namespace NxFr
 
 namespace NxEn
 {
+	static const char* SplitCommands = ";";
 	static const char* SplitArgs = ",";
 	static const char* SplitTimer = ":";
-	static const char* SplitCommands = ";";
 
 	static NxFr::Dictionary<NxFr::StringId, Command*>& GetCommands()
 	{
