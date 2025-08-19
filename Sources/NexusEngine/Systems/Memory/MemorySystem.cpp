@@ -1,6 +1,16 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Memory/MemorySystem.h"
 
+namespace NxFr
+{
+	namespace StatsHeader
+	{
+		const NxFr::StringId MemoryAllocatedId = "Memory - Allocated"_Sid;
+		const NxFr::StringId MemoryAllocationId = "Memory - Allocation"_Sid;
+		const NxFr::StringId PlatformMemoryId = "Platform - Memory"_Sid;
+	}
+}
+
 namespace NxEn
 {
 	// TODO: Convert to SettingsSystem
@@ -58,6 +68,11 @@ namespace NxEn
 
 		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParams.Smallest) && NxFr::Math::IsPowerOfTwo(SmallParams.Largest), Default, "SmallAllocatorParams have to be PowerOfTwo");
 		NEXUS_ASSERT(Sizes[0] == 0, Default, "Can't set the size of the Raw allocator");
+
+		NxFr::Stats* Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, UnsignedInteger, Set);
 
 		CreateHandleManager();
 		CreateAllocatorContainers();
@@ -324,11 +339,11 @@ namespace NxEn
 	void MemorySystem::RecordMemoryStats()
 	{
 		NxFr::MemoryTracker* Tracker = NxFr::MemoryTracker::GetInstance();
-		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());
-		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::MemoryAllocationId, Tracker->GetAllocationCount());
+		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());
+		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::MemoryAllocationId, Tracker->GetAllocationCount());
 
 		NxFr::Platform* Platform = NxFr::Platform::GetInstance();
 		NxFr::Platform::MemoryInfo MemoryInfo = Platform->GetMemoryInfo();
-		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::PlatformMemoryId, MemoryInfo.CurrentUsage);
+		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::PlatformMemoryId, MemoryInfo.CurrentUsage);
 	}
 }

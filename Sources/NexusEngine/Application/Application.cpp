@@ -79,7 +79,7 @@ namespace NxEn
 
 	void Application::OnExecute()
 	{
-		Ticks.AppendTickOnceCallback({ &Time, &TimeManager::Run }, Ticker::TickBucket::Input, "Start Ticking");
+		Time.Run();
 	}
 
 	void Application::Run()
@@ -108,10 +108,7 @@ namespace NxEn
 
 		while (IsRunning())
 		{
-			NEXUS_PROFILE_SCOPE("Frame");
-
 			float DeltaTime = Time.GetDeltaTime();
-			NEXUS_STAT_DECIMAL(StatsHeader::FpsId, 1.0f / DeltaTime);
 
 			Ticks.Tick(DeltaTime);
 			Time.Tick();

@@ -3,10 +3,18 @@
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Memory/Allocator.h"
 
+namespace NxFr
+{
+	namespace StatsHeader
+	{
+		NEXUS_ENGINE_API extern const NxFr::StringId MemoryAllocatedId;
+		NEXUS_ENGINE_API extern const NxFr::StringId MemoryAllocationId;
+		NEXUS_ENGINE_API extern const NxFr::StringId PlatformMemoryId;
+	}
+}
+
 namespace NxEn
 {
-
-
 	class MemorySystem : public System
 	{
 	public:

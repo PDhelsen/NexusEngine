@@ -3,6 +3,15 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/SystemManager.h"
 
+namespace NxFr
+{
+	namespace StatsHeader
+	{
+		NEXUS_ENGINE_API extern const NxFr::StringId FpsId;
+		NEXUS_ENGINE_API extern const NxFr::StringId TimerMainId;
+	}
+}
+
 namespace NxEn
 {
 	class Ticker

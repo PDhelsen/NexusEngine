@@ -42,8 +42,8 @@ namespace NxEn
 		Application::OnInitialize();
 		Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendSystem<MemorySystem>();
 		Bootstrap.AppendSystem<DebugSystem>();
+		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
 		Bootstrap.AppendSystem<InputSystem>();
 		if (!IsHeadless())
 		{
@@ -90,6 +90,7 @@ namespace NxEn
 		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
 		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 
+		StartDebugging();
 		ParseCommands();
 	}
 
@@ -101,12 +102,17 @@ namespace NxEn
 			return;
 		}
 
-		CommandsSystem* CmdSystem = GetSystems().GetSystem<CommandsSystem>();
+		CommandsSystem* CmdSystem = GetSystem<CommandsSystem>();
 		NxFr::List<CommandInfo> Commands = CommandsSystem::ParseCommands(CommandsList);
 
 		for (auto Cmd : Commands)
 		{
 			CmdSystem->Run(Cmd);
 		}
+	}
+
+	void NexusEngineApplication::StartDebugging()
+	{
+		GetSystem<DebugSystem>()->Start();
 	}
 }

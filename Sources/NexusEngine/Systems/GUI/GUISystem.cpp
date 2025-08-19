@@ -4,6 +4,14 @@
 #include "NexusEngine/External/ImGui.h"
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
 
+namespace NxFr
+{
+	namespace StatsHeader
+	{
+		const NxFr::StringId GuiElementsId = "GUI - Elements"_Sid;
+	}
+}
+
 namespace NxEn
 {
 #if NEXUS_EDITOR
@@ -195,9 +203,14 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
+		NxFr::Stats* Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, UnsignedInteger, Set);
+
 		Imgui::Initialize();
-		LoadLayout();
 		LoadTheme();
+#if NEXUS_EDITOR
+		LoadLayout();
+#endif
 
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
@@ -205,8 +218,10 @@ namespace NxEn
 
 	void GUISystem::OnShutdown()
 	{
-		SaveTheme();
+#if NEXUS_EDITOR
 		SaveLayout();
+#endif
+		SaveTheme();
 		Imgui::Shutdown();
 		
 		System::OnShutdown();
@@ -216,7 +231,7 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		NEXUS_STAT_UNSIGNEDINTEGER(StatsHeader::GuiElementsId, Elements.GetCount());
+		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
 
 		Imgui::Frame();
 
@@ -334,7 +349,10 @@ namespace NxEn
 		auto& Panels = GetPanels();
 		for (auto& It : Panels)
 		{
-			It.Value->ShowWithTarget(Ids.Contains(It.Key));
+			if (Ids.Contains(It.Key))
+			{
+				It.Value->ShowWithTarget(true);
+			}
 		}
 
 		Stream.Close();

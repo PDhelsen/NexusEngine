@@ -3,6 +3,14 @@
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Commands/Command.h"
 
+namespace NxFr
+{
+	namespace LoggerChannel
+	{
+		NEXUS_ENGINE_API extern const NxFr::StringId Command;
+	}
+}
+
 namespace NxEn
 {
 	class CommandsSystem : public System

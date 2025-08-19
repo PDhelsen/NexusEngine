@@ -1,6 +1,14 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Commands/CommandsSystem.h"
 
+namespace NxFr
+{
+	namespace LoggerChannel
+	{
+		const NxFr::StringId Command = "Command"_Sid;
+	}
+}
+
 namespace NxEn
 {
 	static NxFr::Dictionary<NxFr::StringId, Command*>& GetCommands()
@@ -115,6 +123,9 @@ namespace NxEn
 	void CommandsSystem::OnInitialize()
 	{
 		System::OnInitialize();
+
+		NxFr::Logger* Logger = Application::GetInstance()->GetSystem<DebugSystem>()->GetLogger();
+		Logger->AddChannel(NxFr::LoggerChannel::Command, true);
 
 		Alloc = new Allocator(AllocatorType::General);
 		Queue = new NxFr::Queue<CommandInfo>(Alloc);
