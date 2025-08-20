@@ -11,27 +11,12 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
 
 	StatsPanel::StatsPanel()
-		: Filters(), Ids(), Values()
+		: Stats(nullptr), Filters(), Ids(), Values()
 	{
 	}
 
 	StatsPanel::~StatsPanel()
 	{
-	}
-
-	void StatsPanel::SetTarget(void* Instance)
-	{
-		Panel::SetTarget(Instance);
-
-		NxFr::Stats* Statistiques = GetStats();
-		Values = Statistiques->GetAllCurrentStats();
-
-		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
-		for (auto& [Id, Value] : Values)
-		{
-			Ids.Append(&Id.ToString());
-		}
-		Ids.Sort([](const NxFr::String* A, const NxFr::String* B) { return *A <= *B; });
 	}
 
 	void StatsPanel::OnInitialize()
@@ -42,18 +27,31 @@ namespace NxEn
 		GuiFlags = NxFr::Integer::SetFlag(GuiFlags, ImGuiWindowFlags_MenuBar, false);
 	}
 
+	void StatsPanel::OnEnable()
+	{
+		Panel::OnEnable();
+
+		Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
+		Values = Stats->GetAllCurrentStats();
+
+		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
+		for (auto& [Id, Value] : Values)
+		{
+			Ids.Append(&Id.ToString());
+		}
+		Ids.Sort([](const NxFr::String* A, const NxFr::String* B) { return *A <= *B; });
+	}
+
 	void StatsPanel::OnGui(float TimeStep)
 	{
-		NxFr::Stats* Statistiques = GetStats();
-
 		if (ImGui::Button("Start"))
 		{
-			Statistiques->StartRecording();
+			Stats->StartRecording();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Stop"))
 		{
-			Statistiques->StopRecording();
+			Stats->StopRecording();
 		}
 
 		DrawFilter();
@@ -67,11 +65,6 @@ namespace NxEn
 
 			DrawStats(*Label);
 		}
-	}
-
-	void* StatsPanel::FetchDefaultTarget() const
-	{
-		return Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
 	}
 
 	void StatsPanel::DrawFilter()

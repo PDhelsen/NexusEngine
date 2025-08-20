@@ -15,10 +15,15 @@ namespace NxEn
 		GuiFlags = NxFr::Integer::SetFlag(GuiFlags, ImGuiWindowFlags_MenuBar, false);
 	}
 
+	void StylesPanel::OnEnable()
+	{
+		Panel::OnEnable();
+
+		Styles = &Application::GetInstance()->GetSystem<GUISystem>()->Styles;
+	}
+
 	void StylesPanel::OnGui(float TimeStep)
 	{
-		NxFr::Dictionary<NxFr::StringId, GUI::Style>* Styles = GetStyles();
-
 		for (auto& [Id, Style] : *Styles)
 		{
 			NxFr::String Label("Button");
@@ -31,10 +36,5 @@ namespace NxEn
 			Label += NxFr::StringView("##") + Id.C();
 			ImGui::Button(Label.C(), {100, 20});
 		}
-	}
-
-	void* StylesPanel::FetchDefaultTarget() const
-	{
-		return &Application::GetInstance()->GetSystem<GUISystem>()->Styles;
 	}
 }

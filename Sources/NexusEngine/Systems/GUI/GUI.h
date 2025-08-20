@@ -82,11 +82,6 @@ namespace NxEn
 			NEXUS_ENGINE_API Panel();
 			NEXUS_ENGINE_API virtual ~Panel();
 
-			NEXUS_ENGINE_API void ShowWithTarget(bool State, void* Instance = nullptr);
-
-			NEXUS_ENGINE_API virtual void SetTarget(void* Instance);
-			NEXUS_ENGINE_API void* GetTarget();
-
 			NEXUS_ENGINE_API Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			NEXUS_ENGINE_API Panel& SetTitle(NxFr::StringView Title);
 
@@ -98,12 +93,9 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
-			NEXUS_ENGINE_API virtual void* FetchDefaultTarget() const;
-
 		protected:
 			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
-			void* Target;
 		};
 
 		class Menu : public Element

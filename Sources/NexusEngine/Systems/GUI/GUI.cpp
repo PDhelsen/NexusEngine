@@ -152,33 +152,12 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Panel)
 
 		Panel::Panel()
-			: GuiFlags(0), Title(""), Target(nullptr)
+			: GuiFlags(0), Title("")
 		{
 		}
 
 		Panel::~Panel()
 		{
-		}
-
-		void Panel::ShowWithTarget(bool State, void* Instance)
-		{
-			if (Instance == nullptr)
-			{
-				Instance = FetchDefaultTarget();
-			}
-
-			SetEnabled(State);
-			SetTarget(Instance);
-		}
-
-		void Panel::SetTarget(void* Instance)
-		{
-			Target = Instance;
-		}
-
-		void* Panel::GetTarget()
-		{
-			return Target;
 		}
 
 		Panel& Panel::SetGuiFlag(ImGuiWindowFlags GuiFlags)
@@ -215,11 +194,6 @@ namespace NxEn
 			{
 				Hide();
 			}
-		}
-
-		void* Panel::FetchDefaultTarget() const
-		{
-			return nullptr;
 		}
 
 #pragma endregion

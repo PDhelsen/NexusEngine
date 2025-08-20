@@ -13,6 +13,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(ProjectPanel)
 
 	ProjectPanel::ProjectPanel()
+		: Infos(nullptr)
 	{
 	}
 
@@ -28,22 +29,22 @@ namespace NxEn
 		GuiFlags = ImGuiWindowFlags_NoCollapse;
 	}
 
-	void ProjectPanel::OnGui(float TimeStep)
+	void ProjectPanel::OnEnable()
 	{
-		Project* ProjectInfos = GetProject();
+		Panel::OnEnable();
 
-		ImGui::Text("Mode: %s", Enum::ProjectModeToString(ProjectInfos->GetTarget()));
-		ImGui::Separator();
-		ImGui::Text("Name: %s", ProjectInfos->GetName().C());
-		ImGui::Text("Root: %s", ProjectInfos->GetRootPath().C());
-		ImGui::Text("Path: %s", ProjectInfos->GetPath().C());
-		ImGui::Separator();
-		ImGui::Text("Executable: %s", ProjectInfos->GetExecutablePath().C());
-		ImGui::Text("Dll: %s", ProjectInfos->GetDllPath().C());
+		Infos = &Application::GetInstance()->GetProject();
 	}
 
-	void* ProjectPanel::FetchDefaultTarget() const
+	void ProjectPanel::OnGui(float TimeStep)
 	{
-		return &Application::GetInstance()->GetProject();
+		ImGui::Text("Mode: %s", Enum::ProjectModeToString(Infos->GetTarget()));
+		ImGui::Separator();
+		ImGui::Text("Name: %s", Infos->GetName().C());
+		ImGui::Text("Root: %s", Infos->GetRootPath().C());
+		ImGui::Text("Path: %s", Infos->GetPath().C());
+		ImGui::Separator();
+		ImGui::Text("Executable: %s", Infos->GetExecutablePath().C());
+		ImGui::Text("Dll: %s", Infos->GetDllPath().C());
 	}
 }

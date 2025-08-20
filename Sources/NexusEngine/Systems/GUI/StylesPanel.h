@@ -11,11 +11,11 @@ namespace NxEn
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
+		NEXUS_ENGINE_API void OnEnable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
-		NEXUS_ENGINE_API virtual void* FetchDefaultTarget() const;
-
-		NxFr::Dictionary<NxFr::StringId, GUI::Style>* GetStyles() const { return reinterpret_cast<NxFr::Dictionary<NxFr::StringId, GUI::Style>*>(Target); }
+	private:
+		NxFr::Dictionary<NxFr::StringId, GUI::Style>* Styles;
 	};
 }
 

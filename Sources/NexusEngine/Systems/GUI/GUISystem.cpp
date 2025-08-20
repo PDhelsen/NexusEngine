@@ -44,7 +44,7 @@ namespace NxEn
 
 	const static Command CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
 	{
-		GUISystem::GetPanel(NxFr::StringId(Id))->ShowWithTarget(true);
+		GUISystem::GetPanel(NxFr::StringId(Id))->Show();
 	}));
 
 	const static Command CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
@@ -351,7 +351,7 @@ namespace NxEn
 		{
 			if (Ids.Contains(It.Key))
 			{
-				It.Value->ShowWithTarget(true);
+				It.Value->Show();
 			}
 		}
 

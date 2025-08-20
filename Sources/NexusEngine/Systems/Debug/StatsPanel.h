@@ -12,21 +12,18 @@ namespace NxEn
 		NEXUS_ENGINE_API StatsPanel();
 		NEXUS_ENGINE_API ~StatsPanel();
 
-		NEXUS_ENGINE_API void SetTarget(void* Instance) override;
-
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
+		NEXUS_ENGINE_API void OnEnable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
-
-		NEXUS_ENGINE_API void* FetchDefaultTarget() const override;
 
 		void DrawFilter();
 		void DrawStats(const NxFr::String& Label) const;
 		bool FilterStats(const NxFr::String& Label);
 
-		NxFr::Stats* GetStats() const { return reinterpret_cast<NxFr::Stats*>(Target); }
 
 	private:
+		NxFr::Stats* Stats;
 		NxFr::List<const NxFr::String*> Ids;
 		NxFr::Dictionary<NxFr::StringId, const NxFr::Stats::Stat*> Values;
 		NxFr::List<NxFr::StringView> Filters;
