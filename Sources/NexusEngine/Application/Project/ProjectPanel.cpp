@@ -26,7 +26,6 @@ namespace NxEn
 		Panel::OnInitialize();
 
 		Title = "Project";
-		GuiFlags = ImGuiWindowFlags_NoCollapse;
 	}
 
 	void ProjectPanel::OnEnable()

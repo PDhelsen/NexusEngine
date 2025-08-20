@@ -12,7 +12,6 @@ namespace NxEn
 		Panel::OnInitialize();
 
 		Title = "Styles";
-		GuiFlags = NxFr::Integer::SetFlag(GuiFlags, ImGuiWindowFlags_MenuBar, false);
 	}
 
 	void StylesPanel::OnEnable()

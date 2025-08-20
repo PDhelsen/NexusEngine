@@ -24,7 +24,6 @@ namespace NxEn
 		Panel::OnInitialize();
 
 		Title = "Statistiques";
-		GuiFlags = NxFr::Integer::SetFlag(GuiFlags, ImGuiWindowFlags_MenuBar, false);
 	}
 
 	void StatsPanel::OnEnable()

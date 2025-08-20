@@ -176,7 +176,7 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			GuiFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar;
+			GuiFlags = ImGuiWindowFlags_NoCollapse;
 			Title = GetObjectType().ToString();
 		}
 
