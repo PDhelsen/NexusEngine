@@ -135,6 +135,17 @@ namespace NxEn
 			{
 				Value.Pop();
 			}
+
+			HorizontalFill::HorizontalFill(float Offset)
+			{
+				float Available = ImGui::GetContentRegionAvail().x - Offset - ImGui::GetStyle().ItemSpacing.x;
+				ImGui::PushItemWidth(Available);
+			}
+
+			HorizontalFill::~HorizontalFill()
+			{
+				ImGui::PopItemWidth();
+			}
 		}
 	}
 }

@@ -22,6 +22,7 @@ namespace NxAp
 
 		NEXUS_APP_API void PushInputSchema();
 		NEXUS_APP_API void PopInputSchema();
+		NEXUS_APP_API void ShowWindow();
 
 	private:
 		NxEn::Input::Schema InputSchema;

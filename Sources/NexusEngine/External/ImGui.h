@@ -10,6 +10,7 @@
     operator NxFr::Color() const { return NxFr::Color(x, y, z, w); } \
 
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 
 namespace NxEn
 {

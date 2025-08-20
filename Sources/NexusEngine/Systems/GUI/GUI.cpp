@@ -110,22 +110,6 @@ namespace NxEn
 			Element::OnShutdown();
 		}
 
-		void Window::OnTick(float TimeStep)
-		{
-			ImGuiViewport* Viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(Viewport->Pos);
-			ImGui::SetNextWindowSize(Viewport->Size);
-
-			Style.Push();
-			if (ImGui::Begin("Window", nullptr, GuiFlags))
-			{
-				Style.Pop();
-
-				OnGui(TimeStep);
-			}
-			ImGui::End();
-		}
-
 		void Window::OnEnable()
 		{
 			NxEn::GUISystem::SetWindow(this);
@@ -141,7 +125,7 @@ namespace NxEn
 		void Window::OnGui(float TimeStep)
 		{
 			MainMenu->Tick(TimeStep);
-			ImGui::DockSpace(ImGui::GetID("Window"));
+			ImGui::DockSpaceOverViewport(ImGui::GetID("Window"));
 		}
 
 #pragma endregion
@@ -172,6 +156,12 @@ namespace NxEn
 			return *this;
 		}
 
+		Panel& Panel::SetDock(NxFr::StringView Id)
+		{
+			this->Dock = Id.ToString();
+			return *this;
+		}
+
 		void Panel::OnInitialize()
 		{
 			Element::OnInitialize();
@@ -183,6 +173,11 @@ namespace NxEn
 		void Panel::OnTick(float TimeStep)
 		{
 			bool IsOpen = true;
+
+			if (!Dock.IsEmpty())
+			{
+				ImGui::SetNextWindowDockID(ImGui::GetID(Dock.C()), ImGuiCond_FirstUseEver);
+			}
 
 			if (ImGui::Begin(Title.C(), &IsOpen, GuiFlags))
 			{

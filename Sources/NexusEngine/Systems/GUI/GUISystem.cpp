@@ -349,10 +349,7 @@ namespace NxEn
 		auto& Panels = GetPanels();
 		for (auto& It : Panels)
 		{
-			if (Ids.Contains(It.Key))
-			{
-				It.Value->Show();
-			}
+			It.Value->SetEnabled(Ids.Contains(It.Key));
 		}
 
 		Stream.Close();

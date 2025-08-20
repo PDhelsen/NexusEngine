@@ -54,7 +54,6 @@ namespace NxEn
 		protected:
 			NEXUS_ENGINE_API void OnInitialize() override;
 			NEXUS_ENGINE_API void OnShutdown() override;
-			NEXUS_ENGINE_API void OnTick(float TimeStep) override;
 			NEXUS_ENGINE_API void OnEnable() override;
 			NEXUS_ENGINE_API void OnDisable() override;
 			NEXUS_ENGINE_API void OnGui(float TimeStep) override;
@@ -84,6 +83,7 @@ namespace NxEn
 
 			NEXUS_ENGINE_API Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			NEXUS_ENGINE_API Panel& SetTitle(NxFr::StringView Title);
+			NEXUS_ENGINE_API Panel& SetDock(NxFr::StringView Id);
 
 			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
 			NEXUS_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
@@ -96,6 +96,7 @@ namespace NxEn
 		protected:
 			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
+			NxFr::String Dock;
 		};
 
 		class Menu : public Element

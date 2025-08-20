@@ -1,4 +1,5 @@
 #include "NexusApp/Systems/App/AppSystem.h"
+#include "NexusEngine/Systems/Debug/ConsolePanel.h"
 
 namespace NxAp
 {
@@ -20,10 +21,7 @@ namespace NxAp
 		Window = NxEn::Object::Create<NxEn::GUI::Window>(false);
 		PushInputSchema();
 
-		InputSchema.GetMapping().Append("Window"_Sid, NxEn::Input::Action(NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None, [=]()
-		{
-			Window->SetEnabled(!Window->IsEnabled());
-		}));
+		InputSchema.GetMapping().Append("Window"_Sid, NxEn::Input::Action(NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None, { this, &AppSystem::ShowWindow }));
 	}
 
 	void AppSystem::OnShutdown()
@@ -47,5 +45,16 @@ namespace NxAp
 	void AppSystem::PopInputSchema()
 	{
 		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("App"_Sid);
+	}
+
+	void AppSystem::ShowWindow()
+	{
+		bool State = !Window->IsEnabled();
+		Window->SetEnabled(State);
+
+		NxEn::ConsolePanel* Console = NxEn::GUISystem::GetPanel<NxEn::ConsolePanel>();
+		Console->SetDock("Window");
+		Console->SetEnabled(State);
+
 	}
 }

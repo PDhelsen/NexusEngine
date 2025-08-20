@@ -75,6 +75,12 @@ namespace NxEn
 			private:
 				const ::NxEn::GUI::Style& Value;
 			};
+
+			struct HorizontalFill
+			{
+				NEXUS_ENGINE_API HorizontalFill(float Offset = 0);
+				NEXUS_ENGINE_API ~HorizontalFill();
+			};
 		}
 	}
 }
