@@ -33,6 +33,8 @@ namespace NxEd
 	{
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
+		Application::GetInstance()->GetSystem<NxEn::GUISystem>()->SaveLayout();
+
 		Unbootstrap.AppendSystem<EditorSystem>();
 
 		NexusEngineApplication::OnShutdown();
@@ -44,5 +46,7 @@ namespace NxEd
 		NxEn::Ticker& Ticks = GetTicker();
 
 		Ticks.AppendSystem<EditorSystem>(NxEn::Ticker::TickBucket::Engine);
+
+		Application::GetInstance()->GetSystem<NxEn::GUISystem>()->LoadLayout();
 	}
 }

@@ -208,9 +208,6 @@ namespace NxEn
 
 		Imgui::Initialize();
 		LoadTheme();
-#if NEXUS_EDITOR
-		LoadLayout();
-#endif
 
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
@@ -218,9 +215,6 @@ namespace NxEn
 
 	void GUISystem::OnShutdown()
 	{
-#if NEXUS_EDITOR
-		SaveLayout();
-#endif
 		SaveTheme();
 		Imgui::Shutdown();
 		
