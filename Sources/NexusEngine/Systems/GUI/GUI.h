@@ -148,6 +148,7 @@ namespace NxEn
 			NEXUS_ENGINE_API Menu& AddMenuToggle(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			NEXUS_ENGINE_API Menu& AddMenuEnum	(NxFr::StringView Path, void* Enum,		const NxFr::Array<NxFr::StringView>& Labels,	const NxFr::Delegate<void()>& Callback = nullptr,	NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			NEXUS_ENGINE_API Menu& Remove(NxFr::StringView Path);
+			NEXUS_ENGINE_API Menu& Clear();
 
 			NEXUS_ENGINE_API const Item& GetMenuItem(uint64 Index = 0) const { return Items[Index]; }
 			NEXUS_ENGINE_API uint64 GetMenuItemCount() const { return Items.GetCount(); }

@@ -295,6 +295,12 @@ namespace NxEn
 			return *this;
 		}
 
+		Menu& Menu::Clear()
+		{
+			Items.Clear();
+			return *this;
+		}
+
 		void Menu::OnTick(float TimeStep)
 		{
 			if (Main)

@@ -82,5 +82,10 @@ namespace NxEn
 				NEXUS_ENGINE_API ~HorizontalFill();
 			};
 		}
+
+		namespace Utils
+		{
+			NEXUS_ENGINE_API float SpaceHorizontal(float Offset);
+		}
 	}
 }

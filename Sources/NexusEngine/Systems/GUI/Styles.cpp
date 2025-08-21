@@ -62,7 +62,6 @@ namespace NxEn
 			Properties.Append(Id, { Flag, Data });
 		}
 
-
 		void Style::Remove(int32 Id)
 		{
 			if (Properties[Id].Flag == Type::Color) Counts.x--; else Counts.y--;
@@ -138,8 +137,7 @@ namespace NxEn
 
 			HorizontalFill::HorizontalFill(float Offset)
 			{
-				float Available = ImGui::GetContentRegionAvail().x - Offset - ImGui::GetStyle().ItemSpacing.x;
-				ImGui::PushItemWidth(Available);
+				ImGui::PushItemWidth(::NxEn::GUI::Utils::SpaceHorizontal(Offset));
 			}
 
 			HorizontalFill::~HorizontalFill()
@@ -147,6 +145,13 @@ namespace NxEn
 				ImGui::PopItemWidth();
 			}
 		}
+
+		namespace Utils
+		{
+			float SpaceHorizontal(float Offset)
+			{
+				return ImGui::GetContentRegionAvail().x - Offset - ImGui::GetStyle().ItemSpacing.x;
+			}
+		}
 	}
 }
-
