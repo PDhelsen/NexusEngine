@@ -9,7 +9,7 @@ namespace NxEn
 
 	static ProjectMode ModeFromString(NxFr::StringView Mode)
 	{
-		return Mode == NxEn::Enum::ProjectModeToString((uint64)ProjectMode::Editor) ? ProjectMode::Editor : ProjectMode::App;
+		return Mode == NxEn::Enum::ToString(ProjectMode::Editor) ? ProjectMode::Editor : ProjectMode::App;
 	}
 
 	namespace EntryPoint
@@ -132,6 +132,6 @@ namespace NxEn
 
 	NxFr::String Project::ComputeDllName()
 	{
-		return NxFr::StringView(NEXUS_PROJECT_DLL) + NxEn::Enum::ProjectModeToString((uint64)Mode) + NxFr::StringView(".dll");
+		return NxFr::StringView(NEXUS_PROJECT_DLL) + NxEn::Enum::ToString(Mode) + NxFr::StringView(".dll");
 	}
 }

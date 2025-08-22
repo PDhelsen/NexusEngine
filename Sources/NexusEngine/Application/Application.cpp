@@ -57,7 +57,7 @@ namespace NxEn
 		Bootstrap.AppendStep(&NxFr::Arguments::Log, "Console Arguments");
 		Bootstrap.AppendStep([&]()
 		{
-			NEXUS_LOG(Info, Default, "Application starting in %s Mode", NxEn::Enum::ProjectModeToString(ProjectInfo.GetTarget()));
+			NEXUS_LOG(Info, Default, "Application starting in %s Mode", NxEn::Enum::ToString(ProjectInfo.GetTarget()));
 			NxFr::Platform::GetInstance()->SetWorkingDirectory(ProjectInfo.GetRootPath());
 		}, "Setup Project");
 		Bootstrap.AppendStep(&NxFr::Paths::SetupPathsAndFolders, "Setup Paths & Folders");

@@ -37,7 +37,7 @@ namespace NxEn
 
 	void ProjectPanel::OnGui(float TimeStep)
 	{
-		ImGui::Text("Mode: %s", Enum::ProjectModeToString(Infos->GetTarget()));
+		ImGui::Text("Mode: %s", Enum::ToString(Infos->GetTarget()));
 		ImGui::Separator();
 		ImGui::Text("Name: %s", Infos->GetName().C());
 		ImGui::Text("Root: %s", Infos->GetRootPath().C());

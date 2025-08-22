@@ -19,11 +19,11 @@ namespace NxEn
 		GUI::Style StyleFatal;
 		StyleFatal.AppendColor(ImGuiCol_Text, NxFr::Color(0.85f, 0.05f, 0.55f, 1.0f));
 
-		Styles = NxFr::Array<GUI::Style>(NxFr::Enum::ToIndex(NxFr::LoggerVerbosity::COUNT));
-		Styles[NxFr::Enum::ToIndex(NxFr::LoggerVerbosity::Info)] = StyleInfo;
-		Styles[NxFr::Enum::ToIndex(NxFr::LoggerVerbosity::Warning)] = StyleWarning;
-		Styles[NxFr::Enum::ToIndex(NxFr::LoggerVerbosity::Error)] = StyleError;
-		Styles[NxFr::Enum::ToIndex(NxFr::LoggerVerbosity::Fatal)] = StyleFatal;
+		Styles = NxFr::Array<GUI::Style>(NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::COUNT));
+		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Info)] = StyleInfo;
+		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Warning)] = StyleWarning;
+		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Error)] = StyleError;
+		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Fatal)] = StyleFatal;
 	}
 
 	ConsolePanel::~ConsolePanel()
@@ -55,12 +55,12 @@ namespace NxEn
 
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
 
-		for (uint64 Index = 0, Flag = 1; Index < NxFr::Math::LogTwoPowerOfTwo((uint64)NxFr::LoggerVerbosity::COUNT); ++Index, Flag = 1 << Index)
+		for (uint64 Index = 0, Flag = 1; Index < NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::COUNT); ++Index, Flag = (uint64)1 << Index)
 		{
 			uint64 Count = LoggerFlags.GetCount();
 			LoggerFlags.Append(Logger->CheckVerbosity((NxFr::LoggerVerbosity)Flag));
 
-			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::Enum::LoggerVerbosityToString(Index);
+			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::Enum::ToString((NxFr::LoggerVerbosity)Index);
 			Menu.AddMenuToggle(Path, &LoggerFlags.Last(), [=]() { Logger->SetVerbosity((NxFr::LoggerVerbosity)Flag, LoggerFlags[Count]); }, "", Count);
 		}
 
@@ -154,12 +154,13 @@ namespace NxEn
 	{
 		Command.Validate();
 		Commands->Run(Command);
+
 		Command.Clear();
 	}
 
 	void ConsolePanel::AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message)
 	{
-		LoggerLines.AppendConstruct(Message.C(), NxFr::Enum::ToIndex(Verbosity));
+		LoggerLines.AppendConstruct(Message.C(), NxFr::Enum::ToFlagIndex(Verbosity));
 	}
 
 	void ConsolePanel::ClearLogs()
