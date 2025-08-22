@@ -85,7 +85,9 @@ namespace NxEn
 
 		namespace Utils
 		{
-			NEXUS_ENGINE_API float SpaceHorizontal(float Offset);
+			NEXUS_ENGINE_API float AvailableSpaceHorizontal(float Offset);
+			NEXUS_ENGINE_API float AvailableSpaceVertical(float Offset);
+			NEXUS_ENGINE_API NxFr::Vector2f AvailableSpace(NxFr::Vector2f Offset);
 		}
 	}
 }

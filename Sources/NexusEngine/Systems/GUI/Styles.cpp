@@ -137,7 +137,7 @@ namespace NxEn
 
 			HorizontalFill::HorizontalFill(float Offset)
 			{
-				ImGui::PushItemWidth(::NxEn::GUI::Utils::SpaceHorizontal(Offset));
+				ImGui::PushItemWidth(::NxEn::GUI::Utils::AvailableSpaceHorizontal(Offset));
 			}
 
 			HorizontalFill::~HorizontalFill()
@@ -148,9 +148,21 @@ namespace NxEn
 
 		namespace Utils
 		{
-			float SpaceHorizontal(float Offset)
+			float AvailableSpaceHorizontal(float Offset)
 			{
 				return ImGui::GetContentRegionAvail().x - Offset - ImGui::GetStyle().ItemSpacing.x;
+			}
+
+			float AvailableSpaceVertical(float Offset)
+			{
+				return ImGui::GetContentRegionAvail().y - Offset - ImGui::GetStyle().ItemSpacing.y;
+			}
+
+			NxFr::Vector2f AvailableSpace(NxFr::Vector2f Offset)
+			{
+				ImVec2 Content = ImGui::GetContentRegionAvail();
+				ImVec2 Spacing = ImGui::GetStyle().ItemSpacing;
+				return NxFr::Vector2f(Content.x, Content.y) - Offset - NxFr::Vector2f(Spacing.x, Spacing.y);
 			}
 		}
 	}
