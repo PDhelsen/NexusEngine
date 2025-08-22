@@ -151,17 +151,7 @@ namespace NxEn
 	{
 		Command.Validate();
 
-		if (Command == "Test")
-		{
-			NEXUS_LOG(Info, Default, "Test");
-			NEXUS_LOG(Warning, Default, "Test");
-			NEXUS_LOG(Error, Default, "Test");
-			NEXUS_LOG(Fatal, Default, "Test");
-		}
-		else
-		{
-			Application::GetInstance()->GetSystem<CommandsSystem>()->Run(Command);
-		}
+		Application::GetInstance()->GetSystem<CommandsSystem>()->Run(Command);
 
 		Command.Clear();
 	}
