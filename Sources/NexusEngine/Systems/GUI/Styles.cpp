@@ -135,12 +135,12 @@ namespace NxEn
 				Value.Pop();
 			}
 
-			HorizontalFill::HorizontalFill(float Offset)
+			Width::Width(float Size)
 			{
-				ImGui::PushItemWidth(::NxEn::GUI::Utils::AvailableSpaceHorizontal(Offset));
+				ImGui::PushItemWidth(Size);
 			}
 
-			HorizontalFill::~HorizontalFill()
+			Width::~Width()
 			{
 				ImGui::PopItemWidth();
 			}
@@ -148,21 +148,14 @@ namespace NxEn
 
 		namespace Utils
 		{
-			float AvailableSpaceHorizontal(float Offset)
+			NxFr::Vector2f Fill(NxFr::Vector2f Offset, float Count, bool IncludePadding, bool Window)
 			{
-				return ImGui::GetContentRegionAvail().x - Offset - ImGui::GetStyle().ItemSpacing.x;
-			}
-
-			float AvailableSpaceVertical(float Offset)
-			{
-				return ImGui::GetContentRegionAvail().y - Offset - ImGui::GetStyle().ItemSpacing.y;
-			}
-
-			NxFr::Vector2f AvailableSpace(NxFr::Vector2f Offset)
-			{
-				ImVec2 Content = ImGui::GetContentRegionAvail();
-				ImVec2 Spacing = ImGui::GetStyle().ItemSpacing;
-				return NxFr::Vector2f(Content.x, Content.y) - Offset - NxFr::Vector2f(Spacing.x, Spacing.y);
+				NxFr::Vector2f ContentArea = ImGui::GetContentRegionAvail();
+				NxFr::Vector2f WindowArea = NxFr::Vector2f(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+				NxFr::Vector2f Total = Window ? WindowArea : ContentArea;
+				NxFr::Vector2f Spacing = ImGui::GetStyle().ItemSpacing;
+				NxFr::Vector2f Padding = ImGui::GetStyle().FramePadding;
+				return Total - Offset - Spacing * Count - (IncludePadding ? Padding : NxFr::Vector2f::Zero);
 			}
 		}
 	}

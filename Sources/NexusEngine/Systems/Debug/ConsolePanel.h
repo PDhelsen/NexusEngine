@@ -8,6 +8,13 @@ namespace NxEn
 
 	class ConsolePanel : public GUI::Panel
 	{
+		struct Log
+		{
+			NxFr::String Text;
+			bool& Verbosity;
+			bool& Channel;
+		};
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, ConsolePanel)
 
@@ -27,13 +34,10 @@ namespace NxEn
 
 	private:
 		GUI::Menu Menu;
-		NxFr::Array<GUI::Style> Styles;
 
-		CommandsSystem* Commands;
-		NxFr::Logger* Logger;
-
-		NxFr::List<NxFr::Tuple<NxFr::String, uint64>> LoggerLines;
-		NxFr::List<bool> LoggerFlags;
+		NxFr::List<Log> Logs;
+		NxFr::Dictionary<NxFr::LoggerVerbosity, bool> FlagsVerbosity;
+		NxFr::Dictionary<NxFr::StringId, bool> FlagsChannels;
 		NxFr::String Command;
 		NxFr::String Search;
 	};

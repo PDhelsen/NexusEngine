@@ -76,18 +76,16 @@ namespace NxEn
 				const ::NxEn::GUI::Style& Value;
 			};
 
-			struct HorizontalFill
+			struct Width
 			{
-				NEXUS_ENGINE_API HorizontalFill(float Offset = 0);
-				NEXUS_ENGINE_API ~HorizontalFill();
+				NEXUS_ENGINE_API Width(float Size = 0);
+				NEXUS_ENGINE_API ~Width();
 			};
 		}
 
 		namespace Utils
 		{
-			NEXUS_ENGINE_API float AvailableSpaceHorizontal(float Offset);
-			NEXUS_ENGINE_API float AvailableSpaceVertical(float Offset);
-			NEXUS_ENGINE_API NxFr::Vector2f AvailableSpace(NxFr::Vector2f Offset);
+			NEXUS_ENGINE_API NxFr::Vector2f Fill(NxFr::Vector2f Offset = NxFr::Vector2f::Zero, float Count = 0.0f, bool IncludePadding = true, bool Window = false);
 		}
 	}
 }

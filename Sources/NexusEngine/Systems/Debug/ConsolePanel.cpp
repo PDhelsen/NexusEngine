@@ -8,22 +8,8 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(ConsolePanel)
 
 	ConsolePanel::ConsolePanel()
-		: Menu(), Styles(), Commands(nullptr), Logger(nullptr), Command(256), Search(64), LoggerFlags(), LoggerLines()
+		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(256), Search(64)
 	{
-		GUI::Style StyleInfo;
-		StyleInfo.AppendColor(ImGuiCol_Text, NxFr::Color(0.95f, 0.95f, 0.95f, 1.0f));
-		GUI::Style StyleWarning;
-		StyleWarning.AppendColor(ImGuiCol_Text, NxFr::Color(0.95f, 0.85f, 0.05f, 1.0f));
-		GUI::Style StyleError;
-		StyleError.AppendColor(ImGuiCol_Text, NxFr::Color(0.95f, 0.05f, 0.05f, 1.0f));
-		GUI::Style StyleFatal;
-		StyleFatal.AppendColor(ImGuiCol_Text, NxFr::Color(0.85f, 0.05f, 0.55f, 1.0f));
-
-		Styles = NxFr::Array<GUI::Style>(NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::COUNT));
-		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Info)] = StyleInfo;
-		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Warning)] = StyleWarning;
-		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Error)] = StyleError;
-		Styles[NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::Fatal)] = StyleFatal;
 	}
 
 	ConsolePanel::~ConsolePanel()
@@ -50,47 +36,51 @@ namespace NxEn
 		Panel::OnEnable();
 
 		Application* App = Application::GetInstance();
-		Commands = App->GetSystem<CommandsSystem>();
-		Logger = App->GetSystem<DebugSystem>()->GetLogger();
-
+		NxFr::Logger* Logger = App->GetSystem<DebugSystem>()->GetLogger();
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
 
-		for (uint64 Index = 0, Flag = 1; Index < NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::COUNT); ++Index, Flag = (uint64)1 << Index)
+		for (uint64 Index = 0; Index < NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::COUNT); ++Index)
 		{
-			uint64 Count = LoggerFlags.GetCount();
-			LoggerFlags.Append(Logger->CheckVerbosity((NxFr::LoggerVerbosity)Flag));
+			uint64 Priority = FlagsVerbosity.GetCount();
+			NxFr::LoggerVerbosity Verbosity = (NxFr::LoggerVerbosity)((uint64)1 << Index);
+			FlagsVerbosity.Append(Verbosity, Logger->CheckVerbosity(Verbosity));
 
 			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::Enum::ToString((NxFr::LoggerVerbosity)Index);
-			Menu.AddMenuToggle(Path, &LoggerFlags.Last(), [=]() { Logger->SetVerbosity((NxFr::LoggerVerbosity)Flag, LoggerFlags[Count]); }, "", Count);
+			Menu.AddMenuToggle(Path, &FlagsVerbosity[Verbosity], nullptr, "", Priority);
 		}
 
 		NxFr::Array<NxFr::StringId> Channels = Logger->GetChannels();
 		Channels.Sort([](const NxFr::StringId& A, const NxFr::StringId& B) { return A.C() <= B.C(); });
 		for (auto& Id : Channels)
 		{
-			uint64 Count = LoggerFlags.GetCount();
-			LoggerFlags.Append(Logger->CheckChannel(Id));
+			uint64 Priority = FlagsVerbosity.GetCount() + FlagsChannels.GetCount();
+			FlagsChannels.Append(Id, Logger->CheckChannel(Id));
 
 			NxFr::String Path = NxFr::StringView("Channels/") + Id.C();
-			Menu.AddMenuToggle(Path, &LoggerFlags.Last(), [=]() { Logger->SetChannel(Id, LoggerFlags[Count]); }, "", Count);
+			Menu.AddMenuToggle(Path, &FlagsChannels[Id], nullptr, "", Priority);
 		}
 	}
 
 	void ConsolePanel::OnDisable()
 	{
-		Logger->UnregisterCallback({ this, &ConsolePanel::AddLogs });
-
-		LoggerFlags.Clear();
+		FlagsVerbosity.Clear();
+		FlagsChannels.Clear();
 		Menu.Clear();
+
+		Application* App = Application::GetInstance();
+		NxFr::Logger* Logger = App->GetSystem<DebugSystem>()->GetLogger();
+		Logger->UnregisterCallback({ this, &ConsolePanel::AddLogs });
 
 		Panel::OnDisable();
 	}
 
 	void ConsolePanel::OnGui(float TimeStep)
 	{
-		static float ButtonWidthSearch = 250;
+		static float ButtonWidthSearchLabel = ImGui::CalcTextSize("Search:").x;
+		static float ButtonWidthSearchInput = 250.0f;
+		static float ButtonWidthClear = 100.0f;
 		static float ButtonWidthExec = 150.0f;
-		static float LineHeight = ImGui::GetTextLineHeightWithSpacing() + 10.0f;
+		static float LineHeight = ImGui::GetTextLineHeightWithSpacing();
 
 		// Menu
 		{
@@ -98,17 +88,21 @@ namespace NxEn
 
 			if (ImGui::BeginMenuBar())
 			{
-				if (ImGui::Button("Clear"))
+				ImGui::SetCursorPosX(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidthSearchLabel + ButtonWidthSearchInput + ButtonWidthClear), 3, false, true).x);
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Search:");
 				{
-					ClearLogs();
+					GUI::Scope::Width Width(ButtonWidthSearchInput);
+					if (ImGui::InputText("##ConsoleCmd", Search.C_Buffer(), Search.GetCapacity()))
+					{
+						Search.Validate();
+					}
 				}
 
-				ImGui::Dummy({ GUI::Utils::AvailableSpaceHorizontal(ButtonWidthSearch), ImGui::GetFrameHeight() });
-
-				ImGui::TextUnformatted("Search:");
-				if (ImGui::InputText("##ConsoleCmd", Search.C_Buffer(), Search.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
+				if (ImGui::Button("Clear Logs", { ButtonWidthClear, ImGui::GetFrameHeight() }))
 				{
-					Search.Validate();
+					ClearLogs();
 				}
 			}
 			ImGui::EndMenuBar();
@@ -116,12 +110,14 @@ namespace NxEn
 
 		// Logs
 		{
-			ImGui::BeginChild("##Logs", { 0, GUI::Utils::AvailableSpaceVertical(LineHeight) }, 0, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::BeginChild("##Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(LineHeight), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
 
-			for (auto& Line : LoggerLines)
+			for (auto& Log : Logs)
 			{
-				GUI::Scope::Style Style(Styles[Line.GetSecond()]);
-				ImGui::Text(Line.GetFirst().C());
+				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || Log.Text.Contains(Search)))
+				{
+					ImGui::Text(Log.Text.C());
+				}
 			}
 
 			ImGui::EndChild();
@@ -131,11 +127,12 @@ namespace NxEn
 
 		// Command
 		{
-			ImGui::TextUnformatted("Command:");
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Command:");
 			ImGui::SameLine();
 
 			{
-				GUI::Scope::HorizontalFill Fill(ButtonWidthExec);
+				GUI::Scope::Width Width(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidthExec), 1, false).x);
 				if (ImGui::InputText("##ConsoleCmd", Command.C_Buffer(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					ExecuteCommand();
@@ -153,18 +150,29 @@ namespace NxEn
 	void ConsolePanel::ExecuteCommand()
 	{
 		Command.Validate();
-		Commands->Run(Command);
+
+		if (Command == "Test")
+		{
+			NEXUS_LOG(Info, Default, "Test");
+			NEXUS_LOG(Warning, Default, "Test");
+			NEXUS_LOG(Error, Default, "Test");
+			NEXUS_LOG(Fatal, Default, "Test");
+		}
+		else
+		{
+			Application::GetInstance()->GetSystem<CommandsSystem>()->Run(Command);
+		}
 
 		Command.Clear();
 	}
 
 	void ConsolePanel::AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message)
 	{
-		LoggerLines.AppendConstruct(Message.C(), NxFr::Enum::ToFlagIndex(Verbosity));
+		Logs.AppendConstruct(Move(Message.ToString()), FlagsVerbosity[Verbosity], FlagsChannels[Channel]);
 	}
 
 	void ConsolePanel::ClearLogs()
 	{
-		LoggerLines.Clear();
+		Logs.Clear();
 	}
 }
