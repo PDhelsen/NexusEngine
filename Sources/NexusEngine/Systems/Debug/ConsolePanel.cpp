@@ -95,7 +95,7 @@ namespace NxEn
 				ImGui::Text("Search:");
 				{
 					GUI::Scope::Width Width(ButtonWidthSearchInput);
-					if (ImGui::InputText("##ConsoleCmd", Search.C_Buffer(), Search.GetCapacity()))
+					if (ImGui::InputText("##Search", Search.C_Buffer(), Search.GetCapacity()))
 					{
 						Search.Validate();
 					}
@@ -111,7 +111,7 @@ namespace NxEn
 
 		// Logs
 		{
-			ImGui::BeginChild("##Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(LineHeight), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::BeginChild("Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(LineHeight), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
 
 			for (uint64 Index = 0; Index < Logs.GetCount(); ++Index)
 			{
@@ -132,17 +132,16 @@ namespace NxEn
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Command:");
 			ImGui::SameLine();
-
 			{
 				GUI::Scope::Width Width(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidthExec), 1, false).x);
-				if (ImGui::InputText("##ConsoleCmd", Command.C_Buffer(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
+				if (ImGui::InputText("##Command", Command.C_Buffer(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					ExecuteCommand();
 				}
 				ImGui::SameLine();
 			}
 
-			if (ImGui::Button("Execute##ConsoleCmdExecute", { ButtonWidthExec, ImGui::GetFrameHeight() }))
+			if (ImGui::Button("Execute", { ButtonWidthExec, ImGui::GetFrameHeight() }))
 			{
 				ExecuteCommand();
 			}

@@ -17,12 +17,14 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnEnable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
+		void DrawButtons();
 		void DrawFilter();
 		void DrawStats(const NxFr::String& Label) const;
 		bool FilterStats(const NxFr::String& Label);
 
 
 	private:
+		NxFr::Instruments* Instruments;
 		NxFr::Stats* Stats;
 		NxFr::List<const NxFr::String*> Ids;
 		NxFr::Dictionary<NxFr::StringId, const NxFr::Stats::Stat*> Values;

@@ -11,7 +11,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
 
 	StatsPanel::StatsPanel()
-		: Stats(nullptr), Filters(), Ids(), Values()
+		: Instruments(nullptr), Stats(nullptr), Filters(), Ids(), Values()
 	{
 	}
 
@@ -30,9 +30,11 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 
-		Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
-		Values = Stats->GetAllCurrentStats();
+		DebugSystem* Debug = Application::GetInstance()->GetSystem<DebugSystem>();
+		Instruments = Debug->GetInstrumentor();
+		Stats = Debug->GetStats();
 
+		Values = Stats->GetAllCurrentStats();
 		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
 		for (auto& [Id, Value] : Values)
 		{
@@ -43,16 +45,8 @@ namespace NxEn
 
 	void StatsPanel::OnGui(float TimeStep)
 	{
-		if (ImGui::Button("Start"))
-		{
-			Stats->StartRecording();
-		}
+		DrawButtons();
 		ImGui::SameLine();
-		if (ImGui::Button("Stop"))
-		{
-			Stats->StopRecording();
-		}
-
 		DrawFilter();
 
 		for (uint64 Index = 0; Index < Ids.GetCount(); ++Index)
@@ -64,6 +58,46 @@ namespace NxEn
 			}
 
 			DrawStats(*Label);
+		}
+	}
+
+	void StatsPanel::DrawButtons()
+	{
+		static float ButtonWidth = 100.0f;
+
+		NxFr::Color Normal = ImGui::GetStyle().Colors[ImGuiCol_Button];
+		NxFr::Color Pressed = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
+
+		{
+			GUI::Scope::Color Color(ImGuiCol_Button, !Instruments->IsRecording() ? Normal : Pressed);
+			if (ImGui::Button("Instruments", { ButtonWidth , 0 }))
+			{
+				if (!Instruments->IsRecording())
+				{
+					Instruments->StartRecording();
+				}
+				else
+				{
+					Instruments->StopRecording();
+				}
+			}
+		}
+
+		ImGui::SameLine();
+
+		{
+			GUI::Scope::Color Color(ImGuiCol_Button, !Stats->IsRecording() ? Normal : Pressed);
+			if (ImGui::Button("Stats", { ButtonWidth , 0 }))
+			{
+				if (!Stats->IsRecording())
+				{
+					Stats->StartRecording();
+				}
+				else
+				{
+					Stats->StopRecording();
+				}
+			}
 		}
 	}
 

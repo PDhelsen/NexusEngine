@@ -33,8 +33,7 @@ namespace NxEn
 			ImGui::Text(Label.C());
 			ImGui::SameLine();
 
-			Label += NxFr::StringView("##") + Id.C();
-			ImGui::Button(Label.C(), {100, 20});
+			ImGui::Button((Label + "##" + Id.C()).C(), {100, 20});
 		}
 	}
 }
