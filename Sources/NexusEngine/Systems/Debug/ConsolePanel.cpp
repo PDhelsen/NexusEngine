@@ -51,9 +51,10 @@ namespace NxEn
 
 		NxFr::Array<NxFr::StringId> Channels = Logger->GetChannels();
 		Channels.Sort([](const NxFr::StringId& A, const NxFr::StringId& B) { return A.C() <= B.C(); });
-		for (auto& Id : Channels)
+		for (uint64 Index = 0; Index < Channels.GetCount(); ++Index)
 		{
 			uint64 Priority = FlagsVerbosity.GetCount() + FlagsChannels.GetCount();
+			NxFr::StringId Id = Channels[Index];
 			FlagsChannels.Append(Id, Logger->CheckChannel(Id));
 
 			NxFr::String Path = NxFr::StringView("Channels/") + Id.C();
@@ -112,8 +113,9 @@ namespace NxEn
 		{
 			ImGui::BeginChild("##Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(LineHeight), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
 
-			for (auto& Log : Logs)
+			for (uint64 Index = 0; Index < Logs.GetCount(); ++Index)
 			{
+				Log& Log = Logs[Index];
 				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || Log.Text.Contains(Search)))
 				{
 					ImGui::Text(Log.Text.C());

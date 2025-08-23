@@ -166,11 +166,11 @@ namespace NxEn
 			if (OnTickOnce.GetCount() > 0)
 			{
 				NEXUS_PROFILE_SCOPE("Tick Once");
-				for (auto& Function : OnTickOnce)
+				for (uint64 Index = 0; Index < OnTickOnce.GetCount(); ++Index)
 				{
-					NEXUS_PROFILE_SCOPE(Function.GetSecond());
+					NEXUS_PROFILE_SCOPE(OnTickOnce[Index].GetSecond());
 
-					Function.GetFirst().Invoke();
+					OnTickOnce[Index].GetFirst().Invoke();
 				}
 
 				OnTickOnce.Clear();
@@ -181,11 +181,11 @@ namespace NxEn
 			{
 				NEXUS_PROFILE_SCOPE("Tick");
 
-				for (auto& Function : OnTick)
+				for (uint64 Index = 0; Index < OnTick.GetCount(); ++Index)
 				{
-					NEXUS_PROFILE_SCOPE(Function.GetSecond());
+					NEXUS_PROFILE_SCOPE(OnTick[Index].GetSecond());
 
-					Function.GetFirst().Invoke();
+					OnTick[Index].GetFirst().Invoke();
 				}
 			}
 
@@ -231,20 +231,21 @@ namespace NxEn
 
 	void Ticker::FlushCallbackBuffer()
 	{
-		for (auto& Info : CallbacksBuffer)
+		for (uint64 BucketIndex = 0; BucketIndex < CallbacksBuffer.GetCount(); ++BucketIndex)
 		{
+			CallbackInfo& Info = CallbacksBuffer[BucketIndex];
 			if (Info.Remove)
 			{
 				uint64 Index = 0;
 				bool Found = false;
 
 				auto& Callbacks = OnTicks[(uint64)Info.Bucket];
-				for (auto It = Callbacks.Begin(); It != Callbacks.End(); ++It)
+				for (uint64 CallbackIndex = 0; CallbackIndex < Callbacks.GetCount(); ++CallbackIndex)
 				{
-					if (It.Get().GetFirst() == Info.Callback)
+					if (Callbacks[CallbackIndex].GetFirst() == Info.Callback)
 					{
 						Found = true;
-						Index = It.Id();
+						Index = CallbackIndex;
 						break;
 					}
 				}

@@ -345,8 +345,9 @@ namespace NxEn
 
 		void Menu::DrawMenu(float TimeStep)
 		{
-			for (auto& Item : Items)
+			for (uint64 Index = 0; Index < Items.GetCount(); ++Index)
 			{
+				Item& Item = Items[Index];
 				NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(Item.Path);
 				DrawItem(Item, Sections, 0);
 			}
@@ -471,8 +472,9 @@ namespace NxEn
 
 				OnGui(TimeStep);
 
-				for (auto& Button : Callbacks)
+				for (uint64 Index = 0; Index < Callbacks.GetCount(); ++Index)
 				{
+					Item& Button = Callbacks[Index];
 					if (ImGui::Button(Button.Label.C()))
 					{
 						if (!Button.Callback.IsNull())

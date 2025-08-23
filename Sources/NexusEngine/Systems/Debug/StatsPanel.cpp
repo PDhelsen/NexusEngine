@@ -55,8 +55,9 @@ namespace NxEn
 
 		DrawFilter();
 
-		for (auto Label : Ids)
+		for (uint64 Index = 0; Index < Ids.GetCount(); ++Index)
 		{
+			const NxFr::String* Label = Ids[Index];
 			if (!FilterStats(*Label))
 			{
 				continue;
@@ -98,9 +99,9 @@ namespace NxEn
 
 	bool StatsPanel::FilterStats(const NxFr::String& Label)
 	{
-		for (auto F : FilterExclude)
+		for (uint64 Index = 0; Index < FilterExclude->GetCount(); ++Index)
 		{
-			if (Label == F)
+			if (Label == FilterExclude[Index])
 			{
 				return false;
 			}
@@ -111,9 +112,9 @@ namespace NxEn
 			return true;
 		}
 		
-		for (auto F : Filters)
+		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 		{
-			if (Label.Contains(F))
+			if (Label.Contains(Filters[Index]))
 			{
 				return true;
 			}
