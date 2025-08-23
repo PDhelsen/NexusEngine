@@ -15,7 +15,7 @@ namespace NxEn
 	Application::Application(const Project& ProjectInfo)
 		: ProjectInfo(ProjectInfo), Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
 	{
-		NEXUS_ASSERT(Instance == nullptr, Default, "Application was already created");
+		NEXUS_ASSERT(Instance == nullptr, Application, "Application was already created");
 		Instance = this;
 	}
 
@@ -26,14 +26,14 @@ namespace NxEn
 
 	void Application::Quit()
 	{
-		NEXUS_LOG(Info, Default, "Application was requested to quit");
+		NEXUS_LOG(Info, Application, "Application was requested to quit");
 
 		WantsToQuit = true;
 	}
 
 	void Application::Restart()
 	{
-		NEXUS_LOG(Info, Default, "Application was requested to restart");
+		NEXUS_LOG(Info, Application, "Application was requested to restart");
 
 		EntryPoint::ScheduleRestart();
 		Quit();
@@ -41,7 +41,7 @@ namespace NxEn
 
 	void Application::Crash(CrashCode ErrorCode)
 	{
-		NEXUS_LOG(Info, Default, "Application crashed with code %i", ErrorCode);
+		NEXUS_LOG(Info, Application, "Application crashed with code %i", ErrorCode);
 
 		EntryPoint::SetErrorCode((int8)ErrorCode);
 		Quit();
@@ -57,7 +57,7 @@ namespace NxEn
 		Bootstrap.AppendStep(&NxFr::Arguments::Log, "Console Arguments");
 		Bootstrap.AppendStep([&]()
 		{
-			NEXUS_LOG(Info, Default, "Application starting in %s Mode", NxEn::Enum::ToString(ProjectInfo.GetTarget()));
+			NEXUS_LOG(Info, Default, "Application %s starting in %s Mode", ProjectInfo.GetName().C(), NxEn::Enum::ToString(ProjectInfo.GetTarget()));
 			NxFr::Platform::GetInstance()->SetWorkingDirectory(ProjectInfo.GetRootPath());
 		}, "Setup Project");
 		Bootstrap.AppendStep(&NxFr::Paths::SetupPathsAndFolders, "Setup Paths & Folders");

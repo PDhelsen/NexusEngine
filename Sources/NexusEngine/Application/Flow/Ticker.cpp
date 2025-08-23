@@ -60,6 +60,7 @@ namespace NxEn
 			if (Info.Instance->GetObjectType() == Type)
 			{
 				Info.TickRate = ComputeTickRate(TickRate, FixedTimeStep);
+				NEXUS_LOG(Info, Application, "System %s tick rate changed to %f", Type.C(), Info.TickRate);
 				break;
 			}
 		}
@@ -69,7 +70,7 @@ namespace NxEn
 	{
 		if (GetSystemsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Default, "There is no systems to tick");
+			NEXUS_LOG(Warning, Application, "There is no systems to tick");
 			return;
 		}
 
@@ -105,7 +106,7 @@ namespace NxEn
 								}
 								else
 								{
-									NEXUS_LOG(Warning, Default, "System (%s) can depend only on another system from the same bucket. %s is not in the same bucket, dependency will be ignored", Type.C(), D.C());
+									NEXUS_LOG(Warning, Application, "System (%s) can depend only on another system from the same bucket. %s is not in the same bucket, dependency will be ignored", Type.C(), D.C());
 								}
 							}
 						}
@@ -148,10 +149,10 @@ namespace NxEn
 			SystemsPerBuckets[BucketIndex] = Range;
 		}
 
-		NEXUS_LOG(Info, Default, "Tick order:")
+		NEXUS_LOG(Info, Application, "Tick order:")
 		for (auto& Info : Systems)
 		{
-			NEXUS_LOG(Info, Default, "- %s", Info.Instance->GetObjectType().C());
+			NEXUS_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
 		}
 	}
 
@@ -224,7 +225,7 @@ namespace NxEn
 
 	float Ticker::ComputeTickRate(float TickRate, bool FixedTimeStep) const
 	{
-		NEXUS_ASSERT(!FixedTimeStep || (FixedTimeStep && TickRate > 0.0f), Default, "The system has to either no require a fixed timestep or provide a tick rate greater than 0");
+		NEXUS_ASSERT(!FixedTimeStep || (FixedTimeStep && TickRate > 0.0f), Application, "The system has to either no require a fixed timestep or provide a tick rate greater than 0");
 		return TickRate > 0.0f ? 1.0f / TickRate : 0.0f;
 	}
 
@@ -276,6 +277,7 @@ namespace NxEn
 			if (Info.Instance->GetObjectType() == Type)
 			{
 				Info.Patch(Type);
+				NEXUS_LOG(Info, Application, "System %s patch", Type.C());
 				return;
 			}
 		}

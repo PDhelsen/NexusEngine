@@ -29,7 +29,7 @@ namespace NxEd
 		NEXUS_PROFILE_FUNCTION();
 
 		OnSave.Invoke();
-		NEXUS_LOG(Info, Default, "Saved");
+		NEXUS_LOG(Info, System, "Saved");
 	}
 
 	void EditorSystem::OnInitialize()

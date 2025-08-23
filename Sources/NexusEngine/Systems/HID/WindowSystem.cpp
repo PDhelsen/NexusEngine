@@ -224,7 +224,7 @@ namespace NxEn
 			Monitors[Index].Instance = Instances[Index];
 			Glfw::GetMonitorSettings(Monitors[Index].Instance, Monitors[Index].Resolution.x, Monitors[Index].Resolution.y, Monitors[Index].RefreshRate);
 
-			NEXUS_LOG(Info, Default, "Monitor found with resolution %d-%d", Monitors[Index].Resolution.x, Monitors[Index].Resolution.y);
+			NEXUS_LOG(Info, System, "Monitor found with resolution %d-%d", Monitors[Index].Resolution.x, Monitors[Index].Resolution.y);
 		}
 	}
 
@@ -234,7 +234,7 @@ namespace NxEn
 
 		Target.Instance = Glfw::CreateWindow((uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr, Target.Position, Target.Resolution, Target.Title, Target.VSync);
 
-		NEXUS_LOG(Info, Default, "Window created with resolution %d-%d", Target.Resolution.x, Target.Resolution.y);
+		NEXUS_LOG(Info, System, "Window created with resolution %d-%d", Target.Resolution.x, Target.Resolution.y);
 	}
 
 	void WindowSystem::DestroyWindow()
@@ -243,7 +243,7 @@ namespace NxEn
 
 		Glfw::DestroyWindow(Target.Instance);
 
-		NEXUS_LOG(Info, Default, "Window destroyed");
+		NEXUS_LOG(Info, System, "Window destroyed");
 	}
 
 	void WindowSystem::TickWindow()

@@ -47,28 +47,16 @@ namespace NxEn
 		System::OnInitialize();
 
 		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
-		NEXUS_ASSERT(!Folder.Data.IsEmpty(), Default, "Folder can't be empty");
+		NEXUS_ASSERT(!Folder.Data.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
 		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, Folder + "logs.txt");
-		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
-
 		Stats = new NxFr::Stats(Folder + "stats.csv");
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
-		
-		// Push DebugSystem instance to globals
-		NxFr::Globals::Logs = Logger;
-		NxFr::Globals::Statistiques = Stats;
-		NxFr::Globals::Instrumentor = Instrumentor;
 	}
 
 	void DebugSystem::OnShutdown()
 	{
-		// Remove DebugSystem instance from globals only if they are still globals
-		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
-		if (NxFr::Globals::Statistiques == Stats) NxFr::Globals::Statistiques = nullptr;
-		if (NxFr::Globals::Instrumentor == Instrumentor) NxFr::Globals::Instrumentor = nullptr;
-
 		NxFr::Instruments::Destroy(Instrumentor);
 		delete Stats;
 		delete Logger;
@@ -85,17 +73,17 @@ namespace NxEn
 
 	void DebugSystem::StartTools()
 	{
-		bool AutoStart = NxFr::Arguments::HasFlag("Profile");
-
-		if (AutoStart)
-		{
-			Instrumentor->StartRecording();
-		}
+		NxFr::Globals::Logs = Logger;
+		NxFr::Globals::Statistiques = Stats;
+		NxFr::Globals::Instrumentor = Instrumentor;
 
 		Stats->Initialize();
 		Stats->Lock();
-		if (AutoStart)
+
+		if (NxFr::Arguments::HasFlag("Profile"))
 		{
+			NEXUS_LOG(Info, System, "Debug Tools will start automatically");
+			Instrumentor->StartRecording();
 			Stats->StartRecording();
 		}
 	}
@@ -115,6 +103,10 @@ namespace NxEn
 		Stats->Flush();
 
 		Logger->Flush();
+
+		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
+		if (NxFr::Globals::Statistiques == Stats) NxFr::Globals::Statistiques = nullptr;
+		if (NxFr::Globals::Instrumentor == Instrumentor) NxFr::Globals::Instrumentor = nullptr;
 	}
 
 	void DebugSystem::FlushTools()

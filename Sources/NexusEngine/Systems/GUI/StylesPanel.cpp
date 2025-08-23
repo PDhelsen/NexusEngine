@@ -25,13 +25,14 @@ namespace NxEn
 	{
 		for (auto& [Id, Style] : *Styles)
 		{
+			GUI::Scope::Style S(Style);
+
 			NxFr::String Label("Button");
 
 			ImGui::AlignTextToFramePadding(); 
 			ImGui::Text(Label.C());
 			ImGui::SameLine();
 
-			GUI::Scope::Style S(Style);
 			Label += NxFr::StringView("##") + Id.C();
 			ImGui::Button(Label.C(), {100, 20});
 		}

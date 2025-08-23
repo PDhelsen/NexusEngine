@@ -6,6 +6,12 @@
 
 namespace NxFr
 {
+	namespace LoggerChannel
+	{
+		const NxFr::StringId Application = "Application"_Sid;
+		const NxFr::StringId System = "System"_Sid;
+	}
+
 	namespace StatsHeader
 	{
 		const NxFr::StringId FpsId = "FPS"_Sid;
@@ -128,7 +134,10 @@ namespace NxEn
 		DebugSystem* Debug = GetSystem<DebugSystem>();
 
 		NxFr::Logger* Logger = Debug->GetLogger();
-		Logger->AddChannel(NxFr::LoggerChannel::Verbose, false);
+		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
+		Logger->AddChannel(NxFr::LoggerChannel::Verbose, true);
+		Logger->AddChannel(NxFr::LoggerChannel::Application, true);
+		Logger->AddChannel(NxFr::LoggerChannel::System, true);
 
 		NxFr::Stats* Stats = Debug->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);

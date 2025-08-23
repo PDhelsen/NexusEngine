@@ -9,7 +9,9 @@ namespace NxEn
 		: Logger(true, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE)
 	{
 		Logger.AddChannel(NxFr::LoggerChannel::Default, true);
-		Logger.AddChannel(NxFr::LoggerChannel::Verbose, false);
+		Logger.AddChannel(NxFr::LoggerChannel::Verbose, true);
+		Logger.AddChannel(NxFr::LoggerChannel::Application, true);
+		Logger.AddChannel(NxFr::LoggerChannel::System, true);
 	}
 
 	Bootstrapper::~Bootstrapper()
@@ -58,13 +60,13 @@ namespace NxEn
 	{
 		if (GetStepsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Default, "Bootstrap - There is no steps to execute");
+			NEXUS_LOG(Warning, Application, "Bootstrap - There is no steps to execute");
 			return;
 		}
 
 		for (auto It = Steps.Begin(); It != Steps.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Bootstrap - Steps (%i / %i): %s", Boot ? It.Id() + 1 : Steps.GetCount() - It.Id(), Steps.GetCount(), It.Get().GetSecond().C());
+			NEXUS_LOG(Info, Application, "Bootstrap - Steps (%i / %i): %s", Boot ? It.Id() + 1 : Steps.GetCount() - It.Id(), Steps.GetCount(), It.Get().GetSecond().C());
 			It.Get().GetFirst().Invoke();
 		}
 
@@ -75,7 +77,7 @@ namespace NxEn
 	{
 		if (GetSystemsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Default, "Bootstrap - There is no systems to execute");
+			NEXUS_LOG(Warning, Application, "Bootstrap - There is no systems to execute");
 			return;
 		}
 
@@ -83,7 +85,7 @@ namespace NxEn
 		NxFr::Array<System*> Instances = Manager.SortSystems(Systems);
 		for (auto It = Instances.Begin(); It != Instances.End(); ++It)
 		{
-			NEXUS_LOG(Info, Default, "Bootstrap - Systems (%i / %i): %s", Boot ? It.Id() + 1 : Instances.GetCount() - It.Id(), Instances.GetCount(), It.Get()->GetObjectType().C());
+			NEXUS_LOG(Info, Application, "Bootstrap - Systems (%i / %i): %s", Boot ? It.Id() + 1 : Instances.GetCount() - It.Id(), Instances.GetCount(), It.Get()->GetObjectType().C());
 			if (Boot)
 			{
 				It.Get()->Initialize();

@@ -54,7 +54,7 @@ namespace NxEn
 		}
 
 		NxFr::Allocator* Alloc = GetAllocator(Pointer);
-		NEXUS_ASSERT(Alloc, Default, "Memory was not allocated from this allocator");
+		NEXUS_ASSERT(Alloc, System, "Memory was not allocated from this allocator");
 
 		uint64 Marker = Alloc->UsedAmount();
 
@@ -82,7 +82,7 @@ namespace NxEn
 		}
 
 		NxFr::Allocator* Alloc = GetAllocator(Pointer);
-		NEXUS_ASSERT(Alloc, Default, "Memory was not allocated from this allocator");
+		NEXUS_ASSERT(Alloc, System, "Memory was not allocated from this allocator");
 
 		uint64 Marker = Alloc->UsedAmount();
 

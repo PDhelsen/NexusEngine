@@ -5,6 +5,12 @@
 
 namespace NxFr
 {
+	namespace LoggerChannel
+	{
+		NEXUS_ENGINE_API extern const NxFr::StringId Application;
+		NEXUS_ENGINE_API extern const NxFr::StringId System;
+	}
+
 	namespace StatsHeader
 	{
 		NEXUS_ENGINE_API extern const NxFr::StringId FpsId;

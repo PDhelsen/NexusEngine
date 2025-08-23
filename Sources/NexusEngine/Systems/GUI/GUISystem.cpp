@@ -112,11 +112,13 @@ namespace NxEn
 	void GUISystem::RegisterElement(GUI::Element* Element)
 	{
 		Elements.Append(Element);
+		NEXUS_LOG(Info, System, "Register GUI element: %s", Element->GetName().C());
 	}
 
 	void GUISystem::UnregisterElement(GUI::Element* Element)
 	{
 		Elements.Remove(Element);
+		NEXUS_LOG(Info, System, "Unegister GUI element: %s", Element->GetName().C());
 	}
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
@@ -133,7 +135,7 @@ namespace NxEn
 			LoadLayoutNexus(Path);
 		}
 
-		NEXUS_LOG(Info, Default, "GUI layout %s loaded", Name.C());
+		NEXUS_LOG(Info, System, "GUI layout %s loaded", Name.C());
 	}
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
@@ -148,7 +150,7 @@ namespace NxEn
 		}
 		SaveLayoutNexus(Path);
 
-		NEXUS_LOG(Info, Default, "GUI layout %s saved", Name.ToString().C());
+		NEXUS_LOG(Info, System, "GUI layout %s saved", Name.C());
 	}
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
@@ -164,7 +166,7 @@ namespace NxEn
 		LoadThemeImGui(Data["ImGui"]);
 		LoadThemeNexus(Data["Nexus"]);
 
-		NEXUS_LOG(Info, Default, "GUI style %s loaded", Name.C());
+		NEXUS_LOG(Info, System, "GUI style %s loaded", Name.C());
 	}
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
@@ -181,7 +183,7 @@ namespace NxEn
 
 		NxFr::Yaml::SerializeFile(Data, Path);
 
-		NEXUS_LOG(Info, Default, "GUI style %s saved", Name.C());
+		NEXUS_LOG(Info, System, "GUI style %s saved", Name.C());
 	}
 
 	const GUI::Style& GUISystem::GetStyle(NxFr::StringId Id)
@@ -192,11 +194,13 @@ namespace NxEn
 	void GUISystem::AppendStyle(NxFr::StringId Id, const GUI::Style& Style)
 	{
 		Styles.AppendOrAssign(Id, Style);
+		NEXUS_LOG(Info, System, "Register GUI style: %s", Id.C());
 	}
 
 	void GUISystem::RemoveStyle(NxFr::StringId Id)
 	{
 		Styles.Remove(Id);
+		NEXUS_LOG(Info, System, "Unregister GUI style: %s", Id.C());
 	}
 
 	void GUISystem::OnInitialize()

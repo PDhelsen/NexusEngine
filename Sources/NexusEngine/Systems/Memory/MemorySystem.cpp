@@ -32,23 +32,30 @@ namespace NxEn
 
 	NxFr::Allocator* MemorySystem::GetAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
+		NEXUS_LOG(Info, Verbose, "Memory - Get Allocator");
+
 		Size = Type == AllocatorType::Small ? GetSmallAllocationSize(Size) : Size;
 		return FindOrCreateAllocator(Type, Size, Alignement);
 	}
 
 	NxFr::HandleManager* MemorySystem::GetHandlesManager()
 	{
+		NEXUS_LOG(Info, Verbose, "Memory - Get Handles");
+
 		return FindOrCreateHandlesManager();
 	}
 
 	void MemorySystem::Clear()
 	{
+		NEXUS_LOG(Info, System, "Memory - Clear");
+
 		ClearHandleManagerContainers(false);
 		ClearAllocatorContainers(false);
 	}
 
 	void MemorySystem::Defragment(bool Full)
 	{
+		NEXUS_LOG(Info, System, "Memory - Defragmentation (Full: %s)", Full ? "true" : "false");
 		Defragment(DefragmentBudget, Full);
 	}
 
@@ -66,8 +73,8 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParams.Smallest) && NxFr::Math::IsPowerOfTwo(SmallParams.Largest), Default, "SmallAllocatorParams have to be PowerOfTwo");
-		NEXUS_ASSERT(Sizes[0] == 0, Default, "Can't set the size of the Raw allocator");
+		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParams.Smallest) && NxFr::Math::IsPowerOfTwo(SmallParams.Largest), System, "SmallAllocatorParams have to be PowerOfTwo");
+		NEXUS_ASSERT(Sizes[0] == 0, System, "Can't set the size of the Raw allocator");
 
 		NxFr::Stats* Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
@@ -96,7 +103,7 @@ namespace NxEn
 			EmptyAllocators(AllocatorType::Temp2);
 		}
 
-		Defragment(false);
+		Defragment(DefragmentBudget, false);
 		RecordMemoryStats();
 
 		FrameFlag = !FrameFlag;
@@ -228,13 +235,13 @@ namespace NxEn
 	{
 		if (Size > SmallParams.Largest)
 		{
-			NEXUS_LOG(Warning, Default, "Requested small allocation size is too large. Allocation will come from the Raw allocator");
+			NEXUS_LOG(Warning, System, "Requested small allocation size is too large. Allocation will come from the Raw allocator");
 			return 0;
 		}
 
 		if (Size < SmallParams.Smallest)
 		{
-			NEXUS_LOG(Warning, Default, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
+			NEXUS_LOG(Warning, System, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
 			return SmallParams.Smallest;
 		}
 

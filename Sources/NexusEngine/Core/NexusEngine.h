@@ -12,3 +12,5 @@
 #include "NexusEngine/Systems/HID/WindowSystem.h"
 #include "NexusEngine/Systems/GUI/GUISystem.h"
 #include "NexusEngine/Systems/Commands/CommandsSystem.h"
+
+#include "NexusEngine/Core/NexusEngineApplication.h"

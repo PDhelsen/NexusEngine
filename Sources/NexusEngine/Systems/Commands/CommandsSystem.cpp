@@ -110,8 +110,18 @@ namespace NxEn
 		NEXUS_PROFILE_SCOPE(Info.Id.C());
 
 		Current = &Info;
+
 		NEXUS_LOG(Info, Command, "%s", Info.Id.C());
-		GetCommand(Info.Id)->Invoke(Info.Args);
+		Command** Target = GetCommands().TryGet(Info.Id);
+		if (Target == nullptr)
+		{
+			(*Target)->Invoke(Info.Args);
+		}
+		else
+		{
+			NEXUS_LOG(Warning, System, "Invalid command %s", Info.Id.C());
+		}
+
 		Current = nullptr;
 	}
 

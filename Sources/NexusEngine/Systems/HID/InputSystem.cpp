@@ -33,11 +33,13 @@ namespace NxEn
 	void InputSystem::AddSchema(NxFr::StringId Id, Input::Schema* Schema)
 	{
 		Schemas.AppendOrAssign(Id, Schema);
+		NEXUS_LOG(Info, System, "Register Input schema: %s", Id.C());
 	}
 
 	void InputSystem::RemoveSchema(NxFr::StringId Id)
 	{
 		Schemas.Remove(Id);
+		NEXUS_LOG(Info, System, "Unregister Input schema: %s", Id.C());
 	}
 
 	Input::Schema* InputSystem::GetSchema(NxFr::StringId Id)
@@ -171,7 +173,7 @@ namespace NxEn
 		NEXUS_PROFILE_FUNCTION();
 
 		Glfw::PollInput();
-		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, Default, "Unsupported Button pressed");
+		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, System, "Unsupported Button pressed");
 	}
 
 	void InputSystem::TriggerActions()
