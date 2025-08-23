@@ -36,10 +36,19 @@ namespace NxEn
 	DebugSystem::DebugSystem()
 		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr)
 	{
+		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback);
+		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
+		Logger->AddChannel(NxFr::LoggerChannel::Verbose, true);
+
+		NxFr::Globals::Logs = Logger;
 	}
 
 	DebugSystem::~DebugSystem()
 	{
+		NxFr::Globals::Logs = nullptr;
+
+		Logger->Flush();
+		delete Logger;
 	}
 
 	void DebugSystem::OnInitialize()
@@ -50,16 +59,32 @@ namespace NxEn
 		NEXUS_ASSERT(!Folder.Data.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
-		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::All, Folder + "logs.txt");
-		Stats = new NxFr::Stats(Folder + "stats.csv");
+		Logger->SetOutput(NxFr::LoggerOutput::File, true, Folder + "logs.txt");
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
+		Stats = new NxFr::Stats(Folder + "stats.csv");
+
+		NxFr::Globals::Statistiques = Stats;
+		NxFr::Globals::Instrumentor = Instrumentor;
 	}
 
 	void DebugSystem::OnShutdown()
 	{
+		if (Instrumentor->IsRecording())
+		{
+			Instrumentor->StopRecording();
+		}
+
+		Stats->Unlock();
+		if (Stats->IsRecording())
+		{
+			Stats->StopRecording();
+		}
+
+		NxFr::Globals::Statistiques = nullptr;
+		NxFr::Globals::Instrumentor = nullptr;
+
 		NxFr::Instruments::Destroy(Instrumentor);
 		delete Stats;
-		delete Logger;
 
 		System::OnShutdown();
 	}
@@ -68,16 +93,15 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		FlushTools();
+		Stats->Unlock();
+		Stats->Flush();
+		Stats->Lock();
+
+		Logger->Flush();
 	}
 
-	void DebugSystem::StartTools()
+	void DebugSystem::AutoStart()
 	{
-		NxFr::Globals::Logs = Logger;
-		NxFr::Globals::Statistiques = Stats;
-		NxFr::Globals::Instrumentor = Instrumentor;
-
-		Stats->Initialize();
 		Stats->Lock();
 
 		if (NxFr::Arguments::HasFlag("Profile"))
@@ -86,35 +110,5 @@ namespace NxEn
 			Instrumentor->StartRecording();
 			Stats->StartRecording();
 		}
-	}
-
-	void DebugSystem::StopTools()
-	{
-		if (Instrumentor->IsRecording())
-		{
-			Instrumentor->StopRecording();
-		}
-
-		if (Stats->IsRecording())
-		{
-			Stats->StopRecording();
-		}
-		Stats->Unlock();
-		Stats->Flush();
-
-		Logger->Flush();
-
-		if (NxFr::Globals::Logs == Logger) NxFr::Globals::Logs = nullptr;
-		if (NxFr::Globals::Statistiques == Stats) NxFr::Globals::Statistiques = nullptr;
-		if (NxFr::Globals::Instrumentor == Instrumentor) NxFr::Globals::Instrumentor = nullptr;
-	}
-
-	void DebugSystem::FlushTools()
-	{
-		Stats->Unlock();
-		Stats->Flush();
-		Stats->Lock();
-
-		Logger->Flush();
 	}
 }

@@ -48,6 +48,9 @@ namespace NxEn
 			Systems.CreateSystem<GUISystem>();
 		}
 
+		NxFr::Logger* Logger = Systems.GetSystem<DebugSystem>()->GetLogger();
+		Logger->AddChannel(NxFr::LoggerChannel::Application, true);
+		Logger->AddChannel(NxFr::LoggerChannel::System, true);
 		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &InputSchema);
 		if (!IsHeadless())
 		{
@@ -69,6 +72,14 @@ namespace NxEn
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
 			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>();
 		}
+
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Initialize Stats", []()
+		{
+			NxFr::Stats* Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
+			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
+			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
+			Stats->Initialize();
+		});
 	}
 
 	void NexusEngineApplication::OnShutdown()
@@ -84,8 +95,6 @@ namespace NxEn
 			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
 			Unbootstrap.AppendSystem<GUISystem>().AppendDependency<WindowSystem, GUISystem>();
 		}
-
-		//StopDebugTools();
 
 		Application::OnShutdown();
 	}
@@ -106,8 +115,10 @@ namespace NxEn
 		}
 
 		Ticks.AppendTickOnceCallback({ this, &NexusEngineApplication::ParseCommands }, NxEn::Ticker::TickBucket::Input, "Parse Commands");
-
-		//StartDebugTools();
+		Ticks.AppendTickOnceCallback([]()
+		{
+				Application::GetInstance()->GetSystem<DebugSystem>()->AutoStart();
+		}, NxEn::Ticker::TickBucket::Input, "Auto start debug system");
 	}
 
 	void NexusEngineApplication::ParseCommands()
@@ -125,28 +136,5 @@ namespace NxEn
 		{
 			CmdSystem->Run(Cmd);
 		}
-	}
-
-	void NexusEngineApplication::StartDebugTools()
-	{
-		DebugSystem* Debug = GetSystem<DebugSystem>();
-
-		NxFr::Logger* Logger = Debug->GetLogger();
-		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
-		Logger->AddChannel(NxFr::LoggerChannel::Verbose, true);
-		Logger->AddChannel(NxFr::LoggerChannel::Application, true);
-		Logger->AddChannel(NxFr::LoggerChannel::System, true);
-
-		NxFr::Stats* Stats = Debug->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
-
-		Debug->StartTools();
-	}
-
-	void NexusEngineApplication::StopDebugTools()
-	{
-		DebugSystem* Debug = GetSystem<DebugSystem>();
-		Debug->StopTools();
 	}
 }
