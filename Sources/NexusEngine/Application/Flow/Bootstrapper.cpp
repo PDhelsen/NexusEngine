@@ -6,21 +6,16 @@
 namespace NxEn
 {
 	Bootstrapper::Bootstrapper()
-		: Logger(true, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE)
 	{
-		Logger.AddChannel(NxFr::LoggerChannel::Default, true);
-		Logger.AddChannel(NxFr::LoggerChannel::Verbose, true);
-		Logger.AddChannel(NxFr::LoggerChannel::Application, true);
-		Logger.AddChannel(NxFr::LoggerChannel::System, true);
 	}
 
 	Bootstrapper::~Bootstrapper()
 	{
 	}
 
-	Bootstrapper& Bootstrapper::AppendStep(const Signature& Step, NxFr::StringView Tag)
+	Bootstrapper& Bootstrapper::AppendStep(StepBucket Bucket, NxFr::StringView Tag, const Signature& Step)
 	{
-		Steps.AppendConstruct(Step, Tag);
+		Steps.AppendConstruct(Bucket, Step, Tag);
 		return *this;
 	}
 
@@ -38,25 +33,25 @@ namespace NxEn
 
 	void Bootstrapper::RunBoot()
 	{
-		NxFr::Globals::Logs = &Logger;
-
-		ExecuteSteps(true);
+		ExecuteSteps(true, StepBucket::BeforeSystem);
 		ExecuteSystems(true);
+		ExecuteSteps(true, StepBucket::AfterSystem);
 
-		if (NxFr::Globals::Logs == &Logger) NxFr::Globals::Logs = nullptr;
+		Steps.Clear();
+		Systems.Clear();
 	}
 
 	void Bootstrapper::RunUnboot()
 	{
-		NxFr::Globals::Logs = &Logger;
-
+		ExecuteSteps(false, StepBucket::BeforeSystem);
 		ExecuteSystems(false);
-		ExecuteSteps(false);
+		ExecuteSteps(false, StepBucket::AfterSystem);
 
-		if (NxFr::Globals::Logs == &Logger) NxFr::Globals::Logs = nullptr;
+		Steps.Clear();
+		Systems.Clear();
 	}
 
-	void Bootstrapper::ExecuteSteps(bool Boot)
+	void Bootstrapper::ExecuteSteps(bool Boot, StepBucket Bucket)
 	{
 		if (GetStepsCount() == 0)
 		{
@@ -64,13 +59,17 @@ namespace NxEn
 			return;
 		}
 
-		for (auto It = Steps.Begin(); It != Steps.End(); ++It)
+		for (uint64 Index = 0; Index < Steps.GetCount(); ++Index)
 		{
-			NEXUS_LOG(Info, Application, "Bootstrap - Steps (%i / %i): %s", Boot ? It.Id() + 1 : Steps.GetCount() - It.Id(), Steps.GetCount(), It.Get().GetSecond().C());
-			It.Get().GetFirst().Invoke();
-		}
+			StepInfo& Info = Steps[Index];
+			if (Info.Bucket != Bucket)
+			{
+				continue;
+			}
 
-		Steps.Clear();
+			NEXUS_LOG(Info, Application, "Bootstrap - Steps: %s", Info.Tag.C());
+			Info.Callback.Invoke();
+		}
 	}
 
 	void Bootstrapper::ExecuteSystems(bool Boot)
@@ -83,19 +82,18 @@ namespace NxEn
 
 		SystemManager& Manager = Application::GetInstance()->GetSystems();
 		NxFr::Array<System*> Instances = Manager.SortSystems(Systems);
-		for (auto It = Instances.Begin(); It != Instances.End(); ++It)
+		for (uint64 Index = 0; Index < Instances.GetCount(); ++Index)
 		{
-			NEXUS_LOG(Info, Application, "Bootstrap - Systems (%i / %i): %s", Boot ? It.Id() + 1 : Instances.GetCount() - It.Id(), Instances.GetCount(), It.Get()->GetObjectType().C());
+			System* Instance = Instances[Index];
+			NEXUS_LOG(Info, Application, "Bootstrap - Systems: %s", Instance->GetObjectType().C());
 			if (Boot)
 			{
-				It.Get()->Initialize();
+				Instance->Initialize();
 			}
 			else
 			{
-				It.Get()->Shutdown();
+				Instance->Shutdown();
 			}
 		}
-
-		Systems.Clear();
 	}
 }

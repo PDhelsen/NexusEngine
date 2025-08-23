@@ -54,32 +54,36 @@ namespace NxEn
 
 	void Application::OnInitialize()
 	{
-		Bootstrap.AppendStep(&NxFr::Arguments::Log, "Console Arguments");
-		Bootstrap.AppendStep([&]()
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Console Arguments", &NxFr::Arguments::Log);
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Setup Project", [&]()
 		{
 			NEXUS_LOG(Info, Default, "Application %s starting in %s Mode", ProjectInfo.GetName().C(), NxEn::Enum::ToString(ProjectInfo.GetTarget()));
 			NxFr::Platform::GetInstance()->SetWorkingDirectory(ProjectInfo.GetRootPath());
-		}, "Setup Project");
-		Bootstrap.AppendStep(&NxFr::Paths::SetupPathsAndFolders, "Setup Paths & Folders");
-		Bootstrap.AppendStep([&]()
+		});
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Setup Paths & Folders", &NxFr::Paths::SetupPathsAndFolders);
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Connect Ticker to SystemManager", [&]()
 			{
 				Systems.GetOnSystemChanged() += { &Ticks, & Ticker::PatchSystem };
-			}, "Connect Ticker to SystemManager");
+			});
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Start TimeManager", { &Time, &TimeManager::Run });
 	}
 
 	void Application::OnShutdown()
 	{
-		Bootstrap.AppendStep([&]()
-			{
-				Systems.GetOnSystemChanged() -= { &Ticks, & Ticker::PatchSystem };
-			}, "Disconnect Ticker from SystemManager");
-		Bootstrap.AppendStep(NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems), "Clear Systems");
-		Bootstrap.AppendStep(&NxFr::Paths::CleanupFolders, "Cleanup Folders");
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Disconnect Ticker from SystemManager", [&]()
+		{
+			Systems.GetOnSystemChanged() -= { &Ticks, & Ticker::PatchSystem };
+		});
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Clear Systems", NxFr::Delegate<void()>(&Systems, &SystemManager::ClearSystems));
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Cleanup Folders", &NxFr::Paths::CleanupFolders);
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Application duration", []()
+		{
+			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
+		});
 	}
 
 	void Application::OnExecute()
 	{
-		Time.Run();
 	}
 
 	void Application::Run()

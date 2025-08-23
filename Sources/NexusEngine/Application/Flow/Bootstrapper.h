@@ -12,10 +12,24 @@ namespace NxEn
 	public:
 		using Signature = NxFr::Delegate<void()>;
 
+		enum class StepBucket
+		{
+			BeforeSystem, AfterSystem
+		};
+
+	private:
+		struct StepInfo
+		{
+			StepBucket Bucket;
+			Signature Callback;
+			NxFr::StringView Tag;
+		};
+
+	public:
 		NEXUS_ENGINE_API Bootstrapper();
 		NEXUS_ENGINE_API ~Bootstrapper();
 
-		NEXUS_ENGINE_API Bootstrapper& AppendStep(const Signature& Step, NxFr::StringView Tag = "Step");
+		NEXUS_ENGINE_API Bootstrapper& AppendStep(StepBucket Bucket, NxFr::StringView Tag, const Signature& Step);
 
 		template<typename T>
 		Bootstrapper& AppendSystem() { return AppendSystem(T::GetClassType()); }
@@ -32,12 +46,11 @@ namespace NxEn
 		void RunBoot();
 		void RunUnboot();
 
-		void ExecuteSteps(bool Boot);
+		void ExecuteSteps(bool Boot, StepBucket Bucket);
 		void ExecuteSystems(bool Boot);
 
 	private:
-		NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>> Steps;
+		NxFr::List<StepInfo> Steps;
 		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> Systems;
-		NxFr::Logger Logger;
 	};
 }

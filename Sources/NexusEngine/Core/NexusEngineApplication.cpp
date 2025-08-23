@@ -40,16 +40,19 @@ namespace NxEn
 
 		Systems.CreateSystem<DebugSystem>();
 		Systems.CreateSystem<MemorySystem>();
-		InputSystem* Inputs = Systems.CreateSystem<InputSystem>();
-		Inputs->AddSchema("Application"_Sid, &InputSchema);
+		Systems.CreateSystem<InputSystem>();
+		Systems.CreateSystem<CommandsSystem>();
 		if (!IsHeadless())
 		{
-			WindowSystem* Window = Systems.CreateSystem<WindowSystem>();
-			Window->GetOnClose() += NxFr::Delegate<void()>(this, &Application::Quit);
-
+			Systems.CreateSystem<WindowSystem>();
 			Systems.CreateSystem<GUISystem>();
 		}
-		Systems.CreateSystem<CommandsSystem>();
+
+		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &InputSchema);
+		if (!IsHeadless())
+		{
+			Systems.GetSystem<WindowSystem>()->GetOnClose() += NxFr::Delegate<void()>(this, &Application::Quit);
+		}
 	}
 
 	void NexusEngineApplication::OnInitialize()
@@ -60,12 +63,12 @@ namespace NxEn
 		Bootstrap.AppendSystem<DebugSystem>();
 		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
 		Bootstrap.AppendSystem<InputSystem>();
+		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
 		if (!IsHeadless())
 		{
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
 			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>();
 		}
-		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
 	}
 
 	void NexusEngineApplication::OnShutdown()
@@ -75,19 +78,14 @@ namespace NxEn
 		Unbootstrap.AppendSystem<DebugSystem>();
 		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
+		Unbootstrap.AppendSystem<CommandsSystem>();
 		if (!IsHeadless())
 		{
 			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
 			Unbootstrap.AppendSystem<GUISystem>().AppendDependency<WindowSystem, GUISystem>();
 		}
-		Unbootstrap.AppendSystem<CommandsSystem>();
 
-		Unbootstrap.AppendStep([]()
-		{
-			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
-		}, "Application duration");
-
-		StopDebugTools();
+		//StopDebugTools();
 
 		Application::OnShutdown();
 	}
@@ -99,17 +97,17 @@ namespace NxEn
 
 		Ticks.AppendSystem<InputSystem>(Ticker::TickBucket::Input);
 		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, Ticker::LowFrequency).AppendDependency<CommandsSystem, InputSystem>();
+		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
+		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 		if (!IsHeadless())
 		{
 			Ticks.AppendSystem<GUISystem>(Ticker::TickBucket::Output);
 			Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output).AppendDependency<WindowSystem, GUISystem>();
 		}
-		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
-		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 
 		Ticks.AppendTickOnceCallback({ this, &NexusEngineApplication::ParseCommands }, NxEn::Ticker::TickBucket::Input, "Parse Commands");
 
-		StartDebugTools();
+		//StartDebugTools();
 	}
 
 	void NexusEngineApplication::ParseCommands()

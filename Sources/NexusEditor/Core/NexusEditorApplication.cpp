@@ -11,14 +11,14 @@ namespace NxEd
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 
+		Systems.CreateSystem<EditorSystem>();
+
 		if (!IsHeadless())
 		{
 			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
 			Window->SetWindowMode(NxEn::Window::Mode::Windowed);
 			Window->SetCursorMode(NxEn::Cursor::Mode::Default);
 		}
-
-		Systems.CreateSystem<EditorSystem>();
 	}
 
 	void NexusEditorApplication::OnInitialize()
@@ -27,6 +27,11 @@ namespace NxEd
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
 		Bootstrap.AppendSystem<EditorSystem>();
+
+		Bootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::AfterSystem, "Load Layout", []()
+		{
+			Application::GetInstance()->GetSystem<NxEn::GUISystem>()->LoadLayout();
+		});
 	}
 
 	void NexusEditorApplication::OnShutdown()
@@ -37,6 +42,11 @@ namespace NxEd
 
 		Unbootstrap.AppendSystem<EditorSystem>();
 
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::BeforeSystem, "Save Layout", []()
+		{
+			Application::GetInstance()->GetSystem<NxEn::GUISystem>()->SaveLayout();
+		});
+
 		NexusEngineApplication::OnShutdown();
 	}
 
@@ -46,7 +56,5 @@ namespace NxEd
 		NxEn::Ticker& Ticks = GetTicker();
 
 		Ticks.AppendSystem<EditorSystem>(NxEn::Ticker::TickBucket::Engine);
-
-		Application::GetInstance()->GetSystem<NxEn::GUISystem>()->LoadLayout();
 	}
 }

@@ -11,14 +11,14 @@ namespace NxAp
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 
+		Systems.CreateSystem<AppSystem>();
+
 		if (!IsHeadless())
 		{
 			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
 			Window->SetWindowMode(NxEn::Window::Mode::FullScreen);
 			Window->SetCursorMode(NxEn::Cursor::Mode::Captured);
 		}
-
-		Systems.CreateSystem<AppSystem>();
 	}
 
 	void NexusAppApplication::OnInitialize()
