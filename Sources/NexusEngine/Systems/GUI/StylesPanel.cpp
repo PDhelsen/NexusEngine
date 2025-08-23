@@ -10,8 +10,18 @@ namespace NxEn
 	void StylesPanel::OnInitialize()
 	{
 		Panel::OnInitialize();
+		Menu.Initialize();
 
 		Title = "Styles";
+		GuiFlags |= ImGuiWindowFlags_MenuBar;
+
+		Menu.AddMenuItem("Reload", []() { Application::GetInstance()->GetSystem<GUISystem>()->LoadTheme(); });
+	}
+
+	void StylesPanel::OnShutdown()
+	{
+		Menu.Shutdown();
+		Panel::OnShutdown();
 	}
 
 	void StylesPanel::OnEnable()
@@ -23,17 +33,23 @@ namespace NxEn
 
 	void StylesPanel::OnGui(float TimeStep)
 	{
+		static float ButtonWidth = 150.0f;
+		static float ItemSpacing = ImGui::GetStyle().ItemSpacing.x;
+
+		Menu.Tick(TimeStep);
+
 		for (auto& [Id, Style] : *Styles)
 		{
 			GUI::Scope::Style S(Style);
 
-			NxFr::String Label("Button");
+			NxFr::String Label = Id.ToString();
 
 			ImGui::AlignTextToFramePadding(); 
 			ImGui::Text(Label.C());
 			ImGui::SameLine();
 
-			ImGui::Button((Label + "##" + Id.C()).C(), {100, 20});
+			ImGui::SetCursorPosX(ButtonWidth + ItemSpacing);
+			ImGui::Button((Label + "##" + Id.C()).C(), { ButtonWidth, 0 });
 		}
 	}
 }

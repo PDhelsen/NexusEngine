@@ -11,10 +11,13 @@ namespace NxEn
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
+		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnEnable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
 	private:
+		GUI::Menu Menu;
+
 		NxFr::Dictionary<NxFr::StringId, GUI::Style>* Styles;
 	};
 }

@@ -3,9 +3,34 @@
 
 namespace NxEn
 {
+	static NxFr::StringId TextInfo = "Info"_Sid;
+	static NxFr::StringId TextWarning = "Warning"_Sid;
+	static NxFr::StringId TextError = "Error"_Sid;
+	static NxFr::StringId TextFatal = "Fatal"_Sid;
+
 	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
 	NEXUS_OBJECT_IMPLEMENTATION(ConsolePanel)
+
+	const GUI::Style& ConsolePanel::GetStyle(NxFr::LoggerVerbosity Verbosity)
+	{
+		NxFr::StringId Id = 0;
+
+		switch (Verbosity)
+		{
+		case NxFr::LoggerVerbosity::Info: Id = TextInfo; break;
+		case NxFr::LoggerVerbosity::Warning: Id = TextWarning; break;
+		case NxFr::LoggerVerbosity::Error: Id = TextError; break;
+		case NxFr::LoggerVerbosity::Fatal: Id = TextFatal; break;
+
+		case NxFr::LoggerVerbosity::None:
+		case NxFr::LoggerVerbosity::All:
+		case NxFr::LoggerVerbosity::COUNT:
+		default: Id = 0; break;
+		}
+
+		return Application::GetInstance()->GetSystem<GUISystem>()->GetStyle(Id);
+	}
 
 	ConsolePanel::ConsolePanel()
 		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(256), Search(64)
@@ -118,6 +143,7 @@ namespace NxEn
 				Log& Log = Logs[Index];
 				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || Log.Text.Contains(Search)))
 				{
+					GUI::Scope::Style Style(Log.Style);
 					ImGui::Text(Log.Text.C());
 				}
 			}
@@ -159,7 +185,7 @@ namespace NxEn
 
 	void ConsolePanel::AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message)
 	{
-		Logs.AppendConstruct(Move(Message.ToString()), FlagsVerbosity[Verbosity], FlagsChannels[Channel]);
+		Logs.AppendConstruct(Move(Message.ToString()), FlagsVerbosity[Verbosity], FlagsChannels[Channel], GetStyle(Verbosity));
 	}
 
 	void ConsolePanel::ClearLogs()

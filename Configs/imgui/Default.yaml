@@ -1,0 +1,161 @@
+ImGui:
+  FontSizeBase: 13
+  FontScaleMain: 1
+  FontScaleDpi: 1
+  Alpha: 1
+  DisabledAlpha: 0.6
+  WindowPadding: [8, 8]
+  WindowRounding: 0
+  WindowBorderSize: 1
+  WindowBorderHoverPadding: 4
+  WindowMinSize: [32, 32]
+  WindowTitleAlign: [0, 0.5]
+  WindowMenuButtonPosition: 0
+  ChildRounding: 0
+  ChildBorderSize: 1
+  PopupRounding: 0
+  PopupBorderSize: 1
+  FramePadding: [4, 3]
+  FrameRounding: 0
+  FrameBorderSize: 0
+  ItemSpacing: [8, 4]
+  ItemInnerSpacing: [4, 4]
+  CellPadding: [4, 2]
+  TouchExtraPadding: [0, 0]
+  IndentSpacing: 21
+  ColumnsMinSpacing: 6
+  ScrollbarSize: 14
+  ScrollbarRounding: 9
+  GrabMinSize: 12
+  GrabRounding: 0
+  LogSliderDeadzone: 4
+  ImageBorderSize: 0
+  TabRounding: 5
+  TabBorderSize: 0
+  TabCloseButtonMinWidthSelected: -1
+  TabCloseButtonMinWidthUnselected: 0
+  TabBarBorderSize: 1
+  TabBarOverlineSize: 1
+  TableAngledHeadersAngle: 0.61086524
+  TableAngledHeadersTextAlign: [0.5, 0]
+  TreeLinesFlags: 262144
+  TreeLinesSize: 1
+  TreeLinesRounding: 0
+  ColorButtonPosition: 1
+  ButtonTextAlign: [0.5, 0.5]
+  SelectableTextAlign: [0, 0]
+  SeparatorTextBorderSize: 3
+  SeparatorTextAlign: [0, 0.5]
+  SeparatorTextPadding: [20, 3]
+  DisplayWindowPadding: [19, 19]
+  DisplaySafeAreaPadding: [3, 3]
+  DockingSeparatorSize: 2
+  MouseCursorScale: 1
+  AntiAliasedLines: true
+  AntiAliasedLinesUseTex: true
+  AntiAliasedFill: true
+  CurveTessellationTol: 1.25
+  CircleTessellationMaxError: 0.3
+  HoverStationaryDelay: 0.15
+  HoverDelayShort: 0.15
+  HoverDelayNormal: 0.4
+  HoverFlagsForTooltipMouse: 41984
+  HoverFlagsForTooltipNav: 197632
+  Colors:
+    Text: [1, 1, 1, 1]
+    TextDisabled: [0.5, 0.5, 0.5, 1]
+    WindowBg: [0.06, 0.06, 0.06, 0.94]
+    ChildBg: [0, 0, 0, 0]
+    PopupBg: [0.08, 0.08, 0.08, 0.94]
+    Border: [0.43, 0.43, 0.5, 0.5]
+    BorderShadow: [0, 0, 0, 0]
+    FrameBg: [0.16, 0.29, 0.48, 0.54]
+    FrameBgHovered: [0.26, 0.59, 0.98, 0.4]
+    FrameBgActive: [0.26, 0.59, 0.98, 0.67]
+    TitleBg: [0.04, 0.04, 0.04, 1]
+    TitleBgActive: [0.16, 0.29, 0.48, 1]
+    TitleBgCollapsed: [0, 0, 0, 0.51]
+    MenuBarBg: [0.14, 0.14, 0.14, 1]
+    ScrollbarBg: [0.02, 0.02, 0.02, 0.53]
+    ScrollbarGrab: [0.31, 0.31, 0.31, 1]
+    ScrollbarGrabHovered: [0.41, 0.41, 0.41, 1]
+    ScrollbarGrabActive: [0.51, 0.51, 0.51, 1]
+    CheckMark: [0.26, 0.59, 0.98, 1]
+    SliderGrab: [0.24, 0.52, 0.88, 1]
+    SliderGrabActive: [0.26, 0.59, 0.98, 1]
+    Button: [0.26, 0.59, 0.98, 0.4]
+    ButtonHovered: [0.26, 0.59, 0.98, 1]
+    ButtonActive: [0.06, 0.53, 0.98, 1]
+    Header: [0.26, 0.59, 0.98, 0.31]
+    HeaderHovered: [0.26, 0.59, 0.98, 0.8]
+    HeaderActive: [0.26, 0.59, 0.98, 1]
+    Separator: [0.43, 0.43, 0.5, 0.5]
+    SeparatorHovered: [0.1, 0.4, 0.75, 0.78]
+    SeparatorActive: [0.1, 0.4, 0.75, 1]
+    ResizeGrip: [0.26, 0.59, 0.98, 0.2]
+    ResizeGripHovered: [0.26, 0.59, 0.98, 0.67]
+    ResizeGripActive: [0.26, 0.59, 0.98, 0.95]
+    InputTextCursor: [1, 1, 1, 1]
+    TabHovered: [0.26, 0.59, 0.98, 0.8]
+    Tab: [0.17999999, 0.34999996, 0.58000004, 0.862]
+    TabSelected: [0.19999999, 0.40999997, 0.68, 1]
+    TabSelectedOverline: [0.26, 0.59, 0.98, 1]
+    TabDimmed: [0.068, 0.10199998, 0.14800003, 0.9724]
+    TabDimmedSelected: [0.13599998, 0.26199996, 0.424, 1]
+    TabDimmedSelectedOverline: [0.5, 0.5, 0.5, 0]
+    DockingPreview: [0.26, 0.59, 0.98, 0.7]
+    DockingEmptyBg: [0.2, 0.2, 0.2, 1]
+    PlotLines: [0.61, 0.61, 0.61, 1]
+    PlotLinesHovered: [1, 0.43, 0.35, 1]
+    PlotHistogram: [0.9, 0.7, 0, 1]
+    PlotHistogramHovered: [1, 0.6, 0, 1]
+    TableHeaderBg: [0.19, 0.19, 0.2, 1]
+    TableBorderStrong: [0.31, 0.31, 0.35, 1]
+    TableBorderLight: [0.23, 0.23, 0.25, 1]
+    TableRowBg: [0, 0, 0, 0]
+    TableRowBgAlt: [1, 1, 1, 0.06]
+    TextLink: [0.26, 0.59, 0.98, 1]
+    TextSelectedBg: [0.26, 0.59, 0.98, 0.35]
+    TreeLines: [0.43, 0.43, 0.5, 0.5]
+    DragDropTarget: [1, 1, 0, 0.9]
+    NavCursor: [0.26, 0.59, 0.98, 1]
+    NavWindowingHighlight: [1, 1, 1, 0.7]
+    NavWindowingDimBg: [0.8, 0.8, 0.8, 0.2]
+    ModalWindowDimBg: [0.8, 0.8, 0.8, 0.35]
+Nexus:
+  Button_Normal:
+    - id: 21
+      type: 0
+      data: [0.26, 0.59, 0.98, 0.4]
+  Button_Pressed:
+    - id: 21
+      type: 0
+      data: [0.06, 0.53, 0.98, 1]
+  Warning:
+    - id: 0
+      type: 0
+      data: [0.95, 0.75, 0.05, 1]
+    - id: 21
+      type: 0
+      data: [0.45, 0.35, 0.05, 1]
+  Info:
+    - id: 0
+      type: 0
+      data: [0.95, 0.95, 0.95, 1]
+    - id: 21
+      type: 0
+      data: [0.45, 0.45, 0.45, 1]
+  Error:
+    - id: 0
+      type: 0
+      data: [0.9, 0.1, 0.1, 1]
+    - id: 21
+      type: 0
+      data: [0.45, 0.05, 0.05, 1]
+  Fatal:
+    - id: 0
+      type: 0
+      data: [0.85, 0.05, 0.65, 1]
+    - id: 21
+      type: 0
+      data: [0.42, 0.05, 0.32, 1]

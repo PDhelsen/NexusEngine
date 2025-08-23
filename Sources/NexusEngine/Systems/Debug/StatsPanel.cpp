@@ -3,6 +3,8 @@
 
 namespace NxEn
 {
+	static NxFr::StringId ButtonNormal = "Button_Normal"_Sid;
+	static NxFr::StringId ButtonPressed = "Button_Pressed"_Sid;
 	static NxFr::String Filter = 256;
 	static NxFr::StringView FilterExclude[] = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
 
@@ -65,11 +67,8 @@ namespace NxEn
 	{
 		static float ButtonWidth = 100.0f;
 
-		NxFr::Color Normal = ImGui::GetStyle().Colors[ImGuiCol_Button];
-		NxFr::Color Pressed = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
-
 		{
-			GUI::Scope::Color Color(ImGuiCol_Button, !Instruments->IsRecording() ? Normal : Pressed);
+			GUI::Scope::Style Style(!Instruments->IsRecording() ? ButtonNormal : ButtonPressed);
 			if (ImGui::Button("Instruments", { ButtonWidth , 0 }))
 			{
 				if (!Instruments->IsRecording())
@@ -86,7 +85,7 @@ namespace NxEn
 		ImGui::SameLine();
 
 		{
-			GUI::Scope::Color Color(ImGuiCol_Button, !Stats->IsRecording() ? Normal : Pressed);
+			GUI::Scope::Style Style(!Stats->IsRecording() ? ButtonNormal : ButtonPressed);
 			if (ImGui::Button("Stats", { ButtonWidth , 0 }))
 			{
 				if (!Stats->IsRecording())
