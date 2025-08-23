@@ -113,7 +113,7 @@ namespace NxEn
 
 		NEXUS_LOG(Info, Command, "%s", Info.Id.C());
 		Command** Target = GetCommands().TryGet(Info.Id);
-		if (Target == nullptr)
+		if (Target != nullptr)
 		{
 			(*Target)->Invoke(Info.Args);
 		}
