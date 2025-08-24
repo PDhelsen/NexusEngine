@@ -83,7 +83,7 @@ namespace NxEn
 
 	void Application::OnExecute()
 	{
-		Ticks.AppendTickOnceCallback({ &Time, &TimeManager::Run }, Ticker::TickBucket::Input, "Start TimeManager");
+		Ticks.AppendTickOnceCallback(Ticker::TickBucket::Input, "Start TimeManager", { &Time, &TimeManager::Run });
 	}
 
 	void Application::Run()

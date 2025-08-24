@@ -37,17 +37,12 @@ namespace NxEn
 
 			WillClose = true;
 			Hide();
-			Application::GetInstance()->GetTicker().AppendTickOnceCallback([=]() { Object::Destroy(this); }, Ticker::TickBucket::Cleanup);
+			Application::GetInstance()->GetTicker().AppendTickOnceCallback(Ticker::TickBucket::Cleanup, "Destroy Gui element", [=]() { Object::Destroy(this); });
 		}
 
 		void Element::OnInitialize()
 		{
 			SetTickable(true);
-		}
-
-		void Element::OnTick(float TimeStep)
-		{
-			OnGui(TimeStep);
 		}
 
 		void Element::OnEnable()
@@ -68,6 +63,11 @@ namespace NxEn
 			}
 
 			Application::GetSystem<GUISystem>()->UnregisterElement(this);
+		}
+
+		void Element::OnTick(float TimeStep)
+		{
+			OnGui(TimeStep);
 		}
 
 #pragma endregion

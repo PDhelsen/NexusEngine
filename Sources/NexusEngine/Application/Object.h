@@ -74,9 +74,9 @@ namespace NxEn
 	protected:
 		NEXUS_ENGINE_API virtual void OnInitialize() { };
 		NEXUS_ENGINE_API virtual void OnShutdown() { };
-		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) { };
 		NEXUS_ENGINE_API virtual void OnEnable() { };
 		NEXUS_ENGINE_API virtual void OnDisable() { };
+		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) { };
 
 	private:
 		NEXUS_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;

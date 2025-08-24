@@ -25,17 +25,17 @@ namespace NxEn
 		
 	}
 
-	void Ticker::AppendTickCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
+	void Ticker::AppendTickCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback)
 	{
 		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, false, false);
 	}
 
-	void Ticker::AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket, NxFr::StringView Tag)
+	void Ticker::AppendTickOnceCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback)
 	{
 		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, true, false);
 	}
 
-	void Ticker::RemoveTickCallback(const Signature& Callback, TickBucket Bucket)
+	void Ticker::RemoveTickCallback(TickBucket Bucket, const Signature& Callback)
 	{
 		CallbacksBuffer.AppendConstruct(Bucket, Callback, "", true, true);
 	}

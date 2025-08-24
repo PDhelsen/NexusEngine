@@ -63,9 +63,9 @@ namespace NxEn
 		NEXUS_ENGINE_API Ticker();
 		NEXUS_ENGINE_API ~Ticker();
 
-		NEXUS_ENGINE_API void AppendTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project, NxFr::StringView Tag = "Tick Callback");
-		NEXUS_ENGINE_API void AppendTickOnceCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project, NxFr::StringView Tag = "Tick Callback");
-		NEXUS_ENGINE_API void RemoveTickCallback(const Signature& Callback, TickBucket Bucket = TickBucket::Project);
+		NEXUS_ENGINE_API void AppendTickCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
+		NEXUS_ENGINE_API void AppendTickOnceCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
+		NEXUS_ENGINE_API void RemoveTickCallback(TickBucket Bucket, const Signature& Callback);
 
 		template<typename T>
 		Ticker& AppendSystem(TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false) { return AppendSystem(T::GetClassType(), Bucket, TickRate, FixedTimeStep); }

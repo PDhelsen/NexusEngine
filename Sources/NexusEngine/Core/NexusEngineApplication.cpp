@@ -114,11 +114,11 @@ namespace NxEn
 			Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output).AppendDependency<WindowSystem, GUISystem>();
 		}
 
-		Ticks.AppendTickOnceCallback({ this, &NexusEngineApplication::ParseCommands }, NxEn::Ticker::TickBucket::Input, "Parse Commands");
-		Ticks.AppendTickOnceCallback([]()
+		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands });
+		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Auto start debug system", []()
 		{
 				Application::GetInstance()->GetSystem<DebugSystem>()->AutoStart();
-		}, NxEn::Ticker::TickBucket::Input, "Auto start debug system");
+		});
 	}
 
 	void NexusEngineApplication::ParseCommands()

@@ -38,8 +38,6 @@ namespace NxEd
 	{
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Application::GetInstance()->GetSystem<NxEn::GUISystem>()->SaveLayout();
-
 		Unbootstrap.AppendSystem<EditorSystem>();
 
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::BeforeSystem, "Save Layout", []()

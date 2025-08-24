@@ -30,9 +30,9 @@ namespace NxEn
 
 		protected:
 			NEXUS_ENGINE_API virtual void OnInitialize() override;
-			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnEnable() override;
 			NEXUS_ENGINE_API virtual void OnDisable() override;
+			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) = 0;
 
 			NEXUS_ENGINE_API bool IsManual() const { return Manual; }
