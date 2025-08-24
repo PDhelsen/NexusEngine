@@ -32,16 +32,12 @@ namespace NxEn
 
 	NxFr::Allocator* MemorySystem::GetAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
-		NEXUS_LOG(Info, Verbose, "Memory - Get Allocator");
-
 		Size = Type == AllocatorType::Small ? GetSmallAllocationSize(Size) : Size;
 		return FindOrCreateAllocator(Type, Size, Alignement);
 	}
 
 	NxFr::HandleManager* MemorySystem::GetHandlesManager()
 	{
-		NEXUS_LOG(Info, Verbose, "Memory - Get Handles");
-
 		return FindOrCreateHandlesManager();
 	}
 
