@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Flow/Bootstrapper.h"
 
-#include "NexusFramework/Core/NexusFrameworkGlobals.h"
-
 namespace NxEn
 {
 	Bootstrapper::Bootstrapper()
