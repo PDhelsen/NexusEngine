@@ -34,7 +34,6 @@ namespace NxEn
 			bool FixedTimeStep;
 
 			SystemInfo(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep);
-			void Patch(NxFr::StringId Type);
 		};
 
 		struct SystemRange
@@ -86,7 +85,6 @@ namespace NxEn
 		float ComputeTimeStep(SystemInfo& Info, float DeltaTime) const;
 		float ComputeTickRate(float TickRate, bool FixedTimeStep) const;
 		void FlushCallbackBuffer();
-		void PatchSystem(NxFr::StringId Type);
 
 	private:
 		NxFr::List<SystemInfo> Systems;

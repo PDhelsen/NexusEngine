@@ -66,10 +66,6 @@ namespace NxEn
 			NxFr::Platform::GetInstance()->SetWorkingDirectory(ProjectInfo.GetRootPath());
 		});
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Setup Paths & Folders", &NxFr::Paths::SetupPathsAndFolders);
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Connect Ticker to SystemManager", [&]()
-		{
-			Systems.GetOnSystemChanged() += { &Ticks, & Ticker::PatchSystem };
-		});
 	}
 
 	void Application::OnShutdown()
@@ -77,10 +73,6 @@ namespace NxEn
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Application duration", []()
 		{
 			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
-		});
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Disconnect Ticker from SystemManager", [&]()
-		{
-			Systems.GetOnSystemChanged() -= { &Ticks, & Ticker::PatchSystem };
 		});
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Clear Systems", { &Systems, &SystemManager::ClearSystems });
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Cleanup Folders", &NxFr::Paths::CleanupFolders);

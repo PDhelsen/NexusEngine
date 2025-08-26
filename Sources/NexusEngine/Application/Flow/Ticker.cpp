@@ -6,11 +6,6 @@ namespace NxEn
 	Ticker::SystemInfo::SystemInfo(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
 		: Instance(nullptr), Bucket(Bucket), Timer(0), TickRate(TickRate), FixedTimeStep(FixedTimeStep)
 	{
-		Patch(Type);
-	}
-
-	void Ticker::SystemInfo::Patch(NxFr::StringId Type)
-	{
 		Instance = Application::GetInstance()->GetSystems().GetSystem(Type);
 	}
 
@@ -269,18 +264,5 @@ namespace NxEn
 		}
 
 		CallbacksBuffer.Clear();
-	}
-
-	void Ticker::PatchSystem(NxFr::StringId Type)
-	{
-		for (auto& Info : Systems)
-		{
-			if (Info.Instance->GetObjectType() == Type)
-			{
-				Info.Patch(Type);
-				NEXUS_LOG(Info, Application, "System %s patch", Type.C());
-				return;
-			}
-		}
 	}
 }
