@@ -38,6 +38,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnAxisChanged(Input::Axis Axis, float Delta);
 		NEXUS_ENGINE_API void OnMouseChanged(NxFr::Vector2f Position);
 
+	private:
 		NEXUS_ENGINE_API void UpdateButtons();
 		NEXUS_ENGINE_API void UpdateAxises();
 		NEXUS_ENGINE_API void UpdateModifiers();

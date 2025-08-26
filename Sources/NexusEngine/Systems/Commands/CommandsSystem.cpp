@@ -111,17 +111,27 @@ namespace NxEn
 
 		Current = &Info;
 
-		NEXUS_LOG(Info, Command, "%s", Info.Id.C());
 		Command** Target = GetCommands().TryGet(Info.Id);
-		if (Target != nullptr)
+		bool IsValid = Target != nullptr;
+
+		if (!IsValid)
 		{
-			(*Target)->Invoke(Info.Args);
+			NEXUS_LOG(Warning, System, "Invalid command: %s", Info.Id.C());
+		}
+		else if (!Info.Args.IsEmpty())
+		{
+			NEXUS_LOG(Info, Command, "%s: %s", Info.Id.C(), Info.Args.C());
 		}
 		else
 		{
-			NEXUS_LOG(Warning, System, "Invalid command %s", Info.Id.C());
+			NEXUS_LOG(Info, Command, "%s", Info.Id.C());
 		}
 
+		if (IsValid)
+		{
+			(*Target)->Invoke(Info.Args);
+		}
+		
 		Current = nullptr;
 	}
 

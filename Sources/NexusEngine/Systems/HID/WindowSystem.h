@@ -49,6 +49,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnMoved(NxFr::Vector2i Position);
 		NEXUS_ENGINE_API void OnResized(NxFr::Vector2i Size);
 
+	private:
 		NEXUS_ENGINE_API void FetchMonitors();
 		NEXUS_ENGINE_API void CreateWindow();
 		NEXUS_ENGINE_API void DestroyWindow();

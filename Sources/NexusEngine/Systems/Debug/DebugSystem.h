@@ -23,6 +23,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
+	private:
 		NEXUS_ENGINE_API void AutoStart();
 
 	private:

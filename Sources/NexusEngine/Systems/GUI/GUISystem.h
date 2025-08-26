@@ -54,6 +54,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
+	private:
 		NEXUS_ENGINE_API void AddMenuWindowPanels() const;
 		NEXUS_ENGINE_API void AddMenuWindowPanels(NxEn::GUI::Panel* Panel) const;
 		NEXUS_ENGINE_API void AddMenuWindowLayouts() const;
