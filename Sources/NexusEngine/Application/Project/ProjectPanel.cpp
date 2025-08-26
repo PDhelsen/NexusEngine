@@ -7,7 +7,7 @@ namespace NxEn
 
 	const static GUI::Menu::Item MenuItemProject = GUI::Menu::Item::Create("File/Project", NxFr::Delegate<void()>([]()
 	{
-		Application::GetInstance()->GetSystem<CommandsSystem>()->Execute("GUI.Panel,ProjectPanel");
+		Application::GetSystem<CommandsSystem>()->Execute("GUI.Panel,ProjectPanel");
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(ProjectPanel)

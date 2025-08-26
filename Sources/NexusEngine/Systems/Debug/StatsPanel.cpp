@@ -32,7 +32,7 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 
-		DebugSystem* Debug = Application::GetInstance()->GetSystem<DebugSystem>();
+		DebugSystem* Debug = Application::GetSystem<DebugSystem>();
 		Instruments = Debug->GetInstrumentor();
 		Stats = Debug->GetStats();
 

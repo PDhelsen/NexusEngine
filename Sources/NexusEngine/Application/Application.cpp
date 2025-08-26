@@ -12,6 +12,11 @@ namespace NxEn
 		return Instance;
 	}
 
+	System* Application::GetSystem(NxFr::StringId Id)
+	{
+		return Instance->GetSystems().GetSystem(Id);
+	}
+
 	Application::Application(const Project& ProjectInfo)
 		: ProjectInfo(ProjectInfo), Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
 	{

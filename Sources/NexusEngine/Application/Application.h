@@ -44,9 +44,10 @@ namespace NxEn
 		template<typename T>
 		static T* GetInstance() { return (T*)GetInstance(); }
 		template<typename T>
-		static T* GetSystem() { return GetInstance()->GetSystems().GetSystem<T>(); }
+		static T* GetSystem() { return (T*)GetSystem(T::GetClassType()); }
 
 		NEXUS_ENGINE_API static Application* GetInstance();
+		NEXUS_ENGINE_API static System* GetSystem(NxFr::StringId Id);
 
 		NEXUS_ENGINE_API Application(const Project& ProjectInfo);
 		NEXUS_ENGINE_API virtual ~Application();

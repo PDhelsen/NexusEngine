@@ -28,7 +28,7 @@ namespace NxEn
 
 	const static GUI::Menu::Item MenuItemQuit = GUI::Menu::Item::Create("File/Quit", NxFr::Delegate<void()>([]()
 	{
-		Application::GetInstance()->GetSystem<CommandsSystem>()->Execute("Application.Quit");
+		Application::GetSystem<CommandsSystem>()->Execute("Application.Quit");
 	}), "", 2);
 
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
@@ -75,7 +75,7 @@ namespace NxEn
 
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Initialize Stats", []()
 		{
-			NxFr::Stats* Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
+			NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
 			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
 			Stats->Initialize();
@@ -117,7 +117,7 @@ namespace NxEn
 		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands });
 		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Auto start debug system", []()
 		{
-				Application::GetInstance()->GetSystem<DebugSystem>()->AutoStart();
+				Application::GetSystem<DebugSystem>()->AutoStart();
 		});
 	}
 

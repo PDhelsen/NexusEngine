@@ -72,7 +72,7 @@ namespace NxEn
 		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParams.Smallest) && NxFr::Math::IsPowerOfTwo(SmallParams.Largest), System, "SmallAllocatorParams have to be PowerOfTwo");
 		NEXUS_ASSERT(Sizes[0] == 0, System, "Can't set the size of the Raw allocator");
 
-		NxFr::Stats* Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
+		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, UnsignedInteger, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, UnsignedInteger, Set);

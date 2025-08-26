@@ -15,7 +15,7 @@ namespace NxEn
 		Title = "Styles";
 		GuiFlags |= ImGuiWindowFlags_MenuBar;
 
-		Menu.AddMenuItem("Reload", []() { Application::GetInstance()->GetSystem<GUISystem>()->LoadTheme(); });
+		Menu.AddMenuItem("Reload", []() { Application::GetSystem<GUISystem>()->LoadTheme(); });
 	}
 
 	void StylesPanel::OnShutdown()
@@ -28,7 +28,7 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 
-		Styles = &Application::GetInstance()->GetSystem<GUISystem>()->Styles;
+		Styles = &Application::GetSystem<GUISystem>()->Styles;
 	}
 
 	void StylesPanel::OnGui(float TimeStep)

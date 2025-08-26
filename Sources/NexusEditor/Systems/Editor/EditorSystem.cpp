@@ -10,7 +10,7 @@ namespace NxEd
 
 	const static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", NxFr::Delegate<void()>([]()
 	{
-		NxEn::Application::GetInstance()->GetSystem<NxEn::CommandsSystem>()->Execute("Editor.Save");
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Editor.Save");
 	}), "", 1);
 
 	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)

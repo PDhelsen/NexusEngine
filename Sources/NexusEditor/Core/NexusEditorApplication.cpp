@@ -30,7 +30,7 @@ namespace NxEd
 
 		Bootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::AfterSystem, "Load Layout", []()
 		{
-			Application::GetInstance()->GetSystem<NxEn::GUISystem>()->LoadLayout();
+			Application::GetSystem<NxEn::GUISystem>()->LoadLayout();
 		});
 	}
 
@@ -42,7 +42,7 @@ namespace NxEd
 
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::BeforeSystem, "Save Layout", []()
 		{
-			Application::GetInstance()->GetSystem<NxEn::GUISystem>()->SaveLayout();
+			Application::GetSystem<NxEn::GUISystem>()->SaveLayout();
 		});
 
 		NexusEngineApplication::OnShutdown();

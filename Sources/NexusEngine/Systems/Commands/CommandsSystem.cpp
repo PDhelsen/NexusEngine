@@ -23,7 +23,7 @@ namespace NxEn
 
 	const static Command CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
 	{
-		Application::GetInstance()->GetSystem<CommandsSystem>()->Help();
+		Application::GetSystem<CommandsSystem>()->Help();
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(CommandsSystem)
@@ -138,7 +138,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NxFr::Logger* Logger = Application::GetInstance()->GetSystem<DebugSystem>()->GetLogger();
+		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->AddChannel(NxFr::LoggerChannel::Command, true);
 
 		Alloc = new Allocator(AllocatorType::General);

@@ -49,12 +49,12 @@ namespace NxEn
 
 	const static Command CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
 	{
-		Application::GetInstance()->GetSystem<GUISystem>()->SaveLayout(Name);
+		Application::GetSystem<GUISystem>()->SaveLayout(Name);
 	}));
 
 	const static Command CmdGuiLayoutLoad = Command::Create("GUI.Layout.Load"_Sid, "Load gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
 	{
-		Application::GetInstance()->GetSystem<GUISystem>()->LoadLayout(Name);
+		Application::GetSystem<GUISystem>()->LoadLayout(Name);
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
@@ -207,7 +207,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NxFr::Stats* Stats = Application::GetInstance()->GetSystem<DebugSystem>()->GetStats();
+		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, UnsignedInteger, Set);
 
 		Imgui::Initialize();
@@ -269,7 +269,7 @@ namespace NxEn
 		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]()
 		{
 			NxFr::String Cmd = NxFr::StringView("GUI.Panel,") + Panel->GetObjectType().C();
-			Application::GetInstance()->GetSystem<CommandsSystem>()->Execute(Cmd);
+			Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		});
 	}
 
@@ -282,7 +282,7 @@ namespace NxEn
 			NxFr::Path Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Paths::Configs + Folder);
 			if (!Path.IsValid()) return;
 			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save,") + NxFr::Path::GetFileName(Path);
-			NxEn::Application::GetInstance()->GetSystem<CommandsSystem>()->Execute(Cmd);
+			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, "", 1);
 
 		NxFr::Path Path = GetSettingsPath("Layout", SavedLayoutName, LayoutExtension);
@@ -308,7 +308,7 @@ namespace NxEn
 		Menu.AddMenuItem("Window/Layouts/" + Name, [=]()
 		{
 			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Load,") + Name;
-			NxEn::Application::GetInstance()->GetSystem<CommandsSystem>()->Execute(Cmd);
+			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		});
 	}
 

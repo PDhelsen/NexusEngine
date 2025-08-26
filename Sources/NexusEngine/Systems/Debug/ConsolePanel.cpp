@@ -29,7 +29,7 @@ namespace NxEn
 		default: Id = 0; break;
 		}
 
-		return Application::GetInstance()->GetSystem<GUISystem>()->GetStyle(Id);
+		return Application::GetSystem<GUISystem>()->GetStyle(Id);
 	}
 
 	ConsolePanel::ConsolePanel()
@@ -60,8 +60,7 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 
-		Application* App = Application::GetInstance();
-		NxFr::Logger* Logger = App->GetSystem<DebugSystem>()->GetLogger();
+		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
 
 		for (uint64 Index = 0; Index < NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::COUNT); ++Index)
@@ -93,8 +92,7 @@ namespace NxEn
 		FlagsChannels.Clear();
 		Menu.Clear();
 
-		Application* App = Application::GetInstance();
-		NxFr::Logger* Logger = App->GetSystem<DebugSystem>()->GetLogger();
+		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->UnregisterCallback({ this, &ConsolePanel::AddLogs });
 
 		Panel::OnDisable();
@@ -178,7 +176,7 @@ namespace NxEn
 	{
 		Command.Validate();
 
-		Application::GetInstance()->GetSystem<CommandsSystem>()->Run(Command);
+		Application::GetSystem<CommandsSystem>()->Run(Command);
 
 		Command.Clear();
 	}
