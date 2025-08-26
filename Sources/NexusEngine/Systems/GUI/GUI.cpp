@@ -70,6 +70,11 @@ namespace NxEn
 			OnGui(TimeStep);
 		}
 
+		void Element::UpdateId(NxFr::StringView Name)
+		{
+			Id = Name + "##" + GetObjectType().C();
+		}
+
 #pragma endregion
 
 #pragma region Window
@@ -92,6 +97,7 @@ namespace NxEn
 			Element::OnInitialize();
 
 			MainMenu->Initialize();
+			UpdateId("");
 
 			GuiFlags =
 				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
@@ -125,7 +131,7 @@ namespace NxEn
 		void Window::OnGui(float TimeStep)
 		{
 			MainMenu->Tick(TimeStep);
-			ImGui::DockSpaceOverViewport(ImGui::GetID("Window"));
+			ImGui::DockSpaceOverViewport(ImGui::GetID(GetId().C()));
 		}
 
 #pragma endregion
@@ -153,6 +159,7 @@ namespace NxEn
 		Panel& Panel::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title.ToString();
+			UpdateId(Title);
 			return *this;
 		}
 
@@ -166,8 +173,8 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			GuiFlags = ImGuiWindowFlags_NoCollapse;
-			Title = GetObjectType().ToString();
+			SetGuiFlag(ImGuiWindowFlags_NoCollapse);
+			SetTitle(GetObjectType().C());
 		}
 
 		void Panel::OnTick(float TimeStep)
@@ -179,7 +186,7 @@ namespace NxEn
 				ImGui::SetNextWindowDockID(ImGui::GetID(Dock.C()), ImGuiCond_FirstUseEver);
 			}
 
-			if (ImGui::Begin(Title.C(), &IsOpen, GuiFlags))
+			if (ImGui::Begin(GetId().C(), &IsOpen, GuiFlags))
 			{
 				OnGui(TimeStep);
 			}
@@ -432,6 +439,7 @@ namespace NxEn
 		Popup& Popup::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title.ToString();
+			UpdateId(Title);
 			return *this;
 		}
 
@@ -457,7 +465,8 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			GuiFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+			SetGuiFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
+			SetTitle(GetObjectType().C());
 		}
 
 		void Popup::OnTick(float TimeStep)
@@ -517,6 +526,7 @@ namespace NxEn
 		ProgressBar& ProgressBar::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title.ToString();
+			UpdateId(Title);
 			return *this;
 		}
 
@@ -542,7 +552,8 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			GuiFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
+			SetGuiFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
+			SetTitle(GetObjectType().C());
 		}
 
 		void ProgressBar::OnTick(float TimeStep)

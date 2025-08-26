@@ -28,6 +28,8 @@ namespace NxEn
 			NEXUS_ENGINE_API void Hide();
 			NEXUS_ENGINE_API void Close();
 
+			NEXUS_ENGINE_API NxFr::StringView GetId() const { return Id; }
+
 		protected:
 			NEXUS_ENGINE_API virtual void OnInitialize() override;
 			NEXUS_ENGINE_API virtual void OnEnable() override;
@@ -35,10 +37,13 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) = 0;
 
+			NEXUS_ENGINE_API void UpdateId(NxFr::StringView Name);
+
 			NEXUS_ENGINE_API bool IsManual() const { return Manual; }
 			NEXUS_ENGINE_API void SetManual(bool Manual) { this->Manual = Manual; }
 
 		private:
+			NxFr::String Id;
 			bool Manual;
 			bool WillClose;
 		};
@@ -93,7 +98,7 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
-		protected:
+		private:
 			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
 			NxFr::String Dock;
@@ -162,7 +167,7 @@ namespace NxEn
 			void DrawMenu(float TimeStep);
 			void DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const;
 
-		protected:
+		private:
 			NxFr::List<Item> Items;
 			NxFr::Dictionary<NxFr::GUID, NxFr::String> Labels;
 			bool Main;
@@ -199,7 +204,7 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) { };
 
-		protected:
+		private:
 			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
 			NxFr::String Message;
@@ -232,7 +237,7 @@ namespace NxEn
 
 			float ComputePercentage(float TimeStep);
 
-		protected:
+		private:
 			ImGuiWindowFlags GuiFlags;
 			NxFr::String Title;
 			NxFr::String Message;

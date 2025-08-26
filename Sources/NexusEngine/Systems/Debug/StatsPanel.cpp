@@ -25,7 +25,7 @@ namespace NxEn
 	{
 		Panel::OnInitialize();
 
-		Title = "Statistiques";
+		SetTitle("Statistiques");
 	}
 
 	void StatsPanel::OnEnable()

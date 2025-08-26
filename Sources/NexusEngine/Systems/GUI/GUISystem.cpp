@@ -57,6 +57,12 @@ namespace NxEn
 		Application::GetSystem<GUISystem>()->LoadLayout(Name);
 	}));
 
+	static NxFr::StringId ImGuiToNexusId(NxFr::StringView Name)
+	{
+		NxFr::StringView Id = Name.Split("##", 1).Split("/");
+		return NxFr::StringId(Id);
+	}
+
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUI::Window* GUISystem::GetWindow()
@@ -201,6 +207,15 @@ namespace NxEn
 	{
 		Styles.Remove(Id);
 		NEXUS_LOG(Info, System, "Unregister GUI style: %s", Id.C());
+	}
+
+	GUI::Panel* GUISystem::GetActivePanel() const
+	{
+		NxFr::StringView Name = ImGui::GetCurrentContext()->NavWindow->RootWindow->Name;
+		NxFr::StringId Id = ImGuiToNexusId(Name);
+		NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& Panels = GetPanels();
+		GUI::Panel** Active = Panels.TryGet(Id);
+		return Active ? *Active : nullptr;
 	}
 
 	void GUISystem::OnInitialize()

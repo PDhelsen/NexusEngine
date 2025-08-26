@@ -49,6 +49,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void AppendStyle(NxFr::StringId Id, const GUI::Style& Style);
 		NEXUS_ENGINE_API void RemoveStyle(NxFr::StringId Id);
 
+		NEXUS_ENGINE_API GUI::Panel* GetActivePanel() const;
+
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnShutdown() override;
