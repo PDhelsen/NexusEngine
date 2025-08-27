@@ -232,12 +232,12 @@ namespace NxEn
 		{
 			NEXUS_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%d)", MenuPriorityOffsetBase);
 
-			if		(Path.Start(MenuPathProject))	Priority -= MenuPriorityOffsetProject;
-			else if (Path.Start(MenuPathTools))		Priority -= MenuPriorityOffsetTools;
-			else if (Path.Start(MenuPathObject))	Priority -= MenuPriorityOffsetObject;
-			else if (Path.Start(MenuPathWindow))	Priority -= MenuPriorityOffsetWindow;
-			else if (Path.Start(MenuPathEdit))		Priority -= MenuPriorityOffsetEdit;
-			else if (Path.Start(MenuPathFile))		Priority -= MenuPriorityOffsetFile;
+			if		(Path.Start(MenuPathProject))	this->Priority -= MenuPriorityOffsetProject;
+			else if (Path.Start(MenuPathTools))		this->Priority -= MenuPriorityOffsetTools;
+			else if (Path.Start(MenuPathObject))	this->Priority -= MenuPriorityOffsetObject;
+			else if (Path.Start(MenuPathWindow))	this->Priority -= MenuPriorityOffsetWindow;
+			else if (Path.Start(MenuPathEdit))		this->Priority -= MenuPriorityOffsetEdit;
+			else if (Path.Start(MenuPathFile))		this->Priority -= MenuPriorityOffsetFile;
 
 		}
 
