@@ -70,9 +70,9 @@ namespace NxEn
 			OnGui(TimeStep);
 		}
 
-		void Element::UpdateId(NxFr::StringView Name)
+		void Element::UpdateImGuiId(NxFr::StringView Name)
 		{
-			Id = Name + "##" + GetObjectType().C();
+			ImGuiId = Name + "##" + GetObjectType().C();
 		}
 
 #pragma endregion
@@ -97,7 +97,7 @@ namespace NxEn
 			Element::OnInitialize();
 
 			MainMenu->Initialize();
-			UpdateId("");
+			UpdateImGuiId("");
 
 			GuiFlags =
 				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
@@ -131,7 +131,7 @@ namespace NxEn
 		void Window::OnGui(float TimeStep)
 		{
 			MainMenu->Tick(TimeStep);
-			ImGui::DockSpaceOverViewport(ImGui::GetID(GetId().C()));
+			ImGui::DockSpaceOverViewport(ImGui::GetID(GetImGuiId().C()));
 		}
 
 #pragma endregion
@@ -159,7 +159,7 @@ namespace NxEn
 		Panel& Panel::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title.ToString();
-			UpdateId(Title);
+			UpdateImGuiId(Title);
 			return *this;
 		}
 
@@ -186,7 +186,7 @@ namespace NxEn
 				ImGui::SetNextWindowDockID(ImGui::GetID(Dock.C()), ImGuiCond_FirstUseEver);
 			}
 
-			if (ImGui::Begin(GetId().C(), &IsOpen, GuiFlags))
+			if (ImGui::Begin(GetImGuiId().C(), &IsOpen, GuiFlags))
 			{
 				OnGui(TimeStep);
 			}
@@ -439,7 +439,7 @@ namespace NxEn
 		Popup& Popup::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title.ToString();
-			UpdateId(Title);
+			UpdateImGuiId(Title);
 			return *this;
 		}
 
@@ -526,7 +526,7 @@ namespace NxEn
 		ProgressBar& ProgressBar::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title.ToString();
-			UpdateId(Title);
+			UpdateImGuiId(Title);
 			return *this;
 		}
 

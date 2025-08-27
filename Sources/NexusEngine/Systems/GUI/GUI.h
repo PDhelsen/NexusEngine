@@ -28,7 +28,7 @@ namespace NxEn
 			NEXUS_ENGINE_API void Hide();
 			NEXUS_ENGINE_API void Close();
 
-			NEXUS_ENGINE_API NxFr::StringView GetId() const { return Id; }
+			NEXUS_ENGINE_API NxFr::StringView GetImGuiId() const { return ImGuiId; }
 
 		protected:
 			NEXUS_ENGINE_API virtual void OnInitialize() override;
@@ -37,13 +37,13 @@ namespace NxEn
 			NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
 			NEXUS_ENGINE_API virtual void OnGui(float TimeStep) = 0;
 
-			NEXUS_ENGINE_API void UpdateId(NxFr::StringView Name);
+			NEXUS_ENGINE_API void UpdateImGuiId(NxFr::StringView Name);
 
 			NEXUS_ENGINE_API bool IsManual() const { return Manual; }
 			NEXUS_ENGINE_API void SetManual(bool Manual) { this->Manual = Manual; }
 
 		private:
-			NxFr::String Id;
+			NxFr::String ImGuiId;
 			bool Manual;
 			bool WillClose;
 		};
