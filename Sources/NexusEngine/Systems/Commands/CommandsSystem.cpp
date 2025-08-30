@@ -82,7 +82,7 @@ namespace NxEn
 	}
 
 	CommandsSystem::CommandsSystem()
-		: Queue(nullptr), Current(nullptr), Alloc(nullptr)
+		: Queue(), Current(nullptr)
 	{
 	}
 
@@ -97,7 +97,7 @@ namespace NxEn
 
 	void CommandsSystem::Run(const CommandInfo& Info)
 	{
-		Queue->AppendConstruct(Info);
+		Queue.AppendConstruct(Info);
 	}
 
 	void CommandsSystem::Execute(NxFr::StringView Cmd)
@@ -150,17 +150,6 @@ namespace NxEn
 
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->AddChannel(NxFr::LoggerChannel::Command, true);
-
-		Alloc = new Allocator(AllocatorType::General);
-		Queue = new NxFr::Queue<CommandInfo>(Alloc);
-	}
-
-	void CommandsSystem::OnShutdown()
-	{
-		System::OnShutdown();
-
-		delete Queue;
-		delete Alloc;
 	}
 
 	void CommandsSystem::OnTick(float TimeStep)
@@ -184,9 +173,9 @@ namespace NxEn
 
 	void CommandsSystem::FlushCommands(float TimeStep)
 	{
-		while (Queue->GetCount() > 0)
+		while (Queue.GetCount() > 0)
 		{
-			CommandInfo& Info = Queue->Get();
+			CommandInfo& Info = Queue.Get();
 
 			Info.Delay -= TimeStep;
 			if (Info.Delay > 0.0f)
@@ -195,7 +184,7 @@ namespace NxEn
 			}
 
 			Execute(Info);
-			Queue->Remove();
+			Queue.Remove();
 		}
 	}
 }

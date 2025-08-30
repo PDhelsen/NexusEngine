@@ -92,9 +92,9 @@ namespace NxEd
 	void EditSystem::Select(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		auto Iterator = FindInfo(Ctx, Target);
-		if (Iterator == Selection->End())
+		if (Iterator == Selection.End())
 		{
-			Selection->AppendConstruct(Ctx, Target->GetId(), nullptr);
+			Selection.AppendConstruct(Ctx, Target->GetId(), nullptr);
 		}
 	}
 
@@ -121,9 +121,9 @@ namespace NxEd
 	void EditSystem::Unselect(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		auto Iterator = FindInfo(Ctx, Target);
-		if (Iterator != Selection->End())
+		if (Iterator != Selection.End())
 		{
-			Selection->Remove(Iterator.Id());
+			Selection.Remove(Iterator.Id());
 		}
 	}
 
@@ -143,8 +143,8 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::List<NxEn::Object*> Targets(Selection->GetCount());
-		for (auto& Info : *Selection)
+		NxFr::List<NxEn::Object*> Targets(Selection.GetCount());
+		for (auto& Info : Selection)
 		{
 			NxEn::Object* Target = Context.TryGet(Info.Target, Info.Context);
 			if (!Target)
@@ -179,25 +179,25 @@ namespace NxEd
 
 	bool EditSystem::IsSelected(NxEn::Object* Target, NxFr::StringId Ctx) const
 	{
-		return FindInfo(Ctx, Target) != Selection->End();
+		return FindInfo(Ctx, Target) != Selection.End();
 	}
 
 	NxEn::Object* EditSystem::Selected() const
 	{
-		if (Selection->IsEmpty())
+		if (Selection.IsEmpty())
 		{
 			return nullptr;
 		}
 
-		const Edit::Info& Info = Selection->Get(0);
+		const Edit::Info& Info = Selection.Get(0);
 		const Edit::Context& Context = GetContext(Info.Context);
 		return Context.TryGet(Info.Target);
 	}
 
 	NxFr::List<NxEn::Object*> EditSystem::SelectedAll() const
 	{
-		NxFr::List<NxEn::Object*> Result(Selection->GetCount());
-		for (auto& Info : *Selection)
+		NxFr::List<NxEn::Object*> Result(Selection.GetCount());
+		for (auto& Info : Selection)
 		{
 			const Edit::Context& Context = GetContext(Info.Context);
 			NxEn::Object* Target = Context.TryGet(Info.Target);
@@ -214,17 +214,17 @@ namespace NxEd
 
 	uint64 EditSystem::SelectionCount() const
 	{
-		return Selection->GetCount();
+		return Selection.GetCount();
 	}
 
 	void EditSystem::Rename()
 	{
-		if (Selection->IsEmpty())
+		if (Selection.IsEmpty())
 		{
 			return;
 		}
 
-		const Edit::Info& Info = Selection->Get(0);
+		const Edit::Info& Info = Selection.Get(0);
 		const Edit::Context& Context = GetContext(Info.Context);
 		NxEn::Object* Target = Context.TryGet(Info.Target);
 		if (!Target)
@@ -242,7 +242,7 @@ namespace NxEd
 
 	void EditSystem::Delete()
 	{
-		for (auto& Info : *Selection)
+		for (auto& Info : Selection)
 		{
 			const Edit::Context& Context = GetContext(Info.Context);
 			NxEn::Object* Target = Context.TryGet(Info.Target);
@@ -259,7 +259,7 @@ namespace NxEd
 			Context.Delete(Target);
 		}
 
-		Selection->Clear();
+		Selection.Clear();
 	}
 
 	void EditSystem::Cut()
@@ -271,12 +271,10 @@ namespace NxEd
 
 	void EditSystem::Copy()
 	{
-		NxFr::AllocatorContext Alloc(Allocator);
+		Clipboard.Clear();
+		Clipboard.Grow(Selection.GetCount());
 
-		Clipboard->Clear();
-		Clipboard->Grow(Selection->GetCount());
-
-		for (auto& Info : *Selection)
+		for (auto& Info : Selection)
 		{
 			const Edit::Context& Context = GetContext(Info.Context);
 			NxEn::Object* Target = Context.TryGet(Info.Target);
@@ -286,15 +284,13 @@ namespace NxEd
 			}
 
 			NxEn::Object* Data = Target->Clone();
-			Clipboard->AppendConstruct(Info.Context, Info.Target, Data);
+			Clipboard.AppendConstruct(Info.Context, Info.Target, Data);
 		}
 	}
 
 	void EditSystem::Paste()
 	{
-		NxFr::AllocatorContext Alloc(Allocator);
-
-		for (auto& Info : *Clipboard)
+		for (auto& Info : Clipboard)
 		{
 			const Edit::Context& Context = GetContext(Info.Context);
 			if (!Info.Data)
@@ -310,7 +306,7 @@ namespace NxEd
 			Context.Paste(Info.Data);
 		}
 
-		Clipboard->Clear();
+		Clipboard.Clear();
 	}
 
 	void EditSystem::Duplicate()
@@ -321,12 +317,12 @@ namespace NxEd
 
 	void EditSystem::Undo()
 	{
-		if (HistoryUndo->IsEmpty())
+		if (HistoryUndo.IsEmpty())
 		{
 			return;
 		}
 
-		const Edit::Info& Info = HistoryUndo->Last();
+		const Edit::Info& Info = HistoryUndo.Last();
 		const Edit::Context& Context = GetContext(Info.Context);
 		NxEn::Object* Target = Context.TryGet(Info.Target);
 		if (!Target)
@@ -337,18 +333,17 @@ namespace NxEd
 		RecordRedo(Target, Info.Context);
 		Target->Clone(Info.Data);
 
-		NxFr::AllocatorContext Alloc(Allocator);
-		HistoryUndo->RemoveBack();
+		HistoryUndo.RemoveBack();
 	}
 
 	void EditSystem::Redo()
 	{
-		if (HistoryRedo->IsEmpty())
+		if (HistoryRedo.IsEmpty())
 		{
 			return;
 		}
 
-		const Edit::Info& Info = HistoryRedo->Last();
+		const Edit::Info& Info = HistoryRedo.Last();
 		const Edit::Context& Context = GetContext(Info.Context);
 		NxEn::Object* Target = Context.TryGet(Info.Target);
 		if (!Target)
@@ -359,76 +354,66 @@ namespace NxEd
 		RecordUndo(Target, Info.Context);
 		Target->Clone(Info.Data);
 
-		NxFr::AllocatorContext Alloc(Allocator);
-		HistoryRedo->RemoveBack();
+		HistoryRedo.RemoveBack();
 	}
 
 	void EditSystem::RecordUndo(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		const Edit::Context& Context = GetCtx(Ctx);
-		if (HistoryUndo->GetCount() >= HistoryCapacity)
+		if (HistoryUndo.GetCount() >= HistoryCapacity)
 		{
-			HistoryUndo->RemoveFront();
+			HistoryUndo.RemoveFront();
 		}
 
-		NxFr::AllocatorContext Alloc(Allocator);
-		HistoryUndo->AppendBackConstruct(Context.Id, Target->GetId(), Target->Clone());
+		HistoryUndo.AppendBackConstruct(Context.Id, Target->GetId(), Target->Clone());
 	}
 
 	void EditSystem::RecordRedo(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		const Edit::Context& Context = GetCtx(Ctx);
-		if (HistoryRedo->GetCount() >= HistoryCapacity)
+		if (HistoryRedo.GetCount() >= HistoryCapacity)
 		{
-			HistoryRedo->RemoveFront();
+			HistoryRedo.RemoveFront();
 		}
 
-		NxFr::AllocatorContext Alloc(Allocator);
-		HistoryRedo->AppendBackConstruct(Context.Id, Target->GetId(), Target->Clone());
+		HistoryRedo.AppendBackConstruct(Context.Id, Target->GetId(), Target->Clone());
 	}
 
 	void EditSystem::OnInitialize()
 	{
-		Allocator = new NxEn::Allocator(NxEn::AllocatorType::General);
-
-		Selection = new NxFr::List<Edit::Info>(32, Allocator);
-		Clipboard = new NxFr::List<Edit::Info>(32, Allocator);
-		HistoryUndo = new NxFr::Dequeue<Edit::Info>(Allocator);
-		HistoryRedo = new NxFr::Dequeue<Edit::Info>(Allocator);
-
 		NxEn::GUI::Menu* Menu = NxEn::GUISystem::GetMenu();
 		Menu->AddMenuItem("Edit/Undo", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Undo");
-		}, "", 0, [this]() { return !HistoryUndo->IsEmpty(); });
+		}, "", 0, [this]() { return !HistoryUndo.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Redo", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Redo");
-		}, "", 1, [this]() { return !HistoryRedo->IsEmpty(); });
+		}, "", 1, [this]() { return !HistoryRedo.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Rename", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Rename");
-		}, "", 2, [this]() { return !Selection->IsEmpty(); });
+		}, "", 2, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Delete", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Delete");
-		}, "", 3, [this]() { return !Selection->IsEmpty(); });
+		}, "", 3, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Cut", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Cut");
-		}, "", 4, [this]() { return !Selection->IsEmpty(); });
+		}, "", 4, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Copy", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Copy");
-		}, "", 5, [this]() { return !Selection->IsEmpty(); });
+		}, "", 5, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Paste", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Paste");
-		}, "", 6, [this]() { return !Selection->IsEmpty(); });
+		}, "", 6, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Duplicate", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Duplicate");
-		}, "", 7, [this]() { return !Selection->IsEmpty(); });
+		}, "", 7, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Select All", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.SelectAll");
@@ -436,21 +421,11 @@ namespace NxEd
 		Menu->AddMenuItem("Edit/Unselect All", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.UnselectAll");
-		}, "", 9, [this]() { return !Selection->IsEmpty(); });
+		}, "", 9, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Invert Selection", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.InvertSelection");
-		}, "", 10, [this]() { return !Selection->IsEmpty(); });
-	}
-
-	void EditSystem::OnShutdown()
-	{
-		delete Selection;
-		delete Clipboard;
-		delete HistoryUndo;
-		delete HistoryRedo;
-
-		delete Allocator;
+		}, "", 10, [this]() { return !Selection.IsEmpty(); });
 	}
 
 	const Edit::Context& EditSystem::GetCtx(NxFr::StringId Ctx) const
@@ -463,6 +438,6 @@ namespace NxEd
 		const Edit::Context& Context = GetCtx(Ctx);
 		NxFr::GUID Id = Target->GetId();
 		Edit::Info Info = Edit::Info(Context.Id, Id, nullptr);
-		return Selection->Find(Info);
+		return Selection.Find(Info);
 	}
 }

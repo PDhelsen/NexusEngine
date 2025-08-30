@@ -44,18 +44,15 @@ namespace NxEd
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnShutdown() override;
 
 		NEXUS_EDITOR_API const Edit::Context& GetCtx(NxFr::StringId Ctx) const;
 		NEXUS_EDITOR_API NxFr::List<Edit::Info>::I FindInfo(NxFr::StringId Ctx, NxEn::Object* Target) const;
 
 	private:
 		NxFr::Dictionary<NxFr::StringId, Edit::Context> Contexts;
-		NxFr::List<Edit::Info>* Selection;
-		NxFr::List<Edit::Info>* Clipboard;
-		NxFr::Dequeue<Edit::Info>* HistoryUndo;
-		NxFr::Dequeue<Edit::Info>* HistoryRedo;
-
-		NxEn::Allocator* Allocator;
+		NxFr::List<Edit::Info> Selection;
+		NxFr::List<Edit::Info> Clipboard;
+		NxFr::Dequeue<Edit::Info> HistoryUndo;
+		NxFr::Dequeue<Edit::Info> HistoryRedo;
 	};
 }

@@ -107,6 +107,8 @@ namespace NxEn
 
 	NxFr::Allocator* MemorySystem::FindOrCreateAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
 	{
+		NEXUS_ASSERT(Size < GetAllocatorSize(Type), Default, "Allocation size requested overflow allocator size");
+
 		if (Type == AllocatorType::Raw)
 		{
 			return nullptr;

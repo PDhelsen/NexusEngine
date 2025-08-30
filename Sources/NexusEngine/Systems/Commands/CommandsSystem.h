@@ -36,12 +36,11 @@ namespace NxEn
 		NEXUS_ENGINE_API void Help();
 
 		NEXUS_ENGINE_API bool IsExecutingCommand() const { return Current != nullptr; }
-		NEXUS_ENGINE_API uint64 GetQueuedCommandCount() const { return Queue->GetCount(); }
+		NEXUS_ENGINE_API uint64 GetQueuedCommandCount() const { return Queue.GetCount(); }
 		NEXUS_ENGINE_API const CommandInfo& GetCurrentCommand() const { return IsExecutingCommand() ? *Current : CommandInfo::Dummy; };
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
@@ -49,8 +48,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void FlushCommands(float TimeStep);
 
 	private:
-		NxFr::Queue<CommandInfo>* Queue;
+		NxFr::Queue<CommandInfo> Queue;
 		const CommandInfo* Current;
-		Allocator* Alloc;
 	};
 }
