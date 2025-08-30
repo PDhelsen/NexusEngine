@@ -2,6 +2,7 @@
 
 namespace NxEd
 {
+	// TODO: Convert to SettingsSystem
 	const static uint64 HistoryCapacity = 64;
 
 	const static NxEn::Command CmdEditUndo = NxEn::Command::Create("Edit.Undo"_Sid, "Rename selected obejct", NxFr::Delegate<void()>([]()
