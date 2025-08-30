@@ -35,6 +35,7 @@ namespace NxEd
 
 		Info::~Info()
 		{
+			delete Data;
 		}
 
 		bool Info::operator==(const Info& Other) const

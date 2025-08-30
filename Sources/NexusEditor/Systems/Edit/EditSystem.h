@@ -39,7 +39,8 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Undo();
 		NEXUS_EDITOR_API void Redo();
-		NEXUS_EDITOR_API void Record(NxEn::Object* Target, NxFr::StringId Ctx = 0);
+		NEXUS_EDITOR_API void RecordUndo(NxEn::Object* Target, NxFr::StringId Ctx = 0);
+		NEXUS_EDITOR_API void RecordRedo(NxEn::Object* Target, NxFr::StringId Ctx = 0);
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
@@ -50,9 +51,11 @@ namespace NxEd
 
 	private:
 		NxFr::Dictionary<NxFr::StringId, Edit::Context> Contexts;
-		NxFr::List<Edit::Info> Selection;
-		NxFr::List<Edit::Info> Clipboard;
-		NxFr::Dequeue<Edit::Info> HistoryUndo;
-		NxFr::Dequeue<Edit::Info> HistoryRedo;
+		NxFr::List<Edit::Info>* Selection;
+		NxFr::List<Edit::Info>* Clipboard;
+		NxFr::Dequeue<Edit::Info>* HistoryUndo;
+		NxFr::Dequeue<Edit::Info>* HistoryRedo;
+
+		NxEn::Allocator* Allocator;
 	};
 }
