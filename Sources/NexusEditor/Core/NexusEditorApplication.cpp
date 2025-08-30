@@ -1,6 +1,7 @@
 #include "NexusEditor/Core/NexusEditorApplication.h"
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
 {
@@ -12,6 +13,7 @@ namespace NxEd
 		NxEn::SystemManager& Systems = GetSystems();
 
 		Systems.CreateSystem<EditorSystem>();
+		Systems.CreateSystem<EditSystem>();
 
 		if (!IsHeadless())
 		{
@@ -27,6 +29,7 @@ namespace NxEd
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
 		Bootstrap.AppendSystem<EditorSystem>();
+		Bootstrap.AppendSystem<EditSystem>().AppendDependency<EditSystem, EditorSystem>();
 
 		Bootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::AfterSystem, "Load Layout", []()
 		{
@@ -39,6 +42,7 @@ namespace NxEd
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
 		Unbootstrap.AppendSystem<EditorSystem>();
+		Unbootstrap.AppendSystem<EditSystem>();
 
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::BeforeSystem, "Save Layout", []()
 		{

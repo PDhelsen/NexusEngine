@@ -91,6 +91,17 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Tickable);
 	}
 
+	Object* Object::Clone() const
+	{
+		NEXUS_ASSERT(false, Default, "Not Implemented");
+		return nullptr;
+	}
+
+	void Object::Clone(Object* Target)
+	{
+		NEXUS_ASSERT(false, Default, "Not Implemented");
+	}
+
 	NxFr::String Object::ToString() const
 	{
 		return GetObjectType().ToString();
@@ -99,6 +110,11 @@ namespace NxEn
 	NxFr::StringView Object::GetName() const
 	{
 		return GetObjectType().C();
+	}
+
+	NxFr::GUID Object::GetId() const
+	{
+		return reinterpret_cast<NxFr::GUID>(this);
 	}
 
 	bool Object::GetFlag(ObjectFlags Flag) const
