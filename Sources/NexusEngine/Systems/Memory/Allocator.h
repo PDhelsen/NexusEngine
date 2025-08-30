@@ -19,7 +19,7 @@ namespace NxEn
 	class Allocator : public NxFr::Allocator
 	{
 	public:
-		NEXUS_ENGINE_API Allocator(AllocatorType Type);
+		NEXUS_ENGINE_API Allocator(AllocatorType Type, bool Exclusive = false);
 		NEXUS_ENGINE_API Allocator(const Allocator& Other) = delete;
 		NEXUS_ENGINE_API Allocator(Allocator&& Other) noexcept = delete;
 		NEXUS_ENGINE_API virtual ~Allocator();
@@ -38,10 +38,12 @@ namespace NxEn
 		virtual void* Reallocate(void* Pointer, uint64 Size, uint64 Alignement);
 		virtual void Free(void* Pointer);
 
+		NxFr::Allocator* GetAllocator(uint64 Size, uint64 Alignement) const;
 		NxFr::Allocator* GetAllocator(void* Pointer) const;
 
 	private:
 		NxFr::Set<NxFr::Allocator*> Allocators;
 		AllocatorType Type;
+		bool Exclusive;
 	};
 }

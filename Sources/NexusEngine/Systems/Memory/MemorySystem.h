@@ -17,6 +17,8 @@ namespace NxEn
 {
 	class MemorySystem : public System
 	{
+		friend class Allocator;
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, MemorySystem)
 
@@ -27,6 +29,8 @@ namespace NxEn
 		};
 
 		static inline uint64 DefaultAllocationRequestSize = 1024;
+
+		NEXUS_ENGINE_API static NxEn::Allocator* GetDefault();
 
 		NEXUS_ENGINE_API MemorySystem();
 		NEXUS_ENGINE_API ~MemorySystem();
@@ -66,6 +70,7 @@ namespace NxEn
 	private:
 		NxFr::Array<NxFr::List<NxFr::Allocator*>, (uint64)AllocatorType::COUNT> Allocators;
 		NxFr::List<NxFr::HandleManager*> HandleManagers;
+		Allocator* Default;
 
 		uint64 DefragmentAllocatorIndex;
 		uint64 DefragmentHandleManagerIndex;
