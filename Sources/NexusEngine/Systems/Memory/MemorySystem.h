@@ -30,13 +30,12 @@ namespace NxEn
 
 		static inline uint64 DefaultAllocationRequestSize = 1024;
 
-		NEXUS_ENGINE_API static NxEn::Allocator* GetDefault();
-
 		NEXUS_ENGINE_API MemorySystem();
 		NEXUS_ENGINE_API ~MemorySystem();
 
 		NEXUS_ENGINE_API NxFr::Allocator* GetAllocator(AllocatorType Type, uint64 Size = DefaultAllocationRequestSize, uint64 Alignement = NxFr::Memory::DefaultAlignement);
 		NEXUS_ENGINE_API NxFr::HandleManager* GetHandlesManager();
+		NEXUS_ENGINE_API NxEn::Allocator* GetDefault();
 
 		NEXUS_ENGINE_API void Clear();
 		NEXUS_ENGINE_API void Defragment(bool Full = false);

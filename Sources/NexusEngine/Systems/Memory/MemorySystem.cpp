@@ -21,12 +21,6 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(MemorySystem)
 
-	NxEn::Allocator* MemorySystem::GetDefault()
-	{
-		MemorySystem* Instance = Application::GetSystem<MemorySystem>();
-		return Instance ? Instance->Default : nullptr;
-	}
-
 	MemorySystem::MemorySystem()
 		: Allocators(), HandleManagers(), Default(), DefragmentAllocatorIndex(0), DefragmentHandleManagerIndex(0), FrameFlag(false)
 	{
@@ -45,6 +39,11 @@ namespace NxEn
 	NxFr::HandleManager* MemorySystem::GetHandlesManager()
 	{
 		return FindOrCreateHandlesManager();
+	}
+
+	NxEn::Allocator* MemorySystem::GetDefault()
+	{
+		return Default;
 	}
 
 	void MemorySystem::Clear()
