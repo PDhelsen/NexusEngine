@@ -16,7 +16,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)
 
 	EditorSystem::EditorSystem()
-		: OnSave(), InputSchema(), Window(nullptr)
+		: OnSave(), InputSchema(), Window(NxEn::GUISystem::GetWindow())
 	{
 	}
 
@@ -36,14 +36,14 @@ namespace NxEd
 	{
 		System::OnInitialize();
 
-		Window = NxEn::Object::Create<NxEn::GUI::Window>();
-		PushInputSchema();
+		Window->Show();
+		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, &InputSchema);
 	}
 
 	void EditorSystem::OnShutdown()
 	{
-		PopInputSchema();
-		Window = NxEn::Object::Destroy(Window);
+		Window->Hide();
+		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
 
 		System::OnShutdown();
 	}
@@ -51,15 +51,5 @@ namespace NxEd
 	void EditorSystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);
-	}
-
-	void EditorSystem::PushInputSchema()
-	{
-		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, &InputSchema);
-	}
-
-	void EditorSystem::PopInputSchema()
-	{
-		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
 	}
 }

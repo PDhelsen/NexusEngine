@@ -6,7 +6,7 @@ namespace NxAp
 	NEXUS_OBJECT_IMPLEMENTATION(AppSystem)
 
 	AppSystem::AppSystem()
-		: InputSchema(), Window(nullptr)
+		: InputSchema(), Window(NxEn::GUISystem::GetWindow())
 	{
 	}
 
@@ -18,16 +18,13 @@ namespace NxAp
 	{
 		System::OnInitialize();
 
-		Window = NxEn::Object::Create<NxEn::GUI::Window>(false);
-		PushInputSchema();
-
+		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema("App"_Sid, &InputSchema);
 		InputSchema.GetMapping().Append("Window"_Sid, NxEn::Input::Action(NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None, { this, &AppSystem::ShowWindow }));
 	}
 
 	void AppSystem::OnShutdown()
 	{
-		PopInputSchema();
-		Window = NxEn::Object::Destroy(Window);
+		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("App"_Sid);
 
 		System::OnShutdown();
 	}
@@ -35,16 +32,6 @@ namespace NxAp
 	void AppSystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);
-	}
-
-	void AppSystem::PushInputSchema()
-	{
-		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema("App"_Sid, &InputSchema);
-	}
-
-	void AppSystem::PopInputSchema()
-	{
-		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("App"_Sid);
 	}
 
 	void AppSystem::ShowWindow()

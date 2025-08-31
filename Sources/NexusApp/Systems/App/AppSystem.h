@@ -20,8 +20,6 @@ namespace NxAp
 		NEXUS_APP_API void OnShutdown() override;
 		NEXUS_APP_API void OnTick(float TimeStep = 0.0f) override;
 
-		NEXUS_APP_API void PushInputSchema();
-		NEXUS_APP_API void PopInputSchema();
 		NEXUS_APP_API void ShowWindow();
 
 	private:

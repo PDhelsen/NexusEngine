@@ -77,66 +77,6 @@ namespace NxEn
 
 #pragma endregion
 
-#pragma region Window
-
-		NEXUS_OBJECT_IMPLEMENTATION(Window)
-
-		Window::Window()
-			: GuiFlags(0), Style(), MainMenu(nullptr)
-		{
-			MainMenu = GUISystem::GetMenu();
-			SetManual(true);
-		}
-
-		Window::~Window()
-		{
-		}
-
-		void Window::OnInitialize()
-		{
-			Element::OnInitialize();
-
-			MainMenu->Initialize();
-			UpdateImGuiId("");
-
-			GuiFlags =
-				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
-				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing |
-				ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings;
-
-			Style.AppendVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			Style.AppendVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			Style.AppendVarXY(ImGuiStyleVar_WindowPadding, NxFr::Vector2f(0.0f));
-		}
-
-		void Window::OnShutdown()
-		{
-			MainMenu->Shutdown();
-
-			Element::OnShutdown();
-		}
-
-		void Window::OnEnable()
-		{
-			NxEn::GUISystem::SetWindow(this);
-			NxEn::GUISystem::GetMenu()->Show();
-		}
-
-		void Window::OnDisable()
-		{
-			NxEn::GUISystem::GetMenu()->Hide();
-			NxEn::GUISystem::SetWindow(nullptr);
-		}
-
-		void Window::OnGui(float TimeStep)
-		{
-			MainMenu->Tick(TimeStep);
-			ImGui::DockSpaceOverViewport(ImGui::GetID(GetImGuiId().C()));
-		}
-
-#pragma endregion
-
-
 #pragma region Panel
 
 		NEXUS_OBJECT_IMPLEMENTATION(Panel)
@@ -593,6 +533,62 @@ namespace NxEn
 			Progress = NxFr::Math::FMod(Progress, 1.0f);
 
 			return NxFr::Math::Abs(Progress);
+		}
+
+#pragma endregion
+
+#pragma region Window
+
+		NEXUS_OBJECT_IMPLEMENTATION(Window)
+
+		Window::Window()
+			: GuiFlags(0), MainMenu(true), Style()
+		{
+			SetManual(true);
+		}
+
+		Window::~Window()
+		{
+		}
+
+		void Window::OnInitialize()
+		{
+			Element::OnInitialize();
+			MainMenu.Initialize();
+
+			UpdateImGuiId("");
+
+			GuiFlags =
+				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
+				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing |
+				ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings;
+
+			Style.AppendVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			Style.AppendVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			Style.AppendVarXY(ImGuiStyleVar_WindowPadding, NxFr::Vector2f(0.0f));
+		}
+
+		void Window::OnShutdown()
+		{
+			MainMenu.Shutdown();
+			Element::OnShutdown();
+		}
+
+		void Window::OnEnable()
+		{
+			MainMenu.Show();
+		}
+
+		void Window::OnDisable()
+		{
+			MainMenu.Hide();
+		}
+
+		void Window::OnGui(float TimeStep)
+		{
+			MainMenu.Tick(TimeStep);
+
+			ImGui::DockSpaceOverViewport(ImGui::GetID(GetImGuiId().C()));
 		}
 
 #pragma endregion

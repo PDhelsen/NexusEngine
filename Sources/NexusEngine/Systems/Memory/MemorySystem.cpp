@@ -17,7 +17,7 @@ namespace NxEn
 	static float DefragmentBudget = 1.0f;
 	static uint64 HandlesPerManager = 1024;
 	static uint64 SmallParamsSmallest = 32, SmallParamsLargest = 256;
-	static uint64 Sizes[(uint64)AllocatorType::COUNT] = { 0, 1024, 1024, 1024, 1024, 1024, 1024, };
+	static uint64 Sizes[(uint64)AllocatorType::COUNT] = { 0, 1024 * 1024, 1024 * 1024, 1024 * 1024, 1024 * 1024, 1024 * 1024, 1024 * 1024, };
 
 	static HandleManager& GetHandles() { static HandleManager Instance(HandlesPerManager); return Instance; }
 	static Allocator& GetRawAllocator() { static Allocator Instance(AllocatorType::Raw); return Instance; }

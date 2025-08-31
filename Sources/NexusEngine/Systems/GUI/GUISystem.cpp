@@ -28,18 +28,21 @@ namespace NxEn
 	const NxFr::StringView LayoutExtension = ".layout";
 	const NxFr::StringView Folder = "imgui";
 
-	static GUI::Window* Window = nullptr;
+	static GUI::Window& GetMainWindow()
+	{
+		static GUI::Window Window;
+		return Window;
+	}
+
+	static GUI::Menu& GetMainMenu()
+	{
+		return GetMainWindow().GetMenu();
+	}
 
 	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
 	{
 		static NxFr::Dictionary<NxFr::StringId, GUI::Panel*> Panels;
 		return Panels;
-	}
-
-	static GUI::Menu& GetMainMenu()
-	{
-		static GUI::Menu Menu(true);
-		return Menu;
 	}
 
 	const static Command CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
@@ -67,27 +70,7 @@ namespace NxEn
 
 	GUI::Window* GUISystem::GetWindow()
 	{
-		return Window;
-	}
-
-	void GUISystem::SetWindow(GUI::Window* Instance)
-	{
-		Window = Instance;
-	}
-
-	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Id)
-	{
-		return GetPanels()[Id];
-	}
-
-	void GUISystem::RegisterPanel(GUI::Panel* Instance)
-	{
-		GetPanels().Append(Instance->GetObjectType(), Instance);
-	}
-
-	void GUISystem::UnregisterPanel(GUI::Panel* Instance)
-	{
-		GetPanels().Remove(Instance->GetObjectType());
+		return &GetMainWindow();
 	}
 
 	GUI::Menu* GUISystem::GetMenu()
@@ -103,6 +86,21 @@ namespace NxEn
 	void GUISystem::UnregisterMenuItem(GUI::Menu::Item* Instance)
 	{
 		GetMainMenu().RemoveItem(*Instance);
+	}
+
+	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Id)
+	{
+		return GetPanels()[Id];
+	}
+
+	void GUISystem::RegisterPanel(GUI::Panel* Instance)
+	{
+		GetPanels().Append(Instance->GetObjectType(), Instance);
+	}
+
+	void GUISystem::UnregisterPanel(GUI::Panel* Instance)
+	{
+		GetPanels().Remove(Instance->GetObjectType());
 	}
 
 	GUISystem::GUISystem()
@@ -228,12 +226,16 @@ namespace NxEn
 		Imgui::Initialize();
 		LoadTheme();
 
+		GetMainWindow().Initialize(false);
+
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
 	}
 
 	void GUISystem::OnShutdown()
 	{
+		GetMainWindow().Shutdown();
+
 		SaveTheme();
 		Imgui::Shutdown();
 		
@@ -248,10 +250,7 @@ namespace NxEn
 
 		Imgui::Frame();
 
-		if (Window)
-		{
-			Window->Tick(TimeStep);
-		}
+		GetMainWindow().Tick(TimeStep);
 
 		for (auto& Element : Elements)
 		{

@@ -31,6 +31,11 @@ namespace NxEd
 		Bootstrap.AppendSystem<EditorSystem>();
 		Bootstrap.AppendSystem<EditSystem>().AppendDependency<EditSystem, EditorSystem>();
 
+		if (!IsHeadless())
+		{
+			Bootstrap.AppendDependency<EditorSystem, NxEn::GUISystem>();
+		}
+
 		Bootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::AfterSystem, "Load Layout", []()
 		{
 			Application::GetSystem<NxEn::GUISystem>()->LoadLayout();

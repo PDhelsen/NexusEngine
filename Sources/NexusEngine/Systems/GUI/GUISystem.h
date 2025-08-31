@@ -22,7 +22,9 @@ namespace NxEn
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GUISystem)
 
 		NEXUS_ENGINE_API static GUI::Window* GetWindow();
-		NEXUS_ENGINE_API static void SetWindow(GUI::Window* Instance);
+		NEXUS_ENGINE_API static GUI::Menu* GetMenu();
+		NEXUS_ENGINE_API static void RegisterMenuItem(GUI::Menu::Item* Instance);
+		NEXUS_ENGINE_API static void UnregisterMenuItem(GUI::Menu::Item* Instance);
 		template<typename T> static T* GetPanel()
 		{
 			return (T*)GetPanel(T::GetClassType());
@@ -30,9 +32,6 @@ namespace NxEn
 		NEXUS_ENGINE_API static GUI::Panel* GetPanel(NxFr::StringId Id);
 		NEXUS_ENGINE_API static void RegisterPanel(GUI::Panel* Instance);
 		NEXUS_ENGINE_API static void UnregisterPanel(GUI::Panel* Instance);
-		NEXUS_ENGINE_API static GUI::Menu* GetMenu();
-		NEXUS_ENGINE_API static void RegisterMenuItem(GUI::Menu::Item* Instance);
-		NEXUS_ENGINE_API static void UnregisterMenuItem(GUI::Menu::Item* Instance);
 
 		NEXUS_ENGINE_API GUISystem();
 		NEXUS_ENGINE_API ~GUISystem();

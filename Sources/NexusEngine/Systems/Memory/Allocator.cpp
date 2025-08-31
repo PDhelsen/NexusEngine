@@ -31,7 +31,7 @@ namespace NxEn
 
 	void* Allocator::Allocate(uint64 Size, uint64 Alignement)
 	{
-		NEXUS_ASSERT(Size < MemorySystem::GetAllocatorSize(Type), Default, "Allocation size requested overflow allocator size");
+		NEXUS_ASSERT(Size < MemorySystem::GetAllocatorSize(Type) || Type == AllocatorType::Raw, Default, "Allocation size requested overflow allocator size");
 
 		NxFr::Allocator* Alloc = GetAllocator(Size, Alignement);
 

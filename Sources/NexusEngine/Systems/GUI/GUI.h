@@ -7,13 +7,6 @@ namespace NxEn
 {
 	namespace GUI
 	{
-		class Element;
-		class Window;
-		class Panel;
-		class Menu;
-		class Popup;
-		class Progress;
-
 		class Element : public Object
 		{
 			friend class GUISystem;
@@ -46,28 +39,6 @@ namespace NxEn
 			NxFr::String ImGuiId;
 			bool Manual;
 			bool WillClose;
-		};
-
-		class Window : public NxEn::GUI::Element
-		{
-		public:
-			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Window)
-
-			NEXUS_ENGINE_API Window();
-			NEXUS_ENGINE_API ~Window();
-
-		protected:
-			NEXUS_ENGINE_API void OnInitialize() override;
-			NEXUS_ENGINE_API void OnShutdown() override;
-			NEXUS_ENGINE_API void OnEnable() override;
-			NEXUS_ENGINE_API void OnDisable() override;
-			NEXUS_ENGINE_API void OnGui(float TimeStep) override;
-
-		private:
-			ImGuiWindowFlags GuiFlags;
-			Style Style;
-
-			Menu* MainMenu;
 		};
 
 		class Panel : public Element
@@ -243,6 +214,29 @@ namespace NxEn
 			NxFr::String Message;
 			NxFr::Delegate<void()> Callback;
 			float Progress;
+		};
+
+		class Window : public NxEn::GUI::Element
+		{
+		public:
+			NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Window)
+
+			NEXUS_ENGINE_API Window();
+			NEXUS_ENGINE_API ~Window();
+
+			NEXUS_ENGINE_API Menu& GetMenu() { return MainMenu; }
+
+		protected:
+			NEXUS_ENGINE_API void OnInitialize() override;
+			NEXUS_ENGINE_API void OnShutdown() override;
+			NEXUS_ENGINE_API void OnEnable() override;
+			NEXUS_ENGINE_API void OnDisable() override;
+			NEXUS_ENGINE_API void OnGui(float TimeStep) override;
+
+		private:
+			ImGuiWindowFlags GuiFlags;
+			Menu MainMenu;
+			Style Style;
 		};
 	}
 }
