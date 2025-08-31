@@ -16,42 +16,75 @@ namespace NxEn
 	// TODO: Convert to SettingsSystem
 	static float DefragmentBudget = 1.0f;
 	static uint64 HandlesPerManager = 1024;
-	static MemorySystem::SmallAllocatorParms SmallParams = { 32, 256 };
+	static uint64 SmallParamsSmallest = 32, SmallParamsLargest = 256;
 	static uint64 Sizes[(uint64)AllocatorType::COUNT] = { 0, 1024, 1024, 1024, 1024, 1024, 1024, };
+
+	static HandleManager& GetHandles() { static HandleManager Instance(HandlesPerManager); return Instance; }
+	static Allocator& GetRawAllocator() { static Allocator Instance(AllocatorType::Raw); return Instance; }
+	static Allocator& GetGeneralAllocator() { static Allocator Instance(AllocatorType::General); return Instance; }
+	static Allocator& GetTempAllocator() { static Allocator Instance(AllocatorType::Temp); return Instance; }
+	static Allocator& GetTemp2Allocator() { static Allocator Instance(AllocatorType::Temp2); return Instance; }
+	static Allocator& GetConstantAllocator() { static Allocator Instance(AllocatorType::Constant); return Instance; }
+	static Allocator& GetSmallAllocator() { static Allocator Instance(AllocatorType::Small); return Instance; }
+	static Allocator& GetManagedAllocator() { static Allocator Instance(AllocatorType::Managed); return Instance; }
 
 	NEXUS_OBJECT_IMPLEMENTATION(MemorySystem)
 
+	NxEn::HandleManager* MemorySystem::GetHandleManager()
+	{
+		return &GetHandles();
+	}
+
+	NxEn::Allocator* MemorySystem::GetAllocator(AllocatorType Type)
+	{
+		switch (Type)
+		{
+		case NxEn::AllocatorType::Raw: return &GetRawAllocator();
+		case NxEn::AllocatorType::General: return &GetGeneralAllocator();
+		case NxEn::AllocatorType::Temp: return &GetTempAllocator();
+		case NxEn::AllocatorType::Temp2: return &GetTemp2Allocator();
+		case NxEn::AllocatorType::Constant: return &GetConstantAllocator();
+		case NxEn::AllocatorType::Small: return &GetSmallAllocator();
+		case NxEn::AllocatorType::Managed: return &GetManagedAllocator();
+		}
+
+		return nullptr;
+	}
+
+	uint64 MemorySystem::GetSmallAllocationSize(uint64 Size)
+	{
+		if (Size > SmallParamsLargest)
+		{
+			NEXUS_LOG(Warning, System, "Requested small allocation size is too large. Allocation will come from the Raw allocator");
+			return 0;
+		}
+
+		if (Size < SmallParamsSmallest)
+		{
+			NEXUS_LOG(Warning, System, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
+			return SmallParamsSmallest;
+		}
+
+		if (Size == SmallParamsLargest)
+		{
+			return SmallParamsLargest;
+		}
+
+		return NxFr::Math::NextPowerOfTwo(Size);
+	}
+
+	uint64 MemorySystem::GetAllocatorSize(AllocatorType Type)
+	{
+		return Sizes[(uint64)Type];
+	}
+
 	MemorySystem::MemorySystem()
-		: Allocators(), HandleManagers(), Default(), DefragmentAllocatorIndex(0), DefragmentHandleManagerIndex(0), FrameFlag(false)
+		: FrameFlag(false)
 	{
 	}
 
 	MemorySystem::~MemorySystem()
 	{
-	}
-
-	NxFr::Allocator* MemorySystem::GetAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
-	{
-		Size = Type == AllocatorType::Small ? GetSmallAllocationSize(Size) : Size;
-		return FindOrCreateAllocator(Type, Size, Alignement);
-	}
-
-	NxFr::HandleManager* MemorySystem::GetHandlesManager()
-	{
-		return FindOrCreateHandlesManager();
-	}
-
-	NxEn::Allocator* MemorySystem::GetDefault()
-	{
-		return Default;
-	}
-
-	void MemorySystem::Clear()
-	{
-		NEXUS_LOG(Info, System, "Memory - Clear");
-
-		ClearHandleManagerContainers(false);
-		ClearAllocatorContainers(false);
 	}
 
 	void MemorySystem::Defragment(bool Full)
@@ -74,27 +107,17 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParams.Smallest) && NxFr::Math::IsPowerOfTwo(SmallParams.Largest), System, "SmallAllocatorParams have to be PowerOfTwo");
+		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParamsSmallest) && NxFr::Math::IsPowerOfTwo(SmallParamsLargest), System, "SmallAllocatorParams have to be PowerOfTwo");
 		NEXUS_ASSERT(Sizes[0] == 0, System, "Can't set the size of the Raw allocator");
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, UnsignedInteger, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, UnsignedInteger, Set);
-
-		CreateHandleManager();
-		CreateAllocatorContainers();
-
-		Default = new Allocator(AllocatorType::General);
 	}
 
 	void MemorySystem::OnShutdown()
 	{
-		delete Default;
-
-		ClearHandleManagerContainers(true);
-		ClearAllocatorContainers(true);
-
 		System::OnShutdown();
 	}
 
@@ -102,225 +125,16 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		EmptyAllocators(AllocatorType::Temp);
+		GetTempAllocator().Clear();
 		if (FrameFlag)
 		{
-			EmptyAllocators(AllocatorType::Temp2);
+			GetTemp2Allocator().Clear();
 		}
 
 		Defragment(DefragmentBudget, false);
 		RecordMemoryStats();
 
 		FrameFlag = !FrameFlag;
-	}
-
-	NxFr::Allocator* MemorySystem::FindOrCreateAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
-	{
-		NEXUS_ASSERT(Size < GetAllocatorSize(Type), Default, "Allocation size requested overflow allocator size");
-
-		if (Type == AllocatorType::Raw)
-		{
-			return nullptr;
-		}
-
-		NxFr::Allocator* Result = FindAllocator(Type, Size, Alignement);
-		if (Result == nullptr)
-		{
-			Result = CreateAllocator(Type, GetAllocatorSize(Type), Size);
-			Allocators[(uint64)Type].Append(Result);
-		}
-
-		return Result;
-	}
-
-	NxFr::Allocator* MemorySystem::FindAllocator(AllocatorType Type, uint64 Size, uint64 Alignement)
-	{
-		NEXUS_PROFILE_FUNCTION();
-
-		NxFr::Allocator* Result = nullptr;
-
-		NxFr::List<NxFr::Allocator*>& Allocs = Allocators[(uint64)Type];
-		for (NxFr::Allocator* Alloc : Allocs)
-		{
-			if (!Alloc)
-			{
-				continue;
-			}
-
-			if (Type == AllocatorType::Small && static_cast<NxFr::PoolAllocator*>(Alloc)->GetStride() != Size)
-			{
-				continue;
-			}
-
-			if (!Alloc->CanAllocate(Size, Alignement))
-			{
-				continue;
-			}
-
-			Result = Alloc;
-		}
-
-		return Result;
-	}
-
-	NxFr::Allocator* MemorySystem::CreateAllocator(AllocatorType Type, uint64 Size, uint64 Stride)
-	{
-		NEXUS_PROFILE_FUNCTION();
-
-		NxFr::AllocatorContext Context(nullptr);
-		NxFr::Allocator* Alloc = nullptr;
-
-		switch (Type)
-		{
-		case NxEn::AllocatorType::General:
-			Alloc = new NxFr::HeapAllocator(Size);
-			break;
-		case NxEn::AllocatorType::Temp:
-		case NxEn::AllocatorType::Temp2:
-		case NxEn::AllocatorType::Constant:
-			Alloc = new NxFr::StackAllocator(Size);
-			break;
-		case NxEn::AllocatorType::Small:
-			Alloc = new NxFr::PoolAllocator(Size, Stride);
-			break;
-		}
-
-		return Alloc;
-	}
-
-	void MemorySystem::CreateAllocatorContainers()
-	{
-		NxFr::AllocatorContext Context(nullptr);
-
-		for (uint64 Index = 0; Index < (uint64)AllocatorType::COUNT; ++Index)
-		{
-			Allocators.AssignConstruct(Index, 2, nullptr);
-		}
-	}
-
-	void MemorySystem::ClearAllocatorContainers(bool Force)
-	{
-		NxFr::AllocatorContext Context(nullptr);
-		NxFr::Array<NxFr::List<uint64>, (uint64)AllocatorType::COUNT> ToRemove;
-
-		for (auto TypeIt = Allocators.Begin(); TypeIt != Allocators.End(); ++TypeIt)
-		{
-			NxFr::List<NxFr::Allocator*>& Allocs = TypeIt.Get();
-			for (auto AllocatorIt = Allocs.Begin(); AllocatorIt != Allocs.End(); ++AllocatorIt)
-			{
-				NxFr::Allocator* Alloc = AllocatorIt.Get();
-				if (Alloc && (Alloc->IsEmpty() || Force))
-				{
-					ToRemove[TypeIt.Id()].Append(AllocatorIt.Id());
-					delete Alloc;
-				}
-			}
-		}
-
-		for (auto TypeIt = ToRemove.Begin(); TypeIt != ToRemove.End(); ++TypeIt)
-		{
-			NxFr::List<uint64>& Allocs = TypeIt.Get();
-			for (auto AllocatorIt = Allocs.BeginReverse(); AllocatorIt != Allocs.EndReverse(); --AllocatorIt)
-			{
-				Allocators[TypeIt.Id()].Remove(Allocs[AllocatorIt.Id()]);
-			}
-		}
-	}
-
-	void MemorySystem::EmptyAllocators(AllocatorType Type)
-	{
-		NEXUS_PROFILE_FUNCTION();
-
-		NxFr::List<NxFr::Allocator*>& Allocs = Allocators[(uint64)Type];
-		for (NxFr::Allocator* Alloc : Allocs)
-		{
-			Alloc->Clear();
-		}
-	}
-
-	uint64 MemorySystem::GetSmallAllocationSize(uint64 Size) const
-	{
-		if (Size > SmallParams.Largest)
-		{
-			NEXUS_LOG(Warning, System, "Requested small allocation size is too large. Allocation will come from the Raw allocator");
-			return 0;
-		}
-
-		if (Size < SmallParams.Smallest)
-		{
-			NEXUS_LOG(Warning, System, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
-			return SmallParams.Smallest;
-		}
-
-		if (Size == SmallParams.Largest)
-		{
-			return SmallParams.Largest;
-		}
-
-		return NxFr::Math::NextPowerOfTwo(Size);
-	}
-
-	uint64 MemorySystem::GetAllocatorSize(AllocatorType Type) const
-	{
-		return Sizes[(uint64)Type];
-	}
-
-	NxFr::HandleManager* MemorySystem::FindOrCreateHandlesManager()
-	{
-		NxFr::HandleManager* Result = FindHandleManager();
-		if (Result == nullptr)
-		{
-			Result = CreateHandleManager();
-		}
-
-		return Result;
-	}
-
-	NxFr::HandleManager* MemorySystem::FindHandleManager()
-	{
-		NEXUS_PROFILE_FUNCTION();
-
-		for (NxFr::HandleManager* Manager : HandleManagers)
-		{
-			if (Manager->GetCount() < Manager->GetCapacity())
-			{
-				return Manager;
-			}
-		}
-
-		return nullptr;
-	}
-
-	NxFr::HandleManager* MemorySystem::CreateHandleManager()
-	{
-		NEXUS_PROFILE_FUNCTION();
-
-		NxFr::AllocatorContext Context(nullptr);
-
-		NxFr::HandleManager* Manager = new NxFr::HandleManager(HandlesPerManager);
-		HandleManagers.Append(Manager);
-		return Manager;
-	}
-
-	void MemorySystem::ClearHandleManagerContainers(bool Force)
-	{
-		NxFr::AllocatorContext Context(nullptr);
-		NxFr::List<uint64> ToRemove(HandleManagers.GetCount());
-
-		for (auto HandlesIt = HandleManagers.Begin(); HandlesIt != HandleManagers.End(); ++HandlesIt)
-		{
-			NxFr::HandleManager* Manager = HandlesIt.Get();
-			if (Manager && (Manager->IsEmpty() || Force))
-			{
-				ToRemove.Append(HandlesIt.Id());
-				delete Manager;
-			}
-		}
-
-		for (auto HandlesIt = ToRemove.BeginReverse(); HandlesIt != ToRemove.EndReverse(); --HandlesIt)
-		{
-			HandleManagers.Remove(HandlesIt.Id());
-		}
 	}
 
 	// TODO: Defragmentation might not be full because Handle might be scattered across multiple manager
@@ -330,20 +144,14 @@ namespace NxEn
 
 		NxFr::Stopwatch Watch(true);
 
-		DefragmentAllocatorIndex = All ? 0 : DefragmentAllocatorIndex;
-		DefragmentHandleManagerIndex = All ? 0 : DefragmentHandleManagerIndex;
+		NxFr::Set<NxFr::HandleManager*>& Managers = GetHandles().Managers;
+		NxFr::Set<NxFr::Allocator*>& Allocators = GetManagedAllocator().Allocators;
 
-		NxFr::List<NxFr::Allocator*> Managed = Allocators[(uint64)AllocatorType::Managed];
-		for (uint64 AllocatorIndex = 0; AllocatorIndex < Managed.GetCount(); ++AllocatorIndex)
+		for (NxFr::Allocator* Allocator : Allocators)
 		{
-			NxFr::HeapAllocator* Heap = static_cast<NxFr::HeapAllocator*>(Managed[DefragmentAllocatorIndex]);
-			DefragmentAllocatorIndex = NxFr::Math::Modulo(++DefragmentAllocatorIndex, Managed.GetCount());
-
-			for (uint64 ManagerIndex = 0; ManagerIndex < HandleManagers.GetCount(); ++ManagerIndex)
+			NxFr::HeapAllocator* Heap = static_cast<NxFr::HeapAllocator*>(Allocator);
+			for (NxFr::HandleManager* Manager : Managers)
 			{
-				NxFr::HandleManager* Manager = HandleManagers[DefragmentHandleManagerIndex];
-				DefragmentHandleManagerIndex = NxFr::Math::Modulo(++DefragmentHandleManagerIndex, HandleManagers.GetCount());
-
 				Heap->Defragment(Manager, All ? 0.0f : Budget);
 				Budget -= (float)Watch.Peek(NxFr::Time::SecondToMilli);
 			}
