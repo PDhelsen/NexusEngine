@@ -8,7 +8,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(InputSystem)
 
 	InputSystem::InputSystem()
-		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Schemas(), Buttons(), Axises(), Mouse(-NxFr::Vector2f::One), Modifiers(), DirtyFlagButtons(true), DirtyFlagAxises(true)
+		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Schemas(11, MemorySystem::GetAllocator(AllocatorType::General)), Buttons(), Axises(), Mouse(-NxFr::Vector2f::One), Modifiers(), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{
 		OnButtonChange += NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
 		OnAxisChange += NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);

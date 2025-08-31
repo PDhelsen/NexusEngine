@@ -119,6 +119,15 @@ namespace NxEn
 			return Callback;
 		}
 
+		Schema::Schema()
+			: Actions(11, MemorySystem::GetAllocator(AllocatorType::General))
+		{
+		}
+
+		Schema::~Schema()
+		{
+		}
+
 		NxFr::Dictionary<NxFr::StringId, Action>& Schema::GetMapping()
 		{
 			return Actions;

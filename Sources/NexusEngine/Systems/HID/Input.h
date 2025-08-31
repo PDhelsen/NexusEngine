@@ -234,8 +234,8 @@ namespace NxEn
 		struct Schema
 		{
 		public:
-			NEXUS_ENGINE_API Schema() = default;
-			NEXUS_ENGINE_API ~Schema() = default;
+			NEXUS_ENGINE_API Schema();
+			NEXUS_ENGINE_API ~Schema();
 
 			NEXUS_ENGINE_API NxFr::Dictionary<NxFr::StringId, Action>& GetMapping();
 

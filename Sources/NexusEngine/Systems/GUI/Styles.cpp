@@ -6,7 +6,7 @@ namespace NxEn
 	namespace GUI
 	{
 		Style::Style()
-			: Properties()
+			: Properties(5, MemorySystem::GetAllocator(AllocatorType::General))
 		{
 		}
 

@@ -12,8 +12,12 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
 
-	StatsPanel::StatsPanel()
-		: Instruments(nullptr), Stats(nullptr), Filters(), Ids(), Values()
+	StatsPanel::StatsPanel() :
+		Instruments(nullptr),
+		Stats(nullptr),
+		Filters(8, MemorySystem::GetAllocator(AllocatorType::General)),
+		Ids(16, MemorySystem::GetAllocator(AllocatorType::General)),
+		Values(11, MemorySystem::GetAllocator(AllocatorType::General))
 	{
 	}
 
@@ -36,6 +40,7 @@ namespace NxEn
 		Instruments = Debug->GetInstrumentor();
 		Stats = Debug->GetStats();
 
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 		Values = Stats->GetAllCurrentStats();
 		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
 		for (auto& [Id, Value] : Values)
@@ -111,6 +116,8 @@ namespace NxEn
 		ImGui::Separator();
 
 		Filter.Validate();
+
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 		Filters = NxFr::StringUtility::SplitAll(Filter, ",");
 	}
 

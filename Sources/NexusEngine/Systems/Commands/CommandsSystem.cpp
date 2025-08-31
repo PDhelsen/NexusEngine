@@ -82,7 +82,7 @@ namespace NxEn
 	}
 
 	CommandsSystem::CommandsSystem()
-		: Queue(), Current(nullptr)
+		: Queue(MemorySystem::GetAllocator(AllocatorType::General)), Current(nullptr)
 	{
 	}
 

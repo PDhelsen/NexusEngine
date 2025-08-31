@@ -36,6 +36,8 @@ namespace NxEn
 	DebugSystem::DebugSystem()
 		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr)
 	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
 		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback);
 		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
 		Logger->AddChannel(NxFr::LoggerChannel::Verbose, true);
@@ -45,6 +47,8 @@ namespace NxEn
 
 	DebugSystem::~DebugSystem()
 	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
 		NxFr::Globals::Logs = nullptr;
 
 		Logger->Flush();
@@ -54,6 +58,8 @@ namespace NxEn
 	void DebugSystem::OnInitialize()
 	{
 		System::OnInitialize();
+
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 		NEXUS_ASSERT(!Folder.Data.IsEmpty(), System, "Folder can't be empty");
@@ -69,6 +75,8 @@ namespace NxEn
 
 	void DebugSystem::OnShutdown()
 	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
 		if (Instrumentor->IsRecording())
 		{
 			Instrumentor->StopRecording();
