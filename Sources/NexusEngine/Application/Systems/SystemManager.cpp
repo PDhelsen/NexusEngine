@@ -28,16 +28,6 @@ namespace NxEn
 		Systems.Remove(Instance->GetObjectType());
 	}
 
-	void SystemManager::ClearSystems()
-	{
-		for (auto& Info : Systems)
-		{
-			delete Info.Value;
-		}
-
-		Systems.Clear();
-	}
-
 	NxFr::Array<System*> SystemManager::SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const
 	{
 		NxFr::Array<System*> Result = NxFr::Array<System*>(SystemsDependencies.GetCount());

@@ -21,6 +21,13 @@ namespace NxAp
 		}
 	}
 
+	NexusAppApplication::~NexusAppApplication()
+	{
+		NxEn::SystemManager& Systems = GetSystems();
+
+		Systems.DestroySystem<AppSystem>();
+	}
+
 	void NexusAppApplication::OnInitialize()
 	{
 		NexusEngineApplication::OnInitialize();

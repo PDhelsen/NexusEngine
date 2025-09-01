@@ -11,7 +11,7 @@ namespace NxSE
 	{
 	public:
 		NEXUS_SANDBOX_EDITOR_API NexusSandboxEditorApplication(const NxEn::Project& ProjectInfo);
-		NEXUS_SANDBOX_EDITOR_API virtual ~NexusSandboxEditorApplication() = default;
+		NEXUS_SANDBOX_EDITOR_API virtual ~NexusSandboxEditorApplication();
 
 	protected:
 		NEXUS_SANDBOX_EDITOR_API virtual void OnInitialize() override;

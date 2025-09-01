@@ -11,7 +11,7 @@ namespace NxSA
 	{
 	public:
 		NEXUS_SANDBOX_APP_API NexusSandboxAppApplication(const NxEn::Project& ProjectInfo);
-		NEXUS_SANDBOX_APP_API virtual ~NexusSandboxAppApplication() = default;
+		NEXUS_SANDBOX_APP_API virtual ~NexusSandboxAppApplication();
 
 	protected:
 		NEXUS_SANDBOX_APP_API virtual void OnInitialize() override;

@@ -58,6 +58,21 @@ namespace NxEn
 		}
 	}
 
+	NexusEngineApplication::~NexusEngineApplication()
+	{
+		SystemManager& Systems = GetSystems();
+
+		Systems.DestroySystem<DebugSystem>();
+		Systems.DestroySystem<MemorySystem>();
+		Systems.DestroySystem<InputSystem>();
+		Systems.DestroySystem<CommandsSystem>();
+		if (!IsHeadless())
+		{
+			Systems.DestroySystem<WindowSystem>();
+			Systems.DestroySystem<GUISystem>();
+		}
+	}
+
 	void NexusEngineApplication::OnInitialize()
 	{
 		Application::OnInitialize();

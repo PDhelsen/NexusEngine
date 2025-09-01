@@ -23,14 +23,13 @@ namespace NxEn
 		template<typename T>
 		T* GetSystem() const { return (T*)GetSystem(T::GetClassType()); }
 		template<typename T>
-		T* CreateSystem() { T* System = new T(); RegisterSystem(System); return System; };
+		T* CreateSystem() { T* Instance = new T(); RegisterSystem(Instance); return Instance; };
 		template<typename T>
-		void DeleteSystem(T* Instance) { UnregisterSystem(Instance); delete Instance; }
+		void DestroySystem() { System* Instance = Systems[T::GetClassType()]; UnregisterSystem(Instance); delete Instance; }
 
 		NEXUS_ENGINE_API System* GetSystem(NxFr::StringId Type) const;
 		NEXUS_ENGINE_API void RegisterSystem(System* Instance);
 		NEXUS_ENGINE_API void UnregisterSystem(System* Instance);
-		NEXUS_ENGINE_API void ClearSystems();
 		NEXUS_ENGINE_API NxFr::Array<System*> SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const;
 
 		NEXUS_ENGINE_API uint64 GetCount() const { return Systems.GetCount(); }

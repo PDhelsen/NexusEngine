@@ -9,6 +9,10 @@ namespace NxSA
 	{
 	}
 
+	NexusSandboxAppApplication::~NexusSandboxAppApplication()
+	{
+	}
+
 	void NexusSandboxAppApplication::OnInitialize()
 	{
 		NexusAppApplication::OnInitialize();

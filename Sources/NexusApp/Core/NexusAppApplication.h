@@ -11,7 +11,7 @@ namespace NxAp
 	{
 	public:
 		NEXUS_APP_API NexusAppApplication(const NxEn::Project& ProjectInfo);
-		NEXUS_APP_API virtual ~NexusAppApplication() = default;
+		NEXUS_APP_API virtual ~NexusAppApplication();
 
 	protected:
 		NEXUS_APP_API virtual void OnInitialize() override;

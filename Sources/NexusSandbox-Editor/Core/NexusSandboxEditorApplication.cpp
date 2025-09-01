@@ -9,6 +9,10 @@ namespace NxSE
 	{
 	}
 
+	NexusSandboxEditorApplication::~NexusSandboxEditorApplication()
+	{
+	}
+
 	void NexusSandboxEditorApplication::OnInitialize()
 	{
 		NexusEditorApplication::OnInitialize();

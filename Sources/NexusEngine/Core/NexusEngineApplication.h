@@ -26,7 +26,7 @@ namespace NxEn
 	{
 	public:
 		NEXUS_ENGINE_API NexusEngineApplication(const NxEn::Project& ProjectInfo);
-		NEXUS_ENGINE_API virtual ~NexusEngineApplication() = default;
+		NEXUS_ENGINE_API virtual ~NexusEngineApplication();
 
 		NEXUS_ENGINE_API Input::Schema& GetInputSchema() { return InputSchema; }
 		NEXUS_ENGINE_API bool IsHeadless() const { return Headless; }

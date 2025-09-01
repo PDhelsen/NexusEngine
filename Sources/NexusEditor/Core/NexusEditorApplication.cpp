@@ -23,6 +23,14 @@ namespace NxEd
 		}
 	}
 
+	NexusEditorApplication::~NexusEditorApplication()
+	{
+		NxEn::SystemManager& Systems = GetSystems();
+
+		Systems.DestroySystem<EditorSystem>();
+		Systems.DestroySystem<EditSystem>();
+	}
+
 	void NexusEditorApplication::OnInitialize()
 	{
 		NexusEngineApplication::OnInitialize();

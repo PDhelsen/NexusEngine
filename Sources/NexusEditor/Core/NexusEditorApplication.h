@@ -11,7 +11,7 @@ namespace NxEd
 	{
 	public:
 		NEXUS_EDITOR_API NexusEditorApplication(const NxEn::Project& ProjectInfo);
-		NEXUS_EDITOR_API virtual ~NexusEditorApplication() = default;
+		NEXUS_EDITOR_API virtual ~NexusEditorApplication();
 
 	protected:
 		NEXUS_EDITOR_API virtual void OnInitialize() override;

@@ -26,7 +26,6 @@ namespace NxEn
 
 	Application::~Application()
 	{
-		Systems.ClearSystems();
 		Instance = nullptr;
 	}
 
