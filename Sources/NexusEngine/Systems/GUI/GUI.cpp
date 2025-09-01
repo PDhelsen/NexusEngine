@@ -162,6 +162,8 @@ namespace NxEn
 
 		Menu::Item Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
+			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
 			Item It(Callback, Validate, Path, Shortcut, Priority, Menu::ItemMode::Callback, 0, nullptr);
 			GUISystem::RegisterMenuItem(&It);
 			return It;

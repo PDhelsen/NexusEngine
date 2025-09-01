@@ -26,6 +26,7 @@ namespace NxEn
 
 	Application::~Application()
 	{
+		Systems.ClearSystems();
 		Instance = nullptr;
 	}
 
@@ -74,7 +75,6 @@ namespace NxEn
 		{
 			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		});
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Clear Systems", { &Systems, &SystemManager::ClearSystems });
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Cleanup Folders", &NxFr::Paths::CleanupFolders);
 	}
 

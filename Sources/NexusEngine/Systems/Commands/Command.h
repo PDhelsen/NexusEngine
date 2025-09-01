@@ -42,6 +42,8 @@ namespace NxEn
 	template<typename ...Args>
 	inline Command Command::Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback)
 	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
 		Command Instance = Command(Id, Tooltip, [=](NxFr::StringView ArgsLine)
 		{
 			NxFr::List<NxFr::StringView> Arguments = CommandsSystem::ParseArguments(ArgsLine);

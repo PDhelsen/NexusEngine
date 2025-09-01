@@ -30,6 +30,8 @@ namespace NxEn
 
 	static GUI::Window& GetMainWindow()
 	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
 		static GUI::Window Window;
 		return Window;
 	}
@@ -41,6 +43,8 @@ namespace NxEn
 
 	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
 	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
 		static NxFr::Dictionary<NxFr::StringId, GUI::Panel*> Panels;
 		return Panels;
 	}
