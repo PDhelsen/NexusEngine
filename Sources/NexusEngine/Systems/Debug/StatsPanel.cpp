@@ -5,7 +5,6 @@ namespace NxEn
 {
 	static NxFr::StringId ButtonNormal = "Button_Normal"_Sid;
 	static NxFr::StringId ButtonPressed = "Button_Pressed"_Sid;
-	static NxFr::String Filter = 256;
 	static NxFr::StringView FilterExclude[] = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
 
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
@@ -15,9 +14,10 @@ namespace NxEn
 	StatsPanel::StatsPanel() :
 		Instruments(nullptr),
 		Stats(nullptr),
-		Filters(8, MemorySystem::GetAllocator(AllocatorType::General)),
 		Ids(16, MemorySystem::GetAllocator(AllocatorType::General)),
-		Values(11, MemorySystem::GetAllocator(AllocatorType::General))
+		Values(11, MemorySystem::GetAllocator(AllocatorType::General)),
+		Filters(8, MemorySystem::GetAllocator(AllocatorType::General)),
+		Filter(64, MemorySystem::GetAllocator(AllocatorType::General))
 	{
 	}
 
