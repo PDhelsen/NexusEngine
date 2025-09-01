@@ -235,8 +235,6 @@ namespace NxEn
 
 		void Initialize()
 		{
-			NxFr::AllocatorContext Context(nullptr);
-
 			glfwSetErrorCallback(ErrorCallback);
 			if (!glfwInit())
 			{
@@ -251,8 +249,6 @@ namespace NxEn
 
 		void Shutdown()
 		{
-			NxFr::AllocatorContext Context(nullptr);
-
 			glfwTerminate();
 		}
 
@@ -282,8 +278,6 @@ namespace NxEn
 
 		NxFr::Array<void*> GetMonitors()
 		{
-			NxFr::AllocatorContext Context(nullptr);
-
 			int Count;
 			GLFWmonitor** Instances = glfwGetMonitors(&Count);
 
@@ -305,8 +299,6 @@ namespace NxEn
 
 		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval)
 		{
-			NxFr::AllocatorContext Context(nullptr);
-
 			GLFWwindow* Instance = nullptr;
 			switch (Mode)
 			{
@@ -365,8 +357,6 @@ namespace NxEn
 
 		void DestroyWindow(void* Window)
 		{
-			NxFr::AllocatorContext Context(nullptr);
-
 			GLFWwindow* Instance = NEXUS_WINDOW(Window);
 
 			glfwSetWindowCloseCallback(Instance, nullptr);
@@ -447,8 +437,6 @@ namespace NxEn
 
 		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom)
 		{
-			NxFr::AllocatorContext Context(nullptr);
-
 			if (Cursor != nullptr)
 			{
 				glfwDestroyCursor(NEXUS_CURSOR(Cursor));

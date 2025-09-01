@@ -192,7 +192,7 @@ namespace NxEn
 		}
 
 		Menu::Menu(bool Main)
-			: Items(16, MemorySystem::GetAllocator(AllocatorType::General)), Labels(11, MemorySystem::GetAllocator(AllocatorType::General)), Main(Main)
+			: Items(), Labels(), Main(Main)
 		{
 			SetManual(true);
 		}

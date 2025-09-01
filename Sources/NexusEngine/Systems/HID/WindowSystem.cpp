@@ -7,8 +7,15 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(WindowSystem)
 
-	WindowSystem::WindowSystem()
-		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Pointer(), Focused(true)
+	WindowSystem::WindowSystem() :
+		OnClose(MemorySystem::GetAllocator(AllocatorType::General)),
+		OnFocus(MemorySystem::GetAllocator(AllocatorType::General)),
+		OnMove(MemorySystem::GetAllocator(AllocatorType::General)),
+		OnResize(MemorySystem::GetAllocator(AllocatorType::General)),
+		Monitors(5, MemorySystem::GetAllocator(AllocatorType::General)),
+		Target(),
+		Pointer(),
+		Focused(true)
 	{
 		Target = Window(Window::Mode::Windowed, 1, NxFr::Vector2i(50), NxFr::Vector2i(1920, 1080), "Nexus", nullptr, true);
 		OnFocus += NxFr::Delegate<void(bool)>(this, &WindowSystem::OnFocused);

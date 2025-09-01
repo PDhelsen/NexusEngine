@@ -170,6 +170,7 @@ namespace NxEn
 
 	void Allocator::ClearAllocators(bool Delete)
 	{
+		NxFr::AllocatorContext Context(nullptr);
 		NxFr::List<NxFr::Allocator*> ToDelete(Allocators.GetCount());
 
 		for (NxFr::Allocator* Alloc : Allocators)

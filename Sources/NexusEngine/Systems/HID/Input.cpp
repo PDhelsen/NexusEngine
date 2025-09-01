@@ -120,7 +120,7 @@ namespace NxEn
 		}
 
 		Schema::Schema()
-			: Actions(11, MemorySystem::GetAllocator(AllocatorType::General))
+			: Actions()
 		{
 		}
 

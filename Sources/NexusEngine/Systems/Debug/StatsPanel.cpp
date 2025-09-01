@@ -40,7 +40,6 @@ namespace NxEn
 		Instruments = Debug->GetInstrumentor();
 		Stats = Debug->GetStats();
 
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 		Values = Stats->GetAllCurrentStats();
 		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
 		for (auto& [Id, Value] : Values)
@@ -116,8 +115,6 @@ namespace NxEn
 		ImGui::Separator();
 
 		Filter.Validate();
-
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 		Filters = NxFr::StringUtility::SplitAll(Filter, ",");
 	}
 
