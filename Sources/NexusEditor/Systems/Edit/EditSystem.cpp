@@ -52,12 +52,8 @@ namespace NxEd
 
 	NEXUS_OBJECT_IMPLEMENTATION(EditSystem)
 
-	EditSystem::EditSystem() :
-		Contexts(5, NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General)),
-		Selection(32, NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General)),
-		Clipboard(32, NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General)),
-		HistoryUndo(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General)),
-		HistoryRedo(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General))
+	EditSystem::EditSystem()
+		: Contexts(), Selection(), Clipboard(), HistoryUndo(), HistoryRedo()
 	{
 		CreateContext(Edit::Context::Dummy);
 	}

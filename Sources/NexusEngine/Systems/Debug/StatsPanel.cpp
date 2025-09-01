@@ -11,13 +11,8 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
 
-	StatsPanel::StatsPanel() :
-		Instruments(nullptr),
-		Stats(nullptr),
-		Ids(16, MemorySystem::GetAllocator(AllocatorType::General)),
-		Values(11, MemorySystem::GetAllocator(AllocatorType::General)),
-		Filters(8, MemorySystem::GetAllocator(AllocatorType::General)),
-		Filter(64, MemorySystem::GetAllocator(AllocatorType::General))
+	StatsPanel::StatsPanel()
+		: Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filters(), Filter()
 	{
 	}
 

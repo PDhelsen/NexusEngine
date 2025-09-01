@@ -32,13 +32,8 @@ namespace NxEn
 		return Application::GetSystem<GUISystem>()->GetStyle(Id);
 	}
 
-	ConsolePanel::ConsolePanel():
-		Menu(),
-		Logs(16, MemorySystem::GetAllocator(AllocatorType::General)),
-		FlagsVerbosity(5, MemorySystem::GetAllocator(AllocatorType::General)),
-		FlagsChannels(11, MemorySystem::GetAllocator(AllocatorType::General)),
-		Command(256, MemorySystem::GetAllocator(AllocatorType::General)),
-		Search(64, MemorySystem::GetAllocator(AllocatorType::General))
+	ConsolePanel::ConsolePanel()
+		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(), Search()
 	{
 	}
 

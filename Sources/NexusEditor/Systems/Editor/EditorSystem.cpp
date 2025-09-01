@@ -16,7 +16,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)
 
 	EditorSystem::EditorSystem()
-		: OnSave(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General)), InputSchema(), Window(NxEn::GUISystem::GetWindow())
+		: OnSave(), InputSchema(), Window(NxEn::GUISystem::GetWindow())
 	{
 	}
 

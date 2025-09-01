@@ -103,9 +103,8 @@ namespace NxEn
 		GetPanels().Remove(Instance->GetObjectType());
 	}
 
-	GUISystem::GUISystem() :
-		Elements(11, MemorySystem::GetAllocator(AllocatorType::General)),
-		Styles(32, MemorySystem::GetAllocator(AllocatorType::General))
+	GUISystem::GUISystem()
+		: Elements(), Styles()
 	{
 
 	}
