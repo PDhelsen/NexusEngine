@@ -14,19 +14,14 @@ namespace NxFr
 
 namespace NxEn
 {
-#if NEXUS_EDITOR
-	const NxFr::StringView Suffix = "_editor";
-#else
-	const NxFr::StringView Suffix = "_app";
-#endif
-
-	const NxFr::StringView SavedConfigName = "imgui";
-	const NxFr::StringView SavedStyleName = "style";
-	const NxFr::StringView SavedLayoutName = "layout";
-	const NxFr::StringView ConfigExtension = ".ini";
-	const NxFr::StringView StyleExtension = ".yaml";
-	const NxFr::StringView LayoutExtension = ".layout";
 	const NxFr::StringView Folder = "imgui";
+	const NxFr::StringView NameDefault = "Default";
+	const NxFr::StringView NameImGui = "imgui";
+	const NxFr::StringView NameStyle = "style";
+	const NxFr::StringView NameLayout = "layout";
+	const NxFr::StringView ExtensionImGui = ".ini";
+	const NxFr::StringView ExtensionStyle = ".style";
+	const NxFr::StringView ExtensionLayout = ".layout";
 
 	static GUI::Window& GetMainWindow()
 	{
@@ -131,13 +126,13 @@ namespace NxEn
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
-		NxFr::Path Path = GetSettingsPath(Name, SavedConfigName, ConfigExtension);
+		NxFr::Path Path = Project::GetSavedConfigPath(Folder, ExtensionImGui, Name, NameImGui, NameDefault);
 		if (Path.Exist())
 		{
 			LoadLayoutImGui(Path);
 		}
 
-		Path = GetSettingsPath(Name, SavedLayoutName, LayoutExtension);
+		Path = Project::GetSavedConfigPath(Folder, ExtensionLayout, Name, NameLayout, NameDefault);
 		if (Path.Exist())
 		{
 			LoadLayoutNexus(Path);
@@ -148,10 +143,10 @@ namespace NxEn
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
-		NxFr::Path Path = GetSettingsPath(Name, SavedConfigName, ConfigExtension);
+		NxFr::Path Path = Project::GetSavedConfigPath(Folder, ExtensionImGui, Name, NameImGui, "");
 		SaveLayoutImGui(Path);
 
-		Path = GetSettingsPath(Name, SavedLayoutName, LayoutExtension);
+		Path = Project::GetSavedConfigPath(Folder, ExtensionLayout, Name, NameLayout, "");
 		if (!Name.IsEmpty() && !Path.Exist())
 		{
 			AddMenuWindowLayouts(Name.ToString());
@@ -163,7 +158,7 @@ namespace NxEn
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
-		NxFr::Path Path = GetSettingsPath(Name, SavedStyleName, StyleExtension);
+		NxFr::Path Path = Project::GetSavedConfigPath(Folder, ExtensionStyle, Name, NameStyle, NameDefault);
 		if (!Path.Exist())
 		{
 			return;
@@ -179,7 +174,7 @@ namespace NxEn
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
 	{
-		NxFr::Path Path = GetSettingsPath(Name, SavedStyleName, StyleExtension);
+		NxFr::Path Path = Project::GetSavedConfigPath(Folder, ExtensionStyle, Name, NameStyle, "");
 
 		YAML::Emitter Data;
 		Data << YAML::BeginMap;
@@ -226,6 +221,8 @@ namespace NxEn
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, UnsignedInteger, Set);
+
+		CreateFolder();
 
 		Imgui::Initialize();
 		LoadTheme();
@@ -303,13 +300,13 @@ namespace NxEn
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, "", 1);
 
-		NxFr::Path Path = GetSettingsPath("Layout", SavedLayoutName, LayoutExtension);
-		NxFr::Directory Folder(Path.GetDirectoryPath());
+		NxFr::Path Path = NxFr::Paths::Configs + Folder;
+		NxFr::Directory Folder(Path);
 		NxFr::List<NxFr::String> Layouts = Folder.GetFiles();
 
 		for (auto& Layout : Layouts)
 		{
-			if (!NxFr::Path::HasExtension(Layout, LayoutExtension))
+			if (!NxFr::Path::HasExtension(Layout, ExtensionLayout))
 			{
 				continue;
 			}
@@ -330,16 +327,10 @@ namespace NxEn
 		});
 	}
 
-	NxFr::Path GUISystem::GetSettingsPath(NxFr::StringView Name, NxFr::StringView Default, NxFr::StringView Extension) const
+	void GUISystem::CreateFolder() const
 	{
-		NxFr::Path Directory = !Name.IsEmpty() ? NxFr::Paths::Configs : NxFr::Paths::Saved;
-		Directory += Folder;
-		NxFr::Directory(Directory).Create();
-
-		NxFr::String File = !Name.IsEmpty() ? Name.ToString() : (Default + Suffix);
-		File += Extension;
-
-		return Directory + File;
+		NxFr::Directory(NxFr::Paths::Configs + Folder).Create();
+		NxFr::Directory(NxFr::Paths::Saved + Folder).Create();
 	}
 
 	void GUISystem::LoadLayoutImGui(const NxFr::Path& Path) const

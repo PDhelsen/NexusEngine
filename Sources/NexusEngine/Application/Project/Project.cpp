@@ -1,7 +1,15 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Project/Project.h"
 
+#include "NexusFramework/Core/NexusFrameworkPaths.h"
+
 #define NEXUS_PROJECT_DLL "NexusProject-"
+
+#if NEXUS_EDITOR
+#define NEXUS_SUFFIX "_editor"
+#else
+#define NEXUS_SUFFIX "_app"
+#endif
 
 namespace NxEn
 {
@@ -73,6 +81,26 @@ namespace NxEn
 			{
 				return Project();
 			}
+		}
+	}
+
+	NxFr::Path Project::GetSavedConfigPath(NxFr::StringView Folder, NxFr::StringView Extension, NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, bool Suffix)
+	{
+		if (!Config.IsEmpty())
+		{
+			return NxFr::Paths::Configs + Folder + (Config + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+		}
+		else
+		{
+			NxFr::Path Path = NxFr::Paths::Saved + Folder + (Saved + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+
+			if (!Path.Exist() && !Template.IsEmpty())
+			{
+				NxFr::Path Target = NxFr::Paths::Configs + Folder + (Template + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+				NxFr::File(Target).Copy(Path);
+			}
+
+			return Path;
 		}
 	}
 

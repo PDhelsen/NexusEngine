@@ -20,6 +20,8 @@ namespace NxEn
 	class Project
 	{
 	public:
+		NEXUS_ENGINE_API static NxFr::Path GetSavedConfigPath(NxFr::StringView Folder, NxFr::StringView Extension, NxFr::StringView Config, NxFr::StringView Saved = "", NxFr::StringView Template = "", bool Suffix = false);
+
 		NEXUS_ENGINE_API Project();
 		NEXUS_ENGINE_API Project(ProjectMode Mode);
 		NEXUS_ENGINE_API Project(NxFr::StringView Path);

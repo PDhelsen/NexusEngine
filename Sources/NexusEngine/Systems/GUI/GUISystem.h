@@ -61,7 +61,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void AddMenuWindowLayouts() const;
 		NEXUS_ENGINE_API void AddMenuWindowLayouts(const NxFr::String& Name) const;
 
-		NEXUS_ENGINE_API NxFr::Path GetSettingsPath(NxFr::StringView Name, NxFr::StringView Default, NxFr::StringView Extension) const;
+		NEXUS_ENGINE_API void CreateFolder() const;
 		NEXUS_ENGINE_API void LoadLayoutImGui(const NxFr::Path& Path) const;
 		NEXUS_ENGINE_API void LoadLayoutNexus(const NxFr::Path& Path) const;
 		NEXUS_ENGINE_API void SaveLayoutImGui(const NxFr::Path& Path) const;
