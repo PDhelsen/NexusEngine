@@ -25,7 +25,7 @@ namespace NxEn
 		Project NxEn::EntryPoint::CreateProject()
 		{
 			// Check cmd args
-			NxFr::StringView ModeArg = NxFr::Arguments::GetValue("Target");
+			NxFr::StringView ModeArg = NxFr::Arguments::GetValue("Mode");
 			NxFr::StringView PathArg = NxFr::Arguments::GetValue("Project");
 
 			// Convert arg

@@ -21,6 +21,7 @@ set Folders[6]=yaml-cpp
 set Folders[7]=glfw
 set Folders[8]=imgui
 
+robocopy %Root%Configs %Deploy%Configs /it /is /e /v
 call :CopyFolder %Root%Libraries %Deploy%Libraries "*.h *.hpp *.cpp *.cc *.natvis"
 call :CopyFolder %Root%Sources %Deploy%Sources "*.h *.cpp *.natvis"
 call :CopyFolder %Root%builds\binaries %Deploy%Builds "*.exe *.dll *.lib *.pdb"
