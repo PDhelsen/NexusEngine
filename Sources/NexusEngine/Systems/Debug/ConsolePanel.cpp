@@ -33,7 +33,7 @@ namespace NxEn
 	}
 
 	ConsolePanel::ConsolePanel()
-		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(), Search()
+		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128)
 	{
 	}
 
