@@ -222,7 +222,8 @@ namespace NxEn
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, UnsignedInteger, Set);
 
-		CreateFolder();
+		NxFr::Directory(NxFr::Paths::Configs + Folder).Create();
+		NxFr::Directory(NxFr::Paths::Saved + Folder).Create();
 
 		Imgui::Initialize();
 		LoadTheme();
@@ -325,12 +326,6 @@ namespace NxEn
 			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Load,") + Name;
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		});
-	}
-
-	void GUISystem::CreateFolder() const
-	{
-		NxFr::Directory(NxFr::Paths::Configs + Folder).Create();
-		NxFr::Directory(NxFr::Paths::Saved + Folder).Create();
 	}
 
 	void GUISystem::LoadLayoutImGui(const NxFr::Path& Path) const
