@@ -84,20 +84,28 @@ namespace NxEn
 		}
 	}
 
-	NxFr::Path Project::GetSavedConfigPath(NxFr::StringView Folder, NxFr::StringView Extension, NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, bool Suffix)
+	NxFr::Path Project::GetSavedConfigPath(NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, NxFr::StringView Extension, NxFr::StringView SubFolder, bool Suffix)
 	{
 		if (!Config.IsEmpty())
 		{
-			return NxFr::Paths::Configs + Folder + (Config + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+			return NxFr::Paths::Configs + SubFolder + (Config + (Suffix ? NEXUS_SUFFIX : "") + Extension);
 		}
 		else
 		{
-			NxFr::Path Path = NxFr::Paths::Saved + Folder + (Saved + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+			NxFr::Path Path = NxFr::Paths::Saved + SubFolder + (Saved + (Suffix ? NEXUS_SUFFIX : "") + Extension);
 
 			if (!Path.Exist() && !Template.IsEmpty())
 			{
-				NxFr::Path Target = NxFr::Paths::Configs + Folder + (Template + (Suffix ? NEXUS_SUFFIX : "") + Extension);
-				NxFr::File(Target).Copy(Path);
+				NxFr::Path Target = NxFr::Paths::Configs + SubFolder + (Template + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+
+				if (Extension.IsEmpty())
+				{
+					NxFr::Directory(Target).Copy(Path);
+				}
+				else
+				{
+					NxFr::File(Target).Copy(Path);
+				}
 			}
 
 			return Path;
