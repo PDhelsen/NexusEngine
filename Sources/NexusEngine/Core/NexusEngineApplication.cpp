@@ -42,6 +42,7 @@ namespace NxEn
 		Systems.CreateSystem<MemorySystem>();
 		Systems.CreateSystem<InputSystem>();
 		Systems.CreateSystem<CommandsSystem>();
+		Systems.CreateSystem<SettingsSystem>();
 		if (!IsHeadless())
 		{
 			Systems.CreateSystem<WindowSystem>();
@@ -66,6 +67,7 @@ namespace NxEn
 		Systems.DestroySystem<MemorySystem>();
 		Systems.DestroySystem<InputSystem>();
 		Systems.DestroySystem<CommandsSystem>();
+		Systems.DestroySystem<SettingsSystem>();
 		if (!IsHeadless())
 		{
 			Systems.DestroySystem<WindowSystem>();
@@ -82,6 +84,7 @@ namespace NxEn
 		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
 		Bootstrap.AppendSystem<InputSystem>();
 		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
+		Bootstrap.AppendSystem<SettingsSystem>();
 		if (!IsHeadless())
 		{
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
@@ -105,6 +108,7 @@ namespace NxEn
 		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
 		Unbootstrap.AppendSystem<CommandsSystem>();
+		Unbootstrap.AppendSystem<SettingsSystem>();
 		if (!IsHeadless())
 		{
 			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
