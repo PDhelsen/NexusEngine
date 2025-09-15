@@ -16,9 +16,17 @@ namespace NxEn
 		return Settings;
 	}
 
-	const static Command CmdSettings = Command::Create("Settings"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Value)
+	const static Command CmdSettingsVar = Command::Create("SettingsVar"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Value)
 	{
 		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(Value);
+	}));
+	const static Command CmdSettingsSeq = Command::Create("SettingsSeq"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Index, NxFr::StringView Value)
+	{
+		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(NxFr::StringUtility::ToInteger(Index), Value);
+	}));
+	const static Command CmdSettingsMap = Command::Create("SettingsMap"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Key, NxFr::StringView Value)
+	{
+		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(Key.ToString(), Value);
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(SettingsSystem)
@@ -82,7 +90,7 @@ namespace NxEn
 				YAML::Node& Value = It->second;
 
 				auto* Instance = Settings[Key.as<NxFr::String>()];
-				Instance->Set(Value.as<NxFr::String>());
+				Instance->Deserialize(Value);
 			}
 		}
 	}
@@ -101,7 +109,7 @@ namespace NxEn
 				Data << YAML::Key;
 				Data << Instance->GetName();
 				Data << YAML::Value;
-				Data << Instance->Get();
+				Instance->Serialize(Data);
 			}
 			Data << YAML::EndMap;
 

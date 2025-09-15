@@ -3,9 +3,6 @@
 
 namespace NxEn
 {
-	static const float Width = 100.0f;
-	static const uint64 Buffer = 128;
-
 	static SettingsPanel* Panel = GUI::Panel::Create<SettingsPanel>();
 
 	const static GUI::Menu::Item MenuItemSettings = GUI::Menu::Item::Create("File/Settings", NxFr::Delegate<void()>([]()
@@ -45,12 +42,11 @@ namespace NxEn
 	void SettingsPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		FetchValues();
+		Fetch();
 	}
 
 	void SettingsPanel::OnDisable()
 	{
-		ApplyValues();
 		Panel::OnDisable();
 	}
 
@@ -63,7 +59,7 @@ namespace NxEn
 			return;
 		}
 
-		ImGui::BeginChild("Pages", { Width, 0.0f }, true);
+		ImGui::BeginChild("Pages", { Indent, 0.0f }, true);
 		for (uint64 Index = 0; Index < Pages.GetCount(); ++Index)
 		{
 			if (ImGui::Selectable(Pages[Index].C(), Page == Index))
@@ -77,32 +73,21 @@ namespace NxEn
 
 		ImGui::BeginChild("Settings", { 0.0f, 0.0f }, false);
 		NxFr::Array<NxFr::String>& SettingsNames = Names[Page];
-		NxFr::Array<NxFr::String>& SettingsValues = Values[Page];
+		NxFr::Array<Setting*>& SettingsValues = Values[Page];
 		for (uint64 Index = 0; Index < SettingsNames.GetCount(); ++Index)
 		{
 			NxFr::String& Name = SettingsNames[Index];
-			NxFr::String& Value = SettingsValues[Index];
+			Setting* Value = SettingsValues[Index];
 
-			{
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text(Name.C());
-			}
-
-			ImGui::SameLine(Width);
-
-			{
-				NxFr::String ImGuiId = "##" + Name;
-				ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-				if (ImGui::InputText(ImGuiId.C(), Value.C_Buffer(), Value.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
-				{
-					ApplyValue(Page, Index);
-				}
-			}
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(Name.C());
+			ImGui::SameLine(Indent);
+			Value->OnGui();
 		}
 		ImGui::EndChild();
 	}
 
-	void SettingsPanel::FetchValues()
+	void SettingsPanel::Fetch()
 	{
 		auto Settings = SettingsSystem::GetAllSettings();
 
@@ -111,7 +96,7 @@ namespace NxEn
 
 		Pages = NxFr::Array<NxFr::String>(PageCount);
 		Names = NxFr::Array<NxFr::Array<NxFr::String>>(PageCount);
-		Values = NxFr::Array<NxFr::Array<NxFr::String>>(PageCount);
+		Values = NxFr::Array<NxFr::Array<Setting*>>(PageCount);
 
 		for (auto& [Page, Instances] : Settings)
 		{
@@ -120,16 +105,15 @@ namespace NxEn
 
 			Pages[PageIndex] = Page.ToString();
 			Names[PageIndex] = NxFr::Array<NxFr::String>(NameCount);
-			Values[PageIndex] = NxFr::Array<NxFr::String>(NameCount);
+			Values[PageIndex] = NxFr::Array<Setting*>(NameCount);
 
 			NxFr::Array<NxFr::String>& PageName = Names[PageIndex];
-			NxFr::Array<NxFr::String>& PageValue = Values[PageIndex];
+			NxFr::Array<Setting*>& PageValue = Values[PageIndex];
 
 			for (auto& [Name, Instance] : Instances)
 			{
 				PageName[NameIndex] = Name.ToString();
-				PageValue[NameIndex] = Instance->Get();
-				PageValue[NameIndex].Grow(Buffer);
+				PageValue[NameIndex] = Instance;
 
 				NameIndex++;
 			}
@@ -138,37 +122,14 @@ namespace NxEn
 		}
 	}
 
-	void SettingsPanel::ApplyValues()
-	{
-		for (uint64 PageIndex = 0; PageIndex < Pages.GetCount(); ++PageIndex)
-		{
-			for (uint64 SettingIndex = 0; SettingIndex < Names[PageIndex].GetCount(); ++SettingIndex)
-			{
-				ApplyValue(PageIndex, SettingIndex);
-			}
-		}
-	}
-
-	void SettingsPanel::ApplyValue(uint64 PageIndex, uint64 SettingIndex)
-	{
-		NxFr::String& Page = Pages[PageIndex];
-		NxFr::String& Name = Names[PageIndex][SettingIndex];
-		NxFr::String& Value = Values[PageIndex][SettingIndex];
-
-		Value.Validate();
-		NxFr::String Key = Settings::Key(Page, Name);
-		SettingsSystem::GetSetting(Key)->Set(Value);
-	}
-
 	void SettingsPanel::Load()
 	{
 		Application::GetSystem<SettingsSystem>()->LoadSettings();
-		FetchValues();
+		Fetch();
 	}
 
 	void SettingsPanel::Save()
 	{
-		ApplyValues();
 		Application::GetSystem<SettingsSystem>()->SaveSettings();
 	}
 }

@@ -9,6 +9,8 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, SettingsPanel)
 
+		inline static float Indent = 100.0f;
+
 		NEXUS_ENGINE_API SettingsPanel();
 		NEXUS_ENGINE_API ~SettingsPanel();
 
@@ -19,10 +21,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnDisable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
-		void FetchValues();
-		void ApplyValues();
-		void ApplyValue(uint64 PageIndex, uint64 SettingIndex);
-
+		void Fetch();
 		void Load();
 		void Save();
 
@@ -32,6 +31,6 @@ namespace NxEn
 
 		NxFr::Array<NxFr::String> Pages;
 		NxFr::Array<NxFr::Array<NxFr::String>> Names;
-		NxFr::Array<NxFr::Array<NxFr::String>> Values;
+		NxFr::Array<NxFr::Array<Setting*>> Values;
 	};
 }
