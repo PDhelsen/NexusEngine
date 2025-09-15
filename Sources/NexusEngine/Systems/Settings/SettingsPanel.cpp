@@ -48,6 +48,12 @@ namespace NxEn
 		FetchValues();
 	}
 
+	void SettingsPanel::OnDisable()
+	{
+		ApplyValues();
+		Panel::OnDisable();
+	}
+
 	void SettingsPanel::OnGui(float TimeStep)
 	{
 		Menu.Tick(TimeStep);
@@ -150,7 +156,7 @@ namespace NxEn
 		NxFr::String& Value = Values[PageIndex][SettingIndex];
 
 		Value.Validate();
-		NxFr::String Key = Setting::Key(Page, Name);
+		NxFr::String Key = Settings::Key(Page, Name);
 		SettingsSystem::GetSetting(Key)->Set(Value);
 	}
 

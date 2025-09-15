@@ -81,8 +81,8 @@ namespace NxEn
 				YAML::Node& Key = It->first;
 				YAML::Node& Value = It->second;
 
-				auto& Instance = Settings[Key.as<NxFr::String>()];
-				Instance->Deserialize(Value);
+				auto* Instance = Settings[Key.as<NxFr::String>()];
+				Instance->Set(Value.as<NxFr::String>());
 			}
 		}
 	}
@@ -98,7 +98,10 @@ namespace NxEn
 			Data << YAML::BeginMap;
 			for (auto& [Id, Instance] : Settings)
 			{
-				Instance->Serialize(Data);
+				Data << YAML::Key;
+				Data << Instance->GetName();
+				Data << YAML::Value;
+				Data << Instance->Get();
 			}
 			Data << YAML::EndMap;
 
