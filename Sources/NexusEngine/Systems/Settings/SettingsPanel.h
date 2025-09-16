@@ -22,6 +22,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
 		void Fetch();
+		void Apply();
 		void Load();
 		void Save();
 

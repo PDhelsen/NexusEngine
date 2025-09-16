@@ -18,8 +18,13 @@ namespace NxEn
 		NEXUS_ENGINE_API void LoadSettings() const;
 		NEXUS_ENGINE_API void SaveSettings() const;
 
+		NEXUS_ENGINE_API NxFr::Event<>& GetOnChange() { return OnChange; }
+
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnShutdown() override;
+
+	private:
+		NxFr::Event<> OnChange;
 	};
 }

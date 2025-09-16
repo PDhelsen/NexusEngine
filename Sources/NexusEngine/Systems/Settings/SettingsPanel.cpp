@@ -29,6 +29,7 @@ namespace NxEn
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 		SetTitle("Settings");
 
+		Menu.AddMenuItem("Apply", { this, &SettingsPanel::Apply });
 		Menu.AddMenuItem("Load", { this, &SettingsPanel::Load });
 		Menu.AddMenuItem("Save", { this, &SettingsPanel::Save });
 	}
@@ -122,10 +123,14 @@ namespace NxEn
 		}
 	}
 
+	void SettingsPanel::Apply()
+	{
+		Application::GetSystem<SettingsSystem>()->GetOnChange().Invoke();
+	}
+
 	void SettingsPanel::Load()
 	{
 		Application::GetSystem<SettingsSystem>()->LoadSettings();
-		Fetch();
 	}
 
 	void SettingsPanel::Save()
