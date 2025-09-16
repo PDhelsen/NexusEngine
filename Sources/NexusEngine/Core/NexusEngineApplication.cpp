@@ -52,6 +52,7 @@ namespace NxEn
 		NxFr::Logger* Logger = Systems.GetSystem<DebugSystem>()->GetLogger();
 		Logger->AddChannel(NxFr::LoggerChannel::Application, true);
 		Logger->AddChannel(NxFr::LoggerChannel::System, true);
+		Systems.GetSystem<SettingsSystem>()->GetOnChange() += { Systems.GetSystem<DebugSystem>(), &DebugSystem::ApplySettings };
 		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &InputSchema);
 		if (!IsHeadless())
 		{
@@ -80,11 +81,11 @@ namespace NxEn
 		Application::OnInitialize();
 		Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendSystem<DebugSystem>();
+		Bootstrap.AppendSystem<SettingsSystem>();
+		Bootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, SettingsSystem>();
 		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
 		Bootstrap.AppendSystem<InputSystem>();
 		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
-		Bootstrap.AppendSystem<SettingsSystem>();
 		if (!IsHeadless())
 		{
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
@@ -136,7 +137,7 @@ namespace NxEn
 		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands });
 		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Auto start debug system", []()
 		{
-				Application::GetSystem<DebugSystem>()->AutoStart();
+			Application::GetSystem<DebugSystem>()->AutoStart();
 		});
 	}
 

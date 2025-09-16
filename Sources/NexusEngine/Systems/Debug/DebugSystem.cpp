@@ -12,6 +12,9 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
+	static SettingSeq* SettingVerbosity = SettingSeq::Create(Settings::PageSettings, "LoggerVerbosity", Settings::Type::Bool);
+	static SettingMap* SettingChannels = SettingMap::Create(Settings::PageSettings, "LoggerChannel", Settings::Type::Bool);
+
 	const static Command CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
 	{
 		Application::GetSystem<DebugSystem>()->GetLogger()->SetChannel(NxFr::StringId(Channel), Enabled == "true");
@@ -69,6 +72,8 @@ namespace NxEn
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
 		Stats = new NxFr::Stats(Folder + "stats.csv");
 
+		ApplySettings();
+
 		NxFr::Globals::Statistiques = Stats;
 		NxFr::Globals::Instrumentor = Instrumentor;
 	}
@@ -117,6 +122,21 @@ namespace NxEn
 			NEXUS_LOG(Info, System, "Debug Tools will start automatically");
 			Instrumentor->StartRecording();
 			Stats->StartRecording();
+		}
+	}
+
+	void DebugSystem::ApplySettings()
+	{
+		for (uint64 Index = 0; Index < SettingVerbosity->GetCount(); ++Index)
+		{
+			Logger->SetVerbosity((NxFr::LoggerVerbosity)(1 << Index), SettingVerbosity->As<bool>(Index));
+		}
+
+		auto ChannelsCollection = SettingChannels->GetCollection();
+		for (auto& It = ChannelsCollection.Reset(); It != ChannelsCollection.End(); ++It)
+		{
+			auto& Kv = It.Get();
+			Logger->SetChannel(NxFr::StringId(Kv.Key), Kv.Value.As<bool>());
 		}
 	}
 }

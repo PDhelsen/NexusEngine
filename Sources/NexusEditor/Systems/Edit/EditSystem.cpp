@@ -2,8 +2,7 @@
 
 namespace NxEd
 {
-	// TODO: Convert to SettingsSystem
-	const static uint64 HistoryCapacity = 64;
+	static NxEn::SettingVar* SettingHistoryCapacity = NxEn::SettingVar::Create(NxEn::Settings::PagePreferences, "EditHistoryCapacity", NxEn::Settings::Type::Float);
 
 	const static NxEn::Command CmdEditUndo = NxEn::Command::Create("Edit.Undo"_Sid, "Rename selected obejct", NxFr::Delegate<void()>([]()
 	{
@@ -360,7 +359,7 @@ namespace NxEd
 	void EditSystem::RecordUndo(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		const Edit::Context& Context = GetCtx(Ctx);
-		if (HistoryUndo.GetCount() >= HistoryCapacity)
+		if (HistoryUndo.GetCount() >= SettingHistoryCapacity->As<float>())
 		{
 			HistoryUndo.RemoveFront();
 		}
@@ -371,7 +370,7 @@ namespace NxEd
 	void EditSystem::RecordRedo(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		const Edit::Context& Context = GetCtx(Ctx);
-		if (HistoryRedo.GetCount() >= HistoryCapacity)
+		if (HistoryRedo.GetCount() >= SettingHistoryCapacity->As<float>())
 		{
 			HistoryRedo.RemoveFront();
 		}

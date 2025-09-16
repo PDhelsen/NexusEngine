@@ -94,6 +94,7 @@ namespace NxEn
 		}
 	}
 
+	//TODO: Sort settings
 	void SettingsSystem::SaveSettings() const
 	{
 		NxFr::Path Path = Project::GetSavedConfigPath(Folder, "", "", "");

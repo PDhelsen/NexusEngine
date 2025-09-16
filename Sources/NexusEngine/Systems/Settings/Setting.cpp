@@ -9,7 +9,8 @@ namespace NxEn
 
 	namespace Settings
 	{
-		NxFr::StringView DefaultPage = "Settings";
+		NxFr::StringView PageSettings = "Settings";
+		NxFr::StringView PagePreferences = "Preferences";
 
 		NxFr::String Key(NxFr::StringView Page, NxFr::StringView Name)
 		{

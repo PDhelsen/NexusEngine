@@ -1,5 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Memory/MemorySystem.h"
+#include "NexusEngine/Core/NexusConfig.h"
 
 namespace NxFr
 {
@@ -13,13 +14,13 @@ namespace NxFr
 
 namespace NxEn
 {
-	// TODO: Convert to SettingsSystem
-	static float DefragmentBudget = 1.0f;
-	static uint64 HandlesPerManager = 1024;
-	static uint64 SmallParamsSmallest = 32, SmallParamsLargest = 256;
-	static uint64 Sizes[(uint64)AllocatorType::COUNT] = { 0, 1024 * 1024, 1024 * 1024, 1024 * 1024, 1024 * 1024, 1024 * 1024, 1024 * 1024, };
+	static SettingVar* SettingDefragmentBudget = SettingVar::Create(Settings::PageSettings, "MemoryDefragmentBudget", Settings::Type::Float);
+	static SettingVar* SettingHandlesPerManager = SettingVar::Create(Settings::PageSettings, "MemoryHandlesPerManager", Settings::Type::Float);
+	static SettingVar* SettingSmallParamsSmallest = SettingVar::Create(Settings::PageSettings, "MemorySmallParamsSmallest", Settings::Type::Float);
+	static SettingVar* SettingSmallParamsLargest = SettingVar::Create(Settings::PageSettings, "MemorySmallParamsLargest", Settings::Type::Float);
+	static SettingSeq* SettingSizes = SettingSeq::Create(Settings::PageSettings, "MemoryAllocatorsSize", Settings::Type::Float);
 
-	static HandleManager& GetHandles() { static HandleManager Instance(HandlesPerManager); return Instance; }
+	static HandleManager& GetHandles() { static HandleManager Instance((uint64)SettingHandlesPerManager->As<float>()); return Instance; }
 	static Allocator& GetRawAllocator() { static Allocator Instance(AllocatorType::Raw); return Instance; }
 	static Allocator& GetGeneralAllocator() { static Allocator Instance(AllocatorType::General); return Instance; }
 	static Allocator& GetTempAllocator() { static Allocator Instance(AllocatorType::Temp); return Instance; }
@@ -53,29 +54,40 @@ namespace NxEn
 
 	uint64 MemorySystem::GetSmallAllocationSize(uint64 Size)
 	{
-		if (Size > SmallParamsLargest)
+		if (Size > SettingSmallParamsLargest->As<float>())
 		{
 			NEXUS_LOG(Warning, System, "Requested small allocation size is too large. Allocation will come from the Raw allocator");
 			return 0;
 		}
 
-		if (Size < SmallParamsSmallest)
+		if (Size < SettingSmallParamsSmallest->As<float>())
 		{
 			NEXUS_LOG(Warning, System, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
-			return SmallParamsSmallest;
+			return (uint64)SettingSmallParamsSmallest->As<float>();
 		}
 
-		if (Size == SmallParamsLargest)
+		if (Size == SettingSmallParamsLargest->As<float>())
 		{
-			return SmallParamsLargest;
+			return (uint64)SettingSmallParamsLargest->As<float>();
 		}
 
-		return NxFr::Math::NextPowerOfTwo(Size);
+		return (uint64)NxFr::Math::NextPowerOfTwo(Size);
 	}
 
 	uint64 MemorySystem::GetAllocatorSize(AllocatorType Type)
 	{
-		return Sizes[(uint64)Type];
+		if (Type == NxEn::AllocatorType::Raw)
+		{
+			return 0;
+		}
+
+		uint64 Size = NEXUS_MEMORY_ALLOCATOR_SIZE;
+		if (SettingSizes != nullptr && SettingSizes->GetCount() > 0)
+		{
+			Size = (uint64)SettingSizes->As<float>((uint64)Type);
+		}
+
+		return Size;
 	}
 
 	MemorySystem::MemorySystem()
@@ -90,25 +102,25 @@ namespace NxEn
 	void MemorySystem::Defragment(bool Full)
 	{
 		NEXUS_LOG(Info, System, "Memory - Defragmentation (Full: %s)", Full ? "true" : "false");
-		Defragment(DefragmentBudget, Full);
+		Defragment(SettingDefragmentBudget->As<float>(), Full);
 	}
 
 	float MemorySystem::GetDefragmentBudget() const
 	{
-		return DefragmentBudget;
+		return SettingDefragmentBudget->As<float>();
 	}
 
 	void MemorySystem::SetDefragmentBudget(float Budget)
 	{
-		DefragmentBudget = Budget;
+		SettingDefragmentBudget->As<float>() = Budget;
 	}
 
 	void MemorySystem::OnInitialize()
 	{
 		System::OnInitialize();
 
-		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo(SmallParamsSmallest) && NxFr::Math::IsPowerOfTwo(SmallParamsLargest), System, "SmallAllocatorParams have to be PowerOfTwo");
-		NEXUS_ASSERT(Sizes[0] == 0, System, "Can't set the size of the Raw allocator");
+		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsSmallest->As<float>()) && NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsLargest->As<float>()), System, "SmallAllocatorParams have to be PowerOfTwo");
+		NEXUS_ASSERT(GetAllocatorSize(NxEn::AllocatorType::Raw) == 0, System, "Can't set the size of the Raw allocator");
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
@@ -131,7 +143,7 @@ namespace NxEn
 			GetTemp2Allocator().Clear();
 		}
 
-		Defragment(DefragmentBudget, false);
+		Defragment(SettingDefragmentBudget->As<float>(), false);
 		RecordMemoryStats();
 
 		FrameFlag = !FrameFlag;

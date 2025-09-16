@@ -1,3 +1,5 @@
 #pragma once
 
-
+#ifndef NEXUS_MEMORY_ALLOCATOR_SIZE
+#define NEXUS_MEMORY_ALLOCATOR_SIZE 1024 * 1024
+#endif

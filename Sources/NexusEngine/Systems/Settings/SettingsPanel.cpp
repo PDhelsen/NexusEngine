@@ -84,6 +84,7 @@ namespace NxEn
 		ImGui::EndChild();
 	}
 
+	//TODO: Sort settings
 	void SettingsPanel::Fetch()
 	{
 		auto Settings = SettingsSystem::GetAllSettings();

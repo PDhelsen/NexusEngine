@@ -25,6 +25,7 @@ namespace NxEn
 
 	private:
 		NEXUS_ENGINE_API void AutoStart();
+		NEXUS_ENGINE_API void ApplySettings();
 
 	private:
 		NxFr::Logger* Logger;
