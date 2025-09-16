@@ -192,20 +192,8 @@ namespace NxEn
 
 	void SettingSeq::OnGui()
 	{
-		static float ButtonWidth = 50.0f;
-
 		float Position = ImGui::GetCursorPosX();
 		ImGui::Text("Count: %d", Values.GetCount());
-		ImGui::SameLine(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidth + ButtonWidth), 1, false).x);
-		if (ImGui::Button("Add", { ButtonWidth, 0 }))
-		{
-			Values.AppendConstruct(Type);
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Remove", { ButtonWidth, 0 }))
-		{
-			Values.RemoveLast();
-		}
 
 		for (uint64 Index = 0; Index < Values.GetCount(); ++Index)
 		{
@@ -265,8 +253,6 @@ namespace NxEn
 
 	void SettingMap::OnGui()
 	{
-		static float ButtonWidth = 50.0f;
-
 		float Position = ImGui::GetCursorPosX();
 		ImGui::Text("Count: %d", Values.GetCount());
 

@@ -77,32 +77,6 @@ namespace NxEn
 		{
 			return SettingData.Bool;
 		}
-
-		template<typename T>
-		inline Type ToType(const T& Value)
-		{
-			return Type::Invalid;
-		}
-		template<>
-		inline Type ToType(const NxFr::String& Value)
-		{
-			return Type::String;
-		}
-		template<>
-		inline Type ToType(const NxFr::Vector4f& Value)
-		{
-			return Type::Vector;
-		}
-		template<>
-		inline Type ToType(const float& Value)
-		{
-			return Type::Float;
-		}
-		template<>
-		inline Type ToType(const bool& Value)
-		{
-			return Type::Bool;
-		}
 	}
 
 	struct Setting
@@ -142,14 +116,6 @@ namespace NxEn
 	struct SettingVar : public Setting
 	{
 	public:
-		template<typename T>
-		static SettingVar* Create(NxFr::StringView Page, NxFr::StringView Name, const T& Value)
-		{
-			SettingVar* Instance = Create(Page, Name, Settings::ToType(Value));
-			Instance->As<T>() = Value;
-			return Instance;
-		}
-
 		NEXUS_ENGINE_API static SettingVar* Create(NxFr::StringView Page, NxFr::StringView Name, Settings::Type Type);
 
 		NEXUS_ENGINE_API void OnGui() override;

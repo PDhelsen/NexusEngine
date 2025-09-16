@@ -79,8 +79,7 @@ namespace NxEn
 		NxFr::List<NxFr::String> Files = Directory.GetFiles();
 		for (auto& File : Files)
 		{
-			NxFr::StringView Name = NxFr::Path::GetFileName(File);
-			NxFr::StringView Page = NxFr::StringView(Name);
+			NxFr::StringView Page = NxFr::Path::GetFileName(File);
 			auto& Settings = Pages[Page];
 
 			YAML::Node Root = NxFr::Yaml::DeserializeFile(File);
@@ -103,6 +102,7 @@ namespace NxEn
 		for (auto& [Page, Settings] : Pages)
 		{
 			YAML::Emitter Data;
+
 			Data << YAML::BeginMap;
 			for (auto& [Id, Instance] : Settings)
 			{

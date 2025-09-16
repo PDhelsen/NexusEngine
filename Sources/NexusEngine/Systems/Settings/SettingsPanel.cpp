@@ -29,6 +29,7 @@ namespace NxEn
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 		SetTitle("Settings");
 
+		Menu.AddMenuItem("Fetch", { this, &SettingsPanel::Fetch });
 		Menu.AddMenuItem("Apply", { this, &SettingsPanel::Apply });
 		Menu.AddMenuItem("Load", { this, &SettingsPanel::Load });
 		Menu.AddMenuItem("Save", { this, &SettingsPanel::Save });
@@ -44,11 +45,6 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 		Fetch();
-	}
-
-	void SettingsPanel::OnDisable()
-	{
-		Panel::OnDisable();
 	}
 
 	void SettingsPanel::OnGui(float TimeStep)
