@@ -12,8 +12,8 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
-	static SettingSeq* SettingVerbosity = SettingSeq::Create(Settings::PageSettings, "LoggerVerbosity", Settings::Type::Bool);
-	static SettingMap* SettingChannels = SettingMap::Create(Settings::PageSettings, "LoggerChannel", Settings::Type::Bool);
+	static SettingSeq* SettingVerbosity = SettingSeq::Create("Settings", "LoggerVerbosity", Settings::Type::Bool);
+	static SettingMap* SettingChannels = SettingMap::Create("Settings", "LoggerChannel", Settings::Type::Bool);
 
 	const static Command CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
 	{

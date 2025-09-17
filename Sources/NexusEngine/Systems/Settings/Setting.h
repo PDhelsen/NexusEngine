@@ -6,8 +6,6 @@ namespace NxEn
 {
 	namespace Settings
 	{
-		NEXUS_ENGINE_API extern NxFr::StringView PageSettings;
-		NEXUS_ENGINE_API extern NxFr::StringView PagePreferences;
 		NEXUS_ENGINE_API NxFr::String Key(NxFr::StringView Page, NxFr::StringView Name);
 
 		enum class Mode

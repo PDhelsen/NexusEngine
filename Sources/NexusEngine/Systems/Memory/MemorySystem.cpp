@@ -14,11 +14,11 @@ namespace NxFr
 
 namespace NxEn
 {
-	static SettingVar* SettingDefragmentBudget = SettingVar::Create(Settings::PageSettings, "MemoryDefragmentBudget", Settings::Type::Float);
-	static SettingVar* SettingHandlesPerManager = SettingVar::Create(Settings::PageSettings, "MemoryHandlesPerManager", Settings::Type::Float);
-	static SettingVar* SettingSmallParamsSmallest = SettingVar::Create(Settings::PageSettings, "MemorySmallParamsSmallest", Settings::Type::Float);
-	static SettingVar* SettingSmallParamsLargest = SettingVar::Create(Settings::PageSettings, "MemorySmallParamsLargest", Settings::Type::Float);
-	static SettingSeq* SettingSizes = SettingSeq::Create(Settings::PageSettings, "MemoryAllocatorsSize", Settings::Type::Float);
+	static SettingVar* SettingDefragmentBudget = SettingVar::Create("Settings", "MemoryDefragmentBudget", Settings::Type::Float);
+	static SettingVar* SettingHandlesPerManager = SettingVar::Create("Settings", "MemoryHandlesPerManager", Settings::Type::Float);
+	static SettingVar* SettingSmallParamsSmallest = SettingVar::Create("Settings", "MemorySmallParamsSmallest", Settings::Type::Float);
+	static SettingVar* SettingSmallParamsLargest = SettingVar::Create("Settings", "MemorySmallParamsLargest", Settings::Type::Float);
+	static SettingSeq* SettingSizes = SettingSeq::Create("Settings", "MemoryAllocatorsSize", Settings::Type::Float);
 
 	static HandleManager& GetHandles() { static HandleManager Instance((uint64)SettingHandlesPerManager->As<float>()); return Instance; }
 	static Allocator& GetRawAllocator() { static Allocator Instance(AllocatorType::Raw); return Instance; }

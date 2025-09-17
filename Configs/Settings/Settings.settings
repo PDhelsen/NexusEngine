@@ -1,8 +1,8 @@
 LoggerChannel:
-  Default: true
+  Command: true
   System: true
   Verbose: true
-  Command: true
+  Default: true
   Application: true
 LoggerVerbosity:
   - true
