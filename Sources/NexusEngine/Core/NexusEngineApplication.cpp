@@ -38,11 +38,11 @@ namespace NxEn
 	{
 		SystemManager& Systems = GetSystems();
 
+		Systems.CreateSystem<SettingsSystem>();
 		Systems.CreateSystem<DebugSystem>();
 		Systems.CreateSystem<MemorySystem>();
-		Systems.CreateSystem<InputSystem>();
 		Systems.CreateSystem<CommandsSystem>();
-		Systems.CreateSystem<SettingsSystem>();
+		Systems.CreateSystem<InputSystem>();
 		if (!IsHeadless())
 		{
 			Systems.CreateSystem<WindowSystem>();
@@ -52,11 +52,10 @@ namespace NxEn
 		NxFr::Logger* Logger = Systems.GetSystem<DebugSystem>()->GetLogger();
 		Logger->AddChannel(NxFr::LoggerChannel::Application, true);
 		Logger->AddChannel(NxFr::LoggerChannel::System, true);
-		Systems.GetSystem<SettingsSystem>()->GetOnChange() += { Systems.GetSystem<DebugSystem>(), &DebugSystem::ApplySettings };
 		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &InputSchema);
 		if (!IsHeadless())
 		{
-			Systems.GetSystem<WindowSystem>()->GetOnClose() += NxFr::Delegate<void()>(this, &Application::Quit);
+			Systems.GetSystem<WindowSystem>()->GetOnClose() += { this, &Application::Quit };
 		}
 	}
 
@@ -64,11 +63,11 @@ namespace NxEn
 	{
 		SystemManager& Systems = GetSystems();
 
+		Systems.DestroySystem<SettingsSystem>();
 		Systems.DestroySystem<DebugSystem>();
 		Systems.DestroySystem<MemorySystem>();
-		Systems.DestroySystem<InputSystem>();
 		Systems.DestroySystem<CommandsSystem>();
-		Systems.DestroySystem<SettingsSystem>();
+		Systems.DestroySystem<InputSystem>();
 		if (!IsHeadless())
 		{
 			Systems.DestroySystem<WindowSystem>();
@@ -84,12 +83,12 @@ namespace NxEn
 		Bootstrap.AppendSystem<SettingsSystem>();
 		Bootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, SettingsSystem>();
 		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
-		Bootstrap.AppendSystem<InputSystem>();
 		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
+		Bootstrap.AppendSystem<InputSystem>();
 		if (!IsHeadless())
 		{
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
-			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>();
+			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>().AppendDependency<GUISystem, DebugSystem>();
 		}
 
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Initialize Stats", []()
@@ -105,11 +104,11 @@ namespace NxEn
 	{
 		Bootstrapper& Unbootstrap = GetBootstrapper();
 
+		Unbootstrap.AppendSystem<SettingsSystem>();
+		Unbootstrap.AppendSystem<CommandsSystem>();
 		Unbootstrap.AppendSystem<DebugSystem>();
 		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
-		Unbootstrap.AppendSystem<CommandsSystem>();
-		Unbootstrap.AppendSystem<SettingsSystem>();
 		if (!IsHeadless())
 		{
 			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();

@@ -72,6 +72,7 @@ namespace NxEn
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
 		Stats = new NxFr::Stats(Folder + "stats.csv");
 
+		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &DebugSystem::ApplySettings };
 		ApplySettings();
 
 		NxFr::Globals::Statistiques = Stats;
