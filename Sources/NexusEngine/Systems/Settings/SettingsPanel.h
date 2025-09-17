@@ -20,17 +20,9 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnEnable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
-		void Fetch();
-		void Apply();
-		void Load();
-		void Save();
-
 	private:
+		NxFr::Array<NxFr::Array<Setting*>> Settings;
 		GUI::Menu Menu;
 		uint64 Page;
-
-		NxFr::Array<NxFr::String> Pages;
-		NxFr::Array<NxFr::Array<NxFr::String>> Names;
-		NxFr::Array<NxFr::Array<Setting*>> Values;
 	};
 }

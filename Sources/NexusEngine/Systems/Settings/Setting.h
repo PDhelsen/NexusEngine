@@ -80,7 +80,6 @@ namespace NxEn
 		}
 	}
 
-	//TODO: Default value
 	struct Setting
 	{
 	public:
@@ -95,7 +94,6 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual NxFr::String Get() const { NEXUS_ASSERT(false, Default, "Not supported"); return NxFr::StringUtility::Empty; }
 		NEXUS_ENGINE_API virtual NxFr::String Get(uint64 Index) const { NEXUS_ASSERT(false, Default, "Not supported"); return NxFr::StringUtility::Empty; }
 		NEXUS_ENGINE_API virtual NxFr::String Get(const NxFr::String& Key) const { NEXUS_ASSERT(false, Default, "Not supported"); return NxFr::StringUtility::Empty; }
-		//TODO: Allow other types
 		template<typename T> T& As() { NEXUS_ASSERT(false, Default, "Not supported"); return 0; }
 		template<typename T> T& As(uint64 Index) { NEXUS_ASSERT(false, Default, "Not supported"); return 0; }
 		template<typename T> T& As(const NxFr::String& Key) { NEXUS_ASSERT(false, Default, "Not supported"); return 0; }

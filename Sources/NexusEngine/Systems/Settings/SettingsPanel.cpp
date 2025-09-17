@@ -13,7 +13,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(SettingsPanel)
 
 	SettingsPanel::SettingsPanel()
-		: Menu(), Page(0), Pages(), Names(), Values()
+		: Settings(), Menu(), Page(0)
 	{
 	}
 
@@ -29,10 +29,9 @@ namespace NxEn
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 		SetTitle("Settings");
 
-		Menu.AddMenuItem("Fetch", { this, &SettingsPanel::Fetch });
-		Menu.AddMenuItem("Apply", { this, &SettingsPanel::Apply });
-		Menu.AddMenuItem("Load", { this, &SettingsPanel::Load });
-		Menu.AddMenuItem("Save", { this, &SettingsPanel::Save });
+		Menu.AddMenuItem("Load", []() { Application::GetSystem<SettingsSystem>()->LoadSettings(); });
+		Menu.AddMenuItem("Save", []() { Application::GetSystem<SettingsSystem>()->SaveSettings(); });
+		Menu.AddMenuItem("Apply", []() { Application::GetSystem<SettingsSystem>()->ApplySettings(); });
 	}
 
 	void SettingsPanel::OnShutdown()
@@ -44,22 +43,18 @@ namespace NxEn
 	void SettingsPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Fetch();
+		Settings = Application::GetSystem<SettingsSystem>()->GetAllSettingsSorted();
 	}
 
 	void SettingsPanel::OnGui(float TimeStep)
 	{
 		Menu.Tick(TimeStep);
 
-		if (Pages.GetCount() == 0)
-		{
-			return;
-		}
-
 		ImGui::BeginChild("Pages", { Indent, 0.0f }, true);
-		for (uint64 Index = 0; Index < Pages.GetCount(); ++Index)
+		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
-			if (ImGui::Selectable(Pages[Index].C(), Page == Index))
+			NxFr::String Label = Settings[Index][0]->GetPage().ToString();
+			if (ImGui::Selectable(Label.C(), Page == Index))
 			{
 				Page = Index;
 			}
@@ -69,12 +64,11 @@ namespace NxEn
 		ImGui::SameLine();
 
 		ImGui::BeginChild("Settings", { 0.0f, 0.0f }, false);
-		NxFr::Array<NxFr::String>& SettingsNames = Names[Page];
-		NxFr::Array<Setting*>& SettingsValues = Values[Page];
-		for (uint64 Index = 0; Index < SettingsNames.GetCount(); ++Index)
+		NxFr::Array<Setting*>& Values = Settings[Page];
+		for (uint64 Index = 0; Index < Values.GetCount(); ++Index)
 		{
-			NxFr::String& Name = SettingsNames[Index];
-			Setting* Value = SettingsValues[Index];
+			Setting* Value = Values[Index];
+			NxFr::StringView Name = Value->GetName();
 
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text(Name.C());
@@ -82,56 +76,5 @@ namespace NxEn
 			Value->OnGui();
 		}
 		ImGui::EndChild();
-	}
-
-	//TODO: Sort settings
-	void SettingsPanel::Fetch()
-	{
-		auto Settings = SettingsSystem::GetAllSettings();
-
-		uint64 PageIndex = 0;
-		uint64 PageCount = Settings.GetCount();
-
-		Pages = NxFr::Array<NxFr::String>(PageCount);
-		Names = NxFr::Array<NxFr::Array<NxFr::String>>(PageCount);
-		Values = NxFr::Array<NxFr::Array<Setting*>>(PageCount);
-
-		for (auto& [Page, Instances] : Settings)
-		{
-			uint64 NameIndex = 0;
-			uint64 NameCount = Instances.GetCount();
-
-			Pages[PageIndex] = Page.ToString();
-			Names[PageIndex] = NxFr::Array<NxFr::String>(NameCount);
-			Values[PageIndex] = NxFr::Array<Setting*>(NameCount);
-
-			NxFr::Array<NxFr::String>& PageName = Names[PageIndex];
-			NxFr::Array<Setting*>& PageValue = Values[PageIndex];
-
-			for (auto& [Name, Instance] : Instances)
-			{
-				PageName[NameIndex] = Name.ToString();
-				PageValue[NameIndex] = Instance;
-
-				NameIndex++;
-			}
-
-			PageIndex++;
-		}
-	}
-
-	void SettingsPanel::Apply()
-	{
-		Application::GetSystem<SettingsSystem>()->GetOnChange().Invoke();
-	}
-
-	void SettingsPanel::Load()
-	{
-		Application::GetSystem<SettingsSystem>()->LoadSettings();
-	}
-
-	void SettingsPanel::Save()
-	{
-		Application::GetSystem<SettingsSystem>()->SaveSettings();
 	}
 }

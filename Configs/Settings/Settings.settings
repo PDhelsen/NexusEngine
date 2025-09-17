@@ -1,18 +1,14 @@
+LoggerChannel:
+  Default: true
+  System: true
+  Verbose: true
+  Command: true
+  Application: true
 LoggerVerbosity:
   - true
   - true
   - true
   - true
-MemorySmallParamsSmallest: 8
-LoggerChannel:
-  Command: true
-  System: true
-  Verbose: true
-  Default: true
-  Application: true
-MemoryHandlesPerManager: 1024
-MemorySmallParamsLargest: 256
-MemoryDefragmentBudget: 1
 MemoryAllocatorsSize:
   - 0
   - 1048576
@@ -21,3 +17,7 @@ MemoryAllocatorsSize:
   - 1048576
   - 1048576
   - 1048576
+MemoryDefragmentBudget: 1
+MemoryHandlesPerManager: 1024
+MemorySmallParamsLargest: 256
+MemorySmallParamsSmallest: 8
