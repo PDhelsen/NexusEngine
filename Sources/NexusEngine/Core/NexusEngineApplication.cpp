@@ -55,7 +55,9 @@ namespace NxEn
 		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &InputSchema);
 		if (!IsHeadless())
 		{
-			Systems.GetSystem<WindowSystem>()->GetOnClose() += { this, &Application::Quit };
+			WindowSystem* Window = Systems.GetSystem<WindowSystem>();
+			Window->GetOnClose() += { this, &Application::Quit };
+			Window->SetWindowTitle(GetProject().GetName());
 		}
 	}
 
