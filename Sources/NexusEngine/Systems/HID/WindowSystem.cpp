@@ -329,16 +329,10 @@ namespace NxEn
 	void WindowSystem::ApplySettings()
 	{
 #if !NEXUS_EDITOR
-		Target.WindowMode = (Window::Mode)(uint8)SettingMode->As<float>();
+		SetWindowMode((Window::Mode)(uint8)SettingMode->As<float>());
 #endif
-		Target.Monitor = (uint8)SettingMonitor->As<float>();
-		Target.Resolution = SettingResolution->As<NxFr::Vector4f>();
-		Target.VSync = (uint8)SettingVSync->As<bool>();
-
-		Glfw::SetSwapInterval(Target.VSync);
-		if (Target.IsValid())
-		{
-			UpdateWindow();
-		}
+		SetWindowMonitor((uint8)SettingMonitor->As<float>());
+		SetWindowResolution(SettingResolution->As<NxFr::Vector4f>());
+		SetWindowVSync(SettingVSync->As<bool>());
 	}
 }
