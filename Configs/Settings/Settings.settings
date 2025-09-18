@@ -1,8 +1,8 @@
 LoggerChannel:
-  Command: true
+  Default: true
   System: true
   Verbose: true
-  Default: true
+  Command: true
   Application: true
 LoggerVerbosity:
   - true
@@ -21,3 +21,7 @@ MemoryDefragmentBudget: 1
 MemoryHandlesPerManager: 1024
 MemorySmallParamsLargest: 256
 MemorySmallParamsSmallest: 8
+WindowMode: 0
+WindowMonitor: 0
+WindowResolution: [1920, 1080, 0, 0]
+WindowVSync: true

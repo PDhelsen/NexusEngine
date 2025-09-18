@@ -14,7 +14,7 @@ namespace NxFr
 
 namespace NxEn
 {
-	const NxFr::StringView Folder = "imgui";
+	const NxFr::StringView Folder = "ImGui";
 	const NxFr::StringView NameDefault = "Default";
 	const NxFr::StringView NameImGui = "imgui";
 	const NxFr::StringView NameStyle = "style";

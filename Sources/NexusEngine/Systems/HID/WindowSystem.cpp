@@ -5,6 +5,11 @@
 
 namespace NxEn
 {
+	static SettingVar* SettingMode = SettingVar::Create("Settings", "WindowMode", Settings::Type::Float);
+	static SettingVar* SettingMonitor = SettingVar::Create("Settings", "WindowMonitor", Settings::Type::Float);
+	static SettingVar* SettingResolution = SettingVar::Create("Settings", "WindowResolution", Settings::Type::Vector);
+	static SettingVar* SettingVSync = SettingVar::Create("Settings", "WindowVSync", Settings::Type::Bool);
+
 	NEXUS_OBJECT_IMPLEMENTATION(WindowSystem)
 
 	WindowSystem::WindowSystem()
@@ -25,36 +30,71 @@ namespace NxEn
 
 	void WindowSystem::Close()
 	{
+		if (!Target.IsValid())
+		{
+			return;
+		}
+
 		Glfw::CloseWindow(Target.Instance);
 	}
 
 	void WindowSystem::Minimize()
 	{
+		if (!Target.IsValid())
+		{
+			return;
+		}
+
 		Glfw::MinimizeWindow(Target.Instance);
 	}
 
 	void WindowSystem::Maximize()
 	{
+		if (!Target.IsValid())
+		{
+			return;
+		}
+
 		Glfw::MaximizeWindow(Target.Instance);
 	}
 
 	void WindowSystem::Restore()
 	{
+		if (!Target.IsValid())
+		{
+			return;
+		}
+
 		Glfw::RestoreWindow(Target.Instance);
 	}
 
 	void WindowSystem::Show()
 	{
+		if (!Target.IsValid())
+		{
+			return;
+		}
+
 		Glfw::ShowWindow(Target.Instance);
 	}
 
 	void WindowSystem::Hide()
 	{
+		if (!Target.IsValid())
+		{
+			return;
+		}
+
 		Glfw::HideWindow(Target.Instance);
 	}
 
 	void WindowSystem::Focus()
 	{
+		if (!Target.IsValid())
+		{
+			return;
+		}
+
 		Glfw::FocusWindow(Target.Instance);
 	}
 
@@ -75,8 +115,7 @@ namespace NxEn
 		Target.WindowMode = Mode;
 		if (Target.IsValid())
 		{
-			DestroyWindow();
-			CreateWindow();
+			UpdateWindow();
 		}
 
 		return *this;
@@ -92,8 +131,7 @@ namespace NxEn
 		Target.Monitor = MonitorIndex;
 		if (Target.IsValid())
 		{
-			DestroyWindow();
-			CreateWindow();
+			UpdateWindow();
 		}
 
 		return *this;
@@ -107,7 +145,11 @@ namespace NxEn
 		}
 
 		Target.Position = Position;
-		Glfw::SetWindowPosition(Target.Instance, Position);
+		if (Target.IsValid())
+		{
+			Glfw::SetWindowPosition(Target.Instance, Position);
+		}
+
 		return *this;
 	}
 
@@ -119,21 +161,33 @@ namespace NxEn
 		}
 
 		Target.Resolution = Resolution;
-		Glfw::SetWindowSize(Target.Instance, Resolution);
+		if (Target.IsValid())
+		{
+			Glfw::SetWindowSize(Target.Instance, Resolution);
+		}
+
 		return *this;
 	}
 
 	WindowSystem& WindowSystem::SetWindowTitle(NxFr::StringView Title)
 	{
 		Target.Title = Title.ToString();
-		Glfw::SetWindowTitle(Target.Instance, Title);
+		if (Target.IsValid())
+		{
+			Glfw::SetWindowTitle(Target.Instance, Title);
+		}
+
 		return *this;
 	}
 
 	WindowSystem& WindowSystem::SetWindowIcon(void* Icon)
 	{
 		Target.Icon = Icon;
-		Glfw::SetWindowIcon(Target.Instance, Icon);
+		if (Target.IsValid())
+		{
+			Glfw::SetWindowIcon(Target.Instance, Icon);
+		}
+
 		return *this;
 	}
 
@@ -173,6 +227,9 @@ namespace NxEn
 	void WindowSystem::OnInitialize()
 	{
 		System::OnInitialize();
+
+		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, & WindowSystem::ApplySettings };
+		ApplySettings();
 
 		Glfw::Initialize();
 
@@ -253,11 +310,35 @@ namespace NxEn
 		Glfw::TickWindow(Target.Instance);
 	}
 
+	void WindowSystem::UpdateWindow()
+	{
+		NEXUS_PROFILE_FUNCTION();
+
+		DestroyWindow();
+		CreateWindow();
+	}
+
 	void WindowSystem::UpdateCursor()
 	{
 		NEXUS_PROFILE_FUNCTION();
 
 		Pointer.Instance = Glfw::UpdateCursorIcon(Target.Instance, Pointer.Instance, (uint8)Pointer.CursorIcon, Pointer.IconCustom);
 		Glfw::SetCursorMode(Target.Instance, (uint32)Pointer.CursorMode);
+	}
+
+	void WindowSystem::ApplySettings()
+	{
+#if !NEXUS_EDITOR
+		Target.WindowMode = (Window::Mode)(uint8)SettingMode->As<float>();
+#endif
+		Target.Monitor = (uint8)SettingMonitor->As<float>();
+		Target.Resolution = SettingResolution->As<NxFr::Vector4f>();
+		Target.VSync = (uint8)SettingVSync->As<bool>();
+
+		Glfw::SetSwapInterval(Target.VSync);
+		if (Target.IsValid())
+		{
+			UpdateWindow();
+		}
 	}
 }

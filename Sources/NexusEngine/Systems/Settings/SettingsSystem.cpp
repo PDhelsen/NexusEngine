@@ -70,6 +70,11 @@ namespace NxEn
 		for (auto& File : Files)
 		{
 			NxFr::StringView Page = NxFr::Path::GetFileName(File);
+			if (!Pages.ContainsKey(Page))
+			{
+				continue;
+			}
+
 			auto& Settings = Pages[Page];
 
 			YAML::Node Root = NxFr::Yaml::DeserializeFile(File);
@@ -122,7 +127,7 @@ namespace NxEn
 			NxFr::Dictionary<NxFr::StringView, Setting*>* Page = Result.TryGet(Instance->GetPage());
 			if (!Page)
 			{
-				Page = &Result.AppendConstruct(Instance->GetPage(), 11);
+				Page = &Result.AppendConstruct(Instance->GetPage(), 17);
 			}
 
 			Page->Append(Instance->GetName(), Instance);

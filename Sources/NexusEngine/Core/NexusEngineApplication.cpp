@@ -87,16 +87,19 @@ namespace NxEn
 		Bootstrap.AppendSystem<InputSystem>();
 		if (!IsHeadless())
 		{
-			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<InputSystem, WindowSystem>();
+			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, SettingsSystem>().AppendDependency<InputSystem, WindowSystem>();
 			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>().AppendDependency<GUISystem, DebugSystem>();
 		}
 
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Initialize Stats", []()
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Record Stats", []()
 		{
 			NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
 			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
-			Stats->Initialize();
+		});
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Start Profiler", []()
+		{
+			Application::GetSystem<DebugSystem>()->AutoStart();
 		});
 	}
 
@@ -134,10 +137,6 @@ namespace NxEn
 		}
 
 		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands });
-		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Auto start debug system", []()
-		{
-			Application::GetSystem<DebugSystem>()->AutoStart();
-		});
 	}
 
 	void NexusEngineApplication::ParseCommands()

@@ -64,6 +64,9 @@ namespace NxEn
 
 		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
+		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, & DebugSystem::ApplySettings };
+		ApplySettings();
+
 		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 		NEXUS_ASSERT(!Folder.Data.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
@@ -71,9 +74,6 @@ namespace NxEn
 		Logger->SetOutput(NxFr::LoggerOutput::File, true, Folder + "logs.txt");
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
 		Stats = new NxFr::Stats(Folder + "stats.csv");
-
-		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &DebugSystem::ApplySettings };
-		ApplySettings();
 
 		NxFr::Globals::Statistiques = Stats;
 		NxFr::Globals::Instrumentor = Instrumentor;
@@ -116,6 +116,7 @@ namespace NxEn
 
 	void DebugSystem::AutoStart()
 	{
+		Stats->Initialize();
 		Stats->Lock();
 
 		if (NxFr::Arguments::HasFlag("Profile"))
