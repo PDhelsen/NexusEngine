@@ -15,6 +15,9 @@ namespace NxEd
 		Systems.CreateSystem<EditorSystem>();
 		Systems.CreateSystem<EditSystem>();
 
+		EditorSystem* Editor = Systems.GetSystem<EditorSystem>();
+		Editor->GetOnSave() += [](){ Application::GetSystem<NxEn::GUISystem>()->SaveLayout(); };
+		Editor->GetOnSave() += [](){ Application::GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
 		if (!IsHeadless())
 		{
 			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();

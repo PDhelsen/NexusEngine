@@ -87,13 +87,15 @@ namespace NxEn
 	//TODO: Save user pref in AppData
 	NxFr::Path Project::GetSavedConfigPath(NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, NxFr::StringView Extension, NxFr::StringView SubFolder, bool Suffix)
 	{
+		NxFr::Path Path = NxFr::Path("");
+
 		if (!Config.IsEmpty())
 		{
-			return NxFr::Paths::Configs + SubFolder + (Config + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+			Path = NxFr::Paths::Configs + SubFolder + (Config + (Suffix ? NEXUS_SUFFIX : "") + Extension);
 		}
 		else
 		{
-			NxFr::Path Path = NxFr::Paths::Saved + SubFolder + (Saved + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+			Path = NxFr::Paths::Saved + SubFolder + (Saved + (Suffix ? NEXUS_SUFFIX : "") + Extension);
 
 			if (!Path.Exist() && !Template.IsEmpty())
 			{
@@ -108,9 +110,9 @@ namespace NxEn
 					NxFr::File(Target).Copy(Path);
 				}
 			}
-
-			return Path;
 		}
+
+		return Path.Normalize();
 	}
 
 	Project::Project()

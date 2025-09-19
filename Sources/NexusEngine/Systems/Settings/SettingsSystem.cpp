@@ -87,6 +87,8 @@ namespace NxEn
 				Instance->Deserialize(Value);
 			}
 		}
+
+		NEXUS_LOG(Info, System, "Settings loaded from: %s", Path.C());
 	}
 
 	void SettingsSystem::SaveSettings() const
@@ -110,11 +112,14 @@ namespace NxEn
 
 			NxFr::Yaml::SerializeFile(Data, Path + (Page[0]->GetPage().ToString().C() + Extension));
 		}
+
+		NEXUS_LOG(Info, System, "Settings saved to : %s", Path.C());
 	}
 
 	void SettingsSystem::ApplySettings()
 	{
 		OnChange.Invoke();
+		NEXUS_LOG(Info, System, "Settings applied");
 	}
 
 	NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> SettingsSystem::GetAllSettings() const
