@@ -44,7 +44,7 @@ namespace NxEn
 
 		void Render()
 		{
-			//TODO: Move to RenderingSystem
+			// TODO: Move to RenderingSystem
 			ImGui_ImplOpenGL3_Clear();
 
 			ImGui::Render();

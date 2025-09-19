@@ -15,7 +15,7 @@ namespace NxEn
 	WindowSystem::WindowSystem()
 		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Pointer(), Focused(true)
 	{
-		Target = Window(Window::Mode::Windowed, 1, NxFr::Vector2i(50), NxFr::Vector2i(1920, 1080), "Nexus", nullptr, true);
+		Target = Window(Window::Mode::Windowed, 0, NxFr::Vector2i(50), NxFr::Vector2i(1920, 1080), "Nexus", nullptr, true);
 		OnFocus += NxFr::Delegate<void(bool)>(this, &WindowSystem::OnFocused);
 		OnMove += NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnMoved);
 		OnResize += NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnResized);
@@ -105,38 +105,22 @@ namespace NxEn
 		return *this;
 	}
 
+	// TODO: Window switch mode at runtime
 	WindowSystem& WindowSystem::SetWindowMode(Window::Mode Mode)
 	{
-		if (Target.WindowMode == Mode)
-		{
-			return *this;
-		}
+		NEXUS_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMode has to be called before the window creation and can't be called afterward");
 
 		Target.WindowMode = Mode;
-		if (Target.IsValid())
-		{
-			UpdateWindow();
-		}
-
 		return *this;
 	}
 
 	WindowSystem& WindowSystem::SetWindowMonitor(uint8 MonitorIndex)
 	{
-		if (Target.WindowMode == Window::Mode::Windowed || Target.Monitor == MonitorIndex)
-		{
-			return *this;
-		}
+		NEXUS_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMonitor has to be called before the window creation and can't be called afterward");
 
 		Target.Monitor = MonitorIndex;
-		if (Target.IsValid())
-		{
-			UpdateWindow();
-		}
-
 		return *this;
 	}
-
 	WindowSystem& WindowSystem::SetWindowPosition(NxFr::Vector2i Position)
 	{
 		if (Target.WindowMode != Window::Mode::Windowed)
@@ -229,6 +213,10 @@ namespace NxEn
 		System::OnInitialize();
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
+#if !NEXUS_EDITOR
+		SetWindowMode((Window::Mode)((uint8)SettingMode->As<float>()));
+		SetWindowMonitor((uint8)SettingMonitor->As<float>());
+#endif
 
 		Glfw::Initialize();
 
@@ -309,14 +297,6 @@ namespace NxEn
 		Glfw::TickWindow(Target.Instance);
 	}
 
-	void WindowSystem::UpdateWindow()
-	{
-		NEXUS_PROFILE_FUNCTION();
-
-		DestroyWindow();
-		CreateWindow();
-	}
-
 	void WindowSystem::UpdateCursor()
 	{
 		NEXUS_PROFILE_FUNCTION();
@@ -327,10 +307,6 @@ namespace NxEn
 
 	void WindowSystem::ApplySettings()
 	{
-#if !NEXUS_EDITOR
-		SetWindowMode((Window::Mode)(uint8)SettingMode->As<float>());
-#endif
-		SetWindowMonitor((uint8)SettingMonitor->As<float>());
 		SetWindowResolution(SettingResolution->As<NxFr::Vector4f>());
 		SetWindowVSync(SettingVSync->As<bool>());
 	}

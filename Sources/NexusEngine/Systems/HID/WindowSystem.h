@@ -54,7 +54,6 @@ namespace NxEn
 		NEXUS_ENGINE_API void CreateWindow();
 		NEXUS_ENGINE_API void DestroyWindow();
 		NEXUS_ENGINE_API void TickWindow();
-		NEXUS_ENGINE_API void UpdateWindow();
 		NEXUS_ENGINE_API void UpdateCursor();
 		NEXUS_ENGINE_API void ApplySettings();
 

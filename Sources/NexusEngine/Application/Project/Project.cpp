@@ -84,7 +84,7 @@ namespace NxEn
 		}
 	}
 
-	//TODO: Save user pref in AppData
+	// TODO: Save user pref in AppData
 	NxFr::Path Project::GetSavedConfigPath(NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, NxFr::StringView Extension, NxFr::StringView SubFolder, bool Suffix)
 	{
 		NxFr::Path Path = NxFr::Path("");

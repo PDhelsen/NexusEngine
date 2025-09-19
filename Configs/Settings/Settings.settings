@@ -21,7 +21,7 @@ MemoryDefragmentBudget: 1
 MemoryHandlesPerManager: 1024
 MemorySmallParamsLargest: 256
 MemorySmallParamsSmallest: 8
-WindowMode: 0
-WindowMonitor: 0
+WindowMode: 1
+WindowMonitor: 1
 WindowResolution: [1920, 1080, 0, 0]
 WindowVSync: true
