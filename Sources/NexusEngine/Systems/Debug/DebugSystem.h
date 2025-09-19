@@ -25,11 +25,14 @@ namespace NxEn
 
 	private:
 		NEXUS_ENGINE_API void AutoStart();
+		NEXUS_ENGINE_API void RecordStats();
+		NEXUS_ENGINE_API void TickProfiler();
 		NEXUS_ENGINE_API void ApplySettings();
 
 	private:
 		NxFr::Logger* Logger;
 		NxFr::Stats* Stats;
 		NxFr::Instruments* Instrumentor;
+		double Time;
 	};
 }

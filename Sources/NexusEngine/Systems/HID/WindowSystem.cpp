@@ -228,8 +228,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, & WindowSystem::ApplySettings };
-		ApplySettings();
+		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
 
 		Glfw::Initialize();
 

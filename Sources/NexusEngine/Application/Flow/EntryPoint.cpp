@@ -1,6 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Flow/EntryPoint.h"
 
+#include "NexusFramework/Core/NexusFrameworkGlobals.h"
 #include "NexusEngine/Application/Project/Project.h"
 
 namespace NxEn
@@ -36,6 +37,27 @@ namespace NxEn
 		}
 
 		// -------------------------------------------------------------------------------------------------------------------------------
+		// Steps
+		// -------------------------------------------------------------------------------------------------------------------------------
+
+		static void CreateLogger()
+		{
+			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+			NxFr::Globals::Logs = new NxFr::Logger(true, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback);
+			NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::Default, true);
+			NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::Verbose, true);
+		}
+
+		static void DestroyLogger()
+		{
+			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+			NxFr::Globals::Logs->Flush();
+			delete NxFr::Globals::Logs;
+		}
+
+		// -------------------------------------------------------------------------------------------------------------------------------
 		// Main
 		// -------------------------------------------------------------------------------------------------------------------------------
 
@@ -44,6 +66,7 @@ namespace NxEn
 			NxFr::AllocatorContext Context(nullptr);
 			NxFr::Platform* Platform = NxFr::Platform::GetInstance();
 			NxFr::Arguments::Parse(argc, argv);
+			CreateLogger();
 
 			Project ProjectInfo = CreateProject();
 			auto CreateApplication = Platform->GetFunctionFromDll<Application*, const Project&>(ProjectInfo.GetDllPath(), "CreateApplication");
@@ -60,6 +83,7 @@ namespace NxEn
 			} while (Restart);
 
 			Platform->ClearDll();
+			DestroyLogger();
 
 			return ErrorCode;
 		}

@@ -3,21 +3,6 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Application.h"
 
-namespace NxFr
-{
-	namespace LoggerChannel
-	{
-		NEXUS_ENGINE_API extern const NxFr::StringId Application;
-		NEXUS_ENGINE_API extern const NxFr::StringId System;
-	}
-
-	namespace StatsHeader
-	{
-		NEXUS_ENGINE_API extern const NxFr::StringId FpsId;
-		NEXUS_ENGINE_API extern const NxFr::StringId TimerMainId;
-	}
-}
-
 namespace NxEn
 {
 	NEXUS_APPLICATION_DECLARATION(NEXUS_ENGINE_API, ::NxEn::NexusEngineApplication)

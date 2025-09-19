@@ -2,6 +2,15 @@
 #include "NexusEngine/Application/Application.h"
 
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
+#include "NexusFramework/Core/NexusFrameworkGlobals.h"
+
+namespace NxFr
+{
+	namespace LoggerChannel
+	{
+		const NxFr::StringId Application = "Application"_Sid;
+	}
+}
 
 namespace NxEn
 {
@@ -20,6 +29,7 @@ namespace NxEn
 	Application::Application(const Project& ProjectInfo)
 		: ProjectInfo(ProjectInfo), Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
 	{
+		NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::Application, true);
 		NEXUS_ASSERT(Instance == nullptr, Application, "Application was already created");
 		Instance = this;
 	}
@@ -108,16 +118,10 @@ namespace NxEn
 
 		while (IsRunning())
 		{
+			NEXUS_PROFILE_SCOPE("Frame");
+
 			float DeltaTime = Time.GetDeltaTime();
-
-			{
-				NEXUS_PROFILE_SCOPE("Frame");
-				NEXUS_STAT_DECIMAL(NxFr::StatsHeader::FpsId, 1.0f / DeltaTime);
-				NEXUS_STAT_DECIMAL(NxFr::StatsHeader::TimerMainId, DeltaTime);
-
-				Ticks.Tick(DeltaTime);
-			}
-
+			Ticks.Tick(DeltaTime);
 			Time.Tick();
 		}
 	}

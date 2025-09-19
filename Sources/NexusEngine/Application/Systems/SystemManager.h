@@ -2,6 +2,14 @@
 
 #include "NexusEngine/Application/Systems/System.h"
 
+namespace NxFr
+{
+	namespace LoggerChannel
+	{
+		NEXUS_ENGINE_API extern const NxFr::StringId System;
+	}
+}
+
 namespace NxEn
 {
 	struct SystemDependencies

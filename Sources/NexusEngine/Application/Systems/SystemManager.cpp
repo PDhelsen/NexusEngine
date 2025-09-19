@@ -1,11 +1,22 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Systems/SystemManager.h"
 
+#include "NexusFramework/Core/NexusFrameworkGlobals.h"
+
+namespace NxFr
+{
+	namespace LoggerChannel
+	{
+		const NxFr::StringId System = "System"_Sid;
+	}
+}
+
 namespace NxEn
 {
 	SystemManager::SystemManager()
 		: Systems()
 	{
+		NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::System, true);
 	}
 
 	SystemManager::~SystemManager()

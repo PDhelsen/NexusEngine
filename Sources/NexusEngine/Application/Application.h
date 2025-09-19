@@ -8,6 +8,13 @@
 #include "NexusEngine/Application/Systems/TimeManager.h"
 #include "NexusEngine/Application/Systems/SystemManager.h"
 
+namespace NxFr
+{
+	namespace LoggerChannel
+	{
+		NEXUS_ENGINE_API extern const NxFr::StringId Application;
+	}
+}
 
 #define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
 namespace EntryPoint\

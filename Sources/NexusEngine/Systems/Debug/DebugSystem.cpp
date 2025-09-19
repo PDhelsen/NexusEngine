@@ -4,6 +4,15 @@
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
+namespace NxFr
+{
+	namespace StatsHeader
+	{
+		const NxFr::StringId FpsId = "FPS"_Sid;
+		const NxFr::StringId TimerMainId = "Timer - Main"_Sid;
+	}
+}
+
 namespace NxEn
 {
 #if NEXUS_DEBUG
@@ -37,25 +46,12 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 
 	DebugSystem::DebugSystem()
-		: Logger(nullptr), Stats(nullptr), Instrumentor(nullptr)
+		: Logger(NxFr::Globals::Logs), Stats(nullptr), Instrumentor(nullptr), Time(0.0)
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		Logger = new NxFr::Logger(FlushOnLog, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback);
-		Logger->AddChannel(NxFr::LoggerChannel::Default, true);
-		Logger->AddChannel(NxFr::LoggerChannel::Verbose, true);
-
-		NxFr::Globals::Logs = Logger;
 	}
 
 	DebugSystem::~DebugSystem()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		NxFr::Globals::Logs = nullptr;
-
-		Logger->Flush();
-		delete Logger;
 	}
 
 	void DebugSystem::OnInitialize()
@@ -64,16 +60,19 @@ namespace NxEn
 
 		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, & DebugSystem::ApplySettings };
-		ApplySettings();
+		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &DebugSystem::ApplySettings };
 
 		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
 		NEXUS_ASSERT(!Folder.Data.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
+		Logger->SetFlushOnLog(FlushOnLog);
 		Logger->SetOutput(NxFr::LoggerOutput::File, true, Folder + "logs.txt");
 		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
 		Stats = new NxFr::Stats(Folder + "stats.csv");
+
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
 
 		NxFr::Globals::Statistiques = Stats;
 		NxFr::Globals::Instrumentor = Instrumentor;
@@ -94,6 +93,8 @@ namespace NxEn
 			Stats->StopRecording();
 		}
 
+		Logger->SetFlushOnLog(false);
+
 		NxFr::Globals::Statistiques = nullptr;
 		NxFr::Globals::Instrumentor = nullptr;
 
@@ -107,11 +108,8 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		Stats->Unlock();
-		Stats->Flush();
-		Stats->Lock();
-
-		Logger->Flush();
+		RecordStats();
+		TickProfiler();
 	}
 
 	void DebugSystem::AutoStart()
@@ -125,6 +123,26 @@ namespace NxEn
 			Instrumentor->StartRecording();
 			Stats->StartRecording();
 		}
+	}
+
+	void DebugSystem::RecordStats()
+	{
+		double Now = NxFr::Platform::GetInstance()->GetProcessorTimer();
+		float DeltaTime = (float)(Now - Time);
+
+		NEXUS_STAT_DECIMAL(NxFr::StatsHeader::FpsId, 1.0f / DeltaTime);
+		NEXUS_STAT_DECIMAL(NxFr::StatsHeader::TimerMainId, DeltaTime);
+
+		Time = Now;
+	}
+
+	void DebugSystem::TickProfiler()
+	{
+		Stats->Unlock();
+		Stats->Flush();
+		Stats->Lock();
+
+		Logger->Flush();
 	}
 
 	void DebugSystem::ApplySettings()

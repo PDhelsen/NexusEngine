@@ -4,21 +4,6 @@
 #include "NexusEngine/External/Glfw.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
-namespace NxFr
-{
-	namespace LoggerChannel
-	{
-		const NxFr::StringId Application = "Application"_Sid;
-		const NxFr::StringId System = "System"_Sid;
-	}
-
-	namespace StatsHeader
-	{
-		const NxFr::StringId FpsId = "FPS"_Sid;
-		const NxFr::StringId TimerMainId = "Timer - Main"_Sid;
-	}
-}
-
 namespace NxEn
 {
 	const static Command CmdQuit = Command::Create("Application.Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]()
@@ -49,9 +34,6 @@ namespace NxEn
 			Systems.CreateSystem<GUISystem>();
 		}
 
-		NxFr::Logger* Logger = Systems.GetSystem<DebugSystem>()->GetLogger();
-		Logger->AddChannel(NxFr::LoggerChannel::Application, true);
-		Logger->AddChannel(NxFr::LoggerChannel::System, true);
 		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &InputSchema);
 		if (!IsHeadless())
 		{
@@ -93,11 +75,9 @@ namespace NxEn
 			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>().AppendDependency<GUISystem, DebugSystem>();
 		}
 
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Record Stats", []()
+		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Apply Settings", []()
 		{
-			NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
-			NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
+			Application::GetSystem<SettingsSystem>()->ApplySettings();
 		});
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Start Profiler", []()
 		{
