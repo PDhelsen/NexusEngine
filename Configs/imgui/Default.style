@@ -123,39 +123,45 @@ ImGui:
     NavWindowingDimBg: [0.8, 0.8, 0.8, 0.2]
     ModalWindowDimBg: [0.8, 0.8, 0.8, 0.35]
 Nexus:
-  Button_Normal:
-    - id: 21
-      type: 0
-      data: [0.26, 0.59, 0.98, 0.4]
-  Button_Pressed:
-    - id: 21
-      type: 0
-      data: [0.06, 0.53, 0.98, 1]
-  Warning:
-    - id: 0
-      type: 0
-      data: [0.95, 0.75, 0.05, 1]
-    - id: 21
-      type: 0
-      data: [0.45, 0.35, 0.05, 1]
-  Info:
-    - id: 0
-      type: 0
-      data: [0.95, 0.95, 0.95, 1]
-    - id: 21
-      type: 0
-      data: [0.45, 0.45, 0.45, 1]
-  Error:
-    - id: 0
-      type: 0
-      data: [0.9, 0.1, 0.1, 1]
-    - id: 21
-      type: 0
-      data: [0.45, 0.05, 0.05, 1]
-  Fatal:
-    - id: 0
-      type: 0
-      data: [0.85, 0.05, 0.65, 1]
-    - id: 21
-      type: 0
-      data: [0.42, 0.05, 0.32, 1]
+  Styles:
+    Button_Normal:
+      - id: 21
+        type: 0
+        data: [0.26, 0.59, 0.98, 0.4]
+    Button_Pressed:
+      - id: 21
+        type: 0
+        data: [0.06, 0.53, 0.98, 1]
+    Warning:
+      - id: 0
+        type: 0
+        data: [0.95, 0.75, 0.05, 1]
+      - id: 21
+        type: 0
+        data: [0.45, 0.35, 0.05, 1]
+    Info:
+      - id: 0
+        type: 0
+        data: [0.95, 0.95, 0.95, 1]
+      - id: 21
+        type: 0
+        data: [0.45, 0.45, 0.45, 1]
+    Error:
+      - id: 0
+        type: 0
+        data: [0.9, 0.1, 0.1, 1]
+      - id: 21
+        type: 0
+        data: [0.45, 0.05, 0.05, 1]
+    Fatal:
+      - id: 0
+        type: 0
+        data: [0.85, 0.05, 0.65, 1]
+      - id: 21
+        type: 0
+        data: [0.42, 0.05, 0.32, 1]
+  Colors:
+    {}
+  Vars:
+    Indent_Tab:  50.0
+    Indent_Label:  200.0

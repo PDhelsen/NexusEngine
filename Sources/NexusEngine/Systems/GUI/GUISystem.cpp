@@ -103,7 +103,7 @@ namespace NxEn
 	}
 
 	GUISystem::GUISystem()
-		: Elements(), Styles()
+		: Elements()
 	{
 
 	}
@@ -187,23 +187,6 @@ namespace NxEn
 		NxFr::Yaml::SerializeFile(Data, Path);
 
 		NEXUS_LOG(Info, System, "GUI style %s saved", Name.C());
-	}
-
-	const GUI::Style& GUISystem::GetStyle(NxFr::StringId Id)
-	{
-		return Styles[Id];
-	}
-
-	void GUISystem::AppendStyle(NxFr::StringId Id, const GUI::Style& Style)
-	{
-		Styles.AppendOrAssign(Id, Style);
-		NEXUS_LOG(Info, System, "Register GUI style: %s", Id.C());
-	}
-
-	void GUISystem::RemoveStyle(NxFr::StringId Id)
-	{
-		Styles.Remove(Id);
-		NEXUS_LOG(Info, System, "Unregister GUI style: %s", Id.C());
 	}
 
 	GUI::Panel* GUISystem::GetActivePanel() const
@@ -520,7 +503,8 @@ namespace NxEn
 	{
 		NEXUS_PROFILE_FUNCTION();
 
-		for (YAML::const_iterator It = Node.begin(); It != Node.end(); ++It)
+		const YAML::Node& Styles = Node["Styles"];
+		for (YAML::const_iterator It = Styles.begin(); It != Styles.end(); ++It)
 		{
 			const YAML::Node NodeId = It->first;
 			const YAML::Node NodeProperties = It->second;
@@ -546,7 +530,31 @@ namespace NxEn
 				}
 			}
 
-			AppendStyle(Id, Style);
+			GUI::Styles::Styles.AppendOrAssign(Id, Style);
+		}
+
+		const YAML::Node& Colors = Node["Colors"];
+		for (YAML::const_iterator It = Colors.begin(); It != Colors.end(); ++It)
+		{
+			const YAML::Node NodeId = It->first;
+			const YAML::Node NodeProperties = It->second;
+
+			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
+			NxFr::Color Color = NodeProperties.as<NxFr::Color>();
+
+			GUI::Styles::Colors.AppendOrAssign(Id, Color);
+		}
+
+		const YAML::Node& Vars = Node["Vars"];
+		for (YAML::const_iterator It = Vars.begin(); It != Vars.end(); ++It)
+		{
+			const YAML::Node NodeId = It->first;
+			const YAML::Node NodeProperties = It->second;
+
+			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
+			float Var = NodeProperties.as<float>();
+
+			GUI::Styles::Vars.AppendOrAssign(Id, Var);
 		}
 	}
 
@@ -694,7 +702,10 @@ namespace NxEn
 		NEXUS_PROFILE_FUNCTION();
 
 		Emitter << YAML::BeginMap;
-		for (auto& [Id, Style] : Styles)
+
+		Emitter << YAML::Key << "Styles" << YAML::Value;
+		Emitter << YAML::BeginMap;
+		for (auto& [Id, Style] : GUI::Styles::Styles)
 		{
 			Emitter << YAML::Key << Id;
 			Emitter << YAML::Value << YAML::BeginSeq;
@@ -708,6 +719,24 @@ namespace NxEn
 			}
 			Emitter << YAML::EndSeq;
 		}
+		Emitter << YAML::EndMap;
+
+		Emitter << YAML::Key << "Colors" << YAML::Value;
+		Emitter << YAML::BeginMap;
+		for (auto& [Id, Color] : GUI::Styles::Colors)
+		{
+			Emitter << YAML::Key << Id << YAML::Value << Color;
+		}
+		Emitter << YAML::EndMap;
+
+		Emitter << YAML::Key << "Vars" << YAML::Value;
+		Emitter << YAML::BeginMap;
+		for (auto& [Id, Var] : GUI::Styles::Vars)
+		{
+			Emitter << YAML::Key << Id << YAML::Value << Var;
+		}
+		Emitter << YAML::EndMap;
+
 		Emitter << YAML::EndMap;
 	}
 }

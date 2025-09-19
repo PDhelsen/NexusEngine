@@ -6,6 +6,7 @@
 namespace NxEn
 {
 	static const uint64 TextBuffer = 128;
+	static NxFr::StringId Indent = "Indent_Label"_Sid;
 
 	namespace Settings
 	{
@@ -267,7 +268,7 @@ namespace NxEn
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text(Key.C());
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(Position + SettingsPanel::Indent);
+			ImGui::SetCursorPosX(Position + GUI::Styles::Vars[Indent]);
 			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::InputText(ImGuiId.C(), Text.C_Buffer(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{

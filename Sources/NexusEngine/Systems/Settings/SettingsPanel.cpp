@@ -3,6 +3,8 @@
 
 namespace NxEn
 {
+	static NxFr::StringId Indent = "Indent_Label"_Sid;
+
 	static SettingsPanel* Panel = GUI::Panel::Create<SettingsPanel>();
 
 	const static GUI::Menu::Item MenuItemSettings = GUI::Menu::Item::Create("File/Settings", NxFr::Delegate<void()>([]()
@@ -50,7 +52,7 @@ namespace NxEn
 	{
 		Menu.Tick(TimeStep);
 
-		ImGui::BeginChild("Pages", { Indent, 0.0f }, true);
+		ImGui::BeginChild("Pages", { GUI::Styles::Vars[Indent], 0.0f}, true);
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
 			NxFr::String Label = Settings[Index][0]->GetPage().ToString();
@@ -72,7 +74,7 @@ namespace NxEn
 
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text(Name.C());
-			ImGui::SameLine(Indent);
+			ImGui::SameLine(GUI::Styles::Vars[Indent]);
 			Value->OnGui();
 		}
 		ImGui::EndChild();

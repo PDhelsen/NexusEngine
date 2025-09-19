@@ -27,8 +27,6 @@ namespace NxEn
 	void StylesPanel::OnEnable()
 	{
 		Panel::OnEnable();
-
-		Styles = &Application::GetSystem<GUISystem>()->Styles;
 	}
 
 	void StylesPanel::OnGui(float TimeStep)
@@ -38,7 +36,8 @@ namespace NxEn
 
 		Menu.Tick(TimeStep);
 
-		for (auto& [Id, Style] : *Styles)
+		ImGui::Text("Styles");
+		for (auto& [Id, Style] : GUI::Styles::Styles)
 		{
 			GUI::Scope::Style S(Style);
 
@@ -50,6 +49,38 @@ namespace NxEn
 
 			ImGui::SetCursorPosX(ButtonWidth + ItemSpacing);
 			ImGui::Button((Label + "##" + Id.C()).C(), { ButtonWidth, 0 });
+		}
+
+		ImGui::Dummy({ 0, 20 });
+
+		ImGui::Text("Colors");
+		for (auto& [Id, Color] : GUI::Styles::Colors)
+		{
+			GUI::Scope::Color C(ImGuiCol_Button, Color);
+
+			NxFr::String Label = Id.ToString();
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(Label.C());
+			ImGui::SameLine();
+
+			ImGui::SetCursorPosX(ButtonWidth + ItemSpacing);
+			ImGui::Button((Label + "##" + Id.C()).C(), { ButtonWidth, 0 });
+		}
+
+		ImGui::Dummy({ 0, 20 });
+
+		ImGui::Text("Vars");
+		for (auto& [Id, Var] : GUI::Styles::Vars)
+		{
+			NxFr::String Label = Id.ToString();
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(Label.C());
+			ImGui::SameLine();
+
+			ImGui::SetCursorPosX(ButtonWidth + ItemSpacing);
+			ImGui::Text("%f", Var);
 		}
 	}
 }

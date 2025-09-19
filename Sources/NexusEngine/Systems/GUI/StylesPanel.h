@@ -17,8 +17,6 @@ namespace NxEn
 
 	private:
 		GUI::Menu Menu;
-
-		NxFr::Dictionary<NxFr::StringId, GUI::Style>* Styles;
 	};
 }
 

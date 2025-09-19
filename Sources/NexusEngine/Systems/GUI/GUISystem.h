@@ -44,10 +44,6 @@ namespace NxEn
 		NEXUS_ENGINE_API void LoadTheme(NxFr::StringView Name = "");
 		NEXUS_ENGINE_API void SaveTheme(NxFr::StringView Name = "");
 
-		NEXUS_ENGINE_API const GUI::Style& GetStyle(NxFr::StringId Id);
-		NEXUS_ENGINE_API void AppendStyle(NxFr::StringId Id, const GUI::Style& Style);
-		NEXUS_ENGINE_API void RemoveStyle(NxFr::StringId Id);
-
 		NEXUS_ENGINE_API GUI::Panel* GetActivePanel() const;
 
 	protected:
@@ -72,6 +68,5 @@ namespace NxEn
 
 	private:
 		NxFr::Set<GUI::Element*> Elements;
-		NxFr::Dictionary<NxFr::StringId, GUI::Style> Styles;
 	};
 }

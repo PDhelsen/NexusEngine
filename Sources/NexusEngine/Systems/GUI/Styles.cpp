@@ -81,8 +81,32 @@ namespace NxEn
 			}
 		}
 
+		namespace Styles
+		{
+			NxFr::Dictionary<NxFr::StringId, GUI::Style> Styles;
+			NxFr::Dictionary<NxFr::StringId, NxFr::Color> Colors;
+			NxFr::Dictionary<NxFr::StringId, float> Vars;
+		}
+
 		namespace Scope
 		{
+			Style::Style(NxFr::StringId Id)
+				: Value(GUI::Styles::Styles[Id])
+			{
+				Value.Push();
+			}
+
+			Style::Style(const::NxEn::GUI::Style& Value)
+				: Value(Value)
+			{
+				Value.Push();
+			}
+
+			Style::~Style()
+			{
+				Value.Pop();
+			}
+
 			Color::Color(ImGuiCol Id, NxFr::Color Value)
 			{
 				ImGui::PushStyleColor(Id, Value);
@@ -116,23 +140,6 @@ namespace NxEn
 			Var::~Var()
 			{
 				ImGui::PopStyleVar(1);
-			}
-
-			Style::Style(NxFr::StringId Id)
-				: Value(Application::GetSystem<GUISystem>()->GetStyle(Id))
-			{
-				Value.Push();
-			}
-
-			Style::Style(const::NxEn::GUI::Style& Value)
-				: Value(Value)
-			{
-				Value.Push();
-			}
-
-			Style::~Style()
-			{
-				Value.Pop();
 			}
 
 			Width::Width(float Size)

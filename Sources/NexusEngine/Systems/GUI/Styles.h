@@ -50,8 +50,25 @@ namespace NxEn
 			NxFr::Vector2i Counts;
 		};
 
+		namespace Styles
+		{
+			NEXUS_ENGINE_API extern NxFr::Dictionary<NxFr::StringId, GUI::Style> Styles;
+			NEXUS_ENGINE_API extern NxFr::Dictionary<NxFr::StringId, NxFr::Color> Colors;
+			NEXUS_ENGINE_API extern NxFr::Dictionary<NxFr::StringId, float> Vars;
+		}
+
 		namespace Scope
 		{
+			struct Style
+			{
+				NEXUS_ENGINE_API Style(NxFr::StringId Id);
+				NEXUS_ENGINE_API Style(const ::NxEn::GUI::Style& Value);
+				NEXUS_ENGINE_API ~Style();
+
+			private:
+				const ::NxEn::GUI::Style& Value;
+			};
+
 			struct Color
 			{
 				NEXUS_ENGINE_API Color(ImGuiCol Id, NxFr::Color Value);
@@ -64,16 +81,6 @@ namespace NxEn
 				NEXUS_ENGINE_API Var(ImGuiStyleVar Id, float Value, uint8 Index);
 				NEXUS_ENGINE_API Var(ImGuiStyleVar Id, NxFr::Vector2f Value);
 				NEXUS_ENGINE_API ~Var();
-			};
-
-			struct Style
-			{
-				NEXUS_ENGINE_API Style(NxFr::StringId Id);
-				NEXUS_ENGINE_API Style(const ::NxEn::GUI::Style& Value);
-				NEXUS_ENGINE_API ~Style();
-
-			private:
-				const ::NxEn::GUI::Style& Value;
 			};
 
 			struct Width

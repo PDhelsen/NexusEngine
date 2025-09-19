@@ -29,7 +29,7 @@ namespace NxEn
 		default: Id = 0; break;
 		}
 
-		return Application::GetSystem<GUISystem>()->GetStyle(Id);
+		return GUI::Styles::Styles[Id];
 	}
 
 	ConsolePanel::ConsolePanel()

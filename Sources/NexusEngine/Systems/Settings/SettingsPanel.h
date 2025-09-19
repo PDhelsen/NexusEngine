@@ -9,8 +9,6 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, SettingsPanel)
 
-		inline static float Indent = 250.0f;
-
 		NEXUS_ENGINE_API SettingsPanel();
 		NEXUS_ENGINE_API ~SettingsPanel();
 
