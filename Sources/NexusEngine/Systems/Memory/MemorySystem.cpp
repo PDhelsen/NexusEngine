@@ -20,7 +20,7 @@ namespace NxEn
 	static SettingVar* SettingSmallParamsLargest = SettingVar::Create("Settings", "MemorySmallParamsLargest", Settings::Type::Float);
 	static SettingSeq* SettingSizes = SettingSeq::Create("Settings", "MemoryAllocatorsSize", Settings::Type::Float);
 
-	static HandleManager& GetHandles() { static HandleManager Instance((uint64)SettingHandlesPerManager->As<float>()); return Instance; }
+	static HandleManager& GetHandles() { static HandleManager Instance(SettingHandlesPerManager->As<float>()); return Instance; }
 	static Allocator& GetRawAllocator() { static Allocator Instance(AllocatorType::Raw); return Instance; }
 	static Allocator& GetGeneralAllocator() { static Allocator Instance(AllocatorType::General); return Instance; }
 	static Allocator& GetTempAllocator() { static Allocator Instance(AllocatorType::Temp); return Instance; }
@@ -63,12 +63,12 @@ namespace NxEn
 		if (Size < SettingSmallParamsSmallest->As<float>())
 		{
 			NEXUS_LOG(Warning, System, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
-			return (uint64)SettingSmallParamsSmallest->As<float>();
+			return SettingSmallParamsSmallest->As<float>();
 		}
 
 		if (Size == SettingSmallParamsLargest->As<float>())
 		{
-			return (uint64)SettingSmallParamsLargest->As<float>();
+			return SettingSmallParamsLargest->As<float>();
 		}
 
 		return (uint64)NxFr::Math::NextPowerOfTwo(Size);
@@ -84,7 +84,7 @@ namespace NxEn
 		uint64 Size = NEXUS_MEMORY_ALLOCATOR_SIZE;
 		if (SettingSizes != nullptr && SettingSizes->GetCount() > 0)
 		{
-			Size = (uint64)SettingSizes->As<float>((uint64)Type);
+			Size = SettingSizes->As<float>((uint64)Type);
 		}
 
 		return Size;
