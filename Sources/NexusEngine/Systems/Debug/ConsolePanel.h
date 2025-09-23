@@ -11,15 +11,15 @@ namespace NxEn
 		struct Log
 		{
 			NxFr::String Text;
+			NxFr::StringId Style;
 			bool& Verbosity;
 			bool& Channel;
-			const GUI::Style& Style;
 		};
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, ConsolePanel)
 
-		NEXUS_ENGINE_API static const GUI::Style& GetStyle(NxFr::LoggerVerbosity Verbosity);
+		NEXUS_ENGINE_API static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity);
 
 		NEXUS_ENGINE_API ConsolePanel();
 		NEXUS_ENGINE_API ~ConsolePanel();

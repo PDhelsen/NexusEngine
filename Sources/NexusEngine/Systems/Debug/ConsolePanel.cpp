@@ -12,7 +12,7 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(ConsolePanel)
 
-	const GUI::Style& ConsolePanel::GetStyle(NxFr::LoggerVerbosity Verbosity)
+	NxFr::StringId ConsolePanel::GetStyle(NxFr::LoggerVerbosity Verbosity)
 	{
 		NxFr::StringId Id = 0;
 
@@ -29,7 +29,7 @@ namespace NxEn
 		default: Id = 0; break;
 		}
 
-		return GUI::Styles::Styles[Id];
+		return Id;
 	}
 
 	ConsolePanel::ConsolePanel()
@@ -186,7 +186,7 @@ namespace NxEn
 
 	void ConsolePanel::AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message)
 	{
-		Logs.AppendConstruct(Move(Message.ToString()), FlagsVerbosity[Verbosity], FlagsChannels[Channel], GetStyle(Verbosity));
+		Logs.AppendConstruct(Move(Message.ToString()), GetStyle(Verbosity), FlagsVerbosity[Verbosity], FlagsChannels[Channel]);
 	}
 
 	void ConsolePanel::ClearLogs()
