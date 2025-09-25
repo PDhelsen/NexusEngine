@@ -503,34 +503,16 @@ namespace NxEn
 	{
 		NEXUS_PROFILE_FUNCTION();
 
-		const YAML::Node& Styles = Node["Styles"];
-		for (YAML::const_iterator It = Styles.begin(); It != Styles.end(); ++It)
+		const YAML::Node& Vars = Node["Vars"];
+		for (YAML::const_iterator It = Vars.begin(); It != Vars.end(); ++It)
 		{
 			const YAML::Node NodeId = It->first;
 			const YAML::Node NodeProperties = It->second;
 
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
-			GUI::Style Style;
+			float Var = NodeProperties.as<float>();
 
-			for (uint64 Index = 0; Index < NodeProperties.size(); ++Index)
-			{
-				const YAML::Node NodeProperty = NodeProperties[Index];
-
-				uint32 ImGuiId = NodeProperty["id"].as<int32>();
-				GUI::Style::Type Type = (GUI::Style::Type)NodeProperty["type"].as<int32>();
-				NxFr::Vector4f Data = NodeProperty["data"].as<NxFr::Vector4f>();
-
-				switch (Type)
-				{
-				case NxEn::GUI::Style::Type::Color:	Style.AppendColor(ImGuiId, Data);	break;
-				case NxEn::GUI::Style::Type::Var:	Style.AppendVar(ImGuiId, Data.x);	break;
-				case NxEn::GUI::Style::Type::VarX:	Style.AppendVarX(ImGuiId, Data.x);	break;
-				case NxEn::GUI::Style::Type::VarY:	Style.AppendVarY(ImGuiId, Data.y);	break;
-				case NxEn::GUI::Style::Type::VarXY: Style.AppendColor(ImGuiId, Data);	break;
-				}
-			}
-
-			GUI::Styles::Styles.AppendOrAssign(Id, Style);
+			GUI::Style::RegisterVar(Id, Var);
 		}
 
 		const YAML::Node& Colors = Node["Colors"];
@@ -542,19 +524,19 @@ namespace NxEn
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
 			NxFr::Color Color = NodeProperties.as<NxFr::Color>();
 
-			GUI::Styles::Colors.AppendOrAssign(Id, Color);
+			GUI::Style::RegisterColor(Id, Color);
 		}
 
-		const YAML::Node& Vars = Node["Vars"];
-		for (YAML::const_iterator It = Vars.begin(); It != Vars.end(); ++It)
+		const YAML::Node& Styles = Node["Styles"];
+		for (YAML::const_iterator It = Styles.begin(); It != Styles.end(); ++It)
 		{
 			const YAML::Node NodeId = It->first;
 			const YAML::Node NodeProperties = It->second;
 
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
-			float Var = NodeProperties.as<float>();
+			GUI::Style Style = NodeProperties.as<GUI::Style>();
 
-			GUI::Styles::Vars.AppendOrAssign(Id, Var);
+			GUI::Style::RegisterStyle(Id, Style);
 		}
 	}
 
@@ -703,37 +685,27 @@ namespace NxEn
 
 		Emitter << YAML::BeginMap;
 
-		Emitter << YAML::Key << "Styles" << YAML::Value;
+		Emitter << YAML::Key << "Vars" << YAML::Value;
 		Emitter << YAML::BeginMap;
-		for (auto& [Id, Style] : GUI::Styles::Styles)
+		for (auto& [Id, Var] : GUI::Style::GetVars())
 		{
-			Emitter << YAML::Key << Id;
-			Emitter << YAML::Value << YAML::BeginSeq;
-			for (auto& [Index, Property] : Style.Properties)
-			{
-				Emitter << YAML::BeginMap;
-				Emitter << YAML::Key << "id"	<< YAML::Value << Index;
-				Emitter << YAML::Key << "type"	<< YAML::Value << (int32)Property.Flag;
-				Emitter << YAML::Key << "data"	<< YAML::Value << Property.Data;
-				Emitter << YAML::EndMap;
-			}
-			Emitter << YAML::EndSeq;
+			Emitter << YAML::Key << Id << YAML::Value << Var;
 		}
 		Emitter << YAML::EndMap;
 
 		Emitter << YAML::Key << "Colors" << YAML::Value;
 		Emitter << YAML::BeginMap;
-		for (auto& [Id, Color] : GUI::Styles::Colors)
+		for (auto& [Id, Color] : GUI::Style::GetColors())
 		{
 			Emitter << YAML::Key << Id << YAML::Value << Color;
 		}
 		Emitter << YAML::EndMap;
 
-		Emitter << YAML::Key << "Vars" << YAML::Value;
+		Emitter << YAML::Key << "Styles" << YAML::Value;
 		Emitter << YAML::BeginMap;
-		for (auto& [Id, Var] : GUI::Styles::Vars)
+		for (auto& [Id, Style] : GUI::Style::GetStyles())
 		{
-			Emitter << YAML::Key << Id << YAML::Value << Var;
+			Emitter << YAML::Key << Id << YAML::Value << Style;
 		}
 		Emitter << YAML::EndMap;
 

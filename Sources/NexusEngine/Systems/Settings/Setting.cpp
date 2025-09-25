@@ -6,7 +6,7 @@
 namespace NxEn
 {
 	static const uint64 TextBuffer = 128;
-	static NxFr::StringId Indent = "Indent_Label"_Sid;
+	static NxFr::StringId WidthLabel = "WidthLabel"_Sid;
 
 	namespace Settings
 	{
@@ -156,7 +156,7 @@ namespace NxEn
 		NxFr::String Text = Get();
 		Text.Grow(TextBuffer);
 
-		ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		if (ImGui::InputText(ImGuiId.C(), Text.C_Buffer(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 		{
 			Text.Validate();
@@ -204,7 +204,7 @@ namespace NxEn
 			Text.Grow(TextBuffer);
 
 			ImGui::SetCursorPosX(Position);
-			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::InputText(ImGuiId.C(), Text.C_Buffer(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				Text.Validate();
@@ -268,8 +268,8 @@ namespace NxEn
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text(Key.C());
 			ImGui::SameLine();
-			ImGui::SetCursorPosX(Position + GUI::Styles::Vars[Indent]);
-			ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+			ImGui::SetCursorPosX(Position + GUI::Style::GetVar(WidthLabel));
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::InputText(ImGuiId.C(), Text.C_Buffer(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				Text.Validate();

@@ -544,7 +544,7 @@ namespace NxEn
 		NEXUS_OBJECT_IMPLEMENTATION(Window)
 
 		Window::Window()
-			: GuiFlags(0), MainMenu(true), Style()
+			: GuiFlags(0), MainMenu(true)
 		{
 			SetManual(true);
 		}
@@ -564,10 +564,6 @@ namespace NxEn
 				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
 				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing |
 				ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings;
-
-			Style.AppendVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			Style.AppendVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			Style.AppendVarXY(ImGuiStyleVar_WindowPadding, NxFr::Vector2f(0.0f));
 		}
 
 		void Window::OnShutdown()

@@ -5,6 +5,7 @@ namespace NxEn
 {
 	static NxFr::StringId ButtonNormal = "Button_Normal"_Sid;
 	static NxFr::StringId ButtonPressed = "Button_Pressed"_Sid;
+	static NxFr::StringId WidthButton = "WidthButton"_Sid;
 	static NxFr::StringView FilterExclude[] = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
 
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
@@ -64,11 +65,9 @@ namespace NxEn
 
 	void StatsPanel::DrawButtons()
 	{
-		static float ButtonWidth = 100.0f;
-
 		{
-			GUI::Scope::Style Style(!Instruments->IsRecording() ? ButtonNormal : ButtonPressed);
-			if (ImGui::Button("Instruments", { ButtonWidth , 0 }))
+			GUI::Style::Scope Style(!Instruments->IsRecording() ? ButtonNormal : ButtonPressed);
+			if (ImGui::Button("Instruments", { GUI::Style::GetVar(WidthButton) , 0 }))
 			{
 				if (!Instruments->IsRecording())
 				{
@@ -84,8 +83,8 @@ namespace NxEn
 		ImGui::SameLine();
 
 		{
-			GUI::Scope::Style Style(!Stats->IsRecording() ? ButtonNormal : ButtonPressed);
-			if (ImGui::Button("Stats", { ButtonWidth , 0 }))
+			GUI::Style::Scope Style(!Stats->IsRecording() ? ButtonNormal : ButtonPressed);
+			if (ImGui::Button("Stats", { GUI::Style::GetVar(WidthButton) , 0 }))
 			{
 				if (!Stats->IsRecording())
 				{
@@ -104,9 +103,8 @@ namespace NxEn
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Filter:");
 		ImGui::SameLine();
-		ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		ImGui::InputText("##Filter", Filter.C_Buffer(), Filter.GetCapacity());
-		ImGui::PopItemWidth();
 		ImGui::Separator();
 
 		Filter.Validate();

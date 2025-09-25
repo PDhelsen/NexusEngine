@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
-#include "NexusEngine/Systems/GUI/Styles.h"
 
 namespace NxEn
 {
@@ -238,7 +237,6 @@ namespace NxEn
 		private:
 			ImGuiWindowFlags GuiFlags;
 			Menu MainMenu;
-			Style Style;
 		};
 	}
 }

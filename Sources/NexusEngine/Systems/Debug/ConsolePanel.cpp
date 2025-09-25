@@ -120,7 +120,7 @@ namespace NxEn
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Search:");
 				{
-					GUI::Scope::Width Width(ButtonWidthSearchInput);
+					ImGui::SetNextItemWidth(ButtonWidthSearchInput);
 					if (ImGui::InputText("##Search", Search.C_Buffer(), Search.GetCapacity()))
 					{
 						Search.Validate();
@@ -144,7 +144,7 @@ namespace NxEn
 				Log& Log = Logs[Index];
 				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || Log.Text.Contains(Search)))
 				{
-					GUI::Scope::Style Style(Log.Style);
+					GUI::Style::Scope Style(Log.Style);
 					ImGui::Text(Log.Text.C());
 				}
 			}
@@ -160,7 +160,7 @@ namespace NxEn
 			ImGui::Text("Command:");
 			ImGui::SameLine();
 			{
-				GUI::Scope::Width Width(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidthExec), 1, false).x);
+				ImGui::SetNextItemWidth(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidthExec), 1, false).x);
 				if (ImGui::InputText("##Command", Command.C_Buffer(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					ExecuteCommand();

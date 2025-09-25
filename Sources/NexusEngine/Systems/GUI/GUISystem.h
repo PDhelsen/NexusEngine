@@ -3,6 +3,7 @@
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
 #include "NexusEngine/Systems/GUI/Styles.h"
+#include "NexusEngine/Systems/GUI/Utils.h"
 
 namespace NxFr
 {
@@ -16,8 +17,6 @@ namespace NxEn
 {
 	class GUISystem : public System
 	{
-		friend class StylesPanel;
-
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GUISystem)
 

@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	static NxFr::StringId Indent = "Indent_Label"_Sid;
+	static NxFr::StringId WidthLabel = "WidthLabel"_Sid;
 
 	static SettingsPanel* Panel = GUI::Panel::Create<SettingsPanel>();
 
@@ -52,7 +52,7 @@ namespace NxEn
 	{
 		Menu.Tick(TimeStep);
 
-		ImGui::BeginChild("Pages", { GUI::Styles::Vars[Indent], 0.0f}, true);
+		ImGui::BeginChild("Pages", { GUI::Style::GetVar(WidthLabel), 0.0f}, true);
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
 			NxFr::String Label = Settings[Index][0]->GetPage().ToString();
@@ -74,7 +74,7 @@ namespace NxEn
 
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text(Name.C());
-			ImGui::SameLine(GUI::Styles::Vars[Indent]);
+			ImGui::SameLine(GUI::Style::GetVar(WidthLabel));
 			Value->OnGui();
 		}
 		ImGui::EndChild();

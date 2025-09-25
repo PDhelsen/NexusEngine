@@ -5,165 +5,125 @@ namespace NxEn
 {
 	namespace GUI
 	{
-		Style::Style()
-			: Properties()
+		Style::Scope::Scope(NxFr::StringId Id)
+			: Id(Id)
 		{
+			GetStyle(Id).Push();
 		}
 
-		Style::~Style()
+		Style::Scope::~Scope()
 		{
+			GetStyle(Id).Pop();
 		}
 
-		void Style::Push() const
+		NxFr::Dictionary<NxFr::StringId, float>& Style::GetVars()
 		{
-			for (auto& [Id, Prop] : Properties)
-			{
-				Apply(Id, Prop.Flag, Prop.Data);
-			}
+			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+			static NxFr::Dictionary<NxFr::StringId, float> Vars;
+			return Vars;
 		}
 
-		void Style::Pop() const
+		float& Style::GetVar(NxFr::StringId Id)
 		{
-			ImGui::PopStyleColor(Counts.x);
-			ImGui::PopStyleVar(Counts.y);
+			return GetVars()[Id];
 		}
 
-		void Style::Append(int32 Id, Type Flag, NxFr::Vector4f Data)
+		void Style::RegisterVar(NxFr::StringId Id, float Instance)
 		{
-			Property* Prop = Properties.TryGet(Id);
-			if (Prop != nullptr)
-			{
-				if (Prop->Flag == Type::VarX && Flag == Type::VarY)
-				{
-					Prop->Flag = Type::VarXY;
-					Prop->Data.y = Data.y;
-				}
-				else if (Prop->Flag == Type::VarY && Flag == Type::VarX)
-				{
-					Prop->Flag = Type::VarXY;
-					Prop->Data.x = Data.x;
-				}
-				else if (Prop->Flag == Type::VarXY && Flag == Type::VarY)
-				{
-					Prop->Data.y = Data.y;
-				}
-				else if (Prop->Flag == Type::VarXY && Flag == Type::VarX)
-				{
-					Prop->Data.x = Data.x;
-				}
-				else
-				{
-					Prop->Data = Data;
-				}
-				return;
-			}
-
-			if (Flag == Type::Color) Counts.x++; else Counts.y++;
-			Properties.Append(Id, { Flag, Data });
+			GetVars().AppendOrAssign(Id, Instance);
 		}
 
-		void Style::Remove(int32 Id)
+		void Style::UnregisterVar(NxFr::StringId Id)
 		{
-			if (Properties[Id].Flag == Type::Color) Counts.x--; else Counts.y--;
-			Properties.Remove(Id);
+			GetVars().Remove(Id);
 		}
 
-		void Style::Apply(int32 Id, Type Flag, NxFr::Vector4f Data) const
+		NxFr::Dictionary<NxFr::StringId, NxFr::Color>& Style::GetColors()
 		{
-			switch (Flag)
-			{
-			case Type::Color: ImGui::PushStyleColor(Id, NxFr::Color(Data)); break;
-			case Type::Var: ImGui::PushStyleVar(Id, Data.x); break;
-			case Type::VarX: ImGui::PushStyleVarX(Id, Data.x); break;
-			case Type::VarY: ImGui::PushStyleVarY(Id, Data.y); break;
-			case Type::VarXY: ImGui::PushStyleVar(Id, { Data.x, Data.y }); break;
-			default: NEXUS_ASSERT(false, Default, "ImGui unsupported style var index: %d", Flag); break;
-			}
+			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+			static NxFr::Dictionary<NxFr::StringId, NxFr::Color> Colors;
+			return Colors;
 		}
 
-		namespace Styles
+		NxFr::Color& Style::GetColor(NxFr::StringId Id)
 		{
-			NxFr::Dictionary<NxFr::StringId, GUI::Style> Styles;
-			NxFr::Dictionary<NxFr::StringId, NxFr::Color> Colors;
-			NxFr::Dictionary<NxFr::StringId, float> Vars;
+			return GetColors()[Id];
 		}
 
-		namespace Scope
+		void Style::RegisterColor(NxFr::StringId Id, NxFr::Color Instance)
 		{
-			Style::Style(NxFr::StringId Id)
-				: Value(GUI::Styles::Styles[Id])
-			{
-				Value.Push();
-			}
-
-			Style::Style(const::NxEn::GUI::Style& Value)
-				: Value(Value)
-			{
-				Value.Push();
-			}
-
-			Style::~Style()
-			{
-				Value.Pop();
-			}
-
-			Color::Color(ImGuiCol Id, NxFr::Color Value)
-			{
-				ImGui::PushStyleColor(Id, Value);
-			}
-
-			Color::~Color()
-			{
-				ImGui::PopStyleColor(1);
-			}
-
-			Var::Var(ImGuiStyleVar Id, float Value)
-			{
-				ImGui::PushStyleVar(Id, Value);
-			}
-
-			Var::Var(ImGuiStyleVar Id, float Value, uint8 Index)
-			{
-				switch (Index)
-				{
-				case 0: ImGui::PushStyleVarX(Id, Value); break;
-				case 1: ImGui::PushStyleVarY(Id, Value); break;
-				default: NEXUS_ASSERT(false, Default, "ImGui unsupported style var index: %d", Index); break;
-				}
-			}
-
-			Var::Var(ImGuiStyleVar Id, NxFr::Vector2f Value)
-			{
-				ImGui::PushStyleVar(Id, Value);
-			}
-
-			Var::~Var()
-			{
-				ImGui::PopStyleVar(1);
-			}
-
-			Width::Width(float Size)
-			{
-				ImGui::PushItemWidth(Size);
-			}
-
-			Width::~Width()
-			{
-				ImGui::PopItemWidth();
-			}
+			GetColors().AppendOrAssign(Id, Instance);
 		}
 
-		namespace Utils
+		void Style::UnregisterColor(NxFr::StringId Id)
 		{
-			NxFr::Vector2f Fill(NxFr::Vector2f Offset, float Count, bool IncludePadding, bool Window)
-			{
-				NxFr::Vector2f ContentArea = ImGui::GetContentRegionAvail();
-				NxFr::Vector2f WindowArea = NxFr::Vector2f(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
-				NxFr::Vector2f Total = Window ? WindowArea : ContentArea;
-				NxFr::Vector2f Spacing = ImGui::GetStyle().ItemSpacing;
-				NxFr::Vector2f Padding = ImGui::GetStyle().FramePadding;
-				return Total - Offset - Spacing * Count - (IncludePadding ? Padding : NxFr::Vector2f::Zero);
-			}
+			GetColors().Remove(Id);
+		}
+
+		NxFr::Dictionary<NxFr::StringId, Style>& Style::GetStyles()
+		{
+			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+			static NxFr::Dictionary<NxFr::StringId, Style> Styles;
+			return Styles;
+		}
+
+		Style& Style::GetStyle(NxFr::StringId Id)
+		{
+			return GetStyles()[Id];
+		}
+
+		void Style::RegisterStyle(NxFr::StringId Id, const Style& Instance)
+		{
+			GetStyles().AppendOrAssign(Id, Instance);
+		}
+
+		void Style::UnregisterStyle(NxFr::StringId Id)
+		{
+			GetStyles().Remove(Id);
+		}
+
+		void Style::Reset()
+		{
+			ImGuiStyle& Style = ImGui::GetStyle();
+
+			Color = Style.Colors[21];
+			ColorText = Style.Colors[0];
+			ColorBackground = StylePreset == Preset::Panel ? Style.Colors[2] : Style.Colors[7];
+			ColorBorder = Style.Colors[5];
+			Alpha = Style.Alpha;
+			Align = Style.ButtonTextAlign;
+			Spacing = Style.ItemSpacing;
+			Padding = StylePreset == Preset::Panel ? Style.WindowPadding : Style.FramePadding;
+			Rounding = StylePreset == Preset::Panel ? Style.WindowRounding : Style.FrameRounding;
+			Border = StylePreset == Preset::Panel ? Style.WindowBorderSize : Style.FrameBorderSize;
+			Font = Style.FontSizeBase;
+		}
+
+		void Style::Push()
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, Color);
+			ImGui::PushStyleColor(ImGuiCol_Text, ColorText);
+			ImGui::PushStyleColor(StylePreset == Preset::Panel ? ImGuiCol_WindowBg : ImGuiCol_FrameBg, ColorBackground);
+			ImGui::PushStyleColor(ImGuiCol_Border, ColorBorder);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Alpha);
+			ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, Align);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Spacing);
+			ImGui::PushStyleVar(StylePreset == Preset::Panel ? ImGuiStyleVar_WindowPadding : ImGuiStyleVar_FramePadding, Padding);
+			ImGui::PushStyleVar(StylePreset == Preset::Panel ? ImGuiStyleVar_WindowRounding : ImGuiStyleVar_FrameRounding, Rounding);
+			ImGui::PushStyleVar(StylePreset == Preset::Panel ? ImGuiStyleVar_WindowBorderSize : ImGuiStyleVar_FrameBorderSize, Border);
+
+			ImGui::SetWindowFontScale(Font);
+		}
+
+		void Style::Pop()
+		{
+			ImGui::PopStyleColor(4);
+			ImGui::PopStyleVar(6);
+			ImGui::SetWindowFontScale(1);
 		}
 	}
 }
