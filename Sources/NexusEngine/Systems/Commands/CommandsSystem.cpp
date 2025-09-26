@@ -77,12 +77,15 @@ namespace NxEn
 		NxFr::StringView Delay = "0";
 		while (Index < Parts.GetCount())
 		{
-			if (Parts[Index] == "-Delay")
+			if (Parts[Index] == "-Delay" && (Index + 1) < Parts.GetCount())
 			{
 				Delay = Parts[Index + 1];
+				Index += 2;
 			}
-
-			Index++;
+			else
+			{
+				Index++;
+			}
 		}
 
 		return CommandInfo
