@@ -44,9 +44,9 @@ workspace (Engine)
 	debugcommand (Artifacts .. Starter .. ".exe")
 	debugdir (Root)
 	filter "platforms:Win64"
-		debugargs { "Mode=App" }
+		debugargs { "-Mode=App" }
 	filter "platforms:Win64-Editor"
-		debugargs { "Mode=Editor" }
+		debugargs { "-Mode=Editor" }
 	filter {}
 
 	characterset "Unicode"

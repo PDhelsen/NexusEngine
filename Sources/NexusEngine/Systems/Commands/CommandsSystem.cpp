@@ -12,8 +12,8 @@ namespace NxFr
 namespace NxEn
 {
 	static const char* SplitCommands = ";";
-	static const char* SplitArgs = ",";
-	static const char* SplitTimer = ":";
+	static const char* SplitArgs = " ";
+	static const char* SplitOptions = "-";
 
 	static NxFr::Dictionary<NxFr::StringId, Command*>& GetCommands()
 	{
@@ -45,21 +45,51 @@ namespace NxEn
 
 	CommandInfo CommandsSystem::ParseCommand(NxFr::StringView Cmd)
 	{
-		NxFr::StringView IdAndDelay = Cmd.Split(SplitArgs, 0);
-		NxFr::StringId Id = NxFr::StringId(IdAndDelay.Split(SplitTimer, 0));
-		float Delay = (float)NxFr::StringUtility::ToDouble(IdAndDelay.Split(SplitTimer, 1));
+		Cmd = NxFr::StringUtility::RemoveLeading(Cmd);
+		Cmd = NxFr::StringUtility::RemoveTrailing(Cmd);
+		NxFr::List<NxFr::StringView> Parts = Cmd.SplitAll(SplitArgs);
 
-		NxFr::StringView Args = Cmd.Find(SplitArgs);
-		if (!Args.IsEmpty())
+		bool Options = false;
+		uint64 Index = 0;
+
+		NxFr::StringView Id = Parts[Index++];
+
+		NxFr::String Args;
+		while(Index < Parts.GetCount())
 		{
-			Args = Args.ToView(1, Args.GetCount() - 1);
+			NxFr::StringView Arg = Parts[Index];
+			if (Arg.Start(SplitOptions))
+			{
+				Options = true;
+				break;
+			}
+
+			if (Index > 1)
+			{
+				Args += " ";
+			}
+			Args += Arg;
+
+
+			Index++;
+		}
+
+		NxFr::StringView Delay = "0";
+		while (Index < Parts.GetCount())
+		{
+			if (Parts[Index] == "-Delay")
+			{
+				Delay = Parts[Index + 1];
+			}
+
+			Index++;
 		}
 
 		return CommandInfo
 		{
-			.Id = Id,
-			.Args = NxFr::Move(Args.ToString()),
-			.Delay = Delay
+			.Id = NxFr::StringId(Id),
+			.Args = NxFr::Move(Args),
+			.Delay = (float)NxFr::StringUtility::ToDouble(Delay)
 		};
 	}
 

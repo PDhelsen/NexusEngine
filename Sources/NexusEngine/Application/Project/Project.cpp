@@ -25,8 +25,8 @@ namespace NxEn
 		Project NxEn::EntryPoint::CreateProject()
 		{
 			// Check cmd args
-			NxFr::StringView ModeArg = NxFr::Arguments::GetValue("Mode");
-			NxFr::StringView PathArg = NxFr::Arguments::GetValue("Project");
+			NxFr::StringView ModeArg = NxFr::Arguments::Get("Mode");
+			NxFr::StringView PathArg = NxFr::Arguments::Get("Project");
 
 			// Convert arg
 			ProjectMode Mode = ModeFromString(ModeArg);
@@ -35,9 +35,9 @@ namespace NxEn
 			// Lookup NexusProject as argument (without Project key)
 			if (Path.IsEmpty())
 			{
-				if (NxFr::Arguments::GetCount() >= 2)
+				if (NxFr::Arguments::Has(1))
 				{
-					PathArg = NxFr::Arguments::GetValue(1);
+					PathArg = NxFr::Arguments::Get(1);
 					if (NxFr::Path::HasExtension(PathArg, "nexus"))
 					{
 						Path = NxFr::Path::Normalize(PathArg);
@@ -150,7 +150,7 @@ namespace NxEn
 	void Project::Initialize()
 	{
 		Root = !Path.IsEmpty() ? NxFr::Path::GetDirectoryPath(Path).ToString() : NxFr::Platform::GetInstance()->GetWorkingDirectory();
-		Executable = NxFr::Path::Normalize(NxFr::Arguments::GetValue(NxFr::Arguments::KeyProgram));
+		Executable = NxFr::Path::Normalize(NxFr::Arguments::Get(0));
 	}
 
 	void Project::GenerateDefault()

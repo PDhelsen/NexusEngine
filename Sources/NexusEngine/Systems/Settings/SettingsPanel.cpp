@@ -9,7 +9,7 @@ namespace NxEn
 
 	const static GUI::Menu::Item MenuItemSettings = GUI::Menu::Item::Create("File/Settings", NxFr::Delegate<void()>([]()
 	{
-		Application::GetSystem<CommandsSystem>()->Execute("GUI.Panel,SettingsPanel");
+		Application::GetSystem<CommandsSystem>()->Execute("GUI.Panel SettingsPanel");
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(SettingsPanel)

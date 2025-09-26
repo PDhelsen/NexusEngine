@@ -267,7 +267,7 @@ namespace NxEn
 
 		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]()
 		{
-			NxFr::String Cmd = NxFr::StringView("GUI.Panel,") + Panel->GetObjectType().C();
+			NxFr::String Cmd = NxFr::StringView("GUI.Panel ") + Panel->GetObjectType().C();
 			Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		});
 	}
@@ -280,7 +280,7 @@ namespace NxEn
 		{
 			NxFr::Path Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Paths::Configs + Folder);
 			if (!Path.IsValid()) return;
-			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save,") + NxFr::Path::GetFileName(Path);
+			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save ") + NxFr::Path::GetFileName(Path);
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, "", 1);
 
@@ -306,7 +306,7 @@ namespace NxEn
 
 		Menu.AddMenuItem("Window/Layouts/" + Name, [=]()
 		{
-			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Load,") + Name;
+			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Load ") + Name;
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		});
 	}

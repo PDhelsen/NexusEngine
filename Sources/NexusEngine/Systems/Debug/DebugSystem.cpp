@@ -62,7 +62,7 @@ namespace NxEn
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &DebugSystem::ApplySettings };
 
-		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::GetValue("DebugFolder", "debug");
+		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::Get("DebugFolder", "debug");
 		NEXUS_ASSERT(!Folder.Data.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
@@ -117,7 +117,7 @@ namespace NxEn
 		Stats->Initialize();
 		Stats->Lock();
 
-		if (NxFr::Arguments::HasFlag("Profile"))
+		if (NxFr::Arguments::Has("Profile"))
 		{
 			NEXUS_LOG(Info, System, "Debug Tools will start automatically");
 			Instrumentor->StartRecording();

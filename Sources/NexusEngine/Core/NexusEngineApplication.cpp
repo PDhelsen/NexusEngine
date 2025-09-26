@@ -19,7 +19,7 @@ namespace NxEn
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
-		: Application(ProjectInfo), InputSchema(), Headless(NxFr::Arguments::HasFlag("Headless"))
+		: Application(ProjectInfo), InputSchema(), Headless(NxFr::Arguments::Has("Headless"))
 	{
 		SystemManager& Systems = GetSystems();
 
@@ -123,7 +123,7 @@ namespace NxEn
 
 	void NexusEngineApplication::ParseCommands()
 	{
-		NxFr::StringView CommandsList = NxFr::Arguments::GetValue("Commands");
+		NxFr::StringView CommandsList = NxFr::Arguments::Get("Commands");
 		if (CommandsList.IsEmpty())
 		{
 			return;
