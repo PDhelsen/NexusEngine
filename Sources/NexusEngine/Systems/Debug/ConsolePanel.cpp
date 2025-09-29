@@ -7,6 +7,8 @@ namespace NxEn
 	static NxFr::StringId TextWarning = "Warning"_Sid;
 	static NxFr::StringId TextError = "Error"_Sid;
 	static NxFr::StringId TextFatal = "Fatal"_Sid;
+	static NxFr::StringId WidthButton = "WidthButton"_Sid;
+	static NxFr::StringId WidthInpuText = "WidthInpuText"_Sid;
 
 	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
@@ -103,31 +105,25 @@ namespace NxEn
 
 	void ConsolePanel::OnGui(float TimeStep)
 	{
-		static float ButtonWidthSearchLabel = ImGui::CalcTextSize("Search:").x;
-		static float ButtonWidthSearchInput = 250.0f;
-		static float ButtonWidthClear = 100.0f;
-		static float ButtonWidthExec = 150.0f;
-		static float LineHeight = ImGui::GetTextLineHeightWithSpacing();
-
 		// Menu
 		{
 			Menu.Tick(TimeStep);
 
 			if (ImGui::BeginMenuBar())
 			{
-				ImGui::SetCursorPosX(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidthSearchLabel + ButtonWidthSearchInput + ButtonWidthClear), 3, false, true).x);
+				ImGui::SetCursorPosX(GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Style::GetVar(WidthInpuText) + GUI::Style::GetVar(WidthButton)), 3, false, true).x);
 
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Search:");
 				{
-					ImGui::SetNextItemWidth(ButtonWidthSearchInput);
+					ImGui::SetNextItemWidth(GUI::Style::GetVar(WidthInpuText));
 					if (ImGui::InputText("##Search", Search.C_Buffer(), Search.GetCapacity()))
 					{
 						Search.Validate();
 					}
 				}
 
-				if (ImGui::Button("Clear Logs", { ButtonWidthClear, ImGui::GetFrameHeight() }))
+				if (ImGui::Button("Clear Logs", { GUI::Style::GetVar(WidthButton), ImGui::GetFrameHeight() }))
 				{
 					ClearLogs();
 				}
@@ -137,7 +133,7 @@ namespace NxEn
 
 		// Logs
 		{
-			ImGui::BeginChild("Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(LineHeight), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::BeginChild("Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(ImGui::GetTextLineHeightWithSpacing()), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
 
 			for (uint64 Index = 0; Index < Logs.GetCount(); ++Index)
 			{
@@ -160,7 +156,7 @@ namespace NxEn
 			ImGui::Text("Command:");
 			ImGui::SameLine();
 			{
-				ImGui::SetNextItemWidth(GUI::Utils::Fill(NxFr::Vector2f(ButtonWidthExec), 1, false).x);
+				ImGui::SetNextItemWidth(GUI::Utils::Fill(NxFr::Vector2f(GUI::Style::GetVar(WidthButton)), 1, false).x);
 				if (ImGui::InputText("##Command", Command.C_Buffer(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					ExecuteCommand();
@@ -168,7 +164,7 @@ namespace NxEn
 				ImGui::SameLine();
 			}
 
-			if (ImGui::Button("Execute", { ButtonWidthExec, ImGui::GetFrameHeight() }))
+			if (ImGui::Button("Execute", { GUI::Style::GetVar(WidthButton), ImGui::GetFrameHeight() }))
 			{
 				ExecuteCommand();
 			}

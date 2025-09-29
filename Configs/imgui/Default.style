@@ -126,6 +126,7 @@ Nexus:
   Vars:
     WidthButton: 150
     WidthLabel: 200
+    WidthInpuText: 250
   Colors:
     Red: [0.45, 0.05, 0.05, 1]
     Yellow: [0.55, 0.42, 0.05, 1]
