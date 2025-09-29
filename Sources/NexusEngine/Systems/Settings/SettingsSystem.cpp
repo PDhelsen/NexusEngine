@@ -35,11 +35,6 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(SettingsSystem)
 
-	static bool operator<=(const NxFr::Array<Setting*>& A, const NxFr::Array<Setting*>& B)
-	{
-		return A[0]->GetPage() <= B[0]->GetPage();
-	}
-
 	Setting* SettingsSystem::GetSetting(NxFr::StringView Id)
 	{
 		return GetSettings()[Id];
@@ -159,7 +154,7 @@ namespace NxEn
 			Array.Sort([](Setting* A, Setting* B) { return A->GetName() <= B->GetName(); });
 		}
 
-		Sorted.Sort();
+		Sorted.Sort([](const NxFr::Array<Setting*>& A, const NxFr::Array<Setting*>& B) { return A[0]->GetPage() <= B[0]->GetPage(); });
 
 		return Sorted;
 	}

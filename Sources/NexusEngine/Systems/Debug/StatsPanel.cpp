@@ -6,7 +6,7 @@ namespace NxEn
 	static NxFr::StringId ButtonNormal = "Button_Normal"_Sid;
 	static NxFr::StringId ButtonPressed = "Button_Pressed"_Sid;
 	static NxFr::StringId WidthButton = "WidthButton"_Sid;
-	static NxFr::StringView FilterExclude[] = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
+	static NxFr::Array<NxFr::StringView> FilterExclude = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
 
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
 
@@ -129,7 +129,7 @@ namespace NxEn
 
 	bool StatsPanel::FilterStats(const NxFr::String& Label)
 	{
-		for (uint64 Index = 0; Index < FilterExclude->GetCount(); ++Index)
+		for (uint64 Index = 0; Index < FilterExclude.GetCount(); ++Index)
 		{
 			if (Label == FilterExclude[Index])
 			{
