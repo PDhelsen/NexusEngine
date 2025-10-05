@@ -97,8 +97,8 @@ namespace NxEn
 		template<typename T> T& As(const NxFr::String& Key) { NEXUS_ASSERT(false, Default, "Not supported"); return 0; }
 
 		NEXUS_ENGINE_API NxFr::StringView GetId() const { return Id; }
-		NEXUS_ENGINE_API NxFr::StringView GetPage() const { return Id.Split(".", 0); }
-		NEXUS_ENGINE_API NxFr::StringView GetName() const { return Id.Split(".", 1); }
+		NEXUS_ENGINE_API NxFr::StringView GetPage() const { return NxFr::StringUtility::Split(Id, ".", 0); }
+		NEXUS_ENGINE_API NxFr::StringView GetName() const { return NxFr::StringUtility::Split(Id, ".", 1); }
 		NEXUS_ENGINE_API Settings::Mode GetMode() const { return Mode; }
 		NEXUS_ENGINE_API Settings::Type GetType() const { return Type; }
 

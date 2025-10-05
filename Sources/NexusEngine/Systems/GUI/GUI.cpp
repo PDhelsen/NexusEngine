@@ -98,14 +98,14 @@ namespace NxEn
 
 		Panel& Panel::SetTitle(NxFr::StringView Title)
 		{
-			this->Title = Title.ToString();
+			this->Title = Title;
 			UpdateImGuiId(Title);
 			return *this;
 		}
 
 		Panel& Panel::SetDock(NxFr::StringView Id)
 		{
-			this->Dock = Id.ToString();
+			this->Dock = Id;
 			return *this;
 		}
 
@@ -170,16 +170,16 @@ namespace NxEn
 		}
 
 		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
-			: Callback(Callback), Validate(Validate), Path(Path.ToString()), Shortcut(Shortcut.ToString()), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
+			: Callback(Callback), Validate(Validate), Path(Path), Shortcut(Shortcut), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
 		{
 			NEXUS_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%d)", MenuPriorityOffsetBase);
 
-			if		(Path.Start(MenuPathProject))	this->Priority -= MenuPriorityOffsetProject;
-			else if (Path.Start(MenuPathTools))		this->Priority -= MenuPriorityOffsetTools;
-			else if (Path.Start(MenuPathObject))	this->Priority -= MenuPriorityOffsetObject;
-			else if (Path.Start(MenuPathWindow))	this->Priority -= MenuPriorityOffsetWindow;
-			else if (Path.Start(MenuPathEdit))		this->Priority -= MenuPriorityOffsetEdit;
-			else if (Path.Start(MenuPathFile))		this->Priority -= MenuPriorityOffsetFile;
+			if		(NxFr::StringUtility::Start(Path, MenuPathProject))		this->Priority -= MenuPriorityOffsetProject;
+			else if (NxFr::StringUtility::Start(Path, MenuPathTools))		this->Priority -= MenuPriorityOffsetTools;
+			else if (NxFr::StringUtility::Start(Path, MenuPathObject))		this->Priority -= MenuPriorityOffsetObject;
+			else if (NxFr::StringUtility::Start(Path, MenuPathWindow))		this->Priority -= MenuPriorityOffsetWindow;
+			else if (NxFr::StringUtility::Start(Path, MenuPathEdit))		this->Priority -= MenuPriorityOffsetEdit;
+			else if (NxFr::StringUtility::Start(Path, MenuPathFile))		this->Priority -= MenuPriorityOffsetFile;
 
 		}
 
@@ -281,7 +281,7 @@ namespace NxEn
 				NxFr::GUID Id = NxFr::Hash<>::HashObject(Section);
 				if (!Labels.ContainsKey(Id))
 				{
-					Labels.Append(Id, Section.ToString());
+					Labels.Append(Id, Section);
 				}
 			}
 		}
@@ -380,14 +380,14 @@ namespace NxEn
 
 		Popup& Popup::SetTitle(NxFr::StringView Title)
 		{
-			this->Title = Title.ToString();
+			this->Title = Title;
 			UpdateImGuiId(Title);
 			return *this;
 		}
 
 		Popup& Popup::SetMessage(NxFr::StringView Message)
 		{
-			this->Message = Message.ToString();
+			this->Message = Message;
 			return *this;
 		}
 
@@ -399,7 +399,7 @@ namespace NxEn
 
 		Popup& Popup::AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback)
 		{
-			Callbacks.AppendConstruct(Callback, Label.ToString());
+			Callbacks.AppendConstruct(Callback, Label);
 			return *this;
 		}
 
@@ -467,14 +467,14 @@ namespace NxEn
 
 		ProgressBar& ProgressBar::SetTitle(NxFr::StringView Title)
 		{
-			this->Title = Title.ToString();
+			this->Title = Title;
 			UpdateImGuiId(Title);
 			return *this;
 		}
 
 		ProgressBar& ProgressBar::SetMessage(NxFr::StringView Message)
 		{
-			this->Message = Message.ToString();
+			this->Message = Message;
 			return *this;
 		}
 

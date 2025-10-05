@@ -117,7 +117,7 @@ namespace NxEn
 				ImGui::Text("Search:");
 				{
 					ImGui::SetNextItemWidth(GUI::Style::GetVar(WidthInpuText));
-					if (ImGui::InputText("##Search", Search.C_Buffer(), Search.GetCapacity()))
+					if (ImGui::InputText("##Search", Search.Characters(), Search.GetCapacity()))
 					{
 						Search.Validate();
 					}
@@ -138,7 +138,7 @@ namespace NxEn
 			for (uint64 Index = 0; Index < Logs.GetCount(); ++Index)
 			{
 				Log& Log = Logs[Index];
-				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || Log.Text.Contains(Search)))
+				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || NxFr::StringUtility::Contains(Log.Text, Search)))
 				{
 					GUI::Style::Scope Style(Log.Style);
 					ImGui::Text(Log.Text.C());
@@ -157,7 +157,7 @@ namespace NxEn
 			ImGui::SameLine();
 			{
 				ImGui::SetNextItemWidth(GUI::Utils::Fill(NxFr::Vector2f(GUI::Style::GetVar(WidthButton)), 1, false).x);
-				if (ImGui::InputText("##Command", Command.C_Buffer(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
+				if (ImGui::InputText("##Command", Command.Characters(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					ExecuteCommand();
 				}
@@ -182,7 +182,7 @@ namespace NxEn
 
 	void ConsolePanel::AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message)
 	{
-		Logs.AppendConstruct(Move(Message.ToString()), GetStyle(Verbosity), FlagsVerbosity[Verbosity], FlagsChannels[Channel]);
+		Logs.AppendConstruct(Message, GetStyle(Verbosity), FlagsVerbosity[Verbosity], FlagsChannels[Channel]);
 	}
 
 	void ConsolePanel::ClearLogs()

@@ -149,13 +149,13 @@ namespace NxEn
 
 	void Project::Initialize()
 	{
-		Root = !Path.IsEmpty() ? NxFr::Path::GetDirectoryPath(Path).ToString() : NxFr::Platform::GetInstance()->GetWorkingDirectory();
+		Root = !Path.IsEmpty() ? (NxFr::String)NxFr::Path::GetDirectoryPath(Path) : NxFr::Platform::GetInstance()->GetWorkingDirectory();
 		Executable = NxFr::Path::Normalize(NxFr::Arguments::Get(0));
 	}
 
 	void Project::GenerateDefault()
 	{
-		Name = NxFr::Path::GetFileName(Executable).ToString();
+		Name = NxFr::Path::GetFileName(Executable);
 		Dll = Root + ComputeDllName();
 	}
 

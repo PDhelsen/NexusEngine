@@ -111,7 +111,7 @@ namespace NxEn
 		{
 			switch (SettingType)
 			{
-			case Type::String: SettingData.String = Value.ToString(); break;
+			case Type::String: SettingData.String = Value; break;
 			case Type::Vector: NxFr::StringUtility::Scan(Value, "(%f, %f, %f, %f)", &SettingData.Vector.x, &SettingData.Vector.y, &SettingData.Vector.z, &SettingData.Vector.w); break;
 			case Type::Float: SettingData.Float = (float)NxFr::StringUtility::ToDouble(Value); break;
 			case Type::Bool: SettingData.Bool = Value == "True" ? true : false; break;
@@ -157,7 +157,7 @@ namespace NxEn
 		Text.Grow(TextBuffer);
 
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		if (ImGui::InputText(ImGuiId.C(), Text.C_Buffer(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
+		if (ImGui::InputText(ImGuiId.C(), Text.Characters(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 		{
 			Text.Validate();
 			Set(Text);
@@ -205,7 +205,7 @@ namespace NxEn
 
 			ImGui::SetCursorPosX(Position);
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (ImGui::InputText(ImGuiId.C(), Text.C_Buffer(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
+			if (ImGui::InputText(ImGuiId.C(), Text.Characters(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				Text.Validate();
 				Set(Index, Text);
@@ -270,7 +270,7 @@ namespace NxEn
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(Position + GUI::Style::GetVar(WidthLabel));
 			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (ImGui::InputText(ImGuiId.C(), Text.C_Buffer(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
+			if (ImGui::InputText(ImGuiId.C(), Text.Characters(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				Text.Validate();
 				Set(Key, Text);

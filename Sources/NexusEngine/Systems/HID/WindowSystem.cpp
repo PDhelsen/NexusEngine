@@ -155,7 +155,7 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowTitle(NxFr::StringView Title)
 	{
-		Target.Title = Title.ToString();
+		Target.Title = Title;
 		if (Target.IsValid())
 		{
 			Glfw::SetWindowTitle(Target.Instance, Title);

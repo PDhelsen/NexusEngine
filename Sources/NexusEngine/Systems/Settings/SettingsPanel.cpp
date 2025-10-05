@@ -55,8 +55,8 @@ namespace NxEn
 		ImGui::BeginChild("Pages", { GUI::Style::GetVar(WidthLabel), 0.0f}, true);
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
-			NxFr::String Label = Settings[Index][0]->GetPage().ToString();
-			if (ImGui::Selectable(Label.C(), Page == Index))
+			NxFr::StringView Label = Settings[Index][0]->GetPage();
+			if (ImGui::Selectable(Label.C(true), Page == Index))
 			{
 				Page = Index;
 			}

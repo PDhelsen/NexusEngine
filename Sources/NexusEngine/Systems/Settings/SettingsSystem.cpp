@@ -26,7 +26,7 @@ namespace NxEn
 	}));
 	const static Command CmdSettingsMap = Command::Create("Settings.Map"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Key, NxFr::StringView Value)
 	{
-		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(Key.ToString(), Value);
+		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(Key, Value);
 	}));
 	const static Command CmdSettingsApply = Command::Create("Settings.Apply"_Sid, "Apply settings", NxFr::Delegate<void()>([]()
 	{
@@ -105,7 +105,7 @@ namespace NxEn
 			}
 			Data << YAML::EndMap;
 
-			NxFr::Yaml::SerializeFile(Data, Path + (Page[0]->GetPage().ToString().C() + Extension));
+			NxFr::Yaml::SerializeFile(Data, Path + (Page[0]->GetPage().C(true) + Extension));
 		}
 
 		NEXUS_LOG(Info, System, "Settings saved to : %s", Path.C());

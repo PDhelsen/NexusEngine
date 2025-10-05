@@ -26,7 +26,7 @@ namespace NxEn
 	private:
 		NxFr::Instruments* Instruments;
 		NxFr::Stats* Stats;
-		NxFr::List<const NxFr::String*> Ids;
+		NxFr::List<NxFr::String> Ids;
 		NxFr::Dictionary<NxFr::StringId, const NxFr::Stats::Stat*> Values;
 		NxFr::List<NxFr::StringView> Filters;
 		NxFr::String Filter;

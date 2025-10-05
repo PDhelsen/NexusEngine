@@ -104,12 +104,12 @@ namespace NxEn
 
 	NxFr::String Object::ToString() const
 	{
-		return GetObjectType().ToString();
+		return GetObjectType().GetString();
 	}
 
 	NxFr::StringView Object::GetName() const
 	{
-		return GetObjectType().C();
+		return GetObjectType().GetString();
 	}
 
 	NxFr::GUID Object::GetId() const

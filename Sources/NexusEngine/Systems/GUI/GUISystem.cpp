@@ -61,8 +61,8 @@ namespace NxEn
 
 	static NxFr::StringId ImGuiToNexusId(NxFr::StringView Name)
 	{
-		NxFr::StringView Id = Name.Split("##", 1).Split("/");
-		return NxFr::StringId(Id);
+		NxFr::StringView Id = NxFr::StringUtility::Split(Name, "##", 1);
+		return NxFr::StringUtility::Split(Id, "/");
 	}
 
 	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
@@ -149,7 +149,7 @@ namespace NxEn
 		Path = Project::GetSavedConfigPath(Name, NameLayout, "", ExtensionLayout, Folder);
 		if (!Name.IsEmpty() && !Path.Exist())
 		{
-			AddMenuWindowLayouts(Name.ToString());
+			AddMenuWindowLayouts(Name);
 		}
 		SaveLayoutNexus(Path);
 
@@ -295,7 +295,7 @@ namespace NxEn
 				continue;
 			}
 
-			NxFr::String Name = NxFr::Path::GetFileName(Layout).ToString();
+			NxFr::String Name = NxFr::Path::GetFileName(Layout);
 			AddMenuWindowLayouts(Name);
 		}
 	}

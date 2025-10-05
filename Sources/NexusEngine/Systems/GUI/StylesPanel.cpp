@@ -44,7 +44,7 @@ namespace NxEn
 
 		for (auto& [Id, Var] : GUI::Style::GetVars())
 		{
-			NxFr::String Label = Id.ToString();
+			const NxFr::String& Label = Id.GetString();
 
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text(Label.C());
@@ -63,7 +63,7 @@ namespace NxEn
 
 		for (auto& [Id, Color] : GUI::Style::GetColors())
 		{
-			NxFr::String Label = Id.ToString();
+			const NxFr::String& Label = Id.GetString();
 
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text(Label.C());
@@ -86,7 +86,7 @@ namespace NxEn
 		{
 			GUI::Style::Scope S(Id);
 
-			NxFr::String Label = Id.ToString();
+			const NxFr::String& Label = Id.GetString();
 
 			ImGui::AlignTextToFramePadding(); 
 			ImGui::Text(Label.C());

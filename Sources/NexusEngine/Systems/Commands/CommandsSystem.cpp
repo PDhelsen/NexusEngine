@@ -45,9 +45,9 @@ namespace NxEn
 
 	CommandInfo CommandsSystem::ParseCommand(NxFr::StringView Cmd)
 	{
-		Cmd = NxFr::StringUtility::RemoveLeading(Cmd);
-		Cmd = NxFr::StringUtility::RemoveTrailing(Cmd);
-		NxFr::List<NxFr::StringView> Parts = Cmd.SplitAll(SplitArgs);
+		Cmd = NxFr::StringUtility::TrimLeading(Cmd);
+		Cmd = NxFr::StringUtility::TrimTrailing(Cmd);
+		NxFr::List<NxFr::StringView> Parts = NxFr::StringUtility::SplitAll(Cmd, SplitArgs);
 
 		bool Options = false;
 		uint64 Index = 0;
@@ -58,7 +58,7 @@ namespace NxEn
 		while(Index < Parts.GetCount())
 		{
 			NxFr::StringView Arg = Parts[Index];
-			if (Arg.Start(SplitOptions))
+			if (NxFr::StringUtility::Start(Arg, SplitOptions))
 			{
 				Options = true;
 				break;
@@ -98,7 +98,7 @@ namespace NxEn
 
 	NxFr::List<CommandInfo> CommandsSystem::ParseCommands(NxFr::StringView Cmds)
 	{
-		NxFr::List<NxFr::StringView> Commands = Cmds.SplitAll(SplitCommands);
+		NxFr::List<NxFr::StringView> Commands = NxFr::StringUtility::SplitAll(Cmds, SplitCommands);
 		NxFr::List<CommandInfo> Infos(Commands.GetCount());
 		for (auto Cmd : Commands)
 		{
@@ -111,7 +111,7 @@ namespace NxEn
 
 	NxFr::List<NxFr::StringView> CommandsSystem::ParseArguments(NxFr::StringView Args)
 	{
-		return Args.SplitAll(SplitArgs);
+		return NxFr::StringUtility::SplitAll(Args, SplitArgs);
 	}
 
 	CommandsSystem::CommandsSystem()

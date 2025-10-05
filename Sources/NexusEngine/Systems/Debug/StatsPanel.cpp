@@ -37,12 +37,12 @@ namespace NxEn
 		Stats = Debug->GetStats();
 
 		Values = Stats->GetAllCurrentStats();
-		Ids = NxFr::List<const NxFr::String*>(Values.GetCount());
+		Ids = NxFr::List<NxFr::String>(Values.GetCount());
 		for (auto& [Id, Value] : Values)
 		{
-			Ids.Append(&Id.ToString());
+			Ids.Append(Id.GetString());
 		}
-		Ids.Sort([](const NxFr::String* A, const NxFr::String* B) { return *A <= *B; });
+		Ids.Sort();
 	}
 
 	void StatsPanel::OnGui(float TimeStep)
@@ -53,13 +53,13 @@ namespace NxEn
 
 		for (uint64 Index = 0; Index < Ids.GetCount(); ++Index)
 		{
-			const NxFr::String* Label = Ids[Index];
-			if (!FilterStats(*Label))
+			const NxFr::String& Label = Ids[Index];
+			if (!FilterStats(Label))
 			{
 				continue;
 			}
 
-			DrawStats(*Label);
+			DrawStats(Label);
 		}
 	}
 
@@ -104,7 +104,7 @@ namespace NxEn
 		ImGui::Text("Filter:");
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::InputText("##Filter", Filter.C_Buffer(), Filter.GetCapacity());
+		ImGui::InputText("##Filter", Filter.Characters(), Filter.GetCapacity());
 		ImGui::Separator();
 
 		Filter.Validate();
@@ -144,7 +144,7 @@ namespace NxEn
 		
 		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 		{
-			if (Label.Contains(Filters[Index]))
+			if (NxFr::StringUtility::Contains(Label, Filters[Index]))
 			{
 				return true;
 			}
