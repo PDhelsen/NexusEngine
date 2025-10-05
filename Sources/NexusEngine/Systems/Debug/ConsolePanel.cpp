@@ -65,7 +65,7 @@ namespace NxEn
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
 
-		uint8 VerbosityCount = NxFr::Enum::ToFlagIndex(NxFr::LoggerVerbosity::COUNT);
+		uint8 VerbosityCount = NxFr::Enum::FlagIndex(NxFr::LoggerVerbosity::COUNT);
 		FlagsVerbosity.Grow(VerbosityCount);
 		for (uint64 Index = 0; Index < VerbosityCount; ++Index)
 		{
@@ -73,7 +73,7 @@ namespace NxEn
 			NxFr::LoggerVerbosity Verbosity = (NxFr::LoggerVerbosity)((uint64)1 << Index);
 			FlagsVerbosity.Append(Verbosity, Logger->CheckVerbosity(Verbosity));
 
-			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::Enum::ToString((NxFr::LoggerVerbosity)Index);
+			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::Enum::LoggerVerbosityUtils::ToString(Verbosity);
 			Menu.AddMenuToggle(Path, &FlagsVerbosity[Verbosity], nullptr, "", Priority);
 		}
 

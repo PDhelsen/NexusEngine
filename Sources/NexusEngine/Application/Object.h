@@ -27,7 +27,7 @@ namespace NxEn
 		Enabled = 1 << 1,
 		Tickable = 1 << 2,
 	};
-	NEXUS_ENUM_TO_FLAG(ObjectFlags)
+	NEXUS_FLAG(ObjectFlags, uint8)
 
 	class Object
 	{

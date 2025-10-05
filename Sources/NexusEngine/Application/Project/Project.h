@@ -15,7 +15,7 @@ namespace NxEn
 	{
 		App, Editor
 	};
-	NEXUS_ENUM_TO_STRING_DEFINITION(NEXUS_ENGINE_API, ProjectMode)
+	NEXUS_ENUM_STRING(ProjectMode, 2, "App", "Editor")
 
 	class Project
 	{
