@@ -43,6 +43,7 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::StringId, bool> FlagsChannels;
 		NxFr::String Command;
 		NxFr::String Search;
+		bool Scroll;
 	};
 }
 

@@ -12,6 +12,8 @@ namespace NxEn
 
 	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
+	static NxEn::SettingVar* SettingConsoleAutoScroll = NxEn::SettingVar::Create("Preferences", "ConsoleAutoScroll", NxEn::Settings::Type::Bool);
+
 	NEXUS_OBJECT_IMPLEMENTATION(ConsolePanel)
 
 	NxFr::StringId ConsolePanel::GetStyle(NxFr::LoggerVerbosity Verbosity)
@@ -35,7 +37,7 @@ namespace NxEn
 	}
 
 	ConsolePanel::ConsolePanel()
-		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128)
+		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128), Scroll(false)
 	{
 	}
 
@@ -89,6 +91,8 @@ namespace NxEn
 			NxFr::String Path = NxFr::StringView("Channels/") + Id.C();
 			Menu.AddMenuToggle(Path, &FlagsChannels[Id], nullptr, "", Priority);
 		}
+
+		Menu.AddMenuToggle("Settings/AutoScroll", &SettingConsoleAutoScroll->As<bool>());
 	}
 
 	void ConsolePanel::OnDisable()
@@ -145,6 +149,12 @@ namespace NxEn
 				}
 			}
 
+			if (SettingConsoleAutoScroll->As<bool>() && Scroll)
+			{
+				ImGui::SetScrollHereY(1.0f);
+				Scroll = false;
+			}
+
 			ImGui::EndChild();
 		}
 
@@ -183,6 +193,7 @@ namespace NxEn
 	void ConsolePanel::AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message)
 	{
 		Logs.AppendConstruct(Message, GetStyle(Verbosity), FlagsVerbosity[Verbosity], FlagsChannels[Channel]);
+		Scroll = true;
 	}
 
 	void ConsolePanel::ClearLogs()
