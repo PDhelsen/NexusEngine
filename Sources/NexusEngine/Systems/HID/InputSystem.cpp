@@ -163,9 +163,9 @@ namespace NxEn
 			return;
 		}
 
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Control, GetButton(Input::Button::LeftControl) != Input::State::Up || GetButton(Input::Button::RightControl) != Input::State::Up);
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Shift, GetButton(Input::Button::LeftShift) != Input::State::Up || GetButton(Input::Button::RightShift) != Input::State::Up);
-		Modifiers = Input::Enum::SetFlag(Modifiers, Input::Modifier::Alt, GetButton(Input::Button::LeftAlt) != Input::State::Up || GetButton(Input::Button::RightAlt) != Input::State::Up);
+		Modifiers = NxFr::Enum::SetFlag(Modifiers, Input::Modifier::Control, GetButton(Input::Button::LeftControl) != Input::State::Up || GetButton(Input::Button::RightControl) != Input::State::Up);
+		Modifiers = NxFr::Enum::SetFlag(Modifiers, Input::Modifier::Shift, GetButton(Input::Button::LeftShift) != Input::State::Up || GetButton(Input::Button::RightShift) != Input::State::Up);
+		Modifiers = NxFr::Enum::SetFlag(Modifiers, Input::Modifier::Alt, GetButton(Input::Button::LeftAlt) != Input::State::Up || GetButton(Input::Button::RightAlt) != Input::State::Up);
 	}
 
 	void InputSystem::PollInputs()

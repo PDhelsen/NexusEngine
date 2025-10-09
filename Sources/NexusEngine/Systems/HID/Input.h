@@ -6,6 +6,45 @@ namespace NxEn
 {
 	namespace Input
 	{
+		enum class Modifier : uint8
+		{
+			None = 0,
+			Ignore = 1 << 0,
+
+			Control = 1 << 1,
+			Shift = 1 << 2,
+			Alt = 1 << 3,
+		};
+
+		enum class State
+		{
+			Up,
+			Pressed,
+			Down,
+			Released,
+
+			COUNT
+		};
+
+		enum class Mode
+		{
+			Button,
+			Axis,
+			Mouse,
+
+			COUNT
+		};
+
+		enum class Axis
+		{
+			MouseX,
+			MouseY,
+			ScrollX,
+			ScrollY,
+
+			COUNT
+		};
+
 		enum class Button
 		{
 			Invalid,
@@ -131,168 +170,132 @@ namespace NxEn
 
 			COUNT
 		};
+	}
+}
 
-		NEXUS_ENUM_STRING(Button, (uint64)Button::COUNT,
-			"Invalid",
-			"CapsLock",
-			"ScrollLock",
-			"NumLock",
-			"LeftShift",
-			"LeftControl",
-			"LeftAlt",
-			"RightShift",
-			"RightControl",
-			"RightAlt",
-			"A",
-			"B",
-			"C",
-			"D",
-			"E",
-			"F",
-			"G",
-			"H",
-			"I",
-			"J",
-			"K",
-			"L",
-			"M",
-			"N",
-			"O",
-			"P",
-			"Q",
-			"R",
-			"S",
-			"T",
-			"U",
-			"V",
-			"W",
-			"X",
-			"Y",
-			"Z",
-			"Alpha0",
-			"Alpha1",
-			"Alpha2",
-			"Alpha3",
-			"Alpha4",
-			"Alpha5",
-			"Alpha6",
-			"Alpha7",
-			"Alpha8",
-			"Alpha9",
-			"Num0",
-			"Num1",
-			"Num2",
-			"Num3",
-			"Num4",
-			"Num5",
-			"Num6",
-			"Num7",
-			"Num8",
-			"Num9",
-			"NumDecimal",
-			"NumDivide",
-			"NumMultiply",
-			"NumSubtract",
-			"NumAdd",
-			"NumEnter",
-			"NumEqual",
-			"F1",
-			"F2",
-			"F3",
-			"F4",
-			"F5",
-			"F6",
-			"F7",
-			"F8",
-			"F9",
-			"F10",
-			"F11",
-			"F12",
-			"Space",
-			"Apostrophe",
-			"Comma",
-			"Period",
-			"Semicolon",
-			"Slash",
-			"Backslash",
-			"Minus",
-			"Equal",
-			"LeftBracket",
-			"RightBracket",
-			"Escape",
-			"Enter",
-			"Tab",
-			"Backspace",
-			"Insert",
-			"Delete",
-			"Right",
-			"Left",
-			"Down",
-			"Up",
-			"PageUp",
-			"PageDown",
-			"Home",
-			"End",
-			"PrintScreen",
-			"Pause",
-			"Menu",
-			"MouseLeft",
-			"MouseRight",
-			"MouseMiddle",
-			"Mouse1",
-			"Mouse2",
-			"Mouse3",
-			"Mouse4",
-			"Mouse5",
-		);
+NEXUS_FLAG(NxEn::Input::Modifier, uint8);
 
-		enum class Axis
-		{
-			MouseX,
-			MouseY,
-			ScrollX,
-			ScrollY,
+NEXUS_ENUM_STRING(NxEn::Input::State	, (uint64)NxEn::Input::State::COUNT		, "Up", "Pressed", "Down", "Released");
+NEXUS_ENUM_STRING(NxEn::Input::Mode		, (uint64)NxEn::Input::Mode::COUNT		, "Button", "Axis", "Mouse");
+NEXUS_ENUM_STRING(NxEn::Input::Axis		, (uint64)NxEn::Input::Axis::COUNT		, "MouseX", "MouseY", "ScrollX", "ScrollY");
+NEXUS_ENUM_STRING(NxEn::Input::Button	, (uint64)NxEn::Input::Button::COUNT	,
+	"Invalid",
+	"CapsLock",
+	"ScrollLock",
+	"NumLock",
+	"LeftShift",
+	"LeftControl",
+	"LeftAlt",
+	"RightShift",
+	"RightControl",
+	"RightAlt",
+	"A",
+	"B",
+	"C",
+	"D",
+	"E",
+	"F",
+	"G",
+	"H",
+	"I",
+	"J",
+	"K",
+	"L",
+	"M",
+	"N",
+	"O",
+	"P",
+	"Q",
+	"R",
+	"S",
+	"T",
+	"U",
+	"V",
+	"W",
+	"X",
+	"Y",
+	"Z",
+	"Alpha0",
+	"Alpha1",
+	"Alpha2",
+	"Alpha3",
+	"Alpha4",
+	"Alpha5",
+	"Alpha6",
+	"Alpha7",
+	"Alpha8",
+	"Alpha9",
+	"Num0",
+	"Num1",
+	"Num2",
+	"Num3",
+	"Num4",
+	"Num5",
+	"Num6",
+	"Num7",
+	"Num8",
+	"Num9",
+	"NumDecimal",
+	"NumDivide",
+	"NumMultiply",
+	"NumSubtract",
+	"NumAdd",
+	"NumEnter",
+	"NumEqual",
+	"F1",
+	"F2",
+	"F3",
+	"F4",
+	"F5",
+	"F6",
+	"F7",
+	"F8",
+	"F9",
+	"F10",
+	"F11",
+	"F12",
+	"Space",
+	"Apostrophe",
+	"Comma",
+	"Period",
+	"Semicolon",
+	"Slash",
+	"Backslash",
+	"Minus",
+	"Equal",
+	"LeftBracket",
+	"RightBracket",
+	"Escape",
+	"Enter",
+	"Tab",
+	"Backspace",
+	"Insert",
+	"Delete",
+	"Right",
+	"Left",
+	"Down",
+	"Up",
+	"PageUp",
+	"PageDown",
+	"Home",
+	"End",
+	"PrintScreen",
+	"Pause",
+	"Menu",
+	"MouseLeft",
+	"MouseRight",
+	"MouseMiddle",
+	"Mouse1",
+	"Mouse2",
+	"Mouse3",
+	"Mouse4",
+	"Mouse5",
+	);
 
-			COUNT
-		};
-
-		NEXUS_ENUM_STRING(Axis, (uint64)Axis::COUNT, "MouseX", "MouseY", "ScrollX", "ScrollY");
-
-		enum class Mode
-		{
-			Button,
-			Axis,
-			Mouse,
-
-			COUNT
-		};
-
-		NEXUS_ENUM_STRING(Mode, (uint64)Mode::COUNT, "Button", "Axis", "Mouse");
-
-		enum class State
-		{
-			Up,
-			Pressed,
-			Down,
-			Released,
-
-			COUNT
-		};
-
-		NEXUS_ENUM_STRING(State, (uint64)State::COUNT, "Up", "Pressed", "Down", "Released");
-
-		enum class Modifier : uint8
-		{
-			None = 0,
-			Ignore = 1 << 0,
-
-			Control = 1 << 1,
-			Shift = 1 << 2,
-			Alt = 1 << 3,
-		};
-
-		NEXUS_FLAG(Modifier, uint8);
-
+namespace NxEn
+{
+	namespace Input
+	{
 		union Binding
 		{
 			NEXUS_ENGINE_API Binding(Button ButtonInput, State ButtonState);

@@ -119,11 +119,11 @@ namespace NxEn
 
 	bool Object::GetFlag(ObjectFlags Flag) const
 	{
-		return Enum::CheckFlag(Flags, Flag);
+		return NxFr::Enum::CheckFlag(Flags, Flag);
 	}
 
 	void Object::SetFlag(ObjectFlags Flag, bool Value)
 	{
-		Flags = Enum::SetFlag(Flags, Flag, Value);
+		Flags = NxFr::Enum::SetFlag(Flags, Flag, Value);
 	}
 }

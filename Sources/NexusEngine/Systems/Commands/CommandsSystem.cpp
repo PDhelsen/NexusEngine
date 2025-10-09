@@ -92,7 +92,7 @@ namespace NxEn
 		{
 			.Id = NxFr::StringId(Id),
 			.Args = NxFr::Move(Args),
-			.Delay = (float)NxFr::StringUtility::ToDouble(Delay)
+			.Delay = NxFr::StringUtility::FromString<float>(Delay)
 		};
 	}
 

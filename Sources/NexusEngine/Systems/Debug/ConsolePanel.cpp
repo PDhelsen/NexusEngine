@@ -75,7 +75,7 @@ namespace NxEn
 			NxFr::LoggerVerbosity Verbosity = (NxFr::LoggerVerbosity)((uint64)1 << Index);
 			FlagsVerbosity.Append(Verbosity, Logger->CheckVerbosity(Verbosity));
 
-			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::Enum::LoggerVerbosityUtils::ToString(Verbosity);
+			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::StringUtility::ToString(Verbosity);
 			Menu.AddMenuToggle(Path, &FlagsVerbosity[Verbosity], nullptr, "", Priority);
 		}
 

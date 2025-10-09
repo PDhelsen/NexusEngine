@@ -22,7 +22,7 @@ namespace NxEn
 			NxFr::StringView PathArg = NxFr::Arguments::Get("Project");
 
 			// Convert arg
-			ProjectMode Mode = Enum::ProjectModeUtils::FromString(ModeArg.C());
+			ProjectMode Mode = NxFr::StringUtility::FromString<ProjectMode>(ModeArg.C());
 			NxFr::String Path = NxFr::Path::Normalize(PathArg);
 
 			// Lookup NexusProject as argument (without Project key)
@@ -156,7 +156,7 @@ namespace NxEn
 	{
 		YAML::Node File = NxFr::Yaml::DeserializeFile(Path);
 
-		Mode = UseModeFromFile ? Enum::ProjectModeUtils::FromString(File["Mode"].as<NxFr::String>().C()) : Mode;
+		Mode = UseModeFromFile ? NxFr::StringUtility::FromString<ProjectMode>(File["Mode"].as<NxFr::String>().C()) : Mode;
 
 		Name = File["Name"].as<NxFr::String>();
 		Dll = Root + File["Dll"].as<NxFr::String>() + ComputeDllName();
@@ -164,6 +164,6 @@ namespace NxEn
 
 	NxFr::String Project::ComputeDllName()
 	{
-		return NxFr::StringView(NEXUS_PROJECT_DLL) + Enum::ProjectModeUtils::ToString(Mode) + NxFr::StringView(".dll");
+		return NxFr::StringView(NEXUS_PROJECT_DLL) + NxFr::StringUtility::ToString(Mode) + NxFr::StringView(".dll");
 	}
 }

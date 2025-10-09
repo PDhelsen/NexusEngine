@@ -27,8 +27,12 @@ namespace NxEn
 		Enabled = 1 << 1,
 		Tickable = 1 << 2,
 	};
-	NEXUS_FLAG(ObjectFlags, uint8)
+}
 
+NEXUS_FLAG(NxEn::ObjectFlags, uint8)
+
+namespace NxEn
+{
 	class Object
 	{
 	public:

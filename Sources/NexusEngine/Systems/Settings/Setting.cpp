@@ -111,10 +111,10 @@ namespace NxEn
 		{
 			switch (SettingType)
 			{
-			case Type::String: SettingData.String = Value; break;
-			case Type::Vector: NxFr::StringUtility::Scan(Value, "(%f, %f, %f, %f)", &SettingData.Vector.x, &SettingData.Vector.y, &SettingData.Vector.z, &SettingData.Vector.w); break;
-			case Type::Float: SettingData.Float = (float)NxFr::StringUtility::ToDouble(Value); break;
-			case Type::Bool: SettingData.Bool = Value == "True" ? true : false; break;
+			case Type::String: SettingData.String = NxFr::StringUtility::FromString<NxFr::String>(Value); break;
+			case Type::Vector: SettingData.Vector = NxFr::StringUtility::FromString<NxFr::Vector4f>(Value); break;
+			case Type::Float: SettingData.Float = NxFr::StringUtility::FromString<float>(Value); break;
+			case Type::Bool: SettingData.Bool = NxFr::StringUtility::FromString<bool>(Value); break;
 			}
 		}
 
@@ -122,10 +122,10 @@ namespace NxEn
 		{
 			switch (SettingType)
 			{
-			case Type::String: return SettingData.String;
-			case Type::Vector: return SettingData.Vector.ToString();
-			case Type::Float: return NxFr::StringUtility::ToStringF(SettingData.Float);
-			case Type::Bool: return NxFr::StringUtility::ToStringB(SettingData.Bool);
+			case Type::String: return NxFr::StringUtility::ToString(SettingData.String);
+			case Type::Vector: return NxFr::StringUtility::ToString(SettingData.Vector);
+			case Type::Float: return NxFr::StringUtility::ToString(SettingData.Float);
+			case Type::Bool: return NxFr::StringUtility::ToString(SettingData.Bool);
 			}
 
 			return NxFr::StringUtility::Empty;
@@ -199,7 +199,7 @@ namespace NxEn
 
 		for (uint64 Index = 0; Index < Values.GetCount(); ++Index)
 		{
-			NxFr::String ImGuiId = "##" + Id + NxFr::StringUtility::ToStringI(Index);
+			NxFr::String ImGuiId = "##" + Id + NxFr::StringUtility::ToString(Index);
 			NxFr::String Text = Get(Index);
 			Text.Grow(TextBuffer);
 

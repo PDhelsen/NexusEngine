@@ -22,7 +22,7 @@ namespace NxEn
 	}));
 	const static Command CmdSettingsSeq = Command::Create("Settings.Seq"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Index, NxFr::StringView Value)
 	{
-		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(NxFr::StringUtility::ToInteger(Index), Value);
+		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(NxFr::StringUtility::FromString<uint64>(Index), Value);
 	}));
 	const static Command CmdSettingsMap = Command::Create("Settings.Map"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Key, NxFr::StringView Value)
 	{

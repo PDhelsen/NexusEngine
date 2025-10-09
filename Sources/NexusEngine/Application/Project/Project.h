@@ -4,18 +4,22 @@
 
 namespace NxEn
 {
+	enum class ProjectMode
+	{
+		App, Editor
+	};
+}
+
+NEXUS_ENUM_STRING(NxEn::ProjectMode, 2, "App", "Editor")
+
+namespace NxEn
+{
 	class Project;
 
 	namespace EntryPoint
 	{
 		NEXUS_ENGINE_API Project CreateProject();
 	}
-
-	enum class ProjectMode
-	{
-		App, Editor
-	};
-	NEXUS_ENUM_STRING(ProjectMode, 2, "App", "Editor")
 
 	class Project
 	{
