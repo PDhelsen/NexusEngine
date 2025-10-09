@@ -78,8 +78,12 @@ namespace NxEn
 				YAML::Node& Key = It->first;
 				YAML::Node& Value = It->second;
 
-				auto* Instance = Settings[Key.as<NxFr::String>()];
-				Instance->Deserialize(Value);
+				auto Setting = Key.as<NxFr::String>();
+				if (Settings.ContainsKey(Setting))
+				{
+					auto* Instance = Settings[Setting];
+					Instance->Deserialize(Value);
+				}
 			}
 		}
 
