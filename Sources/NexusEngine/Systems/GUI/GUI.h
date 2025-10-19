@@ -164,6 +164,7 @@ namespace NxEn
 			NEXUS_ENGINE_API Popup& SetMessage(NxFr::StringView Message);
 			NEXUS_ENGINE_API Popup& AddButton(NxFr::StringView Label);
 			NEXUS_ENGINE_API Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
+			NEXUS_ENGINE_API Popup& Clear();
 
 			NEXUS_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
 			NEXUS_ENGINE_API NxFr::StringView GetTitle() const { return Title; }

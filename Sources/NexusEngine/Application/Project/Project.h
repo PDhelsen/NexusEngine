@@ -34,10 +34,10 @@ namespace NxEn
 
 		NEXUS_ENGINE_API ProjectMode GetTarget() const { return Mode; }
 		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
-		NEXUS_ENGINE_API const NxFr::String& GetName() const { return Name; }
-		NEXUS_ENGINE_API const NxFr::String& GetRootPath() const { return Root; }
-		NEXUS_ENGINE_API const NxFr::String& GetExecutablePath() const { return Executable; }
-		NEXUS_ENGINE_API const NxFr::String& GetDllPath() const { return Dll; }
+		NEXUS_ENGINE_API NxFr::StringView GetName() const { return Name; }
+		NEXUS_ENGINE_API NxFr::StringView GetRootPath() const { return Root; }
+		NEXUS_ENGINE_API NxFr::StringView GetExecutablePath() const { return Executable; }
+		NEXUS_ENGINE_API NxFr::StringView GetDllPath() const { return Dll; }
 
 	private:
 		void Initialize();

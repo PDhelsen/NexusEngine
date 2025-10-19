@@ -75,7 +75,6 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual Object* Clone() const;
 		NEXUS_ENGINE_API virtual void Clone(Object* Target);
 
-		NEXUS_ENGINE_API virtual NxFr::String ToString() const;
 		NEXUS_ENGINE_API virtual NxFr::StringView GetName() const;
 		NEXUS_ENGINE_API virtual NxFr::GUID GetId() const;
 

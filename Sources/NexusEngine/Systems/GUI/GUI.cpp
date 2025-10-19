@@ -403,6 +403,12 @@ namespace NxEn
 			return *this;
 		}
 
+		Popup& Popup::Clear()
+		{
+			Callbacks.Clear();
+			return *this;
+		}
+
 		void Popup::OnInitialize()
 		{
 			Element::OnInitialize();

@@ -68,7 +68,7 @@ namespace NxEn
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
 
 		uint8 VerbosityCount = NxFr::Enum::FlagIndex(NxFr::LoggerVerbosity::COUNT);
-		FlagsVerbosity.Grow(VerbosityCount);
+		FlagsVerbosity.Reserve(VerbosityCount);
 		for (uint64 Index = 0; Index < VerbosityCount; ++Index)
 		{
 			uint64 Priority = FlagsVerbosity.GetCount();

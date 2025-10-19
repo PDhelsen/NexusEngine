@@ -102,11 +102,6 @@ namespace NxEn
 		NEXUS_ASSERT(false, Default, "Not Implemented");
 	}
 
-	NxFr::String Object::ToString() const
-	{
-		return GetObjectType().GetString();
-	}
-
 	NxFr::StringView Object::GetName() const
 	{
 		return GetObjectType().GetString();

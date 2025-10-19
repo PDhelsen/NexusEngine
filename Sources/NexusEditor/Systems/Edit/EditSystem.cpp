@@ -271,7 +271,7 @@ namespace NxEd
 	void EditSystem::Copy()
 	{
 		Clipboard.Clear();
-		Clipboard.Grow(Selection.GetCount());
+		Clipboard.Reserve(Selection.GetCount());
 
 		for (auto& Info : Selection)
 		{
