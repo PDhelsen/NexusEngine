@@ -13,7 +13,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(ProjectPanel)
 
 	ProjectPanel::ProjectPanel()
-		: Infos(nullptr)
+		: Infos(nullptr), Style()
 	{
 	}
 
@@ -32,18 +32,22 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 
+		Style.Reset();
+		Style.Width = -1.0f;
+		Style.WidthLabel = -1.0f;
+
 		Infos = &Application::GetInstance()->GetProject();
 	}
 
 	void ProjectPanel::OnGui(float TimeStep)
 	{
-		ImGui::Text("Mode: %s", NxFr::StringUtility::ToString(Infos->GetTarget()));
+		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetTarget()), "Mode", &Style);
 		ImGui::Separator();
-		ImGui::Text("Name: %s", Infos->GetName().C());
-		ImGui::Text("Root: %s", Infos->GetRootPath().C());
-		ImGui::Text("Path: %s", Infos->GetPath().C());
+		GUI::Drawer<NxFr::String>::Property(Infos->GetName(), "Name", &Style);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetRootPath(), "Root", &Style);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetPath(), "Path", &Style);
 		ImGui::Separator();
-		ImGui::Text("Executable: %s", Infos->GetExecutablePath().C());
-		ImGui::Text("Dll: %s", Infos->GetDllPath().C());
+		GUI::Drawer<NxFr::String>::Property(Infos->GetExecutablePath(), "Executable", &Style);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetDllPath(), "Dll", &Style);
 	}
 }

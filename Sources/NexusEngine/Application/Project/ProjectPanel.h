@@ -21,5 +21,6 @@ namespace NxEn
 
 	private:
 		Project* Infos;
+		GUI::Style Style;
 	};
 }

@@ -19,11 +19,13 @@ namespace NxEn
 
 		void DrawButtons();
 		void DrawFilter();
-		void DrawStats(const NxFr::String& Label) const;
+		void DrawStats(const NxFr::String& Label);
 		bool FilterStats(const NxFr::String& Label);
 
 
 	private:
+		GUI::Style Style;
+
 		NxFr::Instruments* Instruments;
 		NxFr::Stats* Stats;
 		NxFr::List<NxFr::String> Ids;

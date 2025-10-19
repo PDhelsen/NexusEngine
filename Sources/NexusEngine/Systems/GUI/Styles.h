@@ -6,6 +6,20 @@ namespace NxEn
 {
 	namespace GUI
 	{
+		struct Style;
+
+		struct Scope
+		{
+		public:
+			NEXUS_ENGINE_API Scope(NxFr::StringId Id);
+			NEXUS_ENGINE_API Scope(const Style* Instance);
+			NEXUS_ENGINE_API ~Scope();
+
+		private:
+			NxFr::StringId Id;
+			const Style* Instance;
+		};
+
 		struct Style
 		{
 		public:
@@ -14,15 +28,25 @@ namespace NxEn
 				Text, Button, Panel
 			};
 
-			struct Scope
-			{
-			public:
-				NEXUS_ENGINE_API Scope(NxFr::StringId Id);
-				NEXUS_ENGINE_API ~Scope();
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdWidthButton = "WidthButton"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdWidthLabel = "WidthLabel"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdWidthInpuText = "WidthInpuText"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdRed = "Red"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdYellow = "Yellow"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdGreen = "Green"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdCyan = "Cyan"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdBlue = "Blue"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdMagenta = "Magenta"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdText_Normal = "Text_Normal"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdText_Title = "Text_Title"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdButton_Normal = "Button_Normal"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdButton_Pressed = "Button_Pressed"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdInfo = "Info"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdWarning = "Warning"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdError = "Error"_Sid;
+			NEXUS_ENGINE_API inline static const NxFr::StringId IdFatal = "Fatal"_Sid;
 
-			private:
-				NxFr::StringId Id;
-			};
+			NEXUS_ENGINE_API static const Style Default;
 
 			NEXUS_ENGINE_API static NxFr::Dictionary<NxFr::StringId, float>& GetVars();
 			NEXUS_ENGINE_API static float& GetVar(NxFr::StringId Id);
@@ -37,14 +61,23 @@ namespace NxEn
 			NEXUS_ENGINE_API static void RegisterStyle(NxFr::StringId Id, const Style& Instance);
 			NEXUS_ENGINE_API static void UnregisterStyle(NxFr::StringId Id);
 
-			NEXUS_ENGINE_API Style() = default;
-			NEXUS_ENGINE_API ~Style() = default;
+			NEXUS_ENGINE_API static Style Copy(const Style* Original);
+
+			NEXUS_ENGINE_API Style();
+			NEXUS_ENGINE_API ~Style();
 
 			NEXUS_ENGINE_API void Reset();
-			NEXUS_ENGINE_API void Push();
-			NEXUS_ENGINE_API void Pop();
+			NEXUS_ENGINE_API void Push() const;
+			NEXUS_ENGINE_API void Pop() const;
+			NEXUS_ENGINE_API void SetPosition() const;
+			NEXUS_ENGINE_API void SetWidth() const;
+			NEXUS_ENGINE_API void SetWidthLabel(NxFr::StringView Label = "") const;
 
 			Preset StylePreset;
+			NxFr::Vector2f Position;
+			float Width;
+			float WidthLabel;
+			float Height;
 			NxFr::Color Color;
 			NxFr::Color ColorText;
 			NxFr::Color ColorBackground;
@@ -56,6 +89,7 @@ namespace NxEn
 			float Rounding;
 			float Border;
 			float Font;
+			uint64 Flag;
 		};
 	}
 }
@@ -69,6 +103,9 @@ namespace YAML
 		{
 			Node node;
 			node["StylePreset"] = (int32)rhs.StylePreset;
+			node["Width"] = rhs.Width;
+			node["WidthLabel"] = rhs.WidthLabel;
+			node["Height"] = rhs.Font;
 			node["Color"] = rhs.Color;
 			node["ColorText"] = rhs.ColorText;
 			node["ColorBackground"] = rhs.ColorBackground;
@@ -80,12 +117,16 @@ namespace YAML
 			node["Rounding"] = rhs.Rounding;
 			node["Border"] = rhs.Border;
 			node["Font"] = rhs.Font;
+			node["Flag"] = rhs.Flag;
 			return node;
 		}
 
 		static bool decode(const Node& node, NxEn::GUI::Style& rhs)
 		{
 			rhs.StylePreset = (NxEn::GUI::Style::Preset)node["StylePreset"].as<int32>();
+			rhs.Width = node["Width"].as<float>();
+			rhs.WidthLabel = node["WidthLabel"].as<float>();
+			rhs.Height = node["Height"].as<float>();
 			rhs.Color = node["Color"].as<NxFr::Color>();
 			rhs.ColorText = node["ColorText"].as<NxFr::Color>();
 			rhs.ColorBackground = node["ColorBackground"].as<NxFr::Color>();
@@ -97,6 +138,7 @@ namespace YAML
 			rhs.Rounding = node["Rounding"].as<float>();
 			rhs.Border = node["Border"].as<float>();
 			rhs.Font = node["Font"].as<float>();
+			rhs.Flag = node["Flag"].as<uint64>();
 			return true;
 		}
 	};
@@ -105,6 +147,9 @@ namespace YAML
 	{
 		out << YAML::BeginMap;
 		out << YAML::Key << "StylePreset" << YAML::Value << (int32)rhs.StylePreset;
+		out << YAML::Key << "Width" << YAML::Value << rhs.Width;
+		out << YAML::Key << "WidthLabel" << YAML::Value << rhs.WidthLabel;
+		out << YAML::Key << "Height" << YAML::Value << rhs.Height;
 		out << YAML::Key << "Color" << YAML::Value << rhs.Color;
 		out << YAML::Key << "ColorText" << YAML::Value << rhs.ColorText;
 		out << YAML::Key << "ColorBackground" << YAML::Value << rhs.ColorBackground;
@@ -116,6 +161,7 @@ namespace YAML
 		out << YAML::Key << "Rounding" << YAML::Value << rhs.Rounding;
 		out << YAML::Key << "Border" << YAML::Value << rhs.Border;
 		out << YAML::Key << "Font" << YAML::Value << rhs.Font;
+		out << YAML::Key << "Flag" << YAML::Value << rhs.Flag;
 		out << YAML::EndMap;
 		return out;
 	}

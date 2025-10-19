@@ -3,13 +3,6 @@
 
 namespace NxEn
 {
-	static NxFr::StringId TextInfo = "Info"_Sid;
-	static NxFr::StringId TextWarning = "Warning"_Sid;
-	static NxFr::StringId TextError = "Error"_Sid;
-	static NxFr::StringId TextFatal = "Fatal"_Sid;
-	static NxFr::StringId WidthButton = "WidthButton"_Sid;
-	static NxFr::StringId WidthInpuText = "WidthInpuText"_Sid;
-
 	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
 	static NxEn::SettingVar* SettingConsoleAutoScroll = NxEn::SettingVar::Create("Preferences", "ConsoleAutoScroll", NxEn::Settings::Type::Bool);
@@ -22,10 +15,10 @@ namespace NxEn
 
 		switch (Verbosity)
 		{
-		case NxFr::LoggerVerbosity::Info: Id = TextInfo; break;
-		case NxFr::LoggerVerbosity::Warning: Id = TextWarning; break;
-		case NxFr::LoggerVerbosity::Error: Id = TextError; break;
-		case NxFr::LoggerVerbosity::Fatal: Id = TextFatal; break;
+		case NxFr::LoggerVerbosity::Info: Id = GUI::Style::IdInfo; break;
+		case NxFr::LoggerVerbosity::Warning: Id = GUI::Style::IdWarning; break;
+		case NxFr::LoggerVerbosity::Error: Id = GUI::Style::IdError; break;
+		case NxFr::LoggerVerbosity::Fatal: Id = GUI::Style::IdFatal; break;
 
 		case NxFr::LoggerVerbosity::None:
 		case NxFr::LoggerVerbosity::All:
@@ -37,7 +30,7 @@ namespace NxEn
 	}
 
 	ConsolePanel::ConsolePanel()
-		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128), Scroll(false)
+		: Menu(), Style(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128), Scroll(false)
 	{
 	}
 
@@ -63,6 +56,9 @@ namespace NxEn
 	void ConsolePanel::OnEnable()
 	{
 		Panel::OnEnable();
+
+		Style.Reset();
+		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
@@ -115,19 +111,11 @@ namespace NxEn
 
 			if (ImGui::BeginMenuBar())
 			{
-				ImGui::SetCursorPosX(GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Style::GetVar(WidthInpuText) + GUI::Style::GetVar(WidthButton)), 3, false, true).x);
+				Style.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Style::GetVar(GUI::Style::IdWidthInpuText) + GUI::Style::GetVar(GUI::Style::IdWidthButton)), 3, false, true).x;
+				Style.Width = GUI::Style::GetVar(GUI::Style::IdWidthInpuText);
+				GUI::Drawer<NxFr::String>::Field(Search, "Search", "", &Style);
 
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Search:");
-				{
-					ImGui::SetNextItemWidth(GUI::Style::GetVar(WidthInpuText));
-					if (ImGui::InputText("##Search", Search.Characters(), Search.GetCapacity()))
-					{
-						Search.Validate();
-					}
-				}
-
-				if (ImGui::Button("Clear Logs", { GUI::Style::GetVar(WidthButton), ImGui::GetFrameHeight() }))
+				if (ImGui::Button("Clear Logs", { GUI::Style::GetVar(GUI::Style::IdWidthButton), 0.0f }))
 				{
 					ClearLogs();
 				}
@@ -144,8 +132,7 @@ namespace NxEn
 				Log& Log = Logs[Index];
 				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || NxFr::StringUtility::Contains(Log.Text, Search)))
 				{
-					GUI::Style::Scope Style(Log.Style);
-					ImGui::Text(Log.Text.C());
+					GUI::Drawer<NxFr::String>::Property(Log.Text, "", &GUI::Style::GetStyle(Log.Style));
 				}
 			}
 
@@ -162,19 +149,16 @@ namespace NxEn
 
 		// Command
 		{
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Command:");
-			ImGui::SameLine();
+			Style.Position.x = -1.0f;
+			Style.Width = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Style::GetVar(GUI::Style::IdWidthButton)), 1, false).x;
+			if (GUI::Drawer<NxFr::String>::Field(Command, "Command", "", &Style))
 			{
-				ImGui::SetNextItemWidth(GUI::Utils::Fill(NxFr::Vector2f(GUI::Style::GetVar(WidthButton)), 1, false).x);
-				if (ImGui::InputText("##Command", Command.Characters(), Command.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
-				{
-					ExecuteCommand();
-				}
-				ImGui::SameLine();
+				ExecuteCommand();
 			}
 
-			if (ImGui::Button("Execute", { GUI::Style::GetVar(WidthButton), ImGui::GetFrameHeight() }))
+			ImGui::SameLine();
+
+			if (ImGui::Button("Execute", { GUI::Style::GetVar(GUI::Style::IdWidthButton), 0.0f }))
 			{
 				ExecuteCommand();
 			}

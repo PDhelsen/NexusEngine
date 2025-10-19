@@ -16,6 +16,99 @@ namespace NxEn
 				NxFr::Vector2f Padding = ImGui::GetStyle().FramePadding;
 				return Total - Offset - Spacing * Count - (IncludePadding ? Padding : NxFr::Vector2f::Zero);
 			}
+
+			NxFr::String GenerateId(NxFr::StringView Label, NxFr::StringView Id)
+			{
+				return "##" + (!Id.IsEmpty() ? Id : Label);
+			}
+		}
+
+		namespace Draw
+		{
+			void Label(NxFr::StringView Data, const Style* Visual)
+			{
+				if (Data.IsEmpty())
+				{
+					return;
+				}
+
+				Scope _ = Visual;
+
+				Label(Data);
+
+				if (Visual)
+				{
+					Visual->SetWidthLabel(Data);
+				}
+			}
+
+			void Label(NxFr::StringView Data)
+			{
+				if (Data.IsEmpty())
+				{
+					return;
+				}
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text(Data.C());
+				ImGui::SameLine();
+			}
+
+			void Text(NxFr::StringView Data, const Style* Visual)
+			{
+				Scope _ = Visual;
+
+				Text(Data);
+			}
+
+			void Text(NxFr::StringView Data)
+			{
+				ImGui::Text(Data.C());
+			}
+
+			bool Input(NxFr::String& Data, NxFr::StringView Id, const Style* Visual)
+			{
+				Scope _ = Visual;
+				uint64 Flag = ImGuiInputTextFlags_EnterReturnsTrue;
+
+				if (Visual)
+				{
+					Visual->SetWidth();
+					Flag = Visual->Flag;
+				}
+
+				return Input(Data, Id, Flag);
+			}
+
+			bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag)
+			{
+				bool Result = ImGui::InputText(Id.C(), Data.Characters(), Data.GetCapacity(), Flag);
+				if (Result)
+				{
+					Data.Validate();
+				}
+
+				return Result;
+			}
+
+			bool Button(NxFr::StringView Data, const Style* Visual)
+			{
+				Scope _ = Visual;
+
+				NxFr::Vector2f Size = NxFr::Vector2f::Zero;
+
+				if (Visual)
+				{
+					Size.x = Visual->Width;
+				}
+
+				return Button(Data, Size);
+			}
+
+			bool Button(NxFr::StringView Data, NxFr::Vector2f Size)
+			{
+				return ImGui::Button(Data.C(), Size);
+			}
 		}
 	}
 }

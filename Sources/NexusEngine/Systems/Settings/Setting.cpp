@@ -7,6 +7,32 @@ namespace NxEn
 {
 	static const uint64 TextBuffer = 128;
 	static NxFr::StringId WidthLabel = "WidthLabel"_Sid;
+	static GUI::Style Style;
+
+	namespace GUI
+	{
+		template<>
+		struct Drawer<Settings::Value>
+		{
+			static void Property(const Settings::Value& Data, NxFr::StringView Label = "", Style* Visual = nullptr)
+			{
+				GUI::Drawer<NxFr::String>::Property(Data.Get(), Label, Visual);
+			}
+
+			static bool Field(Settings::Value& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", Style* Visual = nullptr)
+			{
+				NxFr::String Temp = Data.Get();
+
+				bool Result = GUI::Drawer<NxFr::String>::Field(Temp, Label, Id, Visual);
+				if (Result)
+				{
+					Data.Set(Temp);
+				}
+
+				return Result;
+			}
+		};
+	}
 
 	namespace Settings
 	{
@@ -16,6 +42,11 @@ namespace NxEn
 		NxFr::String Key(NxFr::StringView Page, NxFr::StringView Name)
 		{
 			return Page + "." + Name;
+		}
+
+		Value::Value()
+			: SettingType(Type::Float)
+		{
 		}
 
 		Value::Value(Type Type)
@@ -132,6 +163,14 @@ namespace NxEn
 		}
 	}
 
+	void Setting::ResetStyle()
+	{
+		Style.Reset();
+		Style.Width = -1.0f;
+		Style.WidthLabel = -1.0f;
+		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
+	}
+
 	Setting::Setting(NxFr::StringView Page, NxFr::StringView Name, Settings::Mode Mode, Settings::Type Type)
 		: Id(Settings::Key(Page, Name)), Mode(Mode), Type(Type)
 	{
@@ -152,16 +191,7 @@ namespace NxEn
 
 	void SettingVar::OnGui()
 	{
-		NxFr::String ImGuiId = "##" + Id;
-		NxFr::String Text = Get();
-		Text.Grow(TextBuffer);
-
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		if (ImGui::InputText(ImGuiId.C(), Text.Characters(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
-		{
-			Text.Validate();
-			Set(Text);
-		}
+		GUI::Drawer<Settings::Value>::Field(Value, GetName(), Id, &Style);
 	}
 
 	void SettingVar::Deserialize(const YAML::Node& Node)
@@ -194,29 +224,13 @@ namespace NxEn
 
 	void SettingSeq::OnGui()
 	{
-		float Position = ImGui::GetCursorPosX();
-		ImGui::Text("Count: %d", Values.GetCount());
-
-		for (uint64 Index = 0; Index < Values.GetCount(); ++Index)
-		{
-			NxFr::String ImGuiId = "##" + Id + NxFr::StringUtility::ToString(Index);
-			NxFr::String Text = Get(Index);
-			Text.Grow(TextBuffer);
-
-			ImGui::SetCursorPosX(Position);
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (ImGui::InputText(ImGuiId.C(), Text.Characters(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				Text.Validate();
-				Set(Index, Text);
-			}
-		}
+		GUI::Drawer<NxFr::List<Settings::Value>>::Field(Values, GetName(), Id, &Style);
 	}
 
 	void SettingSeq::Deserialize(const YAML::Node& Node)
 	{
 		Values.Clear();
-		Values.Grow(Node.size());
+		Values.Reserve(Node.size());
 
 		for (uint64 Index = 0; Index < Node.size(); ++Index)
 		{
@@ -255,33 +269,13 @@ namespace NxEn
 
 	void SettingMap::OnGui()
 	{
-		float Position = ImGui::GetCursorPosX();
-		ImGui::Text("Count: %d", Values.GetCount());
-
-		for (auto& [Key, Value] : Values)
-		{
-			NxFr::String ImGuiId = "##" + Id + Key;
-			NxFr::String Text = Get(Key);
-			Text.Grow(TextBuffer);
-			
-			ImGui::SetCursorPosX(Position);
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text(Key.C());
-			ImGui::SameLine();
-			ImGui::SetCursorPosX(Position + GUI::Style::GetVar(WidthLabel));
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			if (ImGui::InputText(ImGuiId.C(), Text.Characters(), Text.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				Text.Validate();
-				Set(Key, Text);
-			}
-		}
+		GUI::Drawer<NxFr::Dictionary<NxFr::String, Settings::Value>>::Field(Values, GetName(), Id, &Style);
 	}
 
 	void SettingMap::Deserialize(const YAML::Node& Node)
 	{
 		Values.Clear();
-		Values.Grow(Node.size());
+		Values.Reserve(Node.size());
 
 		for (auto It = Node.begin(); It != Node.end(); ++It)
 		{

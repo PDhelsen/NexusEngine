@@ -31,6 +31,7 @@ namespace NxEn
 
 		struct Value
 		{
+			NEXUS_ENGINE_API Value();
 			NEXUS_ENGINE_API Value(Type SettingType);
 			NEXUS_ENGINE_API Value(const Value& Other);
 			NEXUS_ENGINE_API Value(Value&& Other) noexcept;
@@ -81,6 +82,8 @@ namespace NxEn
 	struct Setting
 	{
 	public:
+		NEXUS_ENGINE_API static void ResetStyle();
+
 		NEXUS_ENGINE_API virtual void OnGui() = 0;
 
 		NEXUS_ENGINE_API virtual void Deserialize(const YAML::Node& Node) = 0;

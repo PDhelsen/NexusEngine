@@ -17,6 +17,7 @@ namespace NxEn
 
 	private:
 		GUI::Menu Menu;
+		GUI::Style Style;
 	};
 }
 

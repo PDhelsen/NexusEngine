@@ -3,10 +3,6 @@
 
 namespace NxEn
 {
-	static NxFr::StringId WidthLabel = "WidthLabel"_Sid;
-	static NxFr::StringId WidthButton = "WidthButton"_Sid;
-	static NxFr::StringId Text_Title = "Text_Title"_Sid;
-
 	static StylesPanel* Panel = GUI::Panel::Create<StylesPanel>();
 
 	NEXUS_OBJECT_IMPLEMENTATION(StylesPanel)
@@ -31,69 +27,47 @@ namespace NxEn
 	void StylesPanel::OnEnable()
 	{
 		Panel::OnEnable();
+		Style.Reset();
+		Style.Width = GUI::Style::GetVar(GUI::Style::IdWidthButton);
+		Style.WidthLabel = -1.0f;
 	}
 
 	void StylesPanel::OnGui(float TimeStep)
 	{
 		Menu.Tick(TimeStep);
 
+		Style.ColorText = NxFr::Colors::White;
+		GUI::Draw::Text("Vars", &GUI::Style::GetStyle(GUI::Style::IdText_Title));
+		for (auto& [Id, DataVar] : GUI::Style::GetVars())
 		{
-			GUI::Style::Scope Style(Text_Title);
-			ImGui::Text("Vars");
-		}
-
-		for (auto& [Id, Var] : GUI::Style::GetVars())
-		{
-			const NxFr::String& Label = Id.GetString();
-
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text(Label.C());
-			ImGui::SameLine();
-
-			ImGui::SetCursorPosX(GUI::Style::GetVar(WidthLabel) + ImGui::GetStyle().ItemSpacing.x);
-			ImGui::Text("%f", Var);
+			GUI::Drawer<float>::Property(DataVar, Id, &Style);
 		}
 
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
+		Style.ColorText = NxFr::Colors::White;
+		GUI::Draw::Text("Colors", &GUI::Style::GetStyle(GUI::Style::IdText_Title));
+		for (auto& [Id, DataColor] : GUI::Style::GetColors())
 		{
-			GUI::Style::Scope Style(Text_Title);
-			ImGui::Text("Colors");
-		}
-
-		for (auto& [Id, Color] : GUI::Style::GetColors())
-		{
-			const NxFr::String& Label = Id.GetString();
-
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text(Label.C());
-			ImGui::SameLine();
-
-			ImGui::SetCursorPosX(GUI::Style::GetVar(WidthLabel) + ImGui::GetStyle().ItemSpacing.x);
-			ImGui::PushStyleColor(ImGuiCol_Button, Color);
-			ImGui::Button((Label + "##" + Id.C()).C(), { GUI::Style::GetVar(WidthButton), 0 });
-			ImGui::PopStyleColor();
+			Style.ColorText = DataColor;
+			GUI::Draw::Label(Id, &Style);
+			Style.Color = DataColor;
+			Style.ColorText = NxFr::Colors::White;
+			GUI::Draw::Button(Id, &Style);
 		}
 
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
+		Style.ColorText = NxFr::Colors::White;
+		GUI::Draw::Text("Styles", &GUI::Style::GetStyle(GUI::Style::IdText_Title));
+		for (auto& [Id, DataStyle] : GUI::Style::GetStyles())
 		{
-			GUI::Style::Scope Style(Text_Title);
-			ImGui::Text("Styles");
-		}
+			GUI::Style Visual = GUI::Style::Copy(&DataStyle);
+			Visual.Width = GUI::Style::GetVar(GUI::Style::IdWidthButton);
+			Visual.WidthLabel = -1.0f;
 
-		for (auto& [Id, Style] : GUI::Style::GetStyles())
-		{
-			GUI::Style::Scope S(Id);
-
-			const NxFr::String& Label = Id.GetString();
-
-			ImGui::AlignTextToFramePadding(); 
-			ImGui::Text(Label.C());
-			ImGui::SameLine();
-
-			ImGui::SetCursorPosX(GUI::Style::GetVar(WidthLabel) + ImGui::GetStyle().ItemSpacing.x);
-			ImGui::Button((Label + "##" + Id.C()).C(), { GUI::Style::GetVar(WidthButton), 0 });
+			GUI::Draw::Label(Id, &Visual);
+			GUI::Draw::Button(Id, &Visual);
 		}
 	}
 }

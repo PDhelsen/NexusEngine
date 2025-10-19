@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	static NxFr::StringId WidthLabel = "WidthLabel"_Sid;
-
 	static SettingsPanel* Panel = GUI::Panel::Create<SettingsPanel>();
 
 	const static GUI::Menu::Item MenuItemSettings = GUI::Menu::Item::Create("File/Settings", NxFr::Delegate<void()>([]()
@@ -45,6 +43,7 @@ namespace NxEn
 	void SettingsPanel::OnEnable()
 	{
 		Panel::OnEnable();
+		Setting::ResetStyle();
 		Settings = Application::GetSystem<SettingsSystem>()->GetAllSettingsSorted();
 	}
 
@@ -52,7 +51,7 @@ namespace NxEn
 	{
 		Menu.Tick(TimeStep);
 
-		ImGui::BeginChild("Pages", { GUI::Style::GetVar(WidthLabel), 0.0f}, true);
+		ImGui::BeginChild("Pages", { GUI::Style::GetVar(GUI::Style::IdWidthLabel), 0.0f}, true);
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
 			NxFr::StringView Label = Settings[Index][0]->GetPage();
@@ -69,13 +68,7 @@ namespace NxEn
 		NxFr::Array<Setting*>& Values = Settings[Page];
 		for (uint64 Index = 0; Index < Values.GetCount(); ++Index)
 		{
-			Setting* Value = Values[Index];
-			NxFr::StringView Name = Value->GetName();
-
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text(Name.C());
-			ImGui::SameLine(GUI::Style::GetVar(WidthLabel));
-			Value->OnGui();
+			Values[Index]->OnGui();
 		}
 		ImGui::EndChild();
 	}

@@ -3,9 +3,6 @@
 
 namespace NxEn
 {
-	static NxFr::StringId ButtonNormal = "Button_Normal"_Sid;
-	static NxFr::StringId ButtonPressed = "Button_Pressed"_Sid;
-	static NxFr::StringId WidthButton = "WidthButton"_Sid;
 	static NxFr::Array<NxFr::StringView> FilterExclude = { NxFr::StatsHeader::TickId.C(), NxFr::StatsHeader::CommentId.C() };
 
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
@@ -13,7 +10,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(StatsPanel)
 
 	StatsPanel::StatsPanel()
-		: Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filters(), Filter()
+		: Style(), Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filters(), Filter()
 	{
 	}
 
@@ -31,6 +28,9 @@ namespace NxEn
 	void StatsPanel::OnEnable()
 	{
 		Panel::OnEnable();
+
+		Style.Reset();
+		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		DebugSystem* Debug = Application::GetSystem<DebugSystem>();
 		Instruments = Debug->GetInstrumentor();
@@ -66,8 +66,8 @@ namespace NxEn
 	void StatsPanel::DrawButtons()
 	{
 		{
-			GUI::Style::Scope Style(!Instruments->IsRecording() ? ButtonNormal : ButtonPressed);
-			if (ImGui::Button("Instruments", { GUI::Style::GetVar(WidthButton) , 0 }))
+			GUI::Scope Style(!Instruments->IsRecording() ? GUI::Style::IdButton_Normal : GUI::Style::IdButton_Pressed);
+			if (ImGui::Button("Instruments", { GUI::Style::GetVar(GUI::Style::IdWidthButton) , 0 }))
 			{
 				if (!Instruments->IsRecording())
 				{
@@ -83,8 +83,8 @@ namespace NxEn
 		ImGui::SameLine();
 
 		{
-			GUI::Style::Scope Style(!Stats->IsRecording() ? ButtonNormal : ButtonPressed);
-			if (ImGui::Button("Stats", { GUI::Style::GetVar(WidthButton) , 0 }))
+			GUI::Scope Style(!Stats->IsRecording() ? GUI::Style::IdButton_Normal : GUI::Style::IdButton_Pressed);
+			if (ImGui::Button("Stats", { GUI::Style::GetVar(GUI::Style::IdWidthButton) , 0 }))
 			{
 				if (!Stats->IsRecording())
 				{
@@ -100,30 +100,33 @@ namespace NxEn
 
 	void StatsPanel::DrawFilter()
 	{
-		ImGui::AlignTextToFramePadding();
-		ImGui::Text("Filter:");
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		ImGui::InputText("##Filter", Filter.Characters(), Filter.GetCapacity());
-		ImGui::Separator();
+		Style.Width = -1.0f;
+		Style.WidthLabel = 0.0f;
 
-		Filter.Validate();
-		Filters = NxFr::StringUtility::SplitAll(Filter, ",");
+		if (GUI::Drawer<NxFr::String>::Field(Filter, "Filter:", "", &Style))
+		{
+			Filters = NxFr::StringUtility::SplitAll(Filter, ",");
+		}
+
+		ImGui::Separator();
 	}
 
-	void StatsPanel::DrawStats(const NxFr::String& Label) const
+	void StatsPanel::DrawStats(const NxFr::String& Label)
 	{
+		Style.Width = 0.0f;
+		Style.WidthLabel = -1.0f;
+
 		NxFr::StringId Id = NxFr::StringId(Label);
 		const NxFr::Stats::Stat* Value = Values[Id];
 
 		switch (Value->GetType())
 		{
-		case NxFr::Stats::StatType::Label: ImGui::Text("%s: %s", Label.C(), Value->GetValue<const NxFr::String&>().C()); break;
-		case NxFr::Stats::StatType::Check: ImGui::Text("%s: %s", Label.C(), Value->GetValue<bool>() ? "true" : "false"); break;
-		case NxFr::Stats::StatType::Integer: ImGui::Text("%s: %d", Label.C(), Value->GetValue<uint64>()); break;
-		case NxFr::Stats::StatType::UnsignedInteger: ImGui::Text("%s: %d", Label.C(), Value->GetValue<uint64>()); break;
-		case NxFr::Stats::StatType::Decimal: ImGui::Text("%s: %f", Label.C(), Value->GetValue<float>()); break;
-		case NxFr::Stats::StatType::DecimalPrecision: ImGui::Text("%s: %f", Label.C(), Value->GetValue <double>()); break;
+		case NxFr::Stats::StatType::Label: GUI::Drawer<NxFr::String>::Property(Value->GetValue<const NxFr::String&>(), Label, &Style); break;
+		case NxFr::Stats::StatType::Check: GUI::Drawer<bool>::Property(Value->GetValue<bool>(), Label, &Style); break;
+		case NxFr::Stats::StatType::Integer: GUI::Drawer<int64>::Property(Value->GetValue<int64>(), Label, &Style); break;
+		case NxFr::Stats::StatType::UnsignedInteger: GUI::Drawer<uint64>::Property(Value->GetValue<uint64>(), Label, &Style); break;
+		case NxFr::Stats::StatType::Decimal: GUI::Drawer<float>::Property(Value->GetValue<float>(), Label, &Style); break;
+		case NxFr::Stats::StatType::DecimalPrecision: GUI::Drawer<double>::Property(Value->GetValue<double>(), Label, &Style); break;
 		}
 	}
 
