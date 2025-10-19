@@ -81,7 +81,7 @@ namespace NxEn
 
 		NxFr::Array<NxFr::StringId> Channels = Logger->GetChannels();
 		Channels.Sort([](const NxFr::StringId& A, const NxFr::StringId& B) { return A.C() <= B.C(); });
-		FlagsChannels.Grow(Channels.GetCount());
+		FlagsChannels.Reserve(Channels.GetCount());
 		for (uint64 Index = 0; Index < Channels.GetCount(); ++Index)
 		{
 			uint64 Priority = FlagsVerbosity.GetCount() + FlagsChannels.GetCount();
