@@ -1,5 +1,7 @@
 #pragma once
 
+#include "NexusEngine/Systems/GUI/GUI.h"
+
 namespace NxEn
 {
 	class InputTextPopup : public GUI::Popup
@@ -14,10 +16,12 @@ namespace NxEn
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
+		NEXUS_ENGINE_API void OnEnable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
 	private:
 		NxFr::String Input;
 		NxFr::Delegate<void(NxFr::StringView)> Callback;
+		GUI::Style Style;
 	};
 }

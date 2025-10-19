@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "InputTextPopup.h"
+#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEn
 {
@@ -29,16 +29,26 @@ namespace NxEn
 	void InputTextPopup::OnInitialize()
 	{
 		Popup::OnInitialize();
+
 		SetTitle("Input Text");
+		SetMessage("Enter text:");
+		AddButton("Cancel");
+	}
+
+	void InputTextPopup::OnEnable()
+	{
+		Popup::OnEnable();
+
+		Style.Reset();
+		Style.Width = -1.0f;
+		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 	}
 
 	void InputTextPopup::OnGui(float TimeStep)
 	{
-		if (ImGui::InputText("##", Input.Characters(), Input.GetCapacity(), ImGuiInputTextFlags_EnterReturnsTrue))
+		if (GUI::Draw::Input(Input, "##", &Style))
 		{
-			Input.Validate();
 			Callback(Input);
-
 			Hide();
 		}
 	}

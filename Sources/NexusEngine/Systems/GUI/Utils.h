@@ -11,6 +11,8 @@ namespace NxEn
 		namespace Utils
 		{
 			NEXUS_ENGINE_API NxFr::Vector2f Fill(NxFr::Vector2f Offset = NxFr::Vector2f::Zero, float Count = 0.0f, bool IncludePadding = true, bool Window = false);
+			NEXUS_ENGINE_API NxFr::Vector2f Center(float WidgetSize, float Count = 0.0f, bool IncludePadding = true);
+			NEXUS_ENGINE_API float Center(NxFr::StringView Text);
 			NEXUS_ENGINE_API NxFr::String GenerateId(NxFr::StringView Label = "", NxFr::StringView Id = "");
 		}
 

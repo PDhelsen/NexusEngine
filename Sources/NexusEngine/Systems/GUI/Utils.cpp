@@ -17,6 +17,21 @@ namespace NxEn
 				return Total - Offset - Spacing * Count - (IncludePadding ? Padding : NxFr::Vector2f::Zero);
 			}
 
+			NxFr::Vector2f Center(float WidgetSize, float Count, bool IncludePadding)
+			{
+				NxFr::Vector2f WindowWidth = ImGui::GetWindowSize();
+				NxFr::Vector2f Spacing = ImGui::GetStyle().ItemSpacing;
+				NxFr::Vector2f Padding = ImGui::GetStyle().FramePadding;
+				return (WindowWidth - WidgetSize - Spacing * Count - (IncludePadding ? Padding : NxFr::Vector2f::Zero)) * 0.5f;
+			}
+
+			float Center(NxFr::StringView Text)
+			{
+				float WindowWidth = ImGui::GetWindowSize().x;
+				float TextWidth = ImGui::CalcTextSize(Text.C()).x;
+				return (WindowWidth - TextWidth) * 0.5f;
+			}
+
 			NxFr::String GenerateId(NxFr::StringView Label, NxFr::StringView Id)
 			{
 				return "##" + (!Id.IsEmpty() ? Id : Label);
