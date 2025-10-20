@@ -138,8 +138,8 @@ Nexus:
     Text_Normal:
       StylePreset: 0
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0, 0, 0, 0]
       ColorText: [1, 1, 1, 1]
@@ -156,8 +156,8 @@ Nexus:
     Button_Pressed:
       StylePreset: 1
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0.06, 0.53, 0.98, 1]
       ColorText: [1, 1, 1, 1]
@@ -174,8 +174,8 @@ Nexus:
     Warning:
       StylePreset: 1
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0.45, 0.35, 0.05, 1]
       ColorText: [0.95, 0.75, 0.05, 1]
@@ -192,8 +192,8 @@ Nexus:
     Info:
       StylePreset: 1
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0.45, 0.45, 0.45, 1]
       ColorText: [0.95, 0.95, 0.95, 1]
@@ -210,8 +210,8 @@ Nexus:
     Button_Normal:
       StylePreset: 1
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0.26, 0.59, 0.98, 0.4]
       ColorText: [1, 1, 1, 1]
@@ -228,8 +228,8 @@ Nexus:
     Text_Title:
       StylePreset: 0
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0, 0, 0, 0]
       ColorText: [1, 1, 1, 1]
@@ -246,8 +246,8 @@ Nexus:
     Fatal:
       StylePreset: 1
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0.42, 0.05, 0.32, 1]
       ColorText: [0.85, 0.05, 0.65, 1]
@@ -264,8 +264,8 @@ Nexus:
     Error:
       StylePreset: 1
       Position: [-1.0, -1.0]
-      Width: 0
-      WidthLabel: 0
+      Width: -1.0
+      WidthLabel: -1.0
       Height: 0
       Color: [0.45, 0.05, 0.05, 1]
       ColorText: [0.9, 0.1, 0.1, 1]
