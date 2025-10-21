@@ -20,7 +20,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
 	private:
-		Project* Infos;
 		GUI::Style Style;
+
+		Project* Infos;
 	};
 }
