@@ -41,7 +41,7 @@ namespace NxEn
 				Draw::Text(Buffer, &DrawerStyle);
 			}
 
-			static bool Field(T& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const  Style* Visual = nullptr)
+			static bool Field(T& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String Buffer = NxFr::StringUtility::ToString<T>(Data);
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
@@ -62,7 +62,7 @@ namespace NxEn
 		template<>
 		struct Drawer<NxFr::String>
 		{
-			static void Property(const NxFr::String& Data, NxFr::StringView Label = "", const  Style* Visual = nullptr)
+			static void Property(const NxFr::String& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
@@ -170,7 +170,7 @@ namespace NxEn
 				}
 			}
 
-			static bool Field(NxFr::Array<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", Style* Visual = nullptr)
+			static bool Field(NxFr::Array<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 				float ButtonSize = Style::GetVar(Style::IdWidthButton);
@@ -228,7 +228,7 @@ namespace NxEn
 				}
 			}
 
-			static bool Field(NxFr::List<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", Style* Visual = nullptr)
+			static bool Field(NxFr::List<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 				float ButtonSize = Style::GetVar(Style::IdWidthButton);
@@ -286,7 +286,7 @@ namespace NxEn
 				}
 			}
 
-			static bool Field(NxFr::Set<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", Style* Visual = nullptr)
+			static bool Field(NxFr::Set<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 				float ButtonSize = Style::GetVar(Style::IdWidthButton);
@@ -347,7 +347,7 @@ namespace NxEn
 				}
 			}
 
-			static bool Field(NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", Style* Visual = nullptr)
+			static bool Field(NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 				float ButtonSize = Style::GetVar(Style::IdWidthButton);
