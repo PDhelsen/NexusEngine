@@ -13,7 +13,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(ProjectPanel)
 
 	ProjectPanel::ProjectPanel()
-		: Infos(nullptr), Style()
+		: Style(), Infos(nullptr)
 	{
 	}
 
