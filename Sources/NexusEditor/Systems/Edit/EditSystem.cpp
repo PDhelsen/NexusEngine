@@ -1,8 +1,10 @@
 #include "NexusEditor/Systems/Edit/EditSystem.h"
 
+#include "NexusEngine/Systems/Settings/SettingTemplate.h"
+
 namespace NxEd
 {
-	static NxEn::SettingVar* SettingHistoryCapacity = NxEn::SettingVar::Create("Preferences", "EditHistoryCapacity", NxEn::Settings::Type::Float);
+	static NxEn::SettingVar<uint64>* SettingHistoryCapacity = NxEn::SettingVar<uint64>::Create("Preferences", "EditHistoryCapacity", 64);
 
 	const static NxEn::Command CmdEditUndo = NxEn::Command::Create("Edit.Undo"_Sid, "Rename selected obejct", NxFr::Delegate<void()>([]()
 	{
@@ -359,7 +361,7 @@ namespace NxEd
 	void EditSystem::RecordUndo(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		const Edit::Context& Context = GetCtx(Ctx);
-		if (HistoryUndo.GetCount() >= SettingHistoryCapacity->As<float>())
+		if (HistoryUndo.GetCount() >= SettingHistoryCapacity->GetValue())
 		{
 			HistoryUndo.RemoveFront();
 		}
@@ -370,7 +372,7 @@ namespace NxEd
 	void EditSystem::RecordRedo(NxEn::Object* Target, NxFr::StringId Ctx)
 	{
 		const Edit::Context& Context = GetCtx(Ctx);
-		if (HistoryRedo.GetCount() >= SettingHistoryCapacity->As<float>())
+		if (HistoryRedo.GetCount() >= SettingHistoryCapacity->GetValue())
 		{
 			HistoryRedo.RemoveFront();
 		}

@@ -13,7 +13,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(SettingsPanel)
 
 	SettingsPanel::SettingsPanel()
-		: Settings(), Menu(), Page(0)
+		: Menu(), Style(), Settings(), Page(0)
 	{
 	}
 
@@ -43,7 +43,12 @@ namespace NxEn
 	void SettingsPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Setting::ResetStyle();
+
+		Style.Reset();
+		Style.Width = -1.0f;
+		Style.WidthLabel = -1.0f;
+		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
+
 		Settings = Application::GetSystem<SettingsSystem>()->GetAllSettingsSorted();
 	}
 
@@ -65,10 +70,9 @@ namespace NxEn
 		ImGui::SameLine();
 
 		ImGui::BeginChild("Settings", { 0.0f, 0.0f }, false);
-		NxFr::Array<Setting*>& Values = Settings[Page];
-		for (uint64 Index = 0; Index < Values.GetCount(); ++Index)
+		for (uint64 Index = 0; Index < Settings[Page].GetCount(); ++Index)
 		{
-			Values[Index]->OnGui();
+			Settings[Page][Index]->OnGui(&Style);
 		}
 		ImGui::EndChild();
 	}

@@ -1,27 +1,11 @@
-LoggerChannel:
-  Default: true
-  System: true
-  Verbose: true
-  Command: true
-  Application: true
-LoggerVerbosity:
-  - true
-  - true
-  - true
-  - true
-MemoryAllocatorsSize:
-  - 0
-  - 1048576
-  - 1048576
-  - 1048576
-  - 1048576
-  - 1048576
-  - 1048576
+LoggerChannel: {Application: true, Command: true, Default: true, System: true, Verbose: true}
+LoggerVerbosity: [true, true, true, true]
+MemoryAllocatorsSize: [0, 1048576, 1048576, 1048576, 1048576, 1048576, 1048576]
 MemoryDefragmentBudget: 1
 MemoryHandlesPerManager: 1024
 MemorySmallParamsLargest: 256
 MemorySmallParamsSmallest: 8
 WindowMode: 1
 WindowMonitor: 1
-WindowResolution: [1920, 1080, 0, 0]
+WindowResolution: [1920, 1080]
 WindowVSync: true

@@ -1,11 +1,13 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Debug/ConsolePanel.h"
 
+#include "NexusEngine/Systems/Settings/SettingTemplate.h"
+
 namespace NxEn
 {
 	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
-	static NxEn::SettingVar* SettingConsoleAutoScroll = NxEn::SettingVar::Create("Preferences", "ConsoleAutoScroll", NxEn::Settings::Type::Bool);
+	static SettingVar<bool>* SettingConsoleAutoScroll = SettingVar<bool>::Create("Preferences", "ConsoleAutoScroll", true);
 
 	NEXUS_OBJECT_IMPLEMENTATION(ConsolePanel)
 
@@ -88,7 +90,7 @@ namespace NxEn
 			Menu.AddMenuToggle(Path, &FlagsChannels[Id], nullptr, "", Priority);
 		}
 
-		Menu.AddMenuToggle("Settings/AutoScroll", &SettingConsoleAutoScroll->As<bool>());
+		Menu.AddMenuToggle("Settings/AutoScroll", &SettingConsoleAutoScroll->GetValue());
 	}
 
 	void ConsolePanel::OnDisable()
@@ -136,7 +138,7 @@ namespace NxEn
 				}
 			}
 
-			if (SettingConsoleAutoScroll->As<bool>() && Scroll)
+			if (SettingConsoleAutoScroll->GetValue() && Scroll)
 			{
 				ImGui::SetScrollHereY(1.0f);
 				Scroll = false;

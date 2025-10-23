@@ -175,12 +175,14 @@ project (App)
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. LinkFramework
+		NexusFramework .. "Builds/NexusFramework" .. LinkFramework,
+		NexusFramework .. "Builds/yaml-cpp" .. LinkFramework
 	}
 
 	links
 	{
 		Framework,
+		Yaml,
 		Engine,
 		ImGui
 	}
@@ -221,12 +223,14 @@ project (Editor)
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. LinkFramework
+		NexusFramework .. "Builds/NexusFramework" .. LinkFramework,
+		NexusFramework .. "Builds/yaml-cpp" .. LinkFramework
 	}
 
 	links
 	{
 		Framework,
+		Yaml,
 		Engine,
 		App,
 		ImGui

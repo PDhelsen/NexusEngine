@@ -1,14 +1,16 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/HID/WindowSystem.h"
 
+#include "NexusEngine/Systems/Settings/SettingTemplate.h"
+
 #include "NexusEngine/External/Glfw.h"
 
 namespace NxEn
 {
-	static SettingVar* SettingMode = SettingVar::Create("Settings", "WindowMode", Settings::Type::Float);
-	static SettingVar* SettingMonitor = SettingVar::Create("Settings", "WindowMonitor", Settings::Type::Float);
-	static SettingVar* SettingResolution = SettingVar::Create("Settings", "WindowResolution", Settings::Type::Vector);
-	static SettingVar* SettingVSync = SettingVar::Create("Settings", "WindowVSync", Settings::Type::Bool);
+	static SettingVar<float>* SettingMode = SettingVar<float>::Create("Settings", "WindowMode", 1);
+	static SettingVar<float>* SettingMonitor = SettingVar<float>::Create("Settings", "WindowMonitor", 1);
+	static SettingVar<NxFr::Vector2i>* SettingResolution = SettingVar<NxFr::Vector2i>::Create("Settings", "WindowResolution", NxFr::Vector2i(1920, 1080));
+	static SettingVar<bool>* SettingVSync = SettingVar<bool>::Create("Settings", "WindowVSync", true);
 
 	NEXUS_OBJECT_IMPLEMENTATION(WindowSystem)
 
@@ -214,8 +216,8 @@ namespace NxEn
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
 #if !NEXUS_EDITOR
-		SetWindowMode((Window::Mode)((uint8)SettingMode->As<float>()));
-		SetWindowMonitor((uint8)SettingMonitor->As<float>());
+		SetWindowMode((Window::Mode)((uint8)SettingMode->GetValue()));
+		SetWindowMonitor((uint8)SettingMonitor->GetValue());
 #endif
 
 		Glfw::Initialize();
@@ -307,7 +309,7 @@ namespace NxEn
 
 	void WindowSystem::ApplySettings()
 	{
-		SetWindowResolution(SettingResolution->As<NxFr::Vector4f>());
-		SetWindowVSync(SettingVSync->As<bool>());
+		SetWindowResolution(SettingResolution->GetValue());
+		SetWindowVSync(SettingVSync->GetValue());
 	}
 }

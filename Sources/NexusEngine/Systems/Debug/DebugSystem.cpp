@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Debug/DebugSystem.h"
 
+#include "NexusEngine/Systems/Settings/SettingTemplate.h"
+
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusFramework/Core/NexusFrameworkGlobals.h"
 
@@ -21,8 +23,8 @@ namespace NxEn
 	bool FlushOnLog = false;
 #endif
 
-	static SettingSeq* SettingVerbosity = SettingSeq::Create("Settings", "LoggerVerbosity", Settings::Type::Bool);
-	static SettingMap* SettingChannels = SettingMap::Create("Settings", "LoggerChannel", Settings::Type::Bool);
+	static SettingSeq<bool>* SettingVerbosity = SettingSeq<bool>::Create("Settings", "LoggerVerbosity", { true, true, true, true });
+	static SettingMap<bool>* SettingChannels = SettingMap<bool>::Create("Settings", "LoggerChannel", { {"Default", true}, { "Verbose", true }});
 
 	const static Command CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
 	{
@@ -147,16 +149,16 @@ namespace NxEn
 
 	void DebugSystem::ApplySettings()
 	{
-		for (uint64 Index = 0; Index < SettingVerbosity->GetCount(); ++Index)
+		auto& Verbosity = SettingVerbosity->GetValue();
+		for (uint64 Index = 0; Index < Verbosity.GetCount(); ++Index)
 		{
-			Logger->SetVerbosity((NxFr::LoggerVerbosity)(1 << Index), SettingVerbosity->As<bool>(Index));
+			Logger->SetVerbosity((NxFr::LoggerVerbosity)(1 << Index), Verbosity[Index]);
 		}
 
-		auto ChannelsCollection = SettingChannels->GetCollection();
-		for (auto& It = ChannelsCollection.Reset(); It != ChannelsCollection.End(); ++It)
+		auto& Channels = SettingChannels->GetValue();
+		for (auto It = Channels.Begin(); It != Channels.End(); ++It)
 		{
-			auto& Kv = It.Get();
-			Logger->SetChannel(NxFr::StringId(Kv.Key), Kv.Value.As<bool>());
+			Logger->SetChannel(NxFr::StringId(It.Get().Key), It.Get().Value);
 		}
 	}
 }

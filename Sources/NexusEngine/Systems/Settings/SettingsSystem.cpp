@@ -61,16 +61,16 @@ namespace NxEn
 		NxFr::Directory Directory(Path);
 		NxFr::List<NxFr::String> Files = Directory.GetFiles();
 
-		auto Pages = GetAllSettings();
-		for (auto& File : Files)
+		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
+		for (NxFr::String& File : Files)
 		{
-			NxFr::StringView Page = NxFr::Path::GetFileName(File);
-			if (!Pages.ContainsKey(Page))
+			NxFr::StringView PageName = NxFr::Path::GetFileName(File);
+			if (!Settings.ContainsKey(PageName))
 			{
 				continue;
 			}
 
-			auto& Settings = Pages[Page];
+			NxFr::Dictionary<NxFr::StringView, Setting*>& Page = Settings[PageName];
 
 			YAML::Node Root = NxFr::Yaml::DeserializeFile(File);
 			for (auto It = Root.begin(); It != Root.end(); ++It)
@@ -78,11 +78,11 @@ namespace NxEn
 				YAML::Node& Key = It->first;
 				YAML::Node& Value = It->second;
 
-				auto Setting = Key.as<NxFr::String>();
-				if (Settings.ContainsKey(Setting))
+				NxFr::String SettingName = Key.as<NxFr::String>();
+				if (Page.ContainsKey(SettingName))
 				{
-					auto* Instance = Settings[Setting];
-					Instance->Deserialize(Value);
+					Setting* Instance = Page[SettingName];
+					Instance->OnDeserialize(Value);
 				}
 			}
 		}
@@ -93,23 +93,24 @@ namespace NxEn
 	void SettingsSystem::SaveSettings() const
 	{
 		NxFr::Path Path = Project::GetSavedConfigPath(Folder, "", "", "");
-		auto Settings = GetAllSettingsSorted();
+		NxFr::Array<NxFr::Array<Setting*>> Settings = GetAllSettingsSorted();
 
-		for (auto& Page : Settings)
+		for (NxFr::Array<Setting*>& Page : Settings)
 		{
-			YAML::Emitter Data;
+			YAML::Emitter Root;
 
-			Data << YAML::BeginMap;
-			for (auto& Setting : Page)
+			Root << YAML::BeginMap;
+			for (Setting* Instance: Page)
 			{
-				Data << YAML::Key;
-				Data << Setting->GetName();
-				Data << YAML::Value;
-				Setting->Serialize(Data);
+				Root << YAML::Key;
+				Root << Instance->GetName();
+				Root << YAML::Value;
+				Instance->OnSerialize(Root);
 			}
-			Data << YAML::EndMap;
+			Root << YAML::EndMap;
 
-			NxFr::Yaml::SerializeFile(Data, Path + (Page[0]->GetPage().C(true) + Extension));
+			NxFr::StringView PageName = Page[0]->GetPage();
+			NxFr::Yaml::SerializeFile(Root, Path + (PageName + Extension));
 		}
 
 		NEXUS_LOG(Info, System, "Settings saved to : %s", Path.C());
@@ -142,25 +143,32 @@ namespace NxEn
 
 	NxFr::Array<NxFr::Array<Setting*>> SettingsSystem::GetAllSettingsSorted() const
 	{
-		auto Settings = GetAllSettings();
+		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
+		NxFr::Array<NxFr::Array<Setting*>> Result = NxFr::Array<NxFr::Array<Setting*>>(Settings.GetCount());
 
-		uint64 IndexPage = 0;
-		NxFr::Array<NxFr::Array<Setting*>> Sorted = NxFr::Array<NxFr::Array<Setting*>>(Settings.GetCount());
-		for (auto [Page, Instances] : Settings)
+		uint64 PageIndex = 0;
+		for (auto [PageName, Page] : Settings)
 		{
-			uint64 IndexName = 0;
-			auto& Array = Sorted[IndexPage++] = NxFr::Array<Setting*>(Instances.GetCount());
-			for (auto [Name, Instance] : Instances)
+			Result[PageIndex] = NxFr::Array<Setting*>(Page.GetCount());
+
+			uint64 InstanceIndex = 0;
+			for (auto [InstanceName, Instance] : Page)
 			{
-				Array[IndexName++] = Instance;
+				Result[PageIndex][InstanceIndex] = Instance;
+
+				InstanceIndex++;
 			}
 
-			Array.Sort([](Setting* A, Setting* B) { return A->GetName() <= B->GetName(); });
+			PageIndex++;
 		}
 
-		Sorted.Sort([](const NxFr::Array<Setting*>& A, const NxFr::Array<Setting*>& B) { return A[0]->GetPage() <= B[0]->GetPage(); });
+		Result.Sort([](const NxFr::Array<Setting*>& A, const NxFr::Array<Setting*>& B) { return A[0]->GetPage() <= B[0]->GetPage(); });
+		for (auto& Page : Result)
+		{
+			Page.Sort([](Setting* A, Setting* B) { return A->GetName() <= B->GetName(); });
+		}
 
-		return Sorted;
+		return Result;
 	}
 
 	void SettingsSystem::OnInitialize()
