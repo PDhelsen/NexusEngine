@@ -158,7 +158,15 @@ namespace NxEn
 		auto& Channels = SettingChannels->GetValue();
 		for (auto It = Channels.Begin(); It != Channels.End(); ++It)
 		{
-			Logger->SetChannel(NxFr::StringId(It.Get().Key), It.Get().Value);
+			NxFr::StringId Id = NxFr::StringId(It.Get().Key);
+			if (Logger->HasChannel(Id))
+			{
+				Logger->SetChannel(Id, It.Get().Value);
+			}
+			else
+			{
+				Logger->AddChannel(Id, It.Get().Value);
+			}
 		}
 	}
 }

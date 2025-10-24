@@ -180,9 +180,6 @@ namespace NxEn
 	void CommandsSystem::OnInitialize()
 	{
 		System::OnInitialize();
-
-		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
-		Logger->AddChannel(NxFr::LoggerChannel::Command, true);
 	}
 
 	void CommandsSystem::OnTick(float TimeStep)
