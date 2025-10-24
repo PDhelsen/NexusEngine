@@ -32,9 +32,9 @@ namespace NxEn
 			Data = Node.as<D>();
 		}
 
-		void OnSerialize(YAML::Emitter& Node) const override
+		void OnSerialize(YAML::Node& Node) const override
 		{
-			Node << Data;
+			Node[GetName()] = Data;
 		}
 
 		void Set(NxFr::StringView Value) override
@@ -96,9 +96,9 @@ namespace NxEn
 			Data = Node.as<D>();
 		}
 
-		void OnSerialize(YAML::Emitter& Node) const override
+		void OnSerialize(YAML::Node& Node) const override
 		{
-			Node << Data;
+			Node[GetName()] = Data;
 		}
 
 		void Set(uint64 Index, NxFr::StringView Value) override
@@ -160,9 +160,9 @@ namespace NxEn
 			Data = Node.as<D>();
 		}
 
-		void OnSerialize(YAML::Emitter& Node) const override
+		void OnSerialize(YAML::Node& Node) const override
 		{
-			Node << Data;
+			Node[GetName()] = Data;
 		}
 
 		void Set(NxFr::StringView Key, NxFr::StringView Value) override

@@ -21,7 +21,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API virtual void OnGui(const GUI::Style* Visual = nullptr) = 0;
 		NEXUS_ENGINE_API virtual void OnDeserialize(const YAML::Node & Node) = 0;
-		NEXUS_ENGINE_API virtual void OnSerialize(YAML::Emitter & Node) const = 0;
+		NEXUS_ENGINE_API virtual void OnSerialize(YAML::Node& Node) const = 0;
 
 		NEXUS_ENGINE_API virtual void Set(NxFr::StringView Value);
 		NEXUS_ENGINE_API virtual void Set(uint64 Index, NxFr::StringView Value);

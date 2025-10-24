@@ -53,35 +53,26 @@ namespace NxEn
 	void SettingsSystem::LoadSettings() const
 	{
 		NxFr::Path Path = Project::GetSavedConfigPath(Folder, "", "", "");
-		if (!Path.Exist())
-		{
-			return;
-		}
-
-		NxFr::Directory Directory(Path);
-		NxFr::List<NxFr::String> Files = Directory.GetFiles();
-
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
-		for (NxFr::String& File : Files)
+
+		for (auto& [Page, Instances] : Settings)
 		{
-			NxFr::StringView PageName = NxFr::Path::GetFileName(File);
-			if (!Settings.ContainsKey(PageName))
+			NxFr::Path PagePath = Path + (Page + Extension);
+			if (!PagePath.Exist())
 			{
 				continue;
 			}
 
-			NxFr::Dictionary<NxFr::StringView, Setting*>& Page = Settings[PageName];
-
-			YAML::Node Root = NxFr::Yaml::DeserializeFile(File);
+			YAML::Node Root = NxFr::Yaml::DeserializeFile(PagePath);
 			for (auto It = Root.begin(); It != Root.end(); ++It)
 			{
 				YAML::Node& Key = It->first;
 				YAML::Node& Value = It->second;
 
 				NxFr::String SettingName = Key.as<NxFr::String>();
-				if (Page.ContainsKey(SettingName))
+				if (Instances.ContainsKey(SettingName))
 				{
-					Setting* Instance = Page[SettingName];
+					Setting* Instance = Instances[SettingName];
 					Instance->OnDeserialize(Value);
 				}
 			}
@@ -97,20 +88,15 @@ namespace NxEn
 
 		for (NxFr::Array<Setting*>& Page : Settings)
 		{
-			YAML::Emitter Root;
+			NxFr::Path PagePath = Path + (Page[0]->GetPage() + Extension);
+			YAML::Node Root = NxFr::Yaml::DeserializeFile(PagePath);
 
-			Root << YAML::BeginMap;
 			for (Setting* Instance: Page)
 			{
-				Root << YAML::Key;
-				Root << Instance->GetName();
-				Root << YAML::Value;
 				Instance->OnSerialize(Root);
 			}
-			Root << YAML::EndMap;
 
-			NxFr::StringView PageName = Page[0]->GetPage();
-			NxFr::Yaml::SerializeFile(Root, Path + (PageName + Extension));
+			NxFr::Yaml::SerializeFile(Root, PagePath);
 		}
 
 		NEXUS_LOG(Info, System, "Settings saved to : %s", Path.C());
