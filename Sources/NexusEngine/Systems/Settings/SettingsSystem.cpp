@@ -89,7 +89,7 @@ namespace NxEn
 		for (NxFr::Array<Setting*>& Page : Settings)
 		{
 			NxFr::Path PagePath = Path + (Page[0]->GetPage() + Extension);
-			YAML::Node Root = NxFr::Yaml::DeserializeFile(PagePath);
+			YAML::Node Root = PagePath.Exist() ? NxFr::Yaml::DeserializeFile(PagePath) : YAML::Node();
 
 			for (Setting* Instance: Page)
 			{

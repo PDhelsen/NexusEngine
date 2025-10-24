@@ -7,7 +7,7 @@ namespace NxEn
 {
 	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
-	static SettingVar<bool>* SettingConsoleAutoScroll = SettingVar<bool>::Create("Preferences", "ConsoleAutoScroll", true);
+	static SettingVar<bool>* SettingConsoleAutoScroll = SettingVar<bool>::Create("Settings", "ConsoleAutoScroll", true);
 
 	NEXUS_OBJECT_IMPLEMENTATION(ConsolePanel)
 

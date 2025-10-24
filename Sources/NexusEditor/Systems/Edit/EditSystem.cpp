@@ -4,7 +4,7 @@
 
 namespace NxEd
 {
-	static NxEn::SettingVar<uint64>* SettingHistoryCapacity = NxEn::SettingVar<uint64>::Create("Preferences", "EditHistoryCapacity", 64);
+	static NxEn::SettingVar<uint64>* SettingHistoryCapacity = NxEn::SettingVar<uint64>::Create("Editor", "EditHistoryCapacity", 64);
 
 	const static NxEn::Command CmdEditUndo = NxEn::Command::Create("Edit.Undo"_Sid, "Rename selected obejct", NxFr::Delegate<void()>([]()
 	{
