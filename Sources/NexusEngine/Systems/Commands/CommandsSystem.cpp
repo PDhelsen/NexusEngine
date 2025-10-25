@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Commands/CommandsSystem.h"
 
+#include "NexusFramework/Core/NexusFrameworkPaths.h"
+
 namespace NxFr
 {
 	namespace LoggerChannel
@@ -24,6 +26,11 @@ namespace NxEn
 	const static Command CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Help();
+	}));
+
+	const static Command CmdFile = Command::Create("Commands.File"_Sid, "Run all commands in the file", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		Application::GetSystem<CommandsSystem>()->File(Path);
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(CommandsSystem)
@@ -166,6 +173,25 @@ namespace NxEn
 		}
 		
 		Current = nullptr;
+	}
+
+	void CommandsSystem::File(NxFr::Path Path)
+	{
+		Path = Application::GetInstance()->GetProject().GetRootPath() + Path;
+		if (!Path.IsValid() || !Path.Exist())
+		{
+			return;
+		}
+
+		NxFr::TextStream File(Path);
+		File.Open(NxFr::File::Mode::Read);
+
+		while (!File.IsAtTheEnd())
+		{
+			Run(File.Read());
+		}
+
+		File.Close();
 	}
 
 	void CommandsSystem::Help()
