@@ -11,7 +11,7 @@ namespace NxEn
 			None = 0,
 			Ignore = 1 << 0,
 
-			Control = 1 << 1,
+			Ctrl = 1 << 1,
 			Shift = 1 << 2,
 			Alt = 1 << 3,
 		};
@@ -175,6 +175,7 @@ namespace NxEn
 
 NEXUS_FLAG(NxEn::Input::Modifier, uint8);
 
+NEXUS_FLAG_STRING(NxEn::Input::Modifier	, 4										, "Ignore", "Ctrl", "Shift", "Alt");
 NEXUS_ENUM_STRING(NxEn::Input::State	, (uint64)NxEn::Input::State::COUNT		, "Up", "Pressed", "Down", "Released");
 NEXUS_ENUM_STRING(NxEn::Input::Mode		, (uint64)NxEn::Input::Mode::COUNT		, "Button", "Axis", "Mouse");
 NEXUS_ENUM_STRING(NxEn::Input::Axis		, (uint64)NxEn::Input::Axis::COUNT		, "MouseX", "MouseY", "ScrollX", "ScrollY");
@@ -298,18 +299,24 @@ namespace NxEn
 	{
 		union Binding
 		{
-			NEXUS_ENGINE_API Binding(Button ButtonInput, State ButtonState);
-			NEXUS_ENGINE_API Binding(Axis InputAxis);
-			NEXUS_ENGINE_API Binding(NxFr::Rectangle InputMouse);
-			NEXUS_ENGINE_API ~Binding();
-
 			struct BindingButton
 			{
 				NEXUS_ENGINE_API BindingButton(Button ButtonInput, State ButtonState);
 
 				Button ButtonInput;
 				State ButtonState;
-			} InputButton;
+			};
+
+			NEXUS_ENGINE_API Binding(Button ButtonInput, State ButtonState);
+			NEXUS_ENGINE_API Binding(Axis InputAxis);
+			NEXUS_ENGINE_API Binding(NxFr::Rectangle InputMouse);
+			NEXUS_ENGINE_API ~Binding();
+
+			NEXUS_ENGINE_API Binding& operator=(BindingButton Other);
+			NEXUS_ENGINE_API Binding& operator=(Axis Other);
+			NEXUS_ENGINE_API Binding& operator=(NxFr::Rectangle Other);
+
+			BindingButton InputButton;
 			Axis InputAxis;
 			NxFr::Rectangle InputMouse;
 		};
@@ -320,7 +327,10 @@ namespace NxEn
 			NEXUS_ENGINE_API Trigger(Button ButtonInput, State ButtonTarget, Modifier Modifiers = Modifier::Ignore);
 			NEXUS_ENGINE_API Trigger(Axis AxisInput, Modifier Modifiers = Modifier::Ignore);
 			NEXUS_ENGINE_API Trigger(NxFr::Rectangle MouseInput, Modifier Modifiers = Modifier::Ignore);
+			NEXUS_ENGINE_API Trigger(const Trigger& Other);
 			NEXUS_ENGINE_API ~Trigger();
+
+			NEXUS_ENGINE_API Trigger& operator=(const Trigger& Other);
 
 			NEXUS_ENGINE_API Mode GetMode() const;
 			NEXUS_ENGINE_API Modifier GetModifiers() const;
@@ -344,7 +354,10 @@ namespace NxEn
 			NEXUS_ENGINE_API Action(Button ButtonInput, State ButtonTarget, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
 			NEXUS_ENGINE_API Action(Axis AxisInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
 			NEXUS_ENGINE_API Action(NxFr::Rectangle MouseInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
+			NEXUS_ENGINE_API Action(const Action& Other);
 			NEXUS_ENGINE_API ~Action();
+
+			NEXUS_ENGINE_API Action& operator=(const Action& Other);
 
 			NEXUS_ENGINE_API const Trigger& GetTrigger() const;
 			NEXUS_ENGINE_API const NxFr::Delegate<void()>& GetCallback() const;

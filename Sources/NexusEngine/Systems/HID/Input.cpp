@@ -29,6 +29,24 @@ namespace NxEn
 		{
 		}
 
+		Binding& Binding::operator=(BindingButton Other)
+		{
+			InputButton = Other;
+			return *this;
+		}
+
+		Binding& Binding::operator=(Axis Other)
+		{
+			InputAxis = Other;
+			return *this;
+		}
+
+		Binding& Binding::operator=(NxFr::Rectangle Other)
+		{
+			InputMouse = Other;
+			return *this;
+		}
+
 		Trigger::Trigger(Button ButtonInput, State ButtonTarget, Modifier Modifiers)
 			: Mode(Mode::Button), Modifiers(Modifiers), Input(ButtonInput, ButtonTarget)
 		{
@@ -44,8 +62,33 @@ namespace NxEn
 		{
 		}
 
+		Trigger::Trigger(const Trigger& Other)
+			: Mode(Other.Mode), Modifiers(Other.Modifiers), Input((Axis)0)
+		{
+			switch (Mode)
+			{
+			case NxEn::Input::Mode::Button: Input.InputButton = Other.Input.InputButton; break;
+			case NxEn::Input::Mode::Axis: Input.InputAxis = Other.Input.InputAxis; break;
+			case NxEn::Input::Mode::Mouse: Input.InputMouse = Other.Input.InputMouse; break;
+			}
+		}
+
 		Trigger::~Trigger()
 		{
+		}
+
+		Trigger& Trigger::operator=(const Trigger& Other)
+		{
+			Mode = Other.Mode;
+			Modifiers = Other.Modifiers;
+			switch (Mode)
+			{
+			case NxEn::Input::Mode::Button: Input.InputButton = Other.Input.InputButton; break;
+			case NxEn::Input::Mode::Axis: Input.InputAxis = Other.Input.InputAxis; break;
+			case NxEn::Input::Mode::Mouse: Input.InputMouse = Other.Input.InputMouse; break;
+			}
+
+			return *this;
 		}
 
 		Mode Trigger::GetMode() const
@@ -102,8 +145,20 @@ namespace NxEn
 		{
 		}
 
+		Action::Action(const Action& Other)
+			: Input(Other.Input), Callback(Other.Callback)
+		{
+		}
+
 		Action::~Action()
 		{
+		}
+
+		Action& Action::operator=(const Action& Other)
+		{
+			Input = Other.Input;
+			Callback = Other.Callback;
+			return *this;
 		}
 
 		const Trigger& Action::GetTrigger() const

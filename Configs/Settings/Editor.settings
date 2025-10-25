@@ -1,1 +1,14 @@
 EditHistoryCapacity: 64
+Shortcuts:
+  Edit.Copy: Ctrl+C
+  Edit.Cut: Ctrl+X
+  Edit.Delete: Delete
+  Edit.Duplicate: Ctrl+D
+  Edit.InvertSelection: Ctrl+I
+  Edit.Paste: Ctrl+V
+  Edit.Redo: Ctrl+Y
+  Edit.Rename: F2
+  Edit.SelectAll: Ctrl+A
+  Edit.Undo: Ctrl+Z
+  Edit.UnselectAll: Ctrl+Shift+A
+  Editor.Save: Ctrl+S

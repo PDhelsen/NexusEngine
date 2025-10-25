@@ -25,6 +25,8 @@ namespace NxEd
 		NEXUS_EDITOR_API void OnShutdown() override;
 		NEXUS_EDITOR_API void OnTick(float TimeStep = 0.0f) override;
 
+		NEXUS_ENGINE_API void ApplySettings();
+
 	private:
 		NxFr::Event<> OnSave;
 
