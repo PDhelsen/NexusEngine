@@ -14,7 +14,7 @@ namespace NxEn
 	const static GUI::Menu::Item MenuItemQuit = GUI::Menu::Item::Create("File/Quit", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Execute("Application.Quit");
-	}), "", 2);
+	}), 2);
 
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 

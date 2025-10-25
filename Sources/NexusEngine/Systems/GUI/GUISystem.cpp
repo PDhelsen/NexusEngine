@@ -282,7 +282,7 @@ namespace NxEn
 			if (!Path.IsValid()) return;
 			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save ") + NxFr::Path::GetFileName(Path);
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
-		}, "", 1);
+		}, 1);
 
 		NxFr::Path Path = NxFr::Paths::Configs + Folder;
 		NxFr::Directory Folder(Path);

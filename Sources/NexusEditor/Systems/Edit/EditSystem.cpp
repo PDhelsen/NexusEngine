@@ -386,47 +386,47 @@ namespace NxEd
 		Menu->AddMenuItem("Edit/Undo", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Undo");
-		}, "", 0, [this]() { return !HistoryUndo.IsEmpty(); });
+		}, 0, [this]() { return !HistoryUndo.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Redo", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Redo");
-		}, "", 1, [this]() { return !HistoryRedo.IsEmpty(); });
+		}, 1, [this]() { return !HistoryRedo.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Rename", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Rename");
-		}, "", 2, [this]() { return !Selection.IsEmpty(); });
+		}, 2, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Delete", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Delete");
-		}, "", 3, [this]() { return !Selection.IsEmpty(); });
+		}, 3, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Cut", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Cut");
-		}, "", 4, [this]() { return !Selection.IsEmpty(); });
+		}, 4, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Copy", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Copy");
-		}, "", 5, [this]() { return !Selection.IsEmpty(); });
+		}, 5, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Paste", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Paste");
-		}, "", 6, [this]() { return !Selection.IsEmpty(); });
+		}, 6, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Duplicate", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Duplicate");
-		}, "", 7, [this]() { return !Selection.IsEmpty(); });
+		}, 7, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Select All", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.SelectAll");
-		}, "", 8);
+		}, 8);
 		Menu->AddMenuItem("Edit/Unselect All", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.UnselectAll");
-		}, "", 9, [this]() { return !Selection.IsEmpty(); });
+		}, 9, [this]() { return !Selection.IsEmpty(); });
 		Menu->AddMenuItem("Edit/Invert Selection", []()
 		{
 			NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.InvertSelection");
-		}, "", 10, [this]() { return !Selection.IsEmpty(); });
+		}, 10, [this]() { return !Selection.IsEmpty(); });
 	}
 
 	const Edit::Context& EditSystem::GetCtx(NxFr::StringId Ctx) const

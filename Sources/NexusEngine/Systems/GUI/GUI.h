@@ -91,25 +91,23 @@ namespace NxEn
 				friend class Menu;
 
 			public:
-				NEXUS_ENGINE_API static Item Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+				NEXUS_ENGINE_API static Item Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 
 				NEXUS_ENGINE_API bool operator==(const Item& Other) const;
 				NEXUS_ENGINE_API bool operator<=(const Item& Other) const;
 
 				NEXUS_ENGINE_API const NxFr::Delegate<void()>& GetCallback() const { return Callback; }
 				NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
-				NEXUS_ENGINE_API NxFr::StringView GetShortcut() const { return Shortcut; }
 				NEXUS_ENGINE_API int64 GetPriority() const { return Priority; }
 				NEXUS_ENGINE_API ItemMode GetMode() const { return Mode; }
 
 			private:
-				NEXUS_ENGINE_API Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
+				NEXUS_ENGINE_API Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
 
 			private:
 				NxFr::Delegate<void()> Callback;
 				NxFr::Delegate<bool()> Validate;
 				NxFr::String Path;
-				NxFr::String Shortcut;
 				int64 Priority;
 				ItemMode Mode;
 				uint64 Index;
@@ -121,9 +119,9 @@ namespace NxEn
 			NEXUS_ENGINE_API Menu(bool Main = false);
 			NEXUS_ENGINE_API virtual ~Menu();
 
-			NEXUS_ENGINE_API Menu& AddMenuItem	(NxFr::StringView Path,																	const NxFr::Delegate<void()>& Callback,				NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
-			NEXUS_ENGINE_API Menu& AddMenuToggle(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
-			NEXUS_ENGINE_API Menu& AddMenuEnum	(NxFr::StringView Path, void* Enum,		const NxFr::Array<NxFr::StringView>& Labels,	const NxFr::Delegate<void()>& Callback = nullptr,	NxFr::StringView Shortcut = "", int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& AddMenuItem	(NxFr::StringView Path,																	const NxFr::Delegate<void()>& Callback,				int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& AddMenuToggle(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			NEXUS_ENGINE_API Menu& AddMenuEnum	(NxFr::StringView Path, void* Enum,		const NxFr::Array<NxFr::StringView>& Labels,	const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			NEXUS_ENGINE_API Menu& Remove(NxFr::StringView Path);
 			NEXUS_ENGINE_API Menu& Clear();
 

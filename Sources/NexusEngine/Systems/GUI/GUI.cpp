@@ -160,17 +160,17 @@ namespace NxEn
 
 		NEXUS_OBJECT_IMPLEMENTATION(Menu)
 
-		Menu::Item Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		Menu::Item Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
 			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-			Item It(Callback, Validate, Path, Shortcut, Priority, Menu::ItemMode::Callback, 0, nullptr);
+			Item It(Callback, Validate, Path, Priority, Menu::ItemMode::Callback, 0, nullptr);
 			GUISystem::RegisterMenuItem(&It);
 			return It;
 		}
 
-		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, NxFr::StringView Shortcut, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
-			: Callback(Callback), Validate(Validate), Path(Path), Shortcut(Shortcut), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
+		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
+			: Callback(Callback), Validate(Validate), Path(Path), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
 		{
 			NEXUS_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%d)", MenuPriorityOffsetBase);
 
@@ -203,23 +203,23 @@ namespace NxEn
 		{
 		}
 
-		Menu& Menu::AddMenuItem(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		Menu& Menu::AddMenuItem(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			AppendItem(Item(Callback, Validate, Path, Shortcut, Priority, ItemMode::Callback, 0, nullptr));
+			AppendItem(Item(Callback, Validate, Path, Priority, ItemMode::Callback, 0, nullptr));
 			return *this;
 		}
 
-		Menu& Menu::AddMenuToggle(NxFr::StringView Path, void* Toggle, const NxFr::Delegate<void()>& Callback, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		Menu& Menu::AddMenuToggle(NxFr::StringView Path, void* Toggle, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			AppendItem(Item(Callback, Validate, Path, Shortcut, Priority, ItemMode::Toggle, 0, Toggle));
+			AppendItem(Item(Callback, Validate, Path, Priority, ItemMode::Toggle, 0, Toggle));
 			return *this;
 		}
 
-		Menu& Menu::AddMenuEnum(NxFr::StringView Path, void* Enum, const NxFr::Array<NxFr::StringView>& Labels, const NxFr::Delegate<void()>& Callback, NxFr::StringView Shortcut, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		Menu& Menu::AddMenuEnum(NxFr::StringView Path, void* Enum, const NxFr::Array<NxFr::StringView>& Labels, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
 			for (uint64 Index = 0; Index < Labels.GetCount(); ++Index)
 			{
-				AppendItem(Item(Callback, Validate, Path + NxFr::Path::SeparatorDirectory + Labels[Index], Shortcut, Priority, ItemMode::Enum, Index, Enum));
+				AppendItem(Item(Callback, Validate, Path + NxFr::Path::SeparatorDirectory + Labels[Index], Priority, ItemMode::Enum, Index, Enum));
 			}
 
 			return *this;
@@ -316,11 +316,11 @@ namespace NxEn
 
 				switch (It.Mode)
 				{
-				case ItemMode::Callback: Call = ImGui::MenuItem(Lbl.C(), It.Shortcut.C(), false, Enabled); break;
+				case ItemMode::Callback: Call = ImGui::MenuItem(Lbl.C(), "", false, Enabled); break;
 				case ItemMode::Enum:
 					{
 						int64& Current = *reinterpret_cast<int64*>(It.Data);
-						Call = ImGui::MenuItem(Lbl.C(), It.Shortcut.C(), Current == It.Index, Enabled);
+						Call = ImGui::MenuItem(Lbl.C(), "", Current == It.Index, Enabled);
 						if (Call)
 						{
 							Current = It.Index;

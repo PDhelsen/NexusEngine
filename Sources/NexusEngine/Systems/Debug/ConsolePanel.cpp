@@ -74,7 +74,7 @@ namespace NxEn
 			FlagsVerbosity.Append(Verbosity, Logger->CheckVerbosity(Verbosity));
 
 			NxFr::String Path = NxFr::StringView("Verbosity/") + NxFr::StringUtility::ToString(Verbosity);
-			Menu.AddMenuToggle(Path, &FlagsVerbosity[Verbosity], nullptr, "", Priority);
+			Menu.AddMenuToggle(Path, &FlagsVerbosity[Verbosity], nullptr, Priority);
 		}
 
 		NxFr::Array<NxFr::StringId> Channels = Logger->GetChannels();
@@ -87,7 +87,7 @@ namespace NxEn
 			FlagsChannels.Append(Id, Logger->CheckChannel(Id));
 
 			NxFr::String Path = NxFr::StringView("Channels/") + Id.C();
-			Menu.AddMenuToggle(Path, &FlagsChannels[Id], nullptr, "", Priority);
+			Menu.AddMenuToggle(Path, &FlagsChannels[Id], nullptr, Priority);
 		}
 
 		Menu.AddMenuToggle("Settings/AutoScroll", &SettingConsoleAutoScroll->GetValue());
