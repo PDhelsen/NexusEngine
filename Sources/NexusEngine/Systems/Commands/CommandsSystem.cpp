@@ -188,7 +188,7 @@ namespace NxEn
 
 		while (!File.IsAtTheEnd())
 		{
-			Run(File.Read());
+			Run(File.ReadLine());
 		}
 
 		File.Close();

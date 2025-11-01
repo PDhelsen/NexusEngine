@@ -328,7 +328,7 @@ namespace NxEn
 		NxFr::Set<NxFr::StringId> Ids;
 		while (!Stream.IsAtTheEnd())
 		{
-			Ids.Append(NxFr::StringId(Stream.Read()));
+			Ids.Append(NxFr::StringId(Stream.ReadLine()));
 		}
 
 		auto& Panels = GetPanels();
@@ -359,7 +359,7 @@ namespace NxEn
 		{
 			if (It.Value->IsEnabled())
 			{
-				Stream.Write(It.Key.C());
+				Stream.WriteLine(It.Key.C());
 			}
 		}
 
