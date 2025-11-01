@@ -19,9 +19,14 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, ResourcesSystem)
 
-		template<typename T>
-		T* Load(NxFr::StringView Path);
-		void Unload(NxFr::StringView Path);
+		template<typename T> T* Load(NxFr::StringView Path);
+		NEXUS_ENGINE_API void Unload(NxFr::StringView Path);
+		NEXUS_ENGINE_API void UnloadAll();
+		template<typename T> T* Create(NxFr::StringView Path);
+		NEXUS_ENGINE_API void Save(NxFr::StringView Path);
+		NEXUS_ENGINE_API void SaveAll();
+		NEXUS_ENGINE_API void Move(NxFr::StringView Path, NxFr::StringView Target);
+		NEXUS_ENGINE_API void Delete(NxFr::StringView Path);
 
 	private:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -35,6 +40,25 @@ namespace NxEn
 	};
 
 	template<typename T>
+	inline T* ResourcesSystem::Create(NxFr::StringView Path)
+	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+		Resource* Instance = GetResource(Path);
+
+		if (Instance != nullptr)
+		{
+			NEXUS_LOG(Warning, Default, "Resources %s is already tracked", Path.C());
+			return;
+		}
+
+		Instance = new T(Path, true);
+		Resources.AppendConstruct(Path, Instance);
+
+		return static_cast<T*>(Instance);
+	}
+
+	template<typename T>
 	inline T* ResourcesSystem::Load(NxFr::StringView Path)
 	{
 		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
@@ -43,7 +67,7 @@ namespace NxEn
 
 		if (Instance == nullptr)
 		{
-			Instance = new T(Path);
+			Instance = new T(Path, false);
 			Resources.AppendConstruct(Path, Instance);
 		}
 

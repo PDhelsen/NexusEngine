@@ -3,13 +3,23 @@
 
 namespace NxEn
 {
-	Text::Text(NxFr::StringView Path)
-		: Resource(Path), Data()
+	Text::Text(NxFr::StringView Path, bool Loaded)
+		: Resource(Path, Loaded), Data()
 	{
 	}
 
 	Text::~Text()
 	{
+	}
+
+	void Text::Save(NxFr::StringView FilePath)
+	{
+		Resource::Save(FilePath);
+
+		NxFr::File File(FilePath);
+		File.Open(NxFr::File::Mode::Write, false);
+		File.WriteText(Data);
+		File.Close();
 	}
 
 	void Text::Load(NxFr::StringView FilePath)

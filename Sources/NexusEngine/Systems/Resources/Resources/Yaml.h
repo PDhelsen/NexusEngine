@@ -7,13 +7,15 @@ namespace NxEn
 	class Yaml : public Resource
 	{
 	public:
-		NEXUS_ENGINE_API Yaml(NxFr::StringView Path);
+		NEXUS_ENGINE_API Yaml(NxFr::StringView Path, bool Loaded);
 		NEXUS_ENGINE_API ~Yaml();
 
+		NEXUS_ENGINE_API YAML::Node& GetRoot() { return Data; }
+
+	protected:
+		NEXUS_ENGINE_API void Save(NxFr::StringView FilePath) override;
 		NEXUS_ENGINE_API void Load(NxFr::StringView FilePath) override;
 		NEXUS_ENGINE_API void Unload() override;
-
-		NEXUS_ENGINE_API const YAML::Node& GetRoot() const { return Data; }
 
 	private:
 		YAML::Node Data;

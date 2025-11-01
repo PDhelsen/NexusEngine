@@ -34,6 +34,80 @@ namespace NxEn
 		}
 	}
 
+	void ResourcesSystem::UnloadAll()
+	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+		for (auto& [Path, Instance] : Resources)
+		{
+			if (Instance->IsLoaded())
+			{
+				Instance->Unload();
+			}
+		}
+	}
+
+	void ResourcesSystem::Save(NxFr::StringView Path)
+	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+		Resource* Instance = GetResource(Path);
+
+		if (Instance == nullptr)
+		{
+			NEXUS_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			return;
+		}
+
+		if (Instance->IsLoaded())
+		{
+			Instance->Save(GetResourceFilePath(Path));
+		}
+	}
+
+	void ResourcesSystem::SaveAll()
+	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+		for (auto& [Path, Instance] : Resources)
+		{
+			if (Instance->IsLoaded())
+			{
+				Instance->Save(GetResourceFilePath(Path));
+			}
+		}
+	}
+
+	void ResourcesSystem::Move(NxFr::StringView Path, NxFr::StringView Target)
+	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+		Resource* Instance = GetResource(Path);
+
+		if (Instance != nullptr)
+		{
+			Resources.Remove(Path);
+			Resources.Append(Target, Instance);
+			Instance->Path = Target;
+		}
+
+		NxFr::File(GetResourceFilePath(Path)).Move(GetResourceFilePath(Target), true);
+	}
+
+	void ResourcesSystem::Delete(NxFr::StringView Path)
+	{
+		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+
+		Resource* Instance = GetResource(Path);
+
+		if (Instance != nullptr && Instance->IsLoaded())
+		{
+			Unload(Path);
+		}
+
+		NxFr::File(GetResourceFilePath(Path)).Delete();
+	}
+
 	void ResourcesSystem::OnInitialize()
 	{
 		System::OnInitialize();

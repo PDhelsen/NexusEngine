@@ -3,13 +3,23 @@
 
 namespace NxEn
 {
-	Blob::Blob(NxFr::StringView Path)
-		: Resource(Path), Data()
+	Blob::Blob(NxFr::StringView Path, bool Loaded)
+		: Resource(Path, Loaded), Data()
 	{
 	}
 
 	Blob::~Blob()
 	{
+	}
+
+	void Blob::Save(NxFr::StringView FilePath)
+	{
+		Resource::Save(FilePath);
+
+		NxFr::File File(FilePath);
+		File.Open(NxFr::File::Mode::Write, false);
+		File.WriteByte(Data);
+		File.Close();
 	}
 
 	void Blob::Load(NxFr::StringView FilePath)

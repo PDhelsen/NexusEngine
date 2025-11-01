@@ -3,13 +3,20 @@
 
 namespace NxEn
 {
-	Yaml::Yaml(NxFr::StringView Path)
-		: Resource(Path), Data()
+	Yaml::Yaml(NxFr::StringView Path, bool Loaded)
+		: Resource(Path, Loaded), Data()
 	{
 	}
 
 	Yaml::~Yaml()
 	{
+	}
+
+	void Yaml::Save(NxFr::StringView FilePath)
+	{
+		Resource::Save(FilePath);
+
+		NxFr::Yaml::SerializeFile(Data, FilePath);
 	}
 
 	void Yaml::Load(NxFr::StringView FilePath)
