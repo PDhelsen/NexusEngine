@@ -38,11 +38,10 @@ namespace NxAp
 
 	void NexusAppApplication::OnShutdown()
 	{
+		NexusEngineApplication::OnShutdown();
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
 		Unbootstrap.AppendSystem<AppSystem>();
-
-		NexusEngineApplication::OnShutdown();
 	}
 
 	void NexusAppApplication::OnExecute()

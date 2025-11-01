@@ -55,17 +55,21 @@ namespace NxEd
 
 	void NexusEditorApplication::OnShutdown()
 	{
+		NexusEngineApplication::OnShutdown();
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
 		Unbootstrap.AppendSystem<EditorSystem>();
 		Unbootstrap.AppendSystem<EditSystem>();
 
+		if (!IsHeadless())
+		{
+			Unbootstrap.AppendDependency<NxEn::GUISystem, EditorSystem>();
+		}
+
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::BeforeSystem, "Save Layout", []()
 		{
 			Application::GetSystem<NxEn::GUISystem>()->SaveLayout();
 		});
-
-		NexusEngineApplication::OnShutdown();
 	}
 
 	void NexusEditorApplication::OnExecute()
