@@ -297,7 +297,7 @@ namespace NxEn
 			RefreshRate = Mode->refreshRate;
 		}
 
-		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval)
+		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, NxFr::Vector2i IconResolution, uint8* IconPixels, uint8 Interval)
 		{
 			GLFWwindow* Instance = nullptr;
 			switch (Mode)
@@ -338,6 +338,10 @@ namespace NxEn
 
 			glfwMakeContextCurrent(Instance);
 			SetSwapInterval(Interval);
+			if (IconPixels)
+			{
+				SetWindowIcon(Instance, IconResolution, IconPixels);
+			}
 
 			glfwSetWindowCloseCallback(Instance, CloseCallback);
 			glfwSetWindowPosCallback(Instance, MoveCallback);
@@ -430,9 +434,13 @@ namespace NxEn
 			glfwSetWindowTitle(NEXUS_WINDOW(Window), Title.C());
 		}
 
-		void SetWindowIcon(void* Window, void* Icon)
+		void SetWindowIcon(void* Window, NxFr::Vector2i Resolution, uint8* Pixels)
 		{
-			glfwSetWindowIcon(NEXUS_WINDOW(Window), 1, nullptr);
+			GLFWimage Image;
+			Image.width = Resolution.x;
+			Image.height = Resolution.y;
+			Image.pixels = Pixels;
+			glfwSetWindowIcon(NEXUS_WINDOW(Window), Pixels ? 1 : 0, Pixels ? &Image : nullptr);
 		}
 
 		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom)

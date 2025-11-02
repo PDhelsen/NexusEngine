@@ -4,6 +4,8 @@
 
 namespace NxEn
 {
+	class Image;
+
 	class Window
 	{
 		friend class WindowSystem;
@@ -15,7 +17,7 @@ namespace NxEn
 		};
 
 		NEXUS_ENGINE_API Window();
-		NEXUS_ENGINE_API Window(Mode WindowMode, int8 Monitor, NxFr::Vector2i Position, NxFr::Vector2i Resolution, const NxFr::String& Title, void* Icon, bool VSync);
+		NEXUS_ENGINE_API Window(Mode WindowMode, int8 Monitor, NxFr::Vector2i Position, NxFr::Vector2i Resolution, const NxFr::String& Title, Image* Icon, bool VSync);
 		NEXUS_ENGINE_API ~Window();
 
 		NEXUS_ENGINE_API Window::Mode GetMode() const { return WindowMode; }
@@ -23,7 +25,7 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Vector2i GetPosition() const { return Position; }
 		NEXUS_ENGINE_API NxFr::Vector2i GetResolution() const { return Resolution; }
 		NEXUS_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
-		NEXUS_ENGINE_API const void* GetIcon() const { return Icon; }
+		NEXUS_ENGINE_API const Image* GetIcon() const { return Icon; }
 		NEXUS_ENGINE_API bool GetVSync() const { return VSync; }
 
 		NEXUS_ENGINE_API bool IsValid() const { return Instance; }
@@ -34,7 +36,7 @@ namespace NxEn
 		NxFr::Vector2i Position;
 		NxFr::Vector2i Resolution;
 		NxFr::String Title;
-		void* Icon;
+		Image* Icon;
 		bool VSync;
 
 		void* Instance;

@@ -2,6 +2,7 @@
 #include "NexusEngine/Application/Project/ProjectPanel.h"
 
 #include "NexusEngine/Systems/Settings/SettingTemplate.h"
+#include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 namespace NxEd
 {
@@ -41,14 +42,19 @@ namespace NxEd
 		System::OnInitialize();
 
 		Window->Show();
+		auto* Icon = NxEn::Application::GetSystem<NxEn::ResourcesSystem>()->Load<NxEn::Image>("Logo_Small.png");
+		NxEn::Application::GetSystem<NxEn::WindowSystem>()->SetWindowIcon(Icon);
 		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, &InputSchema);
 		NxEn::Application::GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, &EditorSystem::ApplySettings };
+
 	}
 
 	void EditorSystem::OnShutdown()
 	{
 		Window->Hide();
 		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
+		NxEn::Application::GetSystem<NxEn::WindowSystem>()->SetWindowIcon(nullptr);
+		NxEn::Application::GetSystem<NxEn::ResourcesSystem>()->Unload("Logo_Small.png");
 
 		System::OnShutdown();
 	}

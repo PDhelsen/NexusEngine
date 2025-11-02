@@ -5,6 +5,8 @@
 
 namespace NxEn
 {
+	class Image;
+
 	class WindowSystem : public System
 	{
 		friend class GUISystem;
@@ -29,7 +31,7 @@ namespace NxEn
 		NEXUS_ENGINE_API WindowSystem& SetWindowPosition(NxFr::Vector2i Position);
 		NEXUS_ENGINE_API WindowSystem& SetWindowResolution(NxFr::Vector2i Resolution);
 		NEXUS_ENGINE_API WindowSystem& SetWindowTitle(NxFr::StringView Title);
-		NEXUS_ENGINE_API WindowSystem& SetWindowIcon(void* Icon);
+		NEXUS_ENGINE_API WindowSystem& SetWindowIcon(Image* Icon);
 		NEXUS_ENGINE_API WindowSystem& SetCursorMode(Cursor::Mode Mode);
 		NEXUS_ENGINE_API WindowSystem& SetCursorIcon(Cursor::Icon Icon, void* IconCustom = nullptr);
 

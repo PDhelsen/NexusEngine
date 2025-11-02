@@ -2,6 +2,7 @@
 #include "NexusEngine/Systems/HID/WindowSystem.h"
 
 #include "NexusEngine/Systems/Settings/SettingTemplate.h"
+#include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 #include "NexusEngine/External/Glfw.h"
 
@@ -166,12 +167,13 @@ namespace NxEn
 		return *this;
 	}
 
-	WindowSystem& WindowSystem::SetWindowIcon(void* Icon)
+	WindowSystem& WindowSystem::SetWindowIcon(Image* Icon)
 	{
 		Target.Icon = Icon;
 		if (Target.IsValid())
 		{
-			Glfw::SetWindowIcon(Target.Instance, Icon);
+			Glfw::SetWindowIcon(Target.Instance,
+				Icon ? Icon->GetResolution() : NxFr::Vector2i::Zero, Icon ? static_cast<uint8*>(Icon->GetPixels()) : nullptr);
 		}
 
 		return *this;
@@ -278,7 +280,11 @@ namespace NxEn
 	{
 		NEXUS_PROFILE_FUNCTION();
 
-		Target.Instance = Glfw::CreateWindow((uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr, Target.Position, Target.Resolution, Target.Title, Target.VSync);
+		Target.Instance = Glfw::CreateWindow(
+			(uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr,
+			Target.Position, Target.Resolution, Target.Title,
+			Target.Icon ? Target.Icon->GetResolution() : NxFr::Vector2i::Zero, Target.Icon ? static_cast<uint8*>(Target.Icon->GetPixels()) : nullptr,
+			Target.VSync);
 
 		NEXUS_LOG(Info, System, "Window created with resolution %d-%d", Target.Resolution.x, Target.Resolution.y);
 	}

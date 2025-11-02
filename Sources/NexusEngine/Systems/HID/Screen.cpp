@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/HID/Screen.h"
 
+#include "NexusEngine/Systems/Resources/Resources/Image.h"
+
 namespace NxEn
 {
 	Window::Window()
@@ -8,7 +10,7 @@ namespace NxEn
 	{
 	}
 
-	Window::Window(Mode WindowMode, int8 Monitor, NxFr::Vector2i Position, NxFr::Vector2i Resolution, const NxFr::String& Title, void* Icon, bool VSync)
+	Window::Window(Mode WindowMode, int8 Monitor, NxFr::Vector2i Position, NxFr::Vector2i Resolution, const NxFr::String& Title, Image* Icon, bool VSync)
 		: WindowMode(WindowMode), Monitor(Monitor), Position(Position), Resolution(Resolution), Title(Title), Icon(Icon), VSync(VSync), Instance(nullptr)
 	{
 	}

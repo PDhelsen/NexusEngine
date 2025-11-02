@@ -17,7 +17,7 @@ namespace NxEn
 		NxFr::Array<void*> GetMonitors();
 		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate);
 
-		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, uint8 Interval);
+		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, NxFr::Vector2i IconResolution = NxFr::Vector2i::Zero, uint8* IconPixels = nullptr, uint8 Interval = 1);
 		void DestroyWindow(void* Window);
 		void TickWindow(void* Window);
 
@@ -32,7 +32,7 @@ namespace NxEn
 		void SetWindowPosition(void* Window, NxFr::Vector2i Position);
 		void SetWindowSize(void* Window, NxFr::Vector2i Size);
 		void SetWindowTitle(void* Window, NxFr::StringView Title);
-		void SetWindowIcon(void* Window, void* Icon);
+		void SetWindowIcon(void* Window, NxFr::Vector2i Resolution, uint8* Pixels);
 
 		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom);
 		void SetCursorMode(void* Window, uint32 Mode);

@@ -13,5 +13,6 @@
 #include "NexusEngine/Systems/GUI/GUISystem.h"
 #include "NexusEngine/Systems/Commands/CommandsSystem.h"
 #include "NexusEngine/Systems/Settings/SettingsSystem.h"
+#include "NexusEngine/Systems/Resources/ResourcesSystem.h"
 
 #include "NexusEngine/Core/NexusEngineApplication.h"
