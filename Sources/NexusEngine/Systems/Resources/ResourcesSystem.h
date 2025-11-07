@@ -7,8 +7,8 @@ namespace NxFr
 {
 	namespace StatsHeader
 	{
-		NEXUS_ENGINE_API extern const NxFr::StringId ResourceTrackedId;
-		NEXUS_ENGINE_API extern const NxFr::StringId ResourceLoadedId;
+		NEXUS_ENGINE_API extern const NxFr::StringId ResourcesTrackedId;
+		NEXUS_ENGINE_API extern const NxFr::StringId ResourcesLoadedId;
 	}
 }
 
