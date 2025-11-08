@@ -3,8 +3,8 @@
 
 namespace NxEn
 {
-	Resource::Resource(NxFr::StringView Path, bool Loaded)
-		: Path(Path), Loaded(Loaded)
+	Resource::Resource(NxFr::StringView Path)
+		: Path(Path), Loaded(true)
 	{
 	}
 

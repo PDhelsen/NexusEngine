@@ -52,7 +52,7 @@ namespace NxEn
 			return;
 		}
 
-		Instance = new T(Path, true);
+		Instance = new T(Path);
 		Resources.AppendConstruct(Path, Instance);
 
 		return static_cast<T*>(Instance);
@@ -67,8 +67,8 @@ namespace NxEn
 
 		if (Instance == nullptr)
 		{
-			Instance = new T(Path, false);
-			Resources.AppendConstruct(Path, Instance);
+			Instance = Create<T>(Path);
+			Instance->Loaded = false;
 		}
 
 		if (!Instance->IsLoaded())

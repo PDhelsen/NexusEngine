@@ -4,7 +4,7 @@
 namespace NxEn
 {
 	Yaml::Yaml(NxFr::StringView Path, bool Loaded)
-		: Resource(Path, Loaded), Data()
+		: Resource(Path), Data()
 	{
 	}
 

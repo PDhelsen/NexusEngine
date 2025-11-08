@@ -9,7 +9,7 @@ namespace NxEn
 		friend class ResourcesSystem;
 
 	public:
-		NEXUS_ENGINE_API Resource(NxFr::StringView Path, bool Loaded);
+		NEXUS_ENGINE_API Resource(NxFr::StringView Path);
 		NEXUS_ENGINE_API virtual ~Resource();
 
 		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
