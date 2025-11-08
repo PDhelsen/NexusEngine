@@ -5,7 +5,7 @@
 
 namespace NxEn
 {
-	Image::Image(NxFr::StringView Path, bool Loaded)
+	Image::Image(NxFr::StringView Path)
 		: Resource(Path), Resolution(), Channels(0), Data(nullptr)
 	{
 	}

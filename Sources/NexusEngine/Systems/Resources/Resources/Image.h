@@ -7,7 +7,7 @@ namespace NxEn
 	class Image : public Resource
 	{
 	public:
-		NEXUS_ENGINE_API Image(NxFr::StringView Path, bool Loaded);
+		NEXUS_ENGINE_API Image(NxFr::StringView Path);
 		NEXUS_ENGINE_API ~Image();
 
 		NEXUS_ENGINE_API NxFr::Vector2i GetResolution() { return Resolution; }

@@ -7,7 +7,7 @@ namespace NxEn
 	class Text : public Resource
 	{
 	public:
-		NEXUS_ENGINE_API Text(NxFr::StringView Path, bool Loaded);
+		NEXUS_ENGINE_API Text(NxFr::StringView Path);
 		NEXUS_ENGINE_API ~Text();
 
 		NEXUS_ENGINE_API NxFr::String& GetText() { return Data; }

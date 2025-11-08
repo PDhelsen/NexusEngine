@@ -7,7 +7,7 @@ namespace NxEn
 	class Yaml : public Resource
 	{
 	public:
-		NEXUS_ENGINE_API Yaml(NxFr::StringView Path, bool Loaded);
+		NEXUS_ENGINE_API Yaml(NxFr::StringView Path);
 		NEXUS_ENGINE_API ~Yaml();
 
 		NEXUS_ENGINE_API YAML::Node& GetRoot() { return Data; }

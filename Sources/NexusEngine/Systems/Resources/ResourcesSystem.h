@@ -49,7 +49,7 @@ namespace NxEn
 		if (Instance != nullptr)
 		{
 			NEXUS_LOG(Warning, Default, "Resources %s is already tracked", Path.C());
-			return;
+			return nullptr;
 		}
 
 		Instance = new T(Path);

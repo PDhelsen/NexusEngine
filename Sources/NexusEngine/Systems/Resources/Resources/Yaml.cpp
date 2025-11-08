@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	Yaml::Yaml(NxFr::StringView Path, bool Loaded)
+	Yaml::Yaml(NxFr::StringView Path)
 		: Resource(Path), Data()
 	{
 	}

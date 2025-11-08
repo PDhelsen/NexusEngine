@@ -79,11 +79,11 @@ namespace NxEd
 			NxFr::List<NxFr::StringView> Keys = NxFr::StringUtility::SplitAll(Shortcut, "+");
 
 			NxEn::Input::State State = NxEn::Input::State::Released;
-			NxEn::Input::Button Button = NxFr::StringUtility::FromString<NxEn::Input::Button>(Keys[Keys.GetCount() - 1]);
+			NxEn::Input::Button Button = NxFr::StringUtility::FromString<NxEn::Input::Button>(Keys.Last());
 			NxEn::Input::Modifier Modifiers = NxEn::Input::Modifier::None;
 			if (Keys.GetCount() > 1)
 			{
-				for (int64 Index = 0; Index < Keys.GetCount() - 1; ++Index)
+				for (uint64 Index = 0; Index < Keys.GetCount() - 1; ++Index)
 				{
 					Modifiers |= NxFr::StringUtility::FromString<NxEn::Input::Modifier>(Keys[Index]);
 				}

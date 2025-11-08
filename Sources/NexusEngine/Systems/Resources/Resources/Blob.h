@@ -7,7 +7,7 @@ namespace NxEn
 	class Blob : public Resource
 	{
 	public:
-		NEXUS_ENGINE_API Blob(NxFr::StringView Path, bool Loaded);
+		NEXUS_ENGINE_API Blob(NxFr::StringView Path);
 		NEXUS_ENGINE_API ~Blob();
 
 		NEXUS_ENGINE_API NxFr::Buffer& GetBytes() { return Data; }

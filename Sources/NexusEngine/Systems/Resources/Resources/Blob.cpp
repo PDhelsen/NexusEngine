@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	Blob::Blob(NxFr::StringView Path, bool Loaded)
+	Blob::Blob(NxFr::StringView Path)
 		: Resource(Path), Data()
 	{
 	}

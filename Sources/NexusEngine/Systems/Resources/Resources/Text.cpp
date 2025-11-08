@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	Text::Text(NxFr::StringView Path, bool Loaded)
+	Text::Text(NxFr::StringView Path)
 		: Resource(Path), Data()
 	{
 	}
