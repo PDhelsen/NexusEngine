@@ -28,6 +28,7 @@ namespace NxEn
 		Systems.CreateSystem<CommandsSystem>();
 		Systems.CreateSystem<InputSystem>();
 		Systems.CreateSystem<ResourcesSystem>();
+		Systems.CreateSystem<AssetsSystem>();
 		if (!IsHeadless())
 		{
 			Systems.CreateSystem<WindowSystem>();
@@ -53,6 +54,7 @@ namespace NxEn
 		Systems.DestroySystem<CommandsSystem>();
 		Systems.DestroySystem<InputSystem>();
 		Systems.DestroySystem<ResourcesSystem>();
+		Systems.DestroySystem<AssetsSystem>();
 		if (!IsHeadless())
 		{
 			Systems.DestroySystem<WindowSystem>();
@@ -71,6 +73,7 @@ namespace NxEn
 		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
 		Bootstrap.AppendSystem<InputSystem>();
 		Bootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, DebugSystem>().AppendDependency<ResourcesSystem, MemorySystem>();
+		Bootstrap.AppendSystem<AssetsSystem>().AppendDependency<AssetsSystem, DebugSystem>().AppendDependency<AssetsSystem, MemorySystem>();
 		if (!IsHeadless())
 		{
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, SettingsSystem>().AppendDependency<InputSystem, WindowSystem>();
@@ -94,8 +97,9 @@ namespace NxEn
 		Unbootstrap.AppendSystem<SettingsSystem>();
 		Unbootstrap.AppendSystem<CommandsSystem>();
 		Unbootstrap.AppendSystem<ResourcesSystem>();
+		Unbootstrap.AppendSystem<AssetsSystem>();
 		Unbootstrap.AppendSystem<DebugSystem>();
-		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>().AppendDependency<MemorySystem, ResourcesSystem>();
+		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>().AppendDependency<MemorySystem, ResourcesSystem>().AppendDependency<MemorySystem, AssetsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
 		if (!IsHeadless())
 		{
@@ -116,6 +120,7 @@ namespace NxEn
 		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
 		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 		Ticks.AppendSystem<ResourcesSystem>(Ticker::TickBucket::Engine);
+		Ticks.AppendSystem<AssetsSystem>(Ticker::TickBucket::Engine);
 		if (!IsHeadless())
 		{
 			Ticks.AppendSystem<GUISystem>(Ticker::TickBucket::Output);
