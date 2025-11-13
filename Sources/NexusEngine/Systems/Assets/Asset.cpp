@@ -5,7 +5,8 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(Asset)
 
-	Asset::Asset()
+	Asset::Asset(NxFr::GUID Id)
+		: Id(Id)
 	{
 		SetTickable(false);
 	}

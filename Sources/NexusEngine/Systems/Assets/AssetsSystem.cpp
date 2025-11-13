@@ -20,20 +20,15 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsSystem)
 
-	AssetsSystem::Info::Info()
-		: Instance(nullptr), Path(""), Count(0)
+	Asset* AssetsSystem::Get(NxFr::GUID Guid, bool CreateIfDontExist)
 	{
-	}
-
-	Asset* AssetsSystem::Get(NxFr::StringView Path, bool CreateIfDontExist)
-	{
-		Info* Instance = GetAsset(Path);
+		Info* Instance = GetAsset(Guid);
 
 		if (Instance == nullptr)
 		{
 			if (CreateIfDontExist)
 			{
-				return Create(Path);
+				return Create(Guid);
 			}
 			else
 			{
@@ -43,16 +38,16 @@ namespace NxEn
 
 		if (Instance->Instance == nullptr)
 		{
-			return Load(Path);
+			return Load(Guid);
 		}
 
 		Instance->Count++;
 		return Instance->Instance;
 	}
 
-	void AssetsSystem::Release(NxFr::StringView Path)
+	void AssetsSystem::Release(NxFr::GUID Guid)
 	{
-		Info* Instance = GetAsset(Path);
+		Info* Instance = GetAsset(Guid);
 
 		if (Instance->Instance == nullptr)
 		{
@@ -62,22 +57,14 @@ namespace NxEn
 		Instance->Count--;
 		if (Instance->Count == 0)
 		{
-			Unload(Path);
+			Unload(Guid);
 		}
 	}
 
-	Asset* AssetsSystem::Create(NxFr::StringView Path)
+	Asset* AssetsSystem::Create(NxFr::GUID Guid)
 	{
-		Info* Instance = GetAsset(Path);
-		if (Instance != nullptr)
-		{
-			NEXUS_LOG(Error, Default, "Asset %s already exist", Path.C());
-			return nullptr;
-		}
-
-		Instance = &Assets.AppendConstruct(Path);
-		Instance->Instance = new Asset();
-		Instance->Path = Path;
+		Info* Instance = AddAsset(Guid);
+		Instance->Instance = new Asset(Guid);
 		Instance->Count = 1;
 
 		if (Instance->Path.IsValid())
@@ -88,12 +75,12 @@ namespace NxEn
 		return Instance->Instance;
 	}
 
-	void AssetsSystem::Delete(NxFr::StringView Path)
+	void AssetsSystem::Delete(NxFr::GUID Guid)
 	{
-		Info* Instance = GetAsset(Path);
+		Info* Instance = GetAsset(Guid);
 		if (Instance == nullptr)
 		{
-			NEXUS_LOG(Error, Default, "Asset %s doesn't exist", Path.C());
+			NEXUS_LOG(Error, Default, "Asset %d doesn't exist", Guid);
 			return;
 		}
 
@@ -109,42 +96,42 @@ namespace NxEn
 			NxFr::File(GetFilePath(Instance->Path)).Delete();
 		}
 
-		Assets.Remove(Path);
+		RemoveAsset(Guid);
 	}
 
-	void AssetsSystem::Move(NxFr::StringView Path, NxFr::StringView Target)
+	void AssetsSystem::Move(NxFr::GUID Guid, NxFr::StringView Target)
 	{
-		Info* Instance = GetAsset(Path);
+		Info* Instance = GetAsset(Guid);
 		if (Instance == nullptr)
 		{
-			NEXUS_LOG(Error, Default, "Asset %s doesn't exist", Path.C());
+			NEXUS_LOG(Error, Default, "Asset %d doesn't exist", Guid);
 			return;
 		}
 
 		if (Instance->Path.IsValid())
 		{
 			NxFr::File(GetFilePath(Instance->Path)).Move(GetFilePath(Target));
-			Instance->Path = Target;
 		}
+
+		MoveAsset(Guid, Target);
 	}
 
-	void AssetsSystem::Save(NxFr::StringView Path)
+	void AssetsSystem::Save(NxFr::GUID Guid)
 	{
-		Info* Instance = GetAsset(Path);
+		Info* Instance = GetAsset(Guid);
 		if (Instance == nullptr)
 		{
-			NEXUS_LOG(Error, Default, "Asset %s doesn't exist", Path.C());
+			NEXUS_LOG(Error, Default, "Asset %d doesn't exist", Guid);
 			return;
 		}
 
 		if (!Instance->Instance)
 		{
-			NEXUS_LOG(Warning, Default, "Asset %s not loaded.", Path.C());
 			return;
 		}
 
 		YAML::Node Node;
-		Node["Id"] = Path;
+		Node["Guid"] = Instance->Guid;
 
 		Instance->Instance->OnSerialize(Node);
 
@@ -153,33 +140,29 @@ namespace NxEn
 
 	void AssetsSystem::SaveAll()
 	{
-		for (auto& [Path, Instance] : Assets)
+		for (auto& [Guid, Instance] : Assets)
 		{
-			if (Instance.Instance)
-			{
-				Save(Path);
-			}
+			Save(Guid);
 		}
 	}
 
-	Asset* AssetsSystem::Load(NxFr::StringView Path)
+	Asset* AssetsSystem::Load(NxFr::GUID Guid)
 	{
-		Info* Instance = GetAsset(Path);
+		Info* Instance = GetAsset(Guid);
 		if (Instance == nullptr)
 		{
-			NEXUS_LOG(Error, Default, "Asset %s doesn't exist", Path.C());
+			NEXUS_LOG(Error, Default, "Asset %d doesn't exist", Guid);
 			return nullptr;
 		}
 
 		if (Instance->Instance)
 		{
-			NEXUS_LOG(Warning, Default, "Asset %s already loaded. Use Get instead to properly track the instance", Path.C());
 			return Instance->Instance;
 		}
 
 		YAML::Node Node = NxFr::Yaml::DeserializeFile(GetFilePath(Instance->Path));
 
-		Instance->Instance = new Asset();
+		Instance->Instance = new Asset(Guid);
 		Instance->Instance->OnDeserialize(Node);
 		Instance->Instance->Initialize();
 		Instance->Count = 1;
@@ -187,18 +170,17 @@ namespace NxEn
 		return Instance->Instance;
 	}
 
-	void AssetsSystem::Unload(NxFr::StringView Path)
+	void AssetsSystem::Unload(NxFr::GUID Guid)
 	{
-		Info* Instance = GetAsset(Path);
+		Info* Instance = GetAsset(Guid);
 		if (Instance == nullptr)
 		{
-			NEXUS_LOG(Error, Default, "Asset %s doesn't exist", Path.C());
+			NEXUS_LOG(Error, Default, "Asset %d doesn't exist", Guid);
 			return;
 		}
 
 		if (!Instance->Instance)
 		{
-			NEXUS_LOG(Warning, Default, "Asset %s not loaded.", Path.C());
 			return;
 		}
 
@@ -210,19 +192,40 @@ namespace NxEn
 
 	void AssetsSystem::Purge()
 	{
-		for (auto& [Path, Instance] : Assets)
+		for (auto& [Guid, Instance] : Assets)
 		{
-			if (Instance.Instance)
-			{
-				Unload(Path);
-			}
+			Unload(Guid);
 		}
 	}
 
-	NxFr::List<NxFr::StringView> AssetsSystem::Find(NxFr::String Filter)
+	NxFr::StringView AssetsSystem::GuidToPath(NxFr::GUID Guid)
+	{
+		Info* Instance = GetAsset(Guid);
+		if (Instance == nullptr)
+		{
+			NEXUS_LOG(Error, Default, "Asset %d doesn't exist", Guid);
+			return NxFr::StringUtility::Empty;
+		}
+
+		return Instance->Path;
+	}
+
+	NxFr::GUID AssetsSystem::PathToGuid(NxFr::StringView Path)
+	{
+		NxFr::GUID* Guid = Paths.TryGet(Path);
+		if (Guid == nullptr)
+		{
+			NEXUS_LOG(Error, Default, "Asset %d doesn't exist", Guid);
+			return 0;
+		}
+
+		return *Guid;
+	}
+
+	NxFr::List<NxFr::StringView> AssetsSystem::Find(NxFr::StringView Filter)
 	{
 		NxFr::List<NxFr::StringView> Result;
-		for (auto& [Id, Instance] : Assets)
+		for (auto& [Guid, Instance] : Assets)
 		{
 			if (NxFr::StringUtility::Contains(Instance.Path, Filter))
 			{
@@ -237,10 +240,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsTrackedId, UnsignedInteger, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsLoadedId, UnsignedInteger, Set);
-
+		StatsRegister();
 		LoadDatabase();
 	}
 
@@ -255,10 +255,25 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
+		StatsUpdate();
+	}
+
+	void AssetsSystem::StatsRegister() const
+	{
+		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsTrackedId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsLoadedId, UnsignedInteger, Set);
+	}
+
+	void AssetsSystem::StatsUpdate() const
+	{
 		uint64 Loaded = 0;
-		for (auto& [Path, Instance] : Assets)
+		for (auto& [Guid, Instance] : Assets)
 		{
-			Loaded++;
+			if (Instance.Instance)
+			{
+				Loaded++;
+			}
 		}
 
 		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::AssetsTrackedId, Assets.GetCount());
@@ -267,19 +282,19 @@ namespace NxEn
 
 	void AssetsSystem::LoadDatabase()
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath("", DatabaseName, "", DatabaseExtension);
+		NxFr::Path CsvPath = Project::GetSavedConfigPath("", DatabaseName, "", DatabaseExtension);
 
-		if (Path.Exist())
+		if (CsvPath.Exist())
 		{
-			NxFr::Csv Csv = NxFr::Csv(Path);
+			NxFr::Csv Csv = NxFr::Csv(CsvPath);
 			Csv.ReadFile();
 
 			for (uint64 Index = 0; Index < Csv.GetLinesCount(); ++Index)
 			{
-				NxFr::StringView File = Csv.GetData(Index, 0);
+				NxFr::GUID Guid = NxFr::StringUtility::FromString<NxFr::GUID>(Csv.GetData(Index, 0));
+				NxFr::StringView Path = Csv.GetData(Index, 1);
 
-				Info* Instance = &Assets.AppendConstruct(File);
-				Instance->Path = File;
+				AddAsset(Guid, Path);
 			}
 		}
 		else
@@ -290,14 +305,13 @@ namespace NxEn
 
 			for (uint64 Index = 0; Index < Files.GetCount(); ++Index)
 			{
-				NxFr::Path File = NxFr::Path(Files[Index]);
-				if (NxFr::Path::HasExtension(File, AssetExtension))
+				NxFr::Path Path = NxFr::Path(Files[Index]);
+				if (NxFr::Path::HasExtension(Path, AssetExtension))
 				{
-					File.ConvertAbsoluteToRelative(NxFr::Paths::Assets);
-					File = File.GetPathWithoutExtension();
+					Path = NxFr::Path::ConvertAbsoluteToRelative(Path, NxFr::Paths::Assets);
+					Path = Path.GetPathWithoutExtension();
 
-					Info* Instance = &Assets.AppendConstruct((NxFr::StringView)File);
-					Instance->Path = File;
+					AddAsset(NxFr::Integer::GenerateGuid(), Path);
 				}
 			}
 		}
@@ -305,13 +319,15 @@ namespace NxEn
 
 	void AssetsSystem::SaveDatabase()
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath("", DatabaseName, "", DatabaseExtension);
+		NxFr::Path CsvPath = Project::GetSavedConfigPath("", DatabaseName, "", DatabaseExtension);
 
-		NxFr::Csv Csv = NxFr::Csv(Path);
+		NxFr::Csv Csv = NxFr::Csv(CsvPath);
+		Csv.AppendHeader("Guid");
 		Csv.AppendHeader("Path");
 
-		for (auto& [File, Instance] : Assets)
+		for (auto& [Guid, Instance] : Assets)
 		{
+			Csv.AppendCell(NxFr::StringUtility::ToString(Instance.Guid));
 			Csv.AppendCell(Instance.Path);
 			Csv.AppendNewLine();
 		}
@@ -319,10 +335,48 @@ namespace NxEn
 		Csv.WriteFile();
 	}
 
-	AssetsSystem::Info* AssetsSystem::GetAsset(NxFr::StringView Path)
+	AssetsSystem::Info* AssetsSystem::GetAsset(NxFr::GUID Guid)
 	{
-		Info* Instance = Assets.TryGet(Path);
+		Info* Instance = Assets.TryGet(Guid);
 		return Instance ? Instance : nullptr;
+	}
+
+	AssetsSystem::Info* AssetsSystem::AddAsset(NxFr::GUID Guid, NxFr::StringView Path)
+	{
+		if (!Path.IsEmpty())
+		{
+			Paths.Append(Path, Guid);
+		}
+
+		Info Instance;
+		Instance.Guid = Guid;
+		Instance.Path = Path;
+		Instance.Count = 0;
+		Instance.Instance = nullptr;
+		return &Assets.Append(Guid, NxFr::Move(Instance));
+	}
+
+	void AssetsSystem::RemoveAsset(NxFr::GUID Guid)
+	{
+		Info& Instance = Assets[Guid];
+		if (Instance.Path.IsValid())
+		{
+			Paths.Remove(Instance.Path);
+		}
+
+		Assets.Remove(Guid);
+	}
+
+	void AssetsSystem::MoveAsset(NxFr::GUID Guid, NxFr::StringView Path)
+	{
+		Info& Instance = Assets[Guid];
+		if (Instance.Path.IsValid())
+		{
+			Paths.Remove(Instance.Path);
+			Paths.Append(Path, Guid);
+		}
+
+		Assets[Guid].Path = Path;
 	}
 
 	NxFr::Path AssetsSystem::GetFilePath(NxFr::StringView Path)
