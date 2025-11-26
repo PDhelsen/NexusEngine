@@ -5,8 +5,7 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(Asset)
 
-	Asset::Asset(NxFr::GUID Id)
-		: Id(Id)
+	Asset::Asset()
 	{
 		SetTickable(false);
 	}
@@ -32,14 +31,6 @@ namespace NxEn
 	}
 
 	void Asset::OnTick(float TimeStep)
-	{
-	}
-
-	void Asset::OnSerialize(YAML::Node& Node)
-	{
-	}
-
-	void Asset::OnDeserialize(const YAML::Node& Node)
 	{
 	}
 }
