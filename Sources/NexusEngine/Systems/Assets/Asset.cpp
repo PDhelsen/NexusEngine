@@ -6,6 +6,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(Asset)
 
 	Asset::Asset()
+		: Id(0), Dirty(false)
 	{
 		SetTickable(false);
 	}
@@ -14,23 +15,23 @@ namespace NxEn
 	{
 	}
 
-	void Asset::OnInitialize()
+	void Asset::Load(YAML::Node& Node)
 	{
+		YAML::Node Data = Node["Data"];
+		OnLoad(Data);
 	}
 
-	void Asset::OnShutdown()
+	void Asset::Unload()
 	{
+		OnUnload();
 	}
 
-	void Asset::OnEnable()
+	void Asset::Save(YAML::Node& Node)
 	{
-	}
+		YAML::Node Data = YAML::Node();
+		OnSave(Data);
 
-	void Asset::OnDisable()
-	{
-	}
-
-	void Asset::OnTick(float TimeStep)
-	{
+		Node["Data"] = Data;
+		Dirty = false;
 	}
 }
