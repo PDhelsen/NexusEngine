@@ -23,13 +23,21 @@ namespace NxEn
 	}
 
 	AssetMetadata::AssetMetadata()
-		: Id(0), Type(0), Path(""), Data(3)
+		: Id(0), Type(0), Path(""), Content(""), Data(3)
 	{
 	}
 
-	AssetMetadata::AssetMetadata(Asset* Instance, NxFr::StringView Path)
-		: Id(Instance->GetId()), Type(Instance->GetObjectType()), Path(Path), Data(3)
+	AssetMetadata::AssetMetadata(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
+		: Id(Instance->GetId()), Type(Instance->GetObjectType()), Path(""), Content(""), Data(3)
 	{
+		if (!Path.IsEmpty())
+		{
+			this->Path = Path;
+			if (!Extension.IsEmpty())
+			{
+				this->Content = Path + "." + Extension;
+			}
+		}
 	}
 
 	AssetMetadata::~AssetMetadata()
@@ -42,6 +50,7 @@ namespace NxEn
 		Metadata["Id"] = Id;
 		Metadata["Type"] = Type;
 		Metadata["Path"] = Path.Data;
+		Metadata["Content"] = Content.Data;
 		Metadata["Data"] = Data;
 
 		Node["Metadata"] = Metadata;
@@ -54,6 +63,7 @@ namespace NxEn
 		Id = Metadata["Id"].as<NxFr::GUID>();
 		Type = Metadata["Type"].as<NxFr::StringId>();
 		Path = Metadata["Path"].as<NxFr::String>();
+		Content = Metadata["Content"].as<NxFr::String>();
 		Data = Metadata["Data"].as<NxFr::Dictionary<NxFr::String, NxFr::String>>();
 	}
 }

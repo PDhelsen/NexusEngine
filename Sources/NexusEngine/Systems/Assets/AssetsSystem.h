@@ -29,7 +29,7 @@ namespace NxEn
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, AssetsSystem)
 
 		template<typename T>
-		T* Create(NxFr::StringView Path);
+		T* Create(NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		NEXUS_ENGINE_API void Rename(NxFr::GUID Id, NxFr::StringView Name);
 		NEXUS_ENGINE_API void Move(NxFr::GUID Id, NxFr::StringView Path);
 		NEXUS_ENGINE_API void Delete(NxFr::GUID Id);
@@ -38,13 +38,13 @@ namespace NxEn
 
 		template<typename T>
 		T* Acquire(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "");
+		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
 		NEXUS_ENGINE_API void Purge();
 
 		NEXUS_ENGINE_API NxFr::List<NxFr::GUID> Find(NxFr::StringView Filter) const;
-		NEXUS_ENGINE_API NxFr::String IdToPath(NxFr::GUID Id) const;
 		NEXUS_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
+		NEXUS_ENGINE_API NxFr::String IdToPath(NxFr::GUID Id) const;
 
 		NEXUS_ENGINE_API Asset* GetAsset(NxFr::GUID Id);
 		NEXUS_ENGINE_API AssetHandle& GetHandle(NxFr::GUID Id);
@@ -61,7 +61,7 @@ namespace NxEn
 		void RecordStats() const;
 		void UpdateStats() const;
 
-		void Create_Append(NxFr::StringView Path, Asset* Instance);
+		void Create_Append(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension);
 		Asset* Acquire_Check(NxFr::GUID Id);
 		void Acquire_Load(NxFr::GUID Id, Asset* Instance);
 
@@ -74,10 +74,10 @@ namespace NxEn
 	};
 
 	template<typename T>
-	inline T* AssetsSystem::Create(NxFr::StringView Path)
+	inline T* AssetsSystem::Create(NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		T* Instance = new T();
-		Create_Append(Path, Instance);
+		Create_Append(Instance, Path, Extension);
 		return Instance;
 	}
 

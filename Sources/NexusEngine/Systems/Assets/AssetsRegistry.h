@@ -19,15 +19,18 @@ namespace NxEn
 		void Deserialize(NxFr::GUID Id, YAML::Node& Node);
 
 		NxFr::List<NxFr::GUID> Find(NxFr::StringView Filter) const;
-		NxFr::String IdToPath(NxFr::GUID Id) const;
 		NxFr::GUID PathToId(NxFr::StringView Path) const;
+		NxFr::String IdToPath(NxFr::GUID Id) const;
+		NxFr::String IdToFile(NxFr::GUID Id) const;
+		NxFr::String IdToContent(NxFr::GUID Id) const;
 
 		bool IsValid(NxFr::GUID Id) const { return Assets.ContainsKey(Id); };
 		uint64 GetCount() const { return Assets.GetCount(); }
 
 	private:
-		NxFr::Path FilePath(NxFr::StringView Path) const;
-		NxFr::Path AssetPath(NxFr::StringView Path, NxFr::GUID Id) const;
+		NxFr::String AssetPath(NxFr::StringView Path, NxFr::GUID Id) const;
+		NxFr::String FilePath(NxFr::StringView Path) const;
+		NxFr::String ContentPath(NxFr::StringView Path) const;
 
 	private:
 		NxFr::Path Root;

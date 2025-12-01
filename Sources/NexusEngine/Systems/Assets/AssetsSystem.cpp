@@ -20,14 +20,14 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsSystem)
 
-	void AssetsSystem::Create_Append(NxFr::StringView Path, Asset* Instance)
+	void AssetsSystem::Create_Append(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
 
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
 		Instance->Id = Id;
 
-		Registry->Append(Id, AssetMetadata(Instance, Path));
+		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
 
@@ -102,7 +102,7 @@ namespace NxEn
 		OnSave.Invoke(Instance);
 
 		YAML::Node Node = YAML::Node();
-		Manager->Save(Id, Node);
+		Manager->Save(Id, Node, Registry->IdToContent(Id));
 		Registry->Serialize(Id, Node);
 
 		OnEvent.Invoke(EventSaveId, Id);
@@ -119,14 +119,14 @@ namespace NxEn
 		OnEvent.Invoke(EventSaveId, 0);
 	}
 
-	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path)
+	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
 
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
 		Instance->Id = Id;
 
-		Registry->Append(Id, AssetMetadata(Instance, Path));
+		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
 
@@ -159,7 +159,7 @@ namespace NxEn
 
 		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
-		Manager->Load(Id, Node);
+		Manager->Load(Id, Node, Registry->IdToContent(Id));
 
 		Instance->Initialize();
 
@@ -207,14 +207,14 @@ namespace NxEn
 		return Registry->Find(Filter);
 	}
 
-	NxFr::String AssetsSystem::IdToPath(NxFr::GUID Id) const
-	{
-		return Registry->IdToPath(Id);
-	}
-
 	NxFr::GUID AssetsSystem::PathToId(NxFr::StringView Path) const
 	{
 		return Registry->PathToId(Path);
+	}
+
+	NxFr::String AssetsSystem::IdToPath(NxFr::GUID Id) const
+	{
+		return Registry->IdToPath(Id);
 	}
 
 	Asset* AssetsSystem::GetAsset(NxFr::GUID Id)
