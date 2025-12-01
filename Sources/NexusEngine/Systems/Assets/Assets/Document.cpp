@@ -1,0 +1,28 @@
+#include "NexusEngine/Core/NexusEnginePch.h"
+#include "NexusEngine/Systems/Assets/Assets/Document.h"
+
+namespace NxEn
+{
+	NEXUS_OBJECT_IMPLEMENTATION(Document)
+
+	void Document::OnLoad(YAML::Node& Node, NxFr::StringView Content)
+	{
+		NxFr::File File = NxFr::File(Content);
+		File.Open(NxFr::File::Mode::Read);
+		Data = File.ReadText();
+		File.Close();
+	}
+
+	void Document::OnUnload()
+	{
+		Data = NxFr::String();
+	}
+
+	void Document::OnSave(YAML::Node& Node, NxFr::StringView Content)
+	{
+		NxFr::File File = NxFr::File(Content);
+		File.Create(true);
+		File.WriteText(Data);
+		File.Close();
+	}
+}
