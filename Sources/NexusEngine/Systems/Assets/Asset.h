@@ -6,9 +6,7 @@ namespace NxEn
 {
 	class Asset : public Object
 	{
-		friend struct AssetMetadata;
 		friend class AssetsSystem;
-		friend class AssetsRegistry;
 		friend class AssetsManager;
 
 	public:

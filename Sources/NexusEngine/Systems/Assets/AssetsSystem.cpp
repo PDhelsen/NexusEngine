@@ -27,8 +27,8 @@ namespace NxEn
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
 		Instance->Id = Id;
 
-		Registry->Append(Id, AssetsRegistry::Info(Instance, Path));
-		Manager->Append(Id, AssetsManager::Info(Instance));
+		Registry->Append(Id, AssetMetadata(Instance, Path));
+		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
 
 		OnEvent.Invoke(EventCreateId, Instance->GetId());
@@ -70,7 +70,8 @@ namespace NxEn
 
 		if (Manager->IsValid(Id))
 		{
-			Asset* Instance = Manager->Get(Id);
+			AssetHandle& Handle = Manager->Get(Id);
+			Asset* Instance = Handle.GetInstance();
 
 			Manager->Unload(Id);
 			Manager->Remove(Id);
@@ -93,12 +94,14 @@ namespace NxEn
 			return;
 		}
 
-		YAML::Node Node = YAML::Node();
-		Asset* Instance = Manager->Get(Id);
-
+		Asset* Instance = Manager->Get(Id).GetInstance();
+		if (!Instance->IsDirty())
+		{
+			return;
+		}
 		OnSave.Invoke(Instance);
 
-		Node["Metadata"] = AssetMetadata(Instance, IdToPath(Id));
+		YAML::Node Node = YAML::Node();
 		Manager->Save(Id, Node);
 		Registry->Serialize(Id, Node);
 
@@ -116,18 +119,6 @@ namespace NxEn
 		OnEvent.Invoke(EventSaveId, 0);
 	}
 
-	Asset* AssetsSystem::Get(NxFr::GUID Id)
-	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
-
-		if (!Manager->IsValid(Id))
-		{
-			return nullptr;
-		}
-
-		return Manager->Get(Id);
-	}
-
 	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path)
 	{
 		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
@@ -135,8 +126,8 @@ namespace NxEn
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
 		Instance->Id = Id;
 
-		Registry->Append(Id, AssetsRegistry::Info(Instance, Path));
-		Manager->Append(Id, AssetsManager::Info(Instance));
+		Registry->Append(Id, AssetMetadata(Instance, Path));
+		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
 
 		OnEvent.Invoke(EventTrackId, Id);
@@ -155,20 +146,18 @@ namespace NxEn
 
 		OnEvent.Invoke(EventAcquireId, Id);
 
-		return Manager->Get(Id);
+		return Manager->Get(Id).GetInstance();
 	}
 
 	void AssetsSystem::Acquire_Load(NxFr::GUID Id, Asset* Instance)
 	{
 		YAML::Node Node = YAML::Node();
-
 		Registry->Deserialize(Id, Node);
-		AssetMetadata Metadata = Node["Metadata"].as<AssetMetadata>();
 
-		NEXUS_ASSERT(Instance->GetObjectType() == Metadata.Type, System, "Asset file type doesn't match runtime type (%d)", Metadata.Id);
-		Instance->Id = Metadata.Id;
+		NEXUS_ASSERT(Instance->GetObjectType() == Registry->Get(Id).GetType(), System, "Asset file type doesn't match runtime type (%d)", Id);
+		Instance->Id = Id;
 
-		Manager->Append(Id, AssetsManager::Info(Instance));
+		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
 		Manager->Load(Id, Node);
 
@@ -189,7 +178,8 @@ namespace NxEn
 		Manager->Release(Id);
 		if (!Manager->IsUsed(Id) && !Keep)
 		{
-			Asset* Instance = Manager->Get(Id);
+			AssetHandle& Handle = Manager->Get(Id);
+			Asset* Instance = Handle.GetInstance();
 
 			Manager->Unload(Id);
 			Manager->Remove(Id);
@@ -225,6 +215,32 @@ namespace NxEn
 	NxFr::GUID AssetsSystem::PathToId(NxFr::StringView Path) const
 	{
 		return Registry->PathToId(Path);
+	}
+
+	Asset* AssetsSystem::GetAsset(NxFr::GUID Id)
+	{
+		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+
+		if (!Manager->IsValid(Id))
+		{
+			return nullptr;
+		}
+
+		return Manager->Get(Id).GetInstance();
+	}
+
+	AssetHandle& AssetsSystem::GetHandle(NxFr::GUID Id)
+	{
+		NEXUS_ASSERT(Manager->IsValid(Id), System, "Unloaded asset %d", Id);
+
+		return Manager->Get(Id);
+	}
+
+	AssetMetadata& AssetsSystem::GetMetadata(NxFr::GUID Id)
+	{
+		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+
+		return Registry->Get(Id);
 	}
 
 	void AssetsSystem::OnInitialize()

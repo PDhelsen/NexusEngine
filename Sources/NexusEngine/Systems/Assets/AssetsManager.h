@@ -1,31 +1,23 @@
 #pragma once
 
-#include "NexusEngine/Systems/Assets/Asset.h"
+#include "NexusEngine/Systems/Assets/AssetMetadata.h"
 
 namespace NxEn
 {
 	class AssetsManager
 	{
 	public:
-		struct Info
-		{
-			Info(Asset* Instance);
-
-			Asset* Instance;
-			uint64 Count;
-		};
-
 		AssetsManager();
 		~AssetsManager();
 
-		void Append(NxFr::GUID Id, const Info& Instance);
+		void Append(NxFr::GUID Id, const AssetHandle& Handle);
 		void Remove(NxFr::GUID Id);
+		AssetHandle& Get(NxFr::GUID Id);
 
 		void Load(NxFr::GUID Id, YAML::Node& Node);
 		void Unload(NxFr::GUID Id);
 		void Save(NxFr::GUID Id, YAML::Node& Node);
 
-		Asset* Get(NxFr::GUID Id);
 		void Acquire(NxFr::GUID Id);
 		void Release(NxFr::GUID Id);
 		bool IsUsed(NxFr::GUID Id) const;
@@ -37,7 +29,7 @@ namespace NxEn
 		uint64 GetCount() const { return Assets.GetCount(); }
 
 	private:
-		NxFr::Dictionary<NxFr::GUID, Info> Assets;
+		NxFr::Dictionary<NxFr::GUID, AssetHandle> Assets;
 		NxFr::Set<NxFr::GUID> Loading;
 	};
 }

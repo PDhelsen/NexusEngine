@@ -2,7 +2,7 @@
 
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Assets/Asset.h"
-#include "AssetsManager.h"
+#include "NexusEngine/Systems/Assets/AssetMetadata.h"
 
 namespace NxFr
 {
@@ -38,7 +38,6 @@ namespace NxEn
 
 		template<typename T>
 		T* Acquire(NxFr::GUID Id);
-		NEXUS_ENGINE_API Asset* Get(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "");
 		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
 		NEXUS_ENGINE_API void Purge();
@@ -46,6 +45,10 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::List<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NEXUS_ENGINE_API NxFr::String IdToPath(NxFr::GUID Id) const;
 		NEXUS_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
+
+		NEXUS_ENGINE_API Asset* GetAsset(NxFr::GUID Id);
+		NEXUS_ENGINE_API AssetHandle& GetHandle(NxFr::GUID Id);
+		NEXUS_ENGINE_API AssetMetadata& GetMetadata(NxFr::GUID Id);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnEvent() { return OnEvent; }
 		NEXUS_ENGINE_API NxFr::Event<Asset*>& GetOnSave() { return OnSave; }

@@ -3,11 +3,6 @@
 
 namespace NxEn
 {
-	AssetsManager::Info::Info(Asset* Instance)
-		: Instance(Instance), Count(0)
-	{
-	}
-
 	AssetsManager::AssetsManager()
 		: Assets(), Loading()
 	{
@@ -17,9 +12,9 @@ namespace NxEn
 	{
 	}
 
-	void AssetsManager::Append(NxFr::GUID Id, const Info& Instance)
+	void AssetsManager::Append(NxFr::GUID Id, const AssetHandle& Handle)
 	{
-		Assets.Append(Id, Instance);
+		Assets.Append(Id, Handle);
 	}
 
 	void AssetsManager::Remove(NxFr::GUID Id)
@@ -29,13 +24,18 @@ namespace NxEn
 		Assets.Remove(Id);
 	}
 
+	AssetHandle& AssetsManager::Get(NxFr::GUID Id)
+	{
+		return Assets[Id];
+	}
+
 	void AssetsManager::Load(NxFr::GUID Id, YAML::Node& Node)
 	{
 		NEXUS_ASSERT(!Loading.Contains(Id), System, "Circular loading dependecy detected (%d)", Id);
 
 		Loading.Append(Id);
 
-		Assets[Id].Instance->Load(Node);
+		Assets[Id].GetInstance()->Load(Node);
 
 		Loading.Remove(Id);
 	}
@@ -46,38 +46,29 @@ namespace NxEn
 
 		Loading.Append(Id);
 
-		Assets[Id].Instance->Unload();
+		Assets[Id].GetInstance()->Unload();
 
 		Loading.Remove(Id);
 	}
 
 	void AssetsManager::Save(NxFr::GUID Id, YAML::Node& Node)
 	{
-		Assets[Id].Instance->Save(Node);
-	}
-
-	Asset* AssetsManager::Get(NxFr::GUID Id)
-	{
-		Info& I = Assets[Id];
-		return I.Instance;
+		Assets[Id].GetInstance()->Save(Node);
 	}
 
 	void NxEn::AssetsManager::Acquire(NxFr::GUID Id)
 	{
-		Info& I = Assets[Id];
-		I.Count++;
+		Assets[Id].Acquire();
 	}
 
 	void NxEn::AssetsManager::Release(NxFr::GUID Id)
 	{
-		Info& I = Assets[Id];
-		I.Count--;
+		Assets[Id].Release();
 	}
 
 	bool AssetsManager::IsUsed(NxFr::GUID Id) const
 	{
-		const Info& I = Assets[Id];
-		return I.Count > 0;
+		return Assets[Id].IsUsed();
 	}
 
 	NxFr::List<NxFr::GUID> AssetsManager::GetUnused() const
@@ -86,7 +77,7 @@ namespace NxEn
 
 		for (auto& [Id, I] : Assets)
 		{
-			if (I.Count == 0)
+			if (I.GetCount() == 0)
 			{
 				Ids.Append(Id);
 			}
@@ -101,7 +92,7 @@ namespace NxEn
 
 		for (auto& [Id, I] : Assets)
 		{
-			if (I.Instance->IsDirty())
+			if (I.GetInstance()->IsDirty())
 			{
 				Ids.Append(Id);
 			}

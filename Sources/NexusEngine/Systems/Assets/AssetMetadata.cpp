@@ -3,17 +3,57 @@
 
 namespace NxEn
 {
+	AssetHandle::AssetHandle(Asset* Instance)
+		: Instance(Instance), Count(0)
+	{
+	}
+
+	AssetHandle::~AssetHandle()
+	{
+	}
+
+	void AssetHandle::Acquire()
+	{
+		Count++;
+	}
+
+	void AssetHandle::Release()
+	{
+		Count--;
+	}
+
 	AssetMetadata::AssetMetadata()
-		: Id(0), Type(0), Path("")
+		: Id(0), Type(0), Path(""), Data(3)
 	{
 	}
 
 	AssetMetadata::AssetMetadata(Asset* Instance, NxFr::StringView Path)
-		: Id(Instance->Id), Type(Instance->GetObjectType()), Path(Path)
+		: Id(Instance->GetId()), Type(Instance->GetObjectType()), Path(Path), Data(3)
 	{
 	}
 
 	AssetMetadata::~AssetMetadata()
 	{
+	}
+
+	void AssetMetadata::Serialize(YAML::Node& Node)
+	{
+		YAML::Node Metadata = YAML::Node();
+		Metadata["Id"] = Id;
+		Metadata["Type"] = Type;
+		Metadata["Path"] = Path.Data;
+		Metadata["Data"] = Data;
+
+		Node["Metadata"] = Metadata;
+	}
+
+	void AssetMetadata::Deserialize(YAML::Node& Node)
+	{
+		YAML::Node Metadata = Node["Metadata"];
+
+		Id = Metadata["Id"].as<NxFr::GUID>();
+		Type = Metadata["Type"].as<NxFr::StringId>();
+		Path = Metadata["Path"].as<NxFr::String>();
+		Data = Metadata["Data"].as<NxFr::Dictionary<NxFr::String, NxFr::String>>();
 	}
 }
