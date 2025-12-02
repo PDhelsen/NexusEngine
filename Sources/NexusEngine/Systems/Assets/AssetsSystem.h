@@ -25,6 +25,7 @@ namespace NxEn
 		const NxFr::StringId EventAcquireId = "Acquire"_Sid;
 		const NxFr::StringId EventTrackId = "Track"_Sid;
 		const NxFr::StringId EventReleaseId = "Release"_Sid;
+		const NxFr::StringId EventImportId = "Import"_Sid;
 
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, AssetsSystem)
 
@@ -42,6 +43,11 @@ namespace NxEn
 		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
 		NEXUS_ENGINE_API void Purge();
 
+#if NEXUS_EDITOR
+		template<typename T>
+		T* Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
+#endif
+
 		NEXUS_ENGINE_API NxFr::List<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NEXUS_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
 		NEXUS_ENGINE_API NxFr::String IdToPath(NxFr::GUID Id) const;
@@ -58,12 +64,15 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
-		void RecordStats() const;
-		void UpdateStats() const;
+		NEXUS_ENGINE_API void RecordStats() const;
+		NEXUS_ENGINE_API void UpdateStats() const;
 
-		void Create_Append(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension);
-		Asset* Acquire_Check(NxFr::GUID Id);
-		void Acquire_Load(NxFr::GUID Id, Asset* Instance);
+		NEXUS_ENGINE_API void Create_Append(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension);
+		NEXUS_ENGINE_API Asset* Acquire_Check(NxFr::GUID Id);
+		NEXUS_ENGINE_API void Acquire_Load(NxFr::GUID Id, Asset* Instance);
+#if NEXUS_EDITOR
+		NEXUS_ENGINE_API void Import_Append(Asset* Instance, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
+#endif
 
 	private:
 		NxFr::Event<NxFr::StringId, NxFr::GUID> OnEvent;
@@ -93,4 +102,14 @@ namespace NxEn
 
 		return Instance;
 	}
+
+#if NEXUS_EDITOR
+	template<typename T>
+	inline T* AssetsSystem::Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
+	{
+		T* Instance = new T();
+		Import_Append(Instance, Node, Path, Extension);
+		return Instance;
+	}
+#endif
 }

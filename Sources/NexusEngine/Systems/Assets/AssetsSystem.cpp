@@ -227,6 +227,26 @@ namespace NxEn
 		OnEvent.Invoke(EventReleaseId, 0);
 	}
 
+#if NEXUS_EDITOR
+	void AssetsSystem::Import_Append(Asset* Instance, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
+	{
+		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already imported asset %d", Instance->GetId());
+
+		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
+		Instance->Id = Id;
+
+		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
+		Manager->Append(Id, AssetHandle(Instance));
+		Manager->Acquire(Id);
+		Manager->Load(Id, Node, Registry->IdToContent(Id));
+
+		Instance->SetDirty();
+		Instance->Initialize();
+
+		OnEvent.Invoke(EventImportId, Instance->GetId());
+	}
+#endif
+
 	NxFr::List<NxFr::GUID> AssetsSystem::Find(NxFr::StringView Filter) const
 	{
 		return Registry->Find(Filter);
