@@ -11,10 +11,10 @@ namespace NxEn
 
 		NEXUS_ENGINE_API YAML::Node& GetRoot() { return Data; }
 
-	private:
-		NEXUS_ENGINE_API void OnLoad(YAML::Node& Node, NxFr::StringView Content) override;
-		NEXUS_ENGINE_API void OnUnload() override;
+	protected:
 		NEXUS_ENGINE_API void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
+		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
+		NEXUS_ENGINE_API void OnUnload() override;
 
 	private:
 		YAML::Node Data;

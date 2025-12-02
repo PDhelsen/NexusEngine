@@ -38,12 +38,19 @@ namespace NxEn
 	{
 		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
 
-		NxFr::StringView AssetPath = IdToPath(Id);
-		if (AssetPath.IsEmpty() || Name.IsEmpty())
+		if (Name.IsEmpty())
 		{
+			NEXUS_LOG(Warning, System, "Can't rename with empty name");
 			return;
 		}
 
+		if (!Registry->HasFile(Id))
+		{
+			NEXUS_LOG(Warning, System, "Asset %d has no associated path");
+			return;
+		}
+
+		NxFr::StringView AssetPath = IdToPath(Id);
 		Registry->Move(Id, NxFr::Path::ChangeFileName(AssetPath, Name));
 
 		OnEvent.Invoke(EventRenameId, Id);
@@ -53,9 +60,15 @@ namespace NxEn
 	{
 		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
 
-		NxFr::StringView AssetPath = IdToPath(Id);
-		if (AssetPath.IsEmpty() || Path.IsEmpty())
+		if (Path.IsEmpty())
 		{
+			NEXUS_LOG(Warning, System, "Can't move to empty path");
+			return;
+		}
+
+		if (!Registry->HasFile(Id))
+		{
+			NEXUS_LOG(Warning, System, "Asset %d has no associated path");
 			return;
 		}
 
@@ -88,6 +101,12 @@ namespace NxEn
 	void AssetsSystem::Save(NxFr::GUID Id)
 	{
 		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+
+		if (!Registry->HasFile(Id))
+		{
+			NEXUS_LOG(Warning, System, "Asset %d has no associated path");
+			return;
+		}
 
 		if (!Manager->IsValid(Id))
 		{
@@ -151,6 +170,12 @@ namespace NxEn
 
 	void AssetsSystem::Acquire_Load(NxFr::GUID Id, Asset* Instance)
 	{
+		if (!Registry->HasFile(Id))
+		{
+			NEXUS_LOG(Warning, System, "Asset %d has no associated path");
+			return;
+		}
+
 		YAML::Node Node = YAML::Node();
 		Registry->Deserialize(Id, Node);
 

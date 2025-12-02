@@ -5,7 +5,12 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(Table)
 
-	void Table::OnLoad(YAML::Node& Node, NxFr::StringView Content)
+	void Table::OnSave(YAML::Node& Node, NxFr::StringView Content)
+	{
+		NxFr::Yaml::SerializeFile(Data, Content);
+	}
+
+	void Table::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
 		Data = NxFr::Yaml::DeserializeFile(Content);
 	}
@@ -13,10 +18,5 @@ namespace NxEn
 	void Table::OnUnload()
 	{
 		Data = YAML::Node();
-	}
-
-	void Table::OnSave(YAML::Node& Node, NxFr::StringView Content)
-	{
-		NxFr::Yaml::SerializeFile(Data, Content);
 	}
 }

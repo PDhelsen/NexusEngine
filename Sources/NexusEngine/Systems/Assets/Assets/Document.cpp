@@ -5,7 +5,15 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(Document)
 
-	void Document::OnLoad(YAML::Node& Node, NxFr::StringView Content)
+	void Document::OnSave(YAML::Node& Node, NxFr::StringView Content)
+	{
+		NxFr::File File = NxFr::File(Content);
+		File.Create(true);
+		File.WriteText(Data);
+		File.Close();
+	}
+
+	void Document::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
 		NxFr::File File = NxFr::File(Content);
 		File.Open(NxFr::File::Mode::Read);
@@ -16,13 +24,5 @@ namespace NxEn
 	void Document::OnUnload()
 	{
 		Data = NxFr::String();
-	}
-
-	void Document::OnSave(YAML::Node& Node, NxFr::StringView Content)
-	{
-		NxFr::File File = NxFr::File(Content);
-		File.Create(true);
-		File.WriteText(Data);
-		File.Close();
 	}
 }

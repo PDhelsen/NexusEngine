@@ -35,23 +35,19 @@ namespace NxEn
 
 		if (Metadata.GetPath().IsValid())
 		{
+			Paths.Append(Metadata.GetPath().Data, Id);
 			NxFr::File(FilePath(Metadata.GetPath())).Create();
 		}
-
-		Paths.Append(AssetPath(Metadata.GetPath(), Id), Id);
 	}
 
 	void AssetsRegistry::Move(NxFr::GUID Id, NxFr::StringView Path)
 	{
 		AssetMetadata& Metadata = Assets[Id];
 
-		if (Metadata.GetPath().IsValid() && Metadata.GetPath().Exist())
-		{
-			NxFr::File(FilePath(Metadata.GetPath())).Move(FilePath(Path));
-		}
+		NxFr::File(FilePath(Metadata.GetPath())).Move(FilePath(Path));
 
-		Paths.Remove(AssetPath(Metadata.GetPath(), Id));
-		Paths.Append(AssetPath(Metadata.GetPath(), Id), Id);
+		Paths.Remove(Metadata.GetPath().Data);
+		Paths.Append(Metadata.GetPath().Data, Id);
 
 		Metadata.Path = Path;
 	}
@@ -62,10 +58,10 @@ namespace NxEn
 
 		if (Metadata.GetPath().IsValid() && Metadata.GetPath().Exist())
 		{
+			Paths.Remove(Metadata.GetPath().Data);
 			NxFr::File(FilePath(Metadata.GetPath())).Delete();
 		}
 
-		Paths.Remove(AssetPath(Metadata.GetPath(), Id));
 		Assets.Remove(Id);
 	}
 
@@ -154,11 +150,6 @@ namespace NxEn
 	{
 		const AssetMetadata* Metadata = Assets.TryGet(Id);
 		return Metadata ? ContentPath(Metadata->GetContent()) : NxFr::StringUtility::Empty;
-	}
-
-	NxFr::String AssetsRegistry::AssetPath(NxFr::StringView Path, NxFr::GUID Id) const
-	{
-		return !Path.IsEmpty() ? NxFr::String(Path) : NxFr::StringUtility::ToString(Id);
 	}
 
 	NxFr::String AssetsRegistry::FilePath(NxFr::StringView Path) const

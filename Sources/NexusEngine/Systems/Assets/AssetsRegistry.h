@@ -25,10 +25,10 @@ namespace NxEn
 		NxFr::String IdToContent(NxFr::GUID Id) const;
 
 		bool IsValid(NxFr::GUID Id) const { return Assets.ContainsKey(Id); };
+		bool HasFile(NxFr::GUID Id) const { return Assets[Id].GetPath().IsValid(); }
 		uint64 GetCount() const { return Assets.GetCount(); }
 
 	private:
-		NxFr::String AssetPath(NxFr::StringView Path, NxFr::GUID Id) const;
 		NxFr::String FilePath(NxFr::StringView Path) const;
 		NxFr::String ContentPath(NxFr::StringView Path) const;
 

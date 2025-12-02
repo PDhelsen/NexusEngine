@@ -19,14 +19,15 @@ namespace NxEn
 		NEXUS_ENGINE_API bool IsDirty() const { return Dirty; }
 		NEXUS_ENGINE_API void SetDirty() { Dirty = true; }
 
+	protected:
+		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node, NxFr::StringView Content) = 0;
+		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node, NxFr::StringView Content) = 0;
+		NEXUS_ENGINE_API virtual void OnUnload() = 0;
+
 	private:
-		NEXUS_ENGINE_API void Load(YAML::Node& Node, NxFr::StringView Content);
+		NEXUS_ENGINE_API void Load(const YAML::Node& Node, NxFr::StringView Content);
 		NEXUS_ENGINE_API void Unload();
 		NEXUS_ENGINE_API void Save(YAML::Node& Node, NxFr::StringView Content);
-
-		NEXUS_ENGINE_API virtual void OnLoad(YAML::Node& Node, NxFr::StringView Content) = 0;
-		NEXUS_ENGINE_API virtual void OnUnload() = 0;
-		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node, NxFr::StringView Content) = 0;
 
 	private:
 		NxFr::GUID Id;
