@@ -43,10 +43,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
 		NEXUS_ENGINE_API void Purge();
 
-#if NEXUS_EDITOR
 		template<typename T>
 		T* Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
-#endif
 
 		NEXUS_ENGINE_API NxFr::List<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NEXUS_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
@@ -103,13 +101,15 @@ namespace NxEn
 		return Instance;
 	}
 
-#if NEXUS_EDITOR
 	template<typename T>
 	inline T* AssetsSystem::Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
 	{
+#if NEXUS_EDITOR
 		T* Instance = new T();
 		Import_Append(Instance, Node, Path, Extension);
 		return Instance;
-	}
+#else
+		return nullptr;
 #endif
+	}
 }
