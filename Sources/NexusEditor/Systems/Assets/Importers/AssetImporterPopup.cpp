@@ -1,17 +1,24 @@
 #include "NexusEditor/Systems/Assets/Importers/AssetImporterPopup.h"
 
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
+#include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
 
 namespace NxEd
 {
-	AssetImporterPopup* Popup = NxEn::Object::Create<AssetImporterPopup>(false);
+	AssetImporterPopup* PopupInstance = NxEn::Object::Create<AssetImporterPopup>(false);
 
 	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Import", NxFr::Delegate<void()>([]()
 	{
-		Popup->Show();
+		PopupInstance->Show();
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(AssetImporterPopup)
+
+	void AssetImporterPopup::ShowWithPath(NxFr::StringView Path)
+	{
+		PopupInstance->Show();
+		PopupInstance->Path = Path;
+	}
 
 	AssetImporterPopup::AssetImporterPopup()
 		: Type(), Path(64), Release(true)

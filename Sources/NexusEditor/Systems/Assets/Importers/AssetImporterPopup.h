@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
+#include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
 
 namespace NxEd
@@ -9,6 +9,8 @@ namespace NxEd
 	{
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetImporterPopup)
+
+		NEXUS_EDITOR_API static void ShowWithPath(NxFr::StringView Path);
 
 		NEXUS_EDITOR_API AssetImporterPopup();
 		NEXUS_EDITOR_API virtual ~AssetImporterPopup();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 namespace NxEd
 {
@@ -52,6 +53,7 @@ namespace NxEd
 			Instance = nullptr;
 		}
 
+		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Refresh();
 		return Instance;
 	}
 }

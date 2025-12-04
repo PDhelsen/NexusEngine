@@ -48,7 +48,7 @@ namespace NxEn
 			template<typename T>
 			static T* Create()
 			{
-				NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+				//NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 				T* Instance = Object::Create<T>(false);
 				GUISystem::RegisterPanel(Instance);
