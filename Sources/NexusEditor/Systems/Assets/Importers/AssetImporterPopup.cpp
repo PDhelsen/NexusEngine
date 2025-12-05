@@ -7,7 +7,7 @@ namespace NxEd
 {
 	AssetImporterPopup* PopupInstance = NxEn::Object::Create<AssetImporterPopup>(false);
 
-	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Import", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Importer", NxFr::Delegate<void()>([]()
 	{
 		PopupInstance->Show();
 	}));
