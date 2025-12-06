@@ -24,6 +24,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node, NxFr::StringView Content) = 0;
 		NEXUS_ENGINE_API virtual void OnUnload() = 0;
 
+		NEXUS_ENGINE_API virtual NxFr::Array<NxFr::GUID> GetDependencies() = 0;
+
 	private:
 		NEXUS_ENGINE_API void Load(const YAML::Node& Node, NxFr::StringView Content);
 		NEXUS_ENGINE_API void Unload();

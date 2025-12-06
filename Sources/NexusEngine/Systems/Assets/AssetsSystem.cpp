@@ -110,15 +110,21 @@ namespace NxEn
 
 		if (!Manager->IsValid(Id))
 		{
+			NEXUS_LOG(Warning, System, "Asset %d is not loaded");
 			return;
 		}
 
-		Asset* Instance = Manager->Get(Id).GetInstance();
+		AssetMetadata& Metadata = Registry->Get(Id);
+		AssetHandle& Handle = Manager->Get(Id);
+		Asset* Instance = Handle.GetInstance();
+
 		if (!Instance->IsDirty())
 		{
 			return;
 		}
+
 		OnSave.Invoke(Instance);
+		Metadata.Dependencies = Instance->GetDependencies();
 
 		YAML::Node Node = YAML::Node();
 		Manager->Save(Id, Node, Registry->IdToContent(Id));
@@ -288,6 +294,15 @@ namespace NxEn
 		return Registry->Get(Id);
 	}
 
+	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recusive)
+	{
+		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+
+		NxFr::Set<NxFr::GUID> Dependencies;
+		FetchDependencies(Id, Recusive, Dependencies);
+		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
+	}
+
 	void AssetsSystem::OnInitialize()
 	{
 		System::OnInitialize();
@@ -324,5 +339,34 @@ namespace NxEn
 	{
 		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::AssetsTrackedId, Registry->GetCount());
 		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::AssetsLoadedId, Manager->GetCount());
+	}
+
+	void AssetsSystem::FetchDependencies(NxFr::GUID Id, bool Recusive, NxFr::Set<NxFr::GUID>& Result)
+	{
+		NxEn::Asset* Instance = GetAsset(Id);
+
+		NxFr::List<NxFr::GUID> Dependencies;
+		if (Instance && Instance->IsDirty())
+		{
+			Dependencies.AppendRange(GetHandle(Id).GetInstance()->GetDependencies());
+		}
+		else
+		{
+			Dependencies.AppendRange(GetMetadata(Id).GetDependencies());
+		}
+
+		for (auto& Dependency : Dependencies)
+		{
+			if (Result.Contains(Dependency) || Dependency == 0)
+			{
+				continue;
+			}
+
+			Result.Append(Dependency);
+			if (Recusive)
+			{
+				FetchDependencies(Dependency, true, Result);
+			}
+		}
 	}
 }

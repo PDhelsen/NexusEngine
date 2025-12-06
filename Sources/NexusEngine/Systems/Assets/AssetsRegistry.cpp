@@ -90,6 +90,7 @@ namespace NxEn
 
 		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
 		NxFr::Array<NxFr::StringId> Types = Filters.GetCount();
+		bool All = Filter == "*";
 
 		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 		{
@@ -106,8 +107,13 @@ namespace NxEn
 		{
 			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 			{
+				// All
+				if (All)
+				{
+					Result.Append(Id);
+				}
 				// Filter by types
-				if (Types[Index].GetId() != 0)
+				else if (Types[Index].GetId() != 0)
 				{
 					if (Metadata.GetType() == Types[Index])
 					{

@@ -51,6 +51,7 @@ namespace NxEn
 		Metadata["Type"] = Type;
 		Metadata["Path"] = Path.Data;
 		Metadata["Content"] = Content.Data;
+		Metadata["Dependencies"] = Dependencies;
 		Metadata["Data"] = Data;
 
 		Node["Metadata"] = Metadata;
@@ -64,6 +65,7 @@ namespace NxEn
 		Type = Metadata["Type"].as<NxFr::StringId>();
 		Path = Metadata["Path"].as<NxFr::String>();
 		Content = Metadata["Content"].as<NxFr::String>();
+		Dependencies = Metadata["Dependencies"].as<NxFr::Array<NxFr::GUID>>();
 		Data = Metadata["Data"].as<NxFr::Dictionary<NxFr::String, NxFr::String>>();
 	}
 }

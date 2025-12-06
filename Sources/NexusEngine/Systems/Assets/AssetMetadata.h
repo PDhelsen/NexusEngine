@@ -6,6 +6,7 @@ namespace NxEn
 {
 	struct AssetHandle
 	{
+		friend class AssetsSystem;
 		friend class AssetsManager;
 
 	public:
@@ -27,6 +28,7 @@ namespace NxEn
 
 	struct AssetMetadata
 	{
+		friend class AssetsSystem;
 		friend class AssetsRegistry;
 
 	public:
@@ -40,6 +42,7 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::StringId GetType() { return Type; }
 		NEXUS_ENGINE_API const NxFr::Path& GetPath() const { return Path; }
 		NEXUS_ENGINE_API const NxFr::Path& GetContent() const { return Content; }
+		NEXUS_ENGINE_API const NxFr::Array<NxFr::GUID>& GetDependencies() { return Dependencies; }
 		NEXUS_ENGINE_API NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
 
 	private:
@@ -51,6 +54,7 @@ namespace NxEn
 		NxFr::StringId Type;
 		NxFr::Path Path;
 		NxFr::Path Content;
+		NxFr::Array<NxFr::GUID> Dependencies;
 		NxFr::Dictionary<NxFr::String, NxFr::String> Data;
 	};	
 }

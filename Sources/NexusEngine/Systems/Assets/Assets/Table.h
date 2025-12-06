@@ -16,6 +16,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
 		NEXUS_ENGINE_API void OnUnload() override;
 
+		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies() override { return NxFr::Array<NxFr::GUID>(); };
+
 	private:
 		YAML::Node Data;
 	};

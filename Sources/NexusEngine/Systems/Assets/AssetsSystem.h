@@ -53,6 +53,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Asset* GetAsset(NxFr::GUID Id);
 		NEXUS_ENGINE_API AssetHandle& GetHandle(NxFr::GUID Id);
 		NEXUS_ENGINE_API AssetMetadata& GetMetadata(NxFr::GUID Id);
+		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recusive = false);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnEvent() { return OnEvent; }
 		NEXUS_ENGINE_API NxFr::Event<Asset*>& GetOnSave() { return OnSave; }
@@ -64,6 +65,8 @@ namespace NxEn
 
 		NEXUS_ENGINE_API void RecordStats() const;
 		NEXUS_ENGINE_API void UpdateStats() const;
+
+		NEXUS_ENGINE_API void FetchDependencies(NxFr::GUID Id, bool Recusive, NxFr::Set<NxFr::GUID>& Result);
 
 		NEXUS_ENGINE_API void Create_Append(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension);
 		NEXUS_ENGINE_API Asset* Acquire_Check(NxFr::GUID Id);
