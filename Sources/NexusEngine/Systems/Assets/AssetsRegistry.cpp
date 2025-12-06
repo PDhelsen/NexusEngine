@@ -97,6 +97,7 @@ namespace NxEn
 		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
 		NxFr::Array<bool> Path = Filters.GetCount();
 		bool All = Filter == "*";
+		bool TypeAndString = false;
 
 		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 		{
@@ -108,6 +109,7 @@ namespace NxEn
 			{
 				NxFr::StringView Substring = Filters[Index].Substring(2, Filters[Index].GetCount() - 2);
 				Types[Index] = Substring;
+				TypeAndString = true;
 			}
 			else if (NxFr::StringUtility::Start(Filters[Index], "id:"))
 			{
@@ -120,41 +122,28 @@ namespace NxEn
 			}
 		}
 
+		// Check if should filter by type and string;
+		TypeAndString &= Filters.GetCount() > 1;
+
 		for (auto [Id, Metadata] : Assets)
 		{
+			bool MatchId = false;
+			bool MatchType = false;
+			bool MatchString = false;
+
 			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 			{
-				// All
-				if (All)
-				{
-					Result.Append(Id);
-				}
-				// Filter by types
-				else if (Types[Index].GetId() != 0)
-				{
-					if (Metadata.GetType() == Types[Index])
-					{
-						Result.Append(Id);
-					}
-				}
-				// Filter by ids
-				else if (Ids[Index] != 0)
-				{
-					if (Metadata.GetId() == Ids[Index])
-					{
-						Result.Append(Id);
-					}
-				}
-				// Filter by string matching
-				else
-				{
-					NxFr::StringView Substring = Metadata.GetPath().Data;
-					Substring = Path[Index] ? Substring : NxFr::Path::Split(Substring).Last();
-					if (NxFr::StringUtility::Contains(Substring, Filters[Index]))
-					{
-						Result.Append(Id);
-					}
-				}
+				NxFr::StringView Substring = Metadata.GetPath().Data;
+				Substring = Path[Index] ? Substring : NxFr::Path::Split(Substring).Last();
+
+				MatchId |= Ids[Index] != 0 && Metadata.GetId() == Ids[Index];
+				MatchType |= Types[Index].GetId() != 0 && Metadata.GetType() == Types[Index];
+				MatchString |= NxFr::StringUtility::Contains(Substring, Filters[Index]);
+			}
+
+			if (All || MatchId || (MatchType && !TypeAndString) || (MatchString && !TypeAndString) || (MatchType && MatchString && TypeAndString))
+			{
+				Result.Append(Id);
 			}
 		}
 

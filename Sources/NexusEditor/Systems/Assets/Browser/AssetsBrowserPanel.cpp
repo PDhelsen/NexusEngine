@@ -239,7 +239,6 @@ namespace NxEd
 	{
 		Search.Clear();
 
-		// Registry
 		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxFr::Array<NxFr::GUID> Ids = System->Find(Filter);
 		for (auto& Id : Ids)
@@ -248,24 +247,6 @@ namespace NxEd
 			Path += "." + NxEn::AssetMetadata::Extension;
 			NxFr::Path::ConvertRelativeToAbsolute(Path, NxFr::Paths::Assets);
 			Search.Append(NxFr::Move(Path));
-		}
-
-		//Folder
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
-		for (auto& Instance : Infos)
-		{
-			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
-			{
-				NxFr::StringView Substring = Instance.Path;
-				if (!NxFr::StringUtility::Contains(Filters[Index], NxFr::Path::SeparatorDirectory))
-				{
-					Substring = NxFr::Path::Split(Substring).Last();
-				}
-				if (NxFr::StringUtility::Contains(Substring, Filters[Index]))
-				{
-					Search.Append(Instance.Path);
-				}
-			}
 		}
 	}
 }
