@@ -4,7 +4,7 @@ namespace NxEd
 {
 	static AssetsReferencesPanel*Panel = NxEn::GUI::Panel::Create<AssetsReferencesPanel>();
 
-	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/References", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Assets/References", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel AssetsReferencesPanel");
 	}));
@@ -216,7 +216,7 @@ namespace NxEd
 		}
 
 		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		NxFr::List<NxFr::GUID> Assets = Full ? System->Find("*") : NxFr::List<NxFr::GUID>({ Selected });
+		NxFr::Array<NxFr::GUID> Assets = Full ? System->Find("*") : NxFr::Array<NxFr::GUID>({ Selected });
 
 		Nodes.Clear();
 		References.Clear();

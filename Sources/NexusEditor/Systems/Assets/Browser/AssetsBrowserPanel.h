@@ -50,14 +50,25 @@ namespace NxEd
 		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
 	private:
+		void DrawHeader();
+
 		void FetchFolder(uint64 Depth = 0, NxFr::StringView Path = "");
 		void DrawFolder(uint64& Index);
-		void ApplySelection();
 		NxFr::String& GenerateImGuiLabel(const Info& Instance);
 
+		void ApplySelection();
+		void ApplySearch();
+
 	private:
+		NxEn::GUI::Style Style;
+
 		NxFr::List<Info> Infos;
-		Selection Select;
 		NxFr::String Buffer;
+
+		Selection Select;
+		NxFr::String Selected;
+
+		NxFr::Set<NxFr::String> Search;
+		NxFr::String Filter;
 	};
 }

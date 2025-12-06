@@ -45,6 +45,10 @@ namespace NxEn
 		AssetMetadata& Metadata = Assets[Id];
 
 		NxFr::File(FilePath(Metadata.GetPath())).Move(FilePath(Path));
+		if (Metadata.GetContent().IsValid())
+		{
+			NxFr::File(ContentPath(Metadata.GetPath())).Move(ContentPath(Path));
+		}
 
 		Paths.Remove(Metadata.GetPath().Data);
 		Paths.Append(Metadata.GetPath().Data, Id);
@@ -84,23 +88,36 @@ namespace NxEn
 		Metadata.Deserialize(Node);
 	}
 
-	NxFr::List<NxFr::GUID> AssetsRegistry::Find(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::GUID> AssetsRegistry::Find(NxFr::StringView Filter) const
 	{
 		NxFr::List<NxFr::GUID> Result;
 
 		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
 		NxFr::Array<NxFr::StringId> Types = Filters.GetCount();
+		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
+		NxFr::Array<bool> Path = Filters.GetCount();
 		bool All = Filter == "*";
 
 		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 		{
-			if (!NxFr::StringUtility::Start(Filters[Index], "t:"))
-			{
-				Types[Index] = 0;
-				continue;
-			}
+			Types[Index] = 0;
+			Ids[Index] = 0;
+			Path[Index] = false;
 
-			Types[Index] = Filters[Index].Substring(2, Filters[Index].GetCount() - 2);
+			if (NxFr::StringUtility::Start(Filters[Index], "t:"))
+			{
+				NxFr::StringView Substring = Filters[Index].Substring(2, Filters[Index].GetCount() - 2);
+				Types[Index] = Substring;
+			}
+			else if (NxFr::StringUtility::Start(Filters[Index], "id:"))
+			{
+				NxFr::StringView Substring = Filters[Index].Substring(3, Filters[Index].GetCount() - 3);
+				Ids[Index] = NxFr::StringUtility::FromString<NxFr::GUID>(Substring);
+			}
+			else
+			{
+				Path[Index] = NxFr::StringUtility::Contains(Filters[Index], NxFr::Path::SeparatorDirectory);
+			}
 		}
 
 		for (auto [Id, Metadata] : Assets)
@@ -120,10 +137,20 @@ namespace NxEn
 						Result.Append(Id);
 					}
 				}
+				// Filter by ids
+				else if (Ids[Index] != 0)
+				{
+					if (Metadata.GetId() == Ids[Index])
+					{
+						Result.Append(Id);
+					}
+				}
 				// Filter by string matching
 				else
 				{
-					if (NxFr::StringUtility::Contains(Metadata.GetPath().Data, Filters[Index]))
+					NxFr::StringView Substring = Metadata.GetPath().Data;
+					Substring = Path[Index] ? Substring : NxFr::Path::Split(Substring).Last();
+					if (NxFr::StringUtility::Contains(Substring, Filters[Index]))
 					{
 						Result.Append(Id);
 					}
@@ -131,7 +158,7 @@ namespace NxEn
 			}
 		}
 
-		return Result;
+		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Result);
 	}
 
 	NxFr::GUID AssetsRegistry::PathToId(NxFr::StringView Path) const

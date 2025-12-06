@@ -46,7 +46,7 @@ namespace NxEn
 		template<typename T>
 		T* Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
 
-		NEXUS_ENGINE_API NxFr::List<NxFr::GUID> Find(NxFr::StringView Filter) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NEXUS_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
 		NEXUS_ENGINE_API NxFr::String IdToPath(NxFr::GUID Id) const;
 

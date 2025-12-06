@@ -253,7 +253,7 @@ namespace NxEn
 	}
 #endif
 
-	NxFr::List<NxFr::GUID> AssetsSystem::Find(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::GUID> AssetsSystem::Find(NxFr::StringView Filter) const
 	{
 		return Registry->Find(Filter);
 	}
