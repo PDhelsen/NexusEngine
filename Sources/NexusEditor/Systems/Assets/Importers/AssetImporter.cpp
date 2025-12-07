@@ -55,15 +55,15 @@ namespace NxEd
 		GetCommands().AppendOrAssign(Id, Callback);
 	}
 
-	void AssetImporter::Import(NxFr::StringId Id, NxFr::StringView Path, bool ReleaseAfterImport)
+	void AssetImporter::Import(NxFr::StringId Id, NxFr::StringView FilePath, bool ReleaseAfterImport)
 	{
 		if (Id.GetId() == 0)
 		{
-			Id = GetExtension(NxFr::Path::GetExtension(Path));
+			Id = GetExtension(NxFr::Path::GetExtension(FilePath));
 		}
 
-		NEXUS_ASSERT(Id.GetId(), Default, "Asset importer requires an type id in order to import the asset at path %s", Path.C());
-		GetCommand(Id).Invoke(Path, ReleaseAfterImport);
+		NEXUS_ASSERT(Id.GetId(), Default, "Asset importer requires an type id in order to import the asset at path %s", FilePath.C());
+		GetCommand(Id).Invoke(FilePath, ReleaseAfterImport);
 	}
 }
 

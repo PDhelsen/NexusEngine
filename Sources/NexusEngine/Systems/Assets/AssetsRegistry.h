@@ -18,6 +18,8 @@ namespace NxEn
 		void Serialize(NxFr::GUID Id, YAML::Node& Node);
 		void Deserialize(NxFr::GUID Id, YAML::Node& Node);
 
+		YAML::Node GetImportData(NxFr::GUID Id);
+
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NxFr::GUID PathToId(NxFr::StringView Path) const;
 		NxFr::String IdToPath(NxFr::GUID Id) const;

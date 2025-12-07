@@ -176,11 +176,7 @@ namespace NxEn
 
 	void AssetsSystem::Acquire_Load(NxFr::GUID Id, Asset* Instance)
 	{
-		if (!Registry->HasFile(Id))
-		{
-			NEXUS_LOG(Warning, System, "Asset %d has no associated path");
-			return;
-		}
+		NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
 
 		YAML::Node Node = YAML::Node();
 		Registry->Deserialize(Id, Node);
@@ -249,9 +245,33 @@ namespace NxEn
 		Instance->SetDirty();
 		Instance->Initialize();
 
-		OnEvent.Invoke(EventImportId, Instance->GetId());
+		OnEvent.Invoke(EventImportId, Id);
 	}
 #endif
+
+	void AssetsSystem::Reimport_Load(Asset* Instance, const YAML::Node& Node, NxFr::GUID Id)
+	{
+		NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
+		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+
+		if (Manager->IsValid(Id))
+		{
+			Manager->Unload(Id);
+			Instance->Shutdown();
+		}
+		else
+		{
+			Manager->Append(Id, AssetHandle(Instance));
+			Manager->Acquire(Id);
+		}
+
+		Manager->Load(Id, Node, Registry->IdToContent(Id));
+
+		Instance->SetDirty();
+		Instance->Initialize();
+
+		OnEvent.Invoke(EventImportId, Id);
+	}
 
 	NxFr::Array<NxFr::GUID> AssetsSystem::Find(NxFr::StringView Filter) const
 	{
@@ -292,6 +312,14 @@ namespace NxEn
 		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
 
 		return Registry->Get(Id);
+	}
+
+	YAML::Node AssetsSystem::GetImportData(NxFr::GUID Id)
+	{
+		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+
+		YAML::Node Node = YAML::Node();
+		return Registry->GetImportData(Id);
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recusive)

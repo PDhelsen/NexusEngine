@@ -45,6 +45,8 @@ namespace NxEn
 
 		template<typename T>
 		T* Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
+		template<typename T>
+		T* Reimport(const YAML::Node& Node, NxFr::GUID Id);
 
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NEXUS_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
@@ -53,6 +55,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Asset* GetAsset(NxFr::GUID Id);
 		NEXUS_ENGINE_API AssetHandle& GetHandle(NxFr::GUID Id);
 		NEXUS_ENGINE_API AssetMetadata& GetMetadata(NxFr::GUID Id);
+		NEXUS_ENGINE_API YAML::Node GetImportData(NxFr::GUID Id);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recusive = false);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnEvent() { return OnEvent; }
@@ -73,6 +76,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void Acquire_Load(NxFr::GUID Id, Asset* Instance);
 #if NEXUS_EDITOR
 		NEXUS_ENGINE_API void Import_Append(Asset* Instance, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
+		NEXUS_ENGINE_API void Reimport_Load(Asset* Instance, const YAML::Node& Node, NxFr::GUID Id);
 #endif
 
 	private:
@@ -110,6 +114,23 @@ namespace NxEn
 #if NEXUS_EDITOR
 		T* Instance = new T();
 		Import_Append(Instance, Node, Path, Extension);
+		return Instance;
+#else
+		return nullptr;
+#endif
+	}
+
+	template<typename T>
+	inline T* AssetsSystem::Reimport(const YAML::Node& Node, NxFr::GUID Id)
+	{
+#if NEXUS_EDITOR
+		T* Instance = static_cast<T*>(GetAsset(Id));
+		if (!Instance)
+		{
+			Instance = new T();
+		}
+
+		Reimport_Load(Instance, Node, Id);
 		return Instance;
 #else
 		return nullptr;

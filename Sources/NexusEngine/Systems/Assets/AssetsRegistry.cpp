@@ -88,6 +88,13 @@ namespace NxEn
 		Metadata.Deserialize(Node);
 	}
 
+	YAML::Node AssetsRegistry::GetImportData(NxFr::GUID Id)
+	{
+		AssetMetadata& Metadata = Assets[Id];
+		YAML::Node Node = NxFr::Yaml::DeserializeFile(FilePath(Metadata.GetPath()));
+		return Node["Data"];
+	}
+
 	NxFr::Array<NxFr::GUID> AssetsRegistry::Find(NxFr::StringView Filter) const
 	{
 		NxFr::List<NxFr::GUID> Result;
