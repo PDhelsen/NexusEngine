@@ -17,7 +17,7 @@ namespace NxEd
 	void AssetImporterPopup::ShowWithPath(NxFr::StringView Path)
 	{
 		PopupInstance->Show();
-		PopupInstance->Path = Path;
+		PopupInstance->SetPath(Path);
 	}
 
 	AssetImporterPopup::AssetImporterPopup()
@@ -77,7 +77,18 @@ namespace NxEd
 			return;
 		}
 
-		Path = NxFr::Path::ConvertAbsoluteToRelative((NxFr::StringView)Selection, NxFr::Paths::Assets);
+		SetPath(Selection);
+	}
+
+	void AssetImporterPopup::SetPath(NxFr::StringView FilePath)
+	{
+		Path = NxFr::Path::IsRelative(FilePath) ? (NxFr::String)FilePath :
+			NxFr::Path::ConvertAbsoluteToRelative((NxFr::StringView)FilePath, NxFr::Paths::Assets);
+
+		if (Type.IsEmpty())
+		{
+			Type = AssetImporter::GetExtension(NxFr::Path::GetExtension(Path)).GetString();
+		}
 	}
 
 	void AssetImporterPopup::Import()

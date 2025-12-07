@@ -10,13 +10,16 @@ namespace NxEd
 	public:
 		NEXUS_EDITOR_API static AssetImporter* GetImporter(NxFr::StringId Id);
 		NEXUS_EDITOR_API static void SetImporter(NxFr::StringId Id, AssetImporter* Instance);
+		NEXUS_EDITOR_API static NxFr::StringId GetExtension(NxFr::StringView Extension);
+		NEXUS_EDITOR_API static void SetExtension(NxFr::StringView Extension, NxFr::StringId Id);
 		NEXUS_EDITOR_API static const NxFr::Delegate<void(NxFr::StringView, bool)>& GetCommand(NxFr::StringId Id);
 		NEXUS_EDITOR_API static void SetCommand(NxFr::StringId Id, const NxFr::Delegate<void(NxFr::StringView, bool)>& Callback);
 
 		template<typename T, typename I>
-		static I* Create();
+		static I* Create(NxFr::InitializerList<NxFr::StringView> Extensions = {});
 		template<typename T>
 		static T* Import(NxFr::StringView Path, bool ReleaseAfterImport = false);
+
 		static void Import(NxFr::StringId Id, NxFr::StringView Path, bool ReleaseAfterImport = false);
 
 	protected:
@@ -27,11 +30,15 @@ namespace NxEd
 	};
 
 	template<typename T, typename I>
-	inline I* AssetImporter::Create()
+	inline I* AssetImporter::Create(NxFr::InitializerList<NxFr::StringView> Extensions)
 	{
 		I* Instance = new I();
 		SetImporter(T::GetClassType(), Instance);
 		SetCommand(T::GetClassType(), [](NxFr::StringView Path, bool Release) { AssetImporter::Import<T>(Path, Release); });
+		for (auto& Extension : Extensions)
+		{
+			SetExtension(Extension, T::GetClassType());
+		}
 		return Instance;
 	}
 

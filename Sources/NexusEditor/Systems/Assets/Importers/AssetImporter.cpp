@@ -8,6 +8,12 @@ namespace NxEd
 		return Importers;
 	}
 
+	static NxFr::Dictionary<NxFr::String, NxFr::StringId>& GetExtensions()
+	{
+		static NxFr::Dictionary<NxFr::String, NxFr::StringId> Extensions;
+		return Extensions;
+	}
+
 	static NxFr::Dictionary<NxFr::StringId, NxFr::Delegate<void(NxFr::StringView, bool)>>& GetCommands()
 	{
 		static NxFr::Dictionary<NxFr::StringId, NxFr::Delegate<void(NxFr::StringView, bool)>> Commands;
@@ -29,6 +35,16 @@ namespace NxEd
 		GetImporters().AppendOrAssign(Id, Instance);
 	}
 
+	NxFr::StringId AssetImporter::GetExtension(NxFr::StringView Extension)
+	{
+		return GetExtensions()[Extension];
+	}
+
+	void AssetImporter::SetExtension(NxFr::StringView Extension, NxFr::StringId Id)
+	{
+		GetExtensions().AppendOrAssign(Extension, Id);
+	}
+
 	const NxFr::Delegate<void(NxFr::StringView, bool)>& AssetImporter::GetCommand(NxFr::StringId Id)
 	{
 		return GetCommands()[Id];
@@ -41,6 +57,12 @@ namespace NxEd
 
 	void AssetImporter::Import(NxFr::StringId Id, NxFr::StringView Path, bool ReleaseAfterImport)
 	{
+		if (Id.GetId() == 0)
+		{
+			Id = GetExtension(NxFr::Path::GetExtension(Path));
+		}
+
+		NEXUS_ASSERT(Id.GetId(), Default, "Asset importer requires an type id in order to import the asset at path %s", Path.C());
 		GetCommand(Id).Invoke(Path, ReleaseAfterImport);
 	}
 }

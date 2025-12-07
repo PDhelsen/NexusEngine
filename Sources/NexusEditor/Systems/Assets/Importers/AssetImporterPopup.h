@@ -21,6 +21,7 @@ namespace NxEd
 		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
 		NEXUS_EDITOR_API void Pick();
+		NEXUS_EDITOR_API void SetPath(NxFr::StringView FilePath);
 		NEXUS_EDITOR_API void Import();
 
 	private:
