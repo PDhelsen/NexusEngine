@@ -27,12 +27,11 @@ namespace NxEd
 			NxFr::String Path;
 			NxFr::StringView Label;
 			InfoType Type;
-			uint64 Depth;
-			int64 Jump;
+			int64 Next;
 			bool Expand;
 			bool Selected;
 
-			Info(NxFr::StringView Path, uint64 Depth);
+			Info(NxFr::StringView FilePath);
 			void Update(NxFr::StringView FilePath);
 		};
 
@@ -52,8 +51,8 @@ namespace NxEd
 	private:
 		void DrawHeader();
 
-		void FetchFolder(uint64 Depth = 0, NxFr::StringView Path = "");
-		void DrawFolder(uint64& Index);
+		void FetchFolder();
+		void DrawFolder(int64& Index);
 		NxFr::String& GenerateImGuiLabel(const Info& Instance);
 
 		void ApplySelection();

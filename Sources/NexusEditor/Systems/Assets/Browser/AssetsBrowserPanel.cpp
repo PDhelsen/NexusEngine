@@ -14,10 +14,10 @@ namespace NxEd
 
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
 
-	AssetsBrowserPanel::Info::Info(NxFr::StringView Path, uint64 Depth)
-		: Path(Path), Label(), Type(), Depth(Depth), Jump(-1), Expand(false), Selected(false)
+	AssetsBrowserPanel::Info::Info(NxFr::StringView FilePath)
+		: Path(""), Label(), Type(), Next(-1), Expand(false), Selected(false)
 	{
-		Update(Path);
+		Update(FilePath);
 	}
 
 	void AssetsBrowserPanel::Info::Update(NxFr::StringView FilePath)
@@ -68,7 +68,7 @@ namespace NxEd
 	{
 		DrawHeader();
 
-		uint64 Index = 0;
+		int64 Index = 0;
 		DrawFolder(Index);
 
 		ApplySelection();
@@ -91,46 +91,62 @@ namespace NxEd
 		ImGui::Separator();
 	}
 
-	void AssetsBrowserPanel::FetchFolder(uint64 Depth, NxFr::StringView Path)
+	void AssetsBrowserPanel::FetchFolder()
 	{
-		if (Depth == 0)
-		{
-			Path = NxFr::Paths::Assets;
-			Infos.Clear();
+		NxFr::Directory Root = NxFr::Directory(NxFr::Paths::Assets);
+		NxFr::List<NxFr::String> Content = Root.GetContent(true);
+		NxFr::Stack<Info*> Directories;
 
-			Infos.AppendConstruct(Path, Depth);
-			Depth++;
+		Infos.Clear();
+		Infos.Reserve(Content.GetCount());
+		Infos.AppendConstruct(Root.GetPath());
+		Directories.Append(&Infos.Last());
+
+		for (auto& Item : Content)
+		{
+			Info* Last = &Infos.Last();
+			if (NxFr::Path::GetPathWithoutExtension(Last->Path) == NxFr::Path::GetPathWithoutExtension(Item))
+			{
+				if (Last->Type == InfoType::File)
+				{
+					Last->Update(Item);
+				}
+
+				continue;
+			}
+
+			Info* Instance = &Infos.AppendConstruct(Item);
+			Last->Next = Infos.GetCount() - 1;
+
+			if (Instance->Type == InfoType::Directory)
+			{
+				while (!Directories.IsEmpty())
+				{
+					Last = Directories.Get();
+					
+					if (NxFr::Path::Split(Last->Path).GetCount() < NxFr::Path::Split(Instance->Path).GetCount())
+					{
+						break;
+					}
+
+					Directories.Remove();
+					Last->Next = Infos.GetCount() - 1;
+				}
+
+				Directories.Append(Instance);
+			}
 		}
 
-		NxFr::Directory Root = NxFr::Directory(Path);
-		for (auto& Item : Root)
+		while (!Directories.IsEmpty())
 		{
-			if (NxFr::Path::IsDirectory(Item))
-			{
-				Info& Instance = Infos.AppendConstruct(Item, Depth);
-				FetchFolder(Depth + 1, Instance.Path);
-				Instance.Jump = Infos.GetCount();
-			}
-			else
-			{
-				Info& Instance = Infos.Last();
+			Info* Instance = Directories.Get();
+			Directories.Remove();
 
-				if (NxFr::Path::GetPathWithoutExtension(Item) == NxFr::Path::GetPathWithoutExtension(Instance.Path))
-				{
-					if (Instance.Type == InfoType::File)
-					{
-						Instance.Update(Item);
-					}
-				}
-				else
-				{
-					Infos.AppendConstruct(Item, Depth);
-				}
-			}
+			Instance->Next = Infos.GetCount();
 		}
 	}
 
-	void AssetsBrowserPanel::DrawFolder(uint64& Index)
+	void AssetsBrowserPanel::DrawFolder(int64& Index)
 	{
 		Info& Instance = Infos[Index];
 		NxFr::String& Id = GenerateImGuiLabel(Instance);
@@ -160,8 +176,8 @@ namespace NxEd
 					else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
 					{
 						Select.State = true;
-						Select.To = Index > Select.From ? Index : Select.From;
-						Select.From = Index < Select.From ? Index : Select.From;
+						Select.To = (uint64)Index > Select.From ? Index : Select.From;
+						Select.From = (uint64)Index < Select.From ? Index : Select.From;
 					}
 					else
 					{
@@ -191,7 +207,7 @@ namespace NxEd
 					ImGui::TreePush(Id.C());
 				}
 
-				while (Index < Infos.GetCount() && Instance.Depth < Infos[Index].Depth)
+				while (Index < Instance.Next)
 				{
 					DrawFolder(Index);
 				}
@@ -203,7 +219,7 @@ namespace NxEd
 			}
 			else
 			{
-				Index = Instance.Jump;
+				Index = Instance.Next;
 			}
 		}
 	}
