@@ -8,7 +8,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(InputSystem)
 
 	InputSystem::InputSystem()
-		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Schemas(), Buttons(), Axises(), Mouse(-NxFr::Vector2f::One), Modifiers(), DirtyFlagButtons(true), DirtyFlagAxises(true)
+		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Schemas(), Buttons(), Axises(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Modifiers(), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{
 		OnButtonChange += NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
 		OnAxisChange += NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);
@@ -47,6 +47,26 @@ namespace NxEn
 		return Schemas[Id];
 	}
 
+	bool InputSystem::CheckButton(Input::Button Button, Input::State State) const
+	{
+		return GetButton(Button) == State;
+	}
+
+	bool InputSystem::CheckAxis(Input::Axis Axis) const
+	{
+		return GetAxis(Axis) != 0.0f;
+	}
+
+	bool InputSystem::CheckMouse() const
+	{
+		return IsMouseOverWindow() && GetMouseDelta() != NxFr::Vector2f::Zero;
+	}
+
+	bool InputSystem::CheckModifier(Input::Modifier Modifier) const
+	{
+		return NxFr::Enum::CheckFlag(Modifiers, Modifier);
+	}
+
 	Input::State InputSystem::GetButton(Input::Button Button) const
 	{
 		return Buttons[(uint64)Button];
@@ -57,9 +77,14 @@ namespace NxEn
 		return Axises[(uint64)Axis];
 	}
 
-	NxFr::Vector2f InputSystem::GetMouse() const
+	NxFr::Vector2f InputSystem::GetMousePosition() const
 	{
-		return Mouse;
+		return MousePosition;
+	}
+
+	NxFr::Vector2f InputSystem::GetMouseDelta() const
+	{
+		return MouseDelta;
 	}
 
 	Input::Modifier InputSystem::GetModifiers() const
@@ -111,11 +136,11 @@ namespace NxEn
 
 	void InputSystem::OnMouseChanged(NxFr::Vector2f Position)
 	{
-		NxFr::Vector2f Delta = Position - Mouse;
-		Axises[(uint64)Input::Axis::MouseX] = Delta.x;
-		Axises[(uint64)Input::Axis::MouseY] = Delta.y;
+		MouseDelta = Position - MousePosition;
+		Axises[(uint64)Input::Axis::MouseX] = MouseDelta.x;
+		Axises[(uint64)Input::Axis::MouseY] = MouseDelta.y;
 
-		Mouse = Position;
+		MousePosition = Position;
 		DirtyFlagAxises = true;
 	}
 
@@ -154,6 +179,8 @@ namespace NxEn
 		{
 			Axises[Index] = 0.0f;
 		}
+
+		MouseDelta = NxFr::Vector2f::Zero;
 	}
 
 	void InputSystem::UpdateModifiers()
@@ -195,7 +222,7 @@ namespace NxEn
 				{
 				case Input::Mode::Button: Invoke = GetButton(Trigger.GetInputButton()) == Trigger.GetInputButtonState(); break;
 				case Input::Mode::Axis: Invoke = GetAxis(Trigger.GetInputAxis()) != 0.0f; break;
-				case Input::Mode::Mouse: Invoke = NxFr::ShapeUtility::Contains(Trigger.GetInputMouse(), Mouse); break;
+				case Input::Mode::Mouse: Invoke = NxFr::ShapeUtility::Contains(Trigger.GetInputMouse(), MousePosition); break;
 				}
 
 				if (Invoke)

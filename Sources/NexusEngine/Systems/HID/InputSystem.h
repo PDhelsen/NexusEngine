@@ -19,16 +19,22 @@ namespace NxEn
 		NEXUS_ENGINE_API void RemoveSchema(NxFr::StringId Id);
 		NEXUS_ENGINE_API Input::Schema* GetSchema(NxFr::StringId Id);
 
+		NEXUS_ENGINE_API bool CheckButton(Input::Button Button, Input::State State = Input::State::Released) const;
+		NEXUS_ENGINE_API bool CheckAxis(Input::Axis Axis) const;
+		NEXUS_ENGINE_API bool CheckMouse() const;
+		NEXUS_ENGINE_API bool CheckModifier(Input::Modifier Modifier) const;
+
 		NEXUS_ENGINE_API Input::State GetButton(Input::Button Button) const;
 		NEXUS_ENGINE_API float GetAxis(Input::Axis Axis) const;
-		NEXUS_ENGINE_API NxFr::Vector2f GetMouse() const;
+		NEXUS_ENGINE_API NxFr::Vector2f GetMousePosition() const;
+		NEXUS_ENGINE_API NxFr::Vector2f GetMouseDelta() const;
 		NEXUS_ENGINE_API Input::Modifier GetModifiers() const;
 
 		NEXUS_ENGINE_API NxFr::Event<Input::Button, Input::State>& GetOnButtonChange() { return OnButtonChange; }
 		NEXUS_ENGINE_API NxFr::Event<Input::Axis, float>& GetOnAxisChange() { return OnAxisChange; }
 		NEXUS_ENGINE_API NxFr::Event<NxFr::Vector2f>& GetOnMouseChange() { return OnMouseChange; }
 
-		NEXUS_ENGINE_API bool IsMouseOverWindow() const { return Mouse != -NxFr::Vector2f::One; }
+		NEXUS_ENGINE_API bool IsMouseOverWindow() const { return MousePosition != -NxFr::Vector2f::One; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -55,7 +61,8 @@ namespace NxEn
 
 		NxFr::Array<Input::State, (uint64)Input::Button::COUNT> Buttons;
 		NxFr::Array<float, (uint64)Input::Axis::COUNT> Axises;
-		NxFr::Vector2f Mouse;
+		NxFr::Vector2f MousePosition;
+		NxFr::Vector2f MouseDelta;
 		NxEn::Input::Modifier Modifiers;
 
 		bool DirtyFlagButtons;

@@ -12,7 +12,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsReferencesPanel)
 
 	AssetsReferencesPanel::AssetsReferencesPanel()
-		: Menu(), Style(), Buffer(64), Anchor(), Zoom(1.0f), Recenter(true), References(), Nodes(), Selection(), Selected(0), Full(false)
+		: Inputs(nullptr), Menu(), Style(), Buffer(64), Anchor(), Zoom(1.0f), Recenter(true), References(), Nodes(), Selection(), Selected(0), Full(false)
 	{
 	}
 
@@ -71,6 +71,8 @@ namespace NxEd
 	void AssetsReferencesPanel::OnEnable()
 	{
 		Panel::OnEnable();
+
+		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
 
 		Style.Reset();
 		Style.Width = 200.0f;
@@ -148,20 +150,18 @@ namespace NxEd
 	{
 		if (ImGui::IsItemHovered())
 		{
-			float Wheel = ImGui::GetIO().MouseWheel;
-			if (Wheel != 0.0f)
+			if (Inputs->CheckAxis(NxEn::Input::Axis::ScrollY))
 			{
-				if (Wheel < 0.0f)
+				if (Inputs->GetAxis(NxEn::Input::Axis::ScrollY) < 0.0f)
 					Zoom /= GetZoomFactor();
 				else
 					Zoom *= GetZoomFactor();
 
 				ClampZoom();
 			}
-
-			if (ImGui::IsMouseDragging(ImGuiMouseButton_Middle, 0.0f))
+			if (Inputs->CheckButton(NxEn::Input::Button::MouseMiddle, NxEn::Input::State::Down))
 			{
-				ImVec2 Delta = ImGui::GetIO().MouseDelta;
+				NxFr::Vector2f Delta = Inputs->GetMouseDelta();
 				Anchor += NxFr::Vector2f(Delta.x, Delta.y) / Zoom;
 			}
 		}

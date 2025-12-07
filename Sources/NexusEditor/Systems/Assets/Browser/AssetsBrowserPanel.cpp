@@ -30,7 +30,7 @@ namespace NxEd
 	}
 
 	AssetsBrowserPanel::AssetsBrowserPanel()
-		: Style(), Infos(), Buffer(), Select(), Selected(128), Search(), Filter(128)
+		: Inputs(nullptr), Style(), Buffer(), Infos(), Select(), Selected(128), Search(), Filter(128)
 	{
 		Select.Flag = 0;
 	}
@@ -55,6 +55,8 @@ namespace NxEd
 	{
 		Panel::OnEnable();
 
+		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
+
 		Style.Reset();
 		Style.Width = -1.0f;
 		Style.WidthLabel = 0.0f;
@@ -74,11 +76,18 @@ namespace NxEd
 
 	void AssetsBrowserPanel::DrawHeader()
 	{
+		if (NxEn::GUI::Draw::Button("Refresh", &Style))
+		{
+			Refresh();
+		}
+
 		if (NxEn::GUI::Drawer<NxFr::String>::Field(Filter, "Filter", "", &Style))
 		{
 			ApplySearch();
 		}
+
 		NxEn::GUI::Drawer<NxFr::String>::Property(Selected, "Selected", &Style);
+
 		ImGui::Separator();
 	}
 
@@ -137,33 +146,36 @@ namespace NxEd
 			Instance.Expand = ImGui::TreeNodeEx(Id.C(), Flag);
 
 			// Inputs
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			if (ImGui::IsItemHovered())
 			{
-				Select.Flag = NxFr::Integer::SetBit1(Select.Flag, (uint64)0);
-				if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl))
+				if (Inputs->CheckButton(NxEn::Input::Button::MouseLeft))
 				{
-					Select.State = !Instance.Selected;
-					Select.From = Index;
-					Select.To = Index;
+					Select.Flag = NxFr::Integer::SetBit1(Select.Flag, (uint64)0);
+					if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
+					{
+						Select.State = !Instance.Selected;
+						Select.From = Index;
+						Select.To = Index;
+					}
+					else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
+					{
+						Select.State = true;
+						Select.To = Index > Select.From ? Index : Select.From;
+						Select.From = Index < Select.From ? Index : Select.From;
+					}
+					else
+					{
+						Select.State = true;
+						Select.From = Index;
+						Select.To = Index;
+						Select.Flag = NxFr::Integer::SetBit1(Select.Flag, (uint64)1);
+					}
 				}
-				else if (ImGui::IsKeyDown(ImGuiKey_LeftShift))
+				if (Inputs->CheckButton(NxEn::Input::Button::MouseRight) && Instance.Type == InfoType::File)
 				{
-					Select.State = true;
-					Select.To = Index > Select.From ? Index : Select.From;
-					Select.From = Index < Select.From ? Index : Select.From;
+					NxFr::String Path = NxFr::Path::ConvertAbsoluteToRelative((NxFr::StringView)Instance.Path, NxFr::Paths::Assets);
+					AssetImporterPopup::ShowWithPath(Path);
 				}
-				else
-				{
-					Select.State = true;
-					Select.From = Index;
-					Select.To = Index;
-					Select.Flag = NxFr::Integer::SetBit1(Select.Flag, (uint64)1);
-				}
-			}
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Right) && Instance.Type == InfoType::File)
-			{
-				NxFr::String Path = NxFr::Path::ConvertAbsoluteToRelative((NxFr::StringView)Instance.Path, NxFr::Paths::Assets);
-				AssetImporterPopup::ShowWithPath(Path);
 			}
 		}
 

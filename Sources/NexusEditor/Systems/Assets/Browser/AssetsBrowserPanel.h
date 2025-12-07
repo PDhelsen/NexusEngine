@@ -60,14 +60,14 @@ namespace NxEd
 		void ApplySearch();
 
 	private:
-		NxEn::GUI::Style Style;
+		NxEn::InputSystem* Inputs;
 
-		NxFr::List<Info> Infos;
+		NxEn::GUI::Style Style;
 		NxFr::String Buffer;
 
+		NxFr::List<Info> Infos;
 		Selection Select;
 		NxFr::String Selected;
-
 		NxFr::Set<NxFr::String> Search;
 		NxFr::String Filter;
 	};

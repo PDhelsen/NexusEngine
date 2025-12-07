@@ -53,6 +53,8 @@ namespace NxEd
 		inline void ClampZoom() { Zoom = NxFr::Math::Clamp(Zoom, 0.2f, 4.0f); }
 
 	private:
+		NxEn::InputSystem* Inputs;
+
 		NxEn::GUI::Menu Menu;
 		NxEn::GUI::Style Style;
 		NxFr::String Buffer;
