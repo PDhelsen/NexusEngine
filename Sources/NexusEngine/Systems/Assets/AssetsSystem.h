@@ -22,10 +22,12 @@ namespace NxEn
 		const NxFr::StringId EventMoveId = "Move"_Sid;
 		const NxFr::StringId EventDeleteId = "Delete"_Sid;
 		const NxFr::StringId EventSaveId = "Save"_Sid;
-		const NxFr::StringId EventAcquireId = "Acquire"_Sid;
 		const NxFr::StringId EventTrackId = "Track"_Sid;
-		const NxFr::StringId EventReloadId = "Reload"_Sid;
+		const NxFr::StringId EventAcquireId = "Acquire"_Sid;
 		const NxFr::StringId EventReleaseId = "Release"_Sid;
+		const NxFr::StringId EventLoadId = "Load"_Sid;
+		const NxFr::StringId EventReloadId = "Reload"_Sid;
+		const NxFr::StringId EventUnloadId = "Unload"_Sid;
 		const NxFr::StringId EventImportId = "Import"_Sid;
 
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, AssetsSystem)
@@ -34,6 +36,8 @@ namespace NxEn
 		T* Create(NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		template<typename T>
 		T* Acquire(NxFr::GUID Id);
+		template<typename T>
+		T* Load(NxFr::GUID Id);
 		template<typename T>
 		T* Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
 		template<typename T>
@@ -46,11 +50,13 @@ namespace NxEn
 		NEXUS_ENGINE_API void Save(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Save();
 
-		NEXUS_ENGINE_API Asset* Acquire(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
-		NEXUS_ENGINE_API void Reload(NxFr::GUID Id);
+		NEXUS_ENGINE_API Asset* Acquire(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
 		NEXUS_ENGINE_API void Purge();
+		NEXUS_ENGINE_API Asset* Load(NxFr::GUID Id);
+		NEXUS_ENGINE_API void Reload(NxFr::GUID Id);
+		NEXUS_ENGINE_API void Unload(NxFr::GUID Id);
 
 		NEXUS_ENGINE_API Asset* Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
 		NEXUS_ENGINE_API Asset* Reimport(NxFr::GUID Id, const YAML::Node& Node);
@@ -100,6 +106,12 @@ namespace NxEn
 	inline T* AssetsSystem::Acquire(NxFr::GUID Id)
 	{
 		return static_cast<T*>(Acquire(Id));
+	}
+
+	template<typename T>
+	inline T* AssetsSystem::Load(NxFr::GUID Id)
+	{
+		return static_cast<T*>(Load(Id));
 	}
 
 	template<typename T>
