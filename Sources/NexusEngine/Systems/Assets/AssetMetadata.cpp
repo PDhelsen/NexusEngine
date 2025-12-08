@@ -19,7 +19,10 @@ namespace NxEn
 
 	void AssetHandle::Release()
 	{
-		Count--;
+		if (Count > 0)
+		{
+			Count--;
+		}
 	}
 
 	AssetMetadata::AssetMetadata()

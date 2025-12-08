@@ -87,7 +87,7 @@ namespace NxEd
 
 		if (Type.IsEmpty())
 		{
-			Type = AssetImporter::GetExtension(NxFr::Path::GetExtension(Path)).GetString();
+			Type = AssetImporter::TryGetImporterId(Path).GetString();
 		}
 	}
 
@@ -96,6 +96,6 @@ namespace NxEd
 		Type.Validate();
 		Path.Validate();
 
-		AssetImporter::Import(NxFr::StringId(Type), Path, Release);
+		AssetImporter::Run(NxFr::StringId(Type), Path, Release);
 	}
 }

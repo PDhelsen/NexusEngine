@@ -24,6 +24,7 @@ namespace NxEn
 		const NxFr::StringId EventSaveId = "Save"_Sid;
 		const NxFr::StringId EventAcquireId = "Acquire"_Sid;
 		const NxFr::StringId EventTrackId = "Track"_Sid;
+		const NxFr::StringId EventReloadId = "Reload"_Sid;
 		const NxFr::StringId EventReleaseId = "Release"_Sid;
 		const NxFr::StringId EventImportId = "Import"_Sid;
 
@@ -40,6 +41,7 @@ namespace NxEn
 		template<typename T>
 		T* Acquire(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
+		NEXUS_ENGINE_API void Reload(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
 		NEXUS_ENGINE_API void Purge();
 
@@ -58,8 +60,8 @@ namespace NxEn
 		NEXUS_ENGINE_API YAML::Node GetImportData(NxFr::GUID Id);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recusive = false);
 
-		NEXUS_ENGINE_API bool IsTracked(NxFr::GUID Id) const { return Registry->IsValid(Id); }
-		NEXUS_ENGINE_API bool IsLoaded(NxFr::GUID Id) const { return Manager->IsValid(Id); }
+		NEXUS_ENGINE_API bool IsTracked(NxFr::GUID Id) const;
+		NEXUS_ENGINE_API bool IsLoaded(NxFr::GUID Id) const;
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnEvent() { return OnEvent; }
 		NEXUS_ENGINE_API NxFr::Event<Asset*>& GetOnSave() { return OnSave; }

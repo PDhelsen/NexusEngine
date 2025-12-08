@@ -12,22 +12,29 @@ namespace NxEd
 		NEXUS_EDITOR_API static void SetImporter(NxFr::StringId Id, AssetImporter* Instance);
 		NEXUS_EDITOR_API static NxFr::StringId GetExtension(NxFr::StringView Extension);
 		NEXUS_EDITOR_API static void SetExtension(NxFr::StringView Extension, NxFr::StringId Id);
+		NEXUS_EDITOR_API static NxFr::StringId TryGetImporterId(NxFr::StringView File);
 
-		NEXUS_EDITOR_API static NxEn::Asset* Import(NxFr::StringId Id, NxFr::StringView FilePath, bool ReleaseAfterImport = false);
+		NEXUS_EDITOR_API static NxEn::Asset* Run(NxFr::StringId Id, NxFr::StringView File, bool Release = false);
+		NEXUS_EDITOR_API static NxEn::Asset* Run(NxFr::StringId Id, NxFr::GUID Asset, bool Release = false);
 
 		template<typename I, typename T>
 		static I* Create(NxFr::InitializerList<NxFr::StringView> Extensions = {});
 		template<typename T>
-		static T* Import(NxFr::StringView FilePath, bool ReleaseAfterImport = false);
+		static T* Run(NxFr::StringView File, bool Release = false);
+		template<typename T>
+		static T* Run(NxFr::GUID Asset, bool Release = false);
 
 	protected:
 		NEXUS_EDITOR_API AssetImporter() = default;
 		NEXUS_EDITOR_API virtual ~AssetImporter() = default;
 
-		NEXUS_EDITOR_API virtual void OnImport(YAML::Node& Node, NxFr::StringView FilePath, bool Reimport) = 0;
+		NEXUS_EDITOR_API virtual void OnImport(YAML::Node& Node, NxFr::StringView File, bool Reimport) = 0;
 
 	private:
-		NxEn::Asset* Import(NxFr::StringView FilePath, bool ReleaseAfterImport = false);
+		NxEn::Asset* Run(NxFr::GUID Asset, NxFr::StringView Path, bool Release);
+		NxEn::Asset* Import(NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::StringView Path, NxFr::StringView Extension);
+		NxEn::Asset* Reimport(NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::GUID Asset);
+		NxEn::Asset* Finalize(NxEn::AssetsSystem* System, NxEn::Asset* Instance, bool Release);
 
 	private:
 		AssetImporterProxy* Proxy;
@@ -49,8 +56,14 @@ namespace NxEd
 	}
 
 	template<typename T>
-	inline T* AssetImporter::Import(NxFr::StringView FilePath, bool ReleaseAfterImport)
+	inline T* AssetImporter::Run(NxFr::StringView File, bool ReleaseAfterImport)
 	{
-		return static_cast<T*>(AssetImporter::Import(T::GetClassType(), FilePath, ReleaseAfterImport));
+		return static_cast<T*>(AssetImporter::Run(T::GetClassType(), File, ReleaseAfterImport));
+	}
+
+	template<typename T>
+	inline T* AssetImporter::Run(NxFr::GUID Asset, bool ReleaseAfterImport)
+	{
+		return static_cast<T*>(AssetImporter::Run(T::GetClassType(), Asset, ReleaseAfterImport));
 	}
 }

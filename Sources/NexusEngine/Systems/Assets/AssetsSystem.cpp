@@ -37,7 +37,7 @@ namespace NxEn
 
 	void AssetsSystem::Rename(NxFr::GUID Id, NxFr::StringView Name)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
 		if (Name.IsEmpty())
 		{
@@ -59,7 +59,7 @@ namespace NxEn
 
 	void AssetsSystem::Move(NxFr::GUID Id, NxFr::StringView Path)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
 		if (Path.IsEmpty())
 		{
@@ -80,9 +80,9 @@ namespace NxEn
 
 	void AssetsSystem::Delete(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
-		if (Manager->IsValid(Id))
+		if (IsLoaded(Id))
 		{
 			AssetHandle& Handle = Manager->Get(Id);
 			Asset* Instance = Handle.GetInstance();
@@ -101,7 +101,7 @@ namespace NxEn
 
 	void AssetsSystem::Save(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
 		if (!Registry->HasFile(Id))
 		{
@@ -109,7 +109,7 @@ namespace NxEn
 			return;
 		}
 
-		if (!Manager->IsValid(Id))
+		if (!IsLoaded(Id))
 		{
 			NEXUS_LOG(Warning, System, "Asset %d is not loaded");
 			return;
@@ -144,26 +144,11 @@ namespace NxEn
 		OnEvent.Invoke(EventSaveId, 0);
 	}
 
-	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
-	{
-		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
-
-		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
-
-		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
-		Manager->Append(Id, AssetHandle(Instance));
-		Manager->Acquire(Id);
-
-		Instance->Id = Id;
-
-		OnEvent.Invoke(EventTrackId, Id);
-	}
-
 	Asset* AssetsSystem::Acquire_Check(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
-		if (!Manager->IsValid(Id))
+		if (!IsLoaded(Id))
 		{
 			return nullptr;
 		}
@@ -191,11 +176,49 @@ namespace NxEn
 		OnEvent.Invoke(EventAcquireId, Id);
 	}
 
+	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
+	{
+		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
+
+		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
+
+		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
+		Manager->Append(Id, AssetHandle(Instance));
+		Manager->Acquire(Id);
+
+		Instance->Id = Id;
+
+		OnEvent.Invoke(EventTrackId, Id);
+	}
+
+	void AssetsSystem::Reload(NxFr::GUID Id)
+	{
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
+
+		if (!IsLoaded(Id))
+		{
+			NEXUS_LOG(Warning, System, "Asset %d is not loaded");
+			return;
+		}
+
+		AssetHandle& Handle = Manager->Get(Id);
+		Asset* Instance = Handle.GetInstance();
+
+		Manager->Unload(Id);
+		Instance->Shutdown();
+
+		YAML::Node Node = Registry->Deserialize(Id);
+		Manager->Load(Id, Node, Registry->IdToContent(Id));
+		Instance->Initialize();
+
+		OnEvent.Invoke(EventReloadId, Id);
+	}
+
 	void AssetsSystem::Release(NxFr::GUID Id, bool Keep)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
-		if (!Manager->IsValid(Id) || !Manager->IsUsed(Id))
+		if (!IsLoaded(Id))
 		{
 			return;
 		}
@@ -249,10 +272,10 @@ namespace NxEn
 
 	void AssetsSystem::Reimport_Load(Asset* Instance, const YAML::Node& Node, NxFr::GUID Id)
 	{
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 		NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
 
-		if (Manager->IsValid(Id))
+		if (IsLoaded(Id))
 		{
 			Manager->Unload(Id);
 			Instance->Shutdown();
@@ -290,9 +313,9 @@ namespace NxEn
 
 	Asset* AssetsSystem::GetAsset(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
-		if (!Manager->IsValid(Id))
+		if (!IsLoaded(Id))
 		{
 			return nullptr;
 		}
@@ -302,21 +325,21 @@ namespace NxEn
 
 	AssetHandle& AssetsSystem::GetHandle(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(Manager->IsValid(Id), System, "Unloaded asset %d", Id);
+		NEXUS_ASSERT(IsLoaded(Id), System, "Unloaded asset %d", Id);
 
 		return Manager->Get(Id);
 	}
 
 	AssetMetadata& AssetsSystem::GetMetadata(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
 		return Registry->Get(Id);
 	}
 
 	YAML::Node AssetsSystem::GetImportData(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
 		YAML::Node Node = YAML::Node();
 		return Registry->GetImportData(Id);
@@ -324,11 +347,21 @@ namespace NxEn
 
 	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recusive)
 	{
-		NEXUS_ASSERT(Registry->IsValid(Id), System, "Unknown asset %d", Id);
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
 		NxFr::Set<NxFr::GUID> Dependencies;
 		FetchDependencies(Id, Recusive, Dependencies);
 		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
+	}
+
+	bool AssetsSystem::IsTracked(NxFr::GUID Id) const
+	{
+		return Registry->IsValid(Id);
+	}
+
+	bool AssetsSystem::IsLoaded(NxFr::GUID Id) const
+	{
+		return Manager->IsValid(Id);
 	}
 
 	void AssetsSystem::OnInitialize()

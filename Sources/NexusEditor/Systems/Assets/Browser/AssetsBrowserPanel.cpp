@@ -187,7 +187,7 @@ namespace NxEd
 						Select.Flag = NxFr::Integer::SetBit1(Select.Flag, (uint64)1);
 					}
 				}
-				if (Inputs->CheckButton(NxEn::Input::Button::MouseRight) && Instance.Type == InfoType::File)
+				if (Inputs->CheckButton(NxEn::Input::Button::MouseRight) && Instance.Type != InfoType::Directory)
 				{
 					NxFr::String Path = NxFr::Path::ConvertAbsoluteToRelative((NxFr::StringView)Instance.Path, NxFr::Paths::Assets);
 					AssetImporterPopup::ShowWithPath(Path);
