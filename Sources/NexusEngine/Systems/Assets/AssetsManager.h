@@ -14,7 +14,7 @@ namespace NxEn
 		void Remove(NxFr::GUID Id);
 		AssetHandle& Get(NxFr::GUID Id);
 
-		void Save(NxFr::GUID Id, YAML::Node& Node, NxFr::StringView External);
+		YAML::Node Save(NxFr::GUID Id, NxFr::StringView External);
 		void Load(NxFr::GUID Id, const YAML::Node& Node, NxFr::StringView External);
 		void Unload(NxFr::GUID Id);
 

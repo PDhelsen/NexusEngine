@@ -29,9 +29,9 @@ namespace NxEn
 		return Assets[Id];
 	}
 
-	void AssetsManager::Save(NxFr::GUID Id, YAML::Node& Node, NxFr::StringView External)
+	YAML::Node AssetsManager::Save(NxFr::GUID Id, NxFr::StringView External)
 	{
-		Assets[Id].GetInstance()->Save(Node, External);
+		return Assets[Id].GetInstance()->Save(External);
 	}
 
 	void AssetsManager::Load(NxFr::GUID Id, const YAML::Node& Node, NxFr::StringView External)

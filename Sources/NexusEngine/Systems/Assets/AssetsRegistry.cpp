@@ -1,5 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Assets/AssetsRegistry.h"
+#include "NexusEngine/Systems/Assets/AssetSerializer.h"
 
 namespace NxEn
 {
@@ -15,10 +16,8 @@ namespace NxEn
 				continue;
 			}
 
-			YAML::Node Node = NxFr::Yaml::DeserializeFile(File);
-
 			AssetMetadata Metadata;
-			Metadata.Deserialize(Node);
+			Metadata.Deserialize(AssetSerializer::DeserializeMetadata(File));
 
 			Assets.Append(Metadata.GetId(), Metadata);
 			Paths.Append(Metadata.GetPath().Data, Metadata.GetId());
@@ -74,25 +73,28 @@ namespace NxEn
 		return Assets[Id];
 	}
 
-	void AssetsRegistry::Serialize(NxFr::GUID Id, YAML::Node& Node)
+	void AssetsRegistry::Serialize(NxFr::GUID Id, const YAML::Node& Node)
 	{
 		AssetMetadata& Metadata = Assets[Id];
-		Metadata.Serialize(Node);
-		NxFr::Yaml::SerializeFile(Node, FilePath(Metadata.GetPath()));
+		YAML::Node Meta = Metadata.Serialize();
+		AssetSerializer::Serialize(FilePath(Metadata.GetPath()), Meta, Node);
 	}
 
-	void AssetsRegistry::Deserialize(NxFr::GUID Id, YAML::Node& Node)
+	YAML::Node AssetsRegistry::Deserialize(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
-		Node = NxFr::Yaml::DeserializeFile(FilePath(Metadata.GetPath()));
-		Metadata.Deserialize(Node);
+
+		YAML::Node Meta, Data;
+		AssetSerializer::Deserialize(FilePath(Metadata.GetPath()), Meta, Data);
+
+		Metadata.Deserialize(Meta);
+		return Data;
 	}
 
 	YAML::Node AssetsRegistry::GetImportData(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
-		YAML::Node Node = NxFr::Yaml::DeserializeFile(FilePath(Metadata.GetPath()));
-		return Node["Data"];
+		return AssetSerializer::DeserializeData(FilePath(Metadata.GetPath()));
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsRegistry::Find(NxFr::StringView Filter) const

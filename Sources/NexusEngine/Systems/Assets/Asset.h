@@ -27,9 +27,9 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual NxFr::Array<NxFr::GUID> GetDependencies() = 0;
 
 	private:
+		NEXUS_ENGINE_API YAML::Node Save(NxFr::StringView Content);
 		NEXUS_ENGINE_API void Load(const YAML::Node& Node, NxFr::StringView Content);
 		NEXUS_ENGINE_API void Unload();
-		NEXUS_ENGINE_API void Save(YAML::Node& Node, NxFr::StringView Content);
 
 	private:
 		NxFr::GUID Id;

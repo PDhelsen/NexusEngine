@@ -46,8 +46,8 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
 
 	private:
-		void Serialize(YAML::Node& Node);
-		void Deserialize(YAML::Node& Node);
+		YAML::Node Serialize();
+		void Deserialize(const YAML::Node& Node);
 
 	private:
 		NxFr::GUID Id;

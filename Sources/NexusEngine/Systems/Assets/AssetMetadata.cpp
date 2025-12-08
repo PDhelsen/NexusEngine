@@ -44,28 +44,25 @@ namespace NxEn
 	{
 	}
 
-	void AssetMetadata::Serialize(YAML::Node& Node)
+	YAML::Node AssetMetadata::Serialize()
 	{
-		YAML::Node Metadata = YAML::Node();
-		Metadata["Id"] = Id;
-		Metadata["Type"] = Type;
-		Metadata["Path"] = Path.Data;
-		Metadata["Content"] = Content.Data;
-		Metadata["Dependencies"] = Dependencies;
-		Metadata["Data"] = Data;
-
-		Node["Metadata"] = Metadata;
+		YAML::Node Node;
+		Node["Id"] = Id;
+		Node["Type"] = Type;
+		Node["Path"] = Path.Data;
+		Node["Content"] = Content.Data;
+		Node["Dependencies"] = Dependencies;
+		Node["Data"] = Data;
+		return Node;
 	}
 
-	void AssetMetadata::Deserialize(YAML::Node& Node)
+	void AssetMetadata::Deserialize(const YAML::Node& Node)
 	{
-		YAML::Node Metadata = Node["Metadata"];
-
-		Id = Metadata["Id"].as<NxFr::GUID>();
-		Type = Metadata["Type"].as<NxFr::StringId>();
-		Path = Metadata["Path"].as<NxFr::String>();
-		Content = Metadata["Content"].as<NxFr::String>();
-		Dependencies = Metadata["Dependencies"].as<NxFr::Array<NxFr::GUID>>();
-		Data = Metadata["Data"].as<NxFr::Dictionary<NxFr::String, NxFr::String>>();
+		Id = Node["Id"].as<NxFr::GUID>();
+		Type = Node["Type"].as<NxFr::StringId>();
+		Path = Node["Path"].as<NxFr::String>();
+		Content = Node["Content"].as<NxFr::String>();
+		Dependencies = Node["Dependencies"].as<NxFr::Array<NxFr::GUID>>();
+		Data = Node["Data"].as<NxFr::Dictionary<NxFr::String, NxFr::String>>();
 	}
 }

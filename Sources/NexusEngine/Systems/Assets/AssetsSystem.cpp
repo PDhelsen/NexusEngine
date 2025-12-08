@@ -25,11 +25,12 @@ namespace NxEn
 		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
 
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
-		Instance->Id = Id;
 
 		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
+
+		Instance->Id = Id;
 
 		OnEvent.Invoke(EventCreateId, Instance->GetId());
 	}
@@ -126,8 +127,7 @@ namespace NxEn
 		OnSave.Invoke(Instance);
 		Metadata.Dependencies = Instance->GetDependencies();
 
-		YAML::Node Node = YAML::Node();
-		Manager->Save(Id, Node, Registry->IdToContent(Id));
+		YAML::Node Node = Manager->Save(Id, Registry->IdToContent(Id));
 		Registry->Serialize(Id, Node);
 
 		OnEvent.Invoke(EventSaveId, Id);
@@ -149,11 +149,12 @@ namespace NxEn
 		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
 
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
-		Instance->Id = Id;
 
 		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
+
+		Instance->Id = Id;
 
 		OnEvent.Invoke(EventTrackId, Id);
 	}
@@ -177,17 +178,14 @@ namespace NxEn
 	void AssetsSystem::Acquire_Load(NxFr::GUID Id, Asset* Instance)
 	{
 		NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
-
-		YAML::Node Node = YAML::Node();
-		Registry->Deserialize(Id, Node);
-
 		NEXUS_ASSERT(Instance->GetObjectType() == Registry->Get(Id).GetType(), System, "Asset file type doesn't match runtime type (%d)", Id);
-		Instance->Id = Id;
 
+		YAML::Node Node = Registry->Deserialize(Id);
 		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
 		Manager->Load(Id, Node, Registry->IdToContent(Id));
 
+		Instance->Id = Id;
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventAcquireId, Id);
@@ -235,13 +233,13 @@ namespace NxEn
 		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already imported asset %d", Instance->GetId());
 
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
-		Instance->Id = Id;
 
 		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Acquire(Id);
 		Manager->Load(Id, Node, Registry->IdToContent(Id));
 
+		Instance->Id = Id;
 		Instance->SetDirty();
 		Instance->Initialize();
 
@@ -261,10 +259,10 @@ namespace NxEn
 		}
 		else
 		{
-			Instance->Id = Id;
-
 			Manager->Append(Id, AssetHandle(Instance));
 			Manager->Acquire(Id);
+
+			Instance->Id = Id;
 		}
 
 		Manager->Load(Id, Node, Registry->IdToContent(Id));
