@@ -20,11 +20,10 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsSystem)
 
-	void AssetsSystem::Create_Append(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
+	Asset* AssetsSystem::Create(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %d", Instance->GetId());
-
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
+		NxEn::Asset* Instance = AssetsFactory::Create(Type);
 
 		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
@@ -33,6 +32,7 @@ namespace NxEn
 		Instance->Id = Id;
 
 		OnEvent.Invoke(EventCreateId, Instance->GetId());
+		return Instance;
 	}
 
 	void AssetsSystem::Rename(NxFr::GUID Id, NxFr::StringView Name)
@@ -144,36 +144,34 @@ namespace NxEn
 		OnEvent.Invoke(EventSaveId, 0);
 	}
 
-	Asset* AssetsSystem::Acquire_Check(NxFr::GUID Id)
+	Asset* AssetsSystem::Acquire(NxFr::GUID Id)
 	{
 		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
-		if (!IsLoaded(Id))
+		Asset* Instance = nullptr;
+
+		if (IsLoaded(Id))
 		{
-			return nullptr;
+			Instance = Manager->Get(Id).GetInstance();
+			Manager->Acquire(Id);
+		}
+		else
+		{
+			NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
+
+			Instance = AssetsFactory::Create(Registry->Get(Id).GetType());
+
+			YAML::Node Node = Registry->Deserialize(Id);
+			Manager->Append(Id, AssetHandle(Instance));
+			Manager->Acquire(Id);
+			Manager->Load(Id, Node, Registry->IdToContent(Id));
+
+			Instance->Id = Id;
+			Instance->Initialize();
 		}
 
-		Manager->Acquire(Id);
-
 		OnEvent.Invoke(EventAcquireId, Id);
-
-		return Manager->Get(Id).GetInstance();
-	}
-
-	void AssetsSystem::Acquire_Load(NxFr::GUID Id, Asset* Instance)
-	{
-		NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
-		NEXUS_ASSERT(Instance->GetObjectType() == Registry->Get(Id).GetType(), System, "Asset file type doesn't match runtime type (%d)", Id);
-
-		YAML::Node Node = Registry->Deserialize(Id);
-		Manager->Append(Id, AssetHandle(Instance));
-		Manager->Acquire(Id);
-		Manager->Load(Id, Node, Registry->IdToContent(Id));
-
-		Instance->Id = Id;
-		Instance->Initialize();
-
-		OnEvent.Invoke(EventAcquireId, Id);
+		return Instance;
 	}
 
 	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
@@ -250,12 +248,13 @@ namespace NxEn
 		OnEvent.Invoke(EventReleaseId, 0);
 	}
 
-#if NEXUS_EDITOR
-	void AssetsSystem::Import_Append(Asset* Instance, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
+	Asset* AssetsSystem::Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-		NEXUS_ASSERT(Instance->GetId() == 0, System, "Already imported asset %d", Instance->GetId());
-
+#if !NEXUS_EDITOR
+		return nullptr;
+#endif
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
+		NxEn::Asset* Instance = AssetsFactory::Create(Type);
 
 		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
@@ -267,21 +266,32 @@ namespace NxEn
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportId, Id);
+		return Instance;
 	}
+
+	Asset* AssetsSystem::Reimport(NxFr::GUID Id, const YAML::Node& Node)
+	{
+#if !NEXUS_EDITOR
+		return nullptr;
 #endif
 
-	void AssetsSystem::Reimport_Load(Asset* Instance, const YAML::Node& Node, NxFr::GUID Id)
-	{
 		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 		NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
 
+		Asset* Instance = nullptr;
+
 		if (IsLoaded(Id))
 		{
+			Instance = Manager->Get(Id).GetInstance();
+
 			Manager->Unload(Id);
+
 			Instance->Shutdown();
 		}
 		else
 		{
+			Instance = AssetsFactory::Create(Registry->Get(Id).GetType());
+
 			Manager->Append(Id, AssetHandle(Instance));
 			Manager->Acquire(Id);
 
@@ -294,6 +304,7 @@ namespace NxEn
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportId, Id);
+		return Instance;
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsSystem::Find(NxFr::StringView Filter) const

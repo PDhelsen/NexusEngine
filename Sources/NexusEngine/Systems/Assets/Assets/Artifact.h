@@ -7,7 +7,7 @@ namespace NxEn
 	class Artifact : public Asset
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Artifact)
+		NEXUS_ASSET_DECLARATION(NEXUS_ENGINE_API, Artifact)
 
 		NEXUS_ENGINE_API NxFr::Buffer& GetBytes() { return Data; }
 		NEXUS_ENGINE_API uint64 GetCount() { return Data.GetCount(); }

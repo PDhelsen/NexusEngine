@@ -25,9 +25,9 @@ namespace NxEd
 		return GetImporters()[Id];
 	}
 
-	void AssetImporter::SetImporter(NxFr::StringId Id, AssetImporter* Instance)
+	void AssetImporter::SetImporter(AssetImporter* Instance)
 	{
-		GetImporters().AppendOrAssign(Id, Instance);
+		GetImporters().AppendOrAssign(Instance->Type, Instance);
 	}
 
 	NxFr::StringId AssetImporter::GetExtension(NxFr::StringView Extension)
@@ -105,7 +105,7 @@ namespace NxEd
 		YAML::Node Node = YAML::Node();
 		OnImport(Node, File, false);
 
-		return Proxy->Import(System, Node, Path, Extension);
+		return System->Import(Type, Node, Path, Extension);
 	}
 
 	NxEn::Asset* AssetImporter::Reimport(NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::GUID Asset)
@@ -113,7 +113,7 @@ namespace NxEd
 		YAML::Node Node = System->GetImportData(Asset);
 		OnImport(Node, File, true);
 
-		return Proxy->Reimport(System, Node, Asset);
+		return System->Reimport(Asset, Node);
 	}
 
 	NxEn::Asset* AssetImporter::Finalize(NxEn::AssetsSystem* System, NxEn::Asset* Instance, bool Release)

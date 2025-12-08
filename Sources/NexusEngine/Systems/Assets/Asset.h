@@ -1,6 +1,14 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Systems/Assets/AssetsFactory.h"
+
+#define NEXUS_ASSET_DECLARATION(Dll, Type) \
+NEXUS_OBJECT_DECLARATION(Dll, Type)
+
+#define NEXUS_ASSET_IMPLEMENTATION(Type) \
+NEXUS_OBJECT_IMPLEMENTATION(Type)\
+NxEn::AssetsFactory::Factory* Factory##Type = NxEn::AssetsFactory::Register<Type>();
 
 namespace NxEn
 {

@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(Table)
+	NEXUS_ASSET_IMPLEMENTATION(Table)
 
 	void Table::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{

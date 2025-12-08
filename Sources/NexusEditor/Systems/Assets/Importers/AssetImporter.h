@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
-#include "NexusEditor/Systems/Assets/Importers/AssetImporterProxy.h"
 
 namespace NxEd
 {
@@ -9,7 +8,7 @@ namespace NxEd
 	{
 	public:
 		NEXUS_EDITOR_API static AssetImporter* GetImporter(NxFr::StringId Id);
-		NEXUS_EDITOR_API static void SetImporter(NxFr::StringId Id, AssetImporter* Instance);
+		NEXUS_EDITOR_API static void SetImporter(AssetImporter* Instance);
 		NEXUS_EDITOR_API static NxFr::StringId GetExtension(NxFr::StringView Extension);
 		NEXUS_EDITOR_API static void SetExtension(NxFr::StringView Extension, NxFr::StringId Id);
 		NEXUS_EDITOR_API static NxFr::StringId TryGetImporterId(NxFr::StringView File);
@@ -37,19 +36,19 @@ namespace NxEd
 		NxEn::Asset* Finalize(NxEn::AssetsSystem* System, NxEn::Asset* Instance, bool Release);
 
 	private:
-		AssetImporterProxy* Proxy;
+		NxFr::StringId Type;
 	};
 
 	template<typename I, typename T>
 	inline I* AssetImporter::Create(NxFr::InitializerList<NxFr::StringView> Extensions)
 	{
 		I* Importer = new I();
-		Importer->Proxy = new AssetImporterTypedProxy<T>();
+		Importer->Type = T::GetClassType();
 
-		SetImporter(T::GetClassType(), Importer);
+		SetImporter(Importer);
 		for (auto& Extension : Extensions)
 		{
-			SetExtension(Extension, T::GetClassType());
+			SetExtension(Extension, Importer->Type);
 		}
 
 		return Importer;

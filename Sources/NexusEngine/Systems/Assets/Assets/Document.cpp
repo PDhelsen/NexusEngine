@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(Document)
+	NEXUS_ASSET_IMPLEMENTATION(Document)
 
 	void Document::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{

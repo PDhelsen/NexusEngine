@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(Artifact)
+	NEXUS_ASSET_IMPLEMENTATION(Artifact)
 
 	void Artifact::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{

@@ -7,7 +7,7 @@ namespace NxEn
 	class Table : public Asset
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Table)
+		NEXUS_ASSET_DECLARATION(NEXUS_ENGINE_API, Table)
 
 		NEXUS_ENGINE_API YAML::Node& GetRoot() { return Data; }
 
