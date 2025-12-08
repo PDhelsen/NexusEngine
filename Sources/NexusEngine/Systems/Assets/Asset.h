@@ -15,7 +15,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Asset();
 		NEXUS_ENGINE_API virtual ~Asset();
 
-		NEXUS_ENGINE_API NxFr::GUID GetId() const { return Id; }
+		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return Id; }
 		NEXUS_ENGINE_API bool IsDirty() const { return Dirty; }
 		NEXUS_ENGINE_API void SetDirty() { Dirty = true; }
 
