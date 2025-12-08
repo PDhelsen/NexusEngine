@@ -17,18 +17,13 @@ namespace NxEn
 	class AssetsSystem : public System
 	{
 	public:
-		const NxFr::StringId EventCreateId = "Create"_Sid;
-		const NxFr::StringId EventRenameId = "Rename"_Sid;
-		const NxFr::StringId EventMoveId = "Move"_Sid;
-		const NxFr::StringId EventDeleteId = "Delete"_Sid;
-		const NxFr::StringId EventSaveId = "Save"_Sid;
-		const NxFr::StringId EventTrackId = "Track"_Sid;
-		const NxFr::StringId EventAcquireId = "Acquire"_Sid;
-		const NxFr::StringId EventReleaseId = "Release"_Sid;
-		const NxFr::StringId EventLoadId = "Load"_Sid;
-		const NxFr::StringId EventReloadId = "Reload"_Sid;
-		const NxFr::StringId EventUnloadId = "Unload"_Sid;
-		const NxFr::StringId EventImportId = "Import"_Sid;
+		const NxFr::StringId EventCreatedId = "Created"_Sid;
+		const NxFr::StringId EventMovedId = "Renamed"_Sid;
+		const NxFr::StringId EventDeletedId = "Deleted"_Sid;
+		const NxFr::StringId EventSavedId = "Saved"_Sid;
+		const NxFr::StringId EventLoadedId = "Loaded"_Sid;
+		const NxFr::StringId EventUnloadedId = "Unloaded"_Sid;
+		const NxFr::StringId EventImportedId = "Imported"_Sid;
 
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, AssetsSystem)
 
@@ -53,10 +48,10 @@ namespace NxEn
 		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		NEXUS_ENGINE_API Asset* Acquire(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
-		NEXUS_ENGINE_API void Purge();
 		NEXUS_ENGINE_API Asset* Load(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Reload(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Unload(NxFr::GUID Id);
+		NEXUS_ENGINE_API void Purge();
 
 		NEXUS_ENGINE_API Asset* Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
 		NEXUS_ENGINE_API Asset* Reimport(NxFr::GUID Id, const YAML::Node& Node);
@@ -85,6 +80,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void RecordStats() const;
 		NEXUS_ENGINE_API void UpdateStats() const;
 
+		NEXUS_ENGINE_API Asset* Reset(NxFr::GUID Id);
 		NEXUS_ENGINE_API void FetchDependencies(NxFr::GUID Id, bool Recusive, NxFr::Set<NxFr::GUID>& Result);
 
 	private:
@@ -93,7 +89,6 @@ namespace NxEn
 
 		class AssetsRegistry* Registry;
 		class AssetsManager* Manager;
-		class AssetsFactory* Factory;
 	};
 
 	template<typename T>
