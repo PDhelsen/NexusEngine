@@ -58,6 +58,9 @@ namespace NxEn
 		NEXUS_ENGINE_API YAML::Node GetImportData(NxFr::GUID Id);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recusive = false);
 
+		NEXUS_ENGINE_API bool IsTracked(NxFr::GUID Id) const { return Registry->IsValid(Id); }
+		NEXUS_ENGINE_API bool IsLoaded(NxFr::GUID Id) const { return Manager->IsValid(Id); }
+
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnEvent() { return OnEvent; }
 		NEXUS_ENGINE_API NxFr::Event<Asset*>& GetOnSave() { return OnSave; }
 

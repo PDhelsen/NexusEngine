@@ -61,6 +61,7 @@ namespace NxEd
 		NxFr::StringView Extension = NxFr::Path::GetExtension(FilePath);
 		NxFr::GUID Id = System->PathToId(Path);
 		bool Reimport = Id != 0;
+		ReleaseAfterImport &= !(Reimport && System->IsLoaded(Id));
 
 		YAML::Node Node = !Reimport ? YAML::Node() : System->GetImportData(Id);
 		OnImport(Node, FilePath, Reimport);
