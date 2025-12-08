@@ -1,4 +1,5 @@
 #include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 namespace NxEd
 {
@@ -12,12 +13,6 @@ namespace NxEd
 	{
 		static NxFr::Dictionary<NxFr::String, NxFr::StringId> Extensions;
 		return Extensions;
-	}
-
-	static NxFr::Dictionary<NxFr::StringId, NxFr::Delegate<void(NxFr::StringView, bool)>>& GetCommands()
-	{
-		static NxFr::Dictionary<NxFr::StringId, NxFr::Delegate<void(NxFr::StringView, bool)>> Commands;
-		return Commands;
 	}
 
 	const static NxEn::Command CmdAssetImport = NxEn::Command::Create("Assets.Import"_Sid, "Import asset at path", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Path)
@@ -45,17 +40,7 @@ namespace NxEd
 		GetExtensions().AppendOrAssign(Extension, Id);
 	}
 
-	const NxFr::Delegate<void(NxFr::StringView, bool)>& AssetImporter::GetCommand(NxFr::StringId Id)
-	{
-		return GetCommands()[Id];
-	}
-
-	void AssetImporter::SetCommand(NxFr::StringId Id, const NxFr::Delegate<void(NxFr::StringView, bool)>& Callback)
-	{
-		GetCommands().AppendOrAssign(Id, Callback);
-	}
-
-	void AssetImporter::Import(NxFr::StringId Id, NxFr::StringView FilePath, bool ReleaseAfterImport)
+	NxEn::Asset* AssetImporter::Import(NxFr::StringId Id, NxFr::StringView FilePath, bool ReleaseAfterImport)
 	{
 		if (Id.GetId() == 0)
 		{
@@ -63,7 +48,36 @@ namespace NxEd
 		}
 
 		NEXUS_ASSERT(Id.GetId(), Default, "Asset importer requires an type id in order to import the asset at path %s", FilePath.C());
-		GetCommand(Id).Invoke(FilePath, ReleaseAfterImport);
+
+		AssetImporter* Importer = GetImporter(Id);
+		return Importer->Import(FilePath, ReleaseAfterImport);
+	}
+
+	NxEn::Asset* AssetImporter::Import(NxFr::StringView FilePath, bool ReleaseAfterImport)
+	{
+		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+
+		NxFr::StringView Path = NxFr::Path::GetPathWithoutExtension(FilePath);
+		NxFr::StringView Extension = NxFr::Path::GetExtension(FilePath);
+		NxFr::GUID Id = System->PathToId(Path);
+		bool Reimport = Id != 0;
+
+		YAML::Node Node = !Reimport ? YAML::Node() : System->GetImportData(Id);
+		OnImport(Node, FilePath, Reimport);
+
+		NxEn::Asset* Instance = !Reimport ?
+			Proxy->Import(System, Node, Path, Extension) :
+			Proxy->Reimport(System, Node, Id);
+
+		System->Save(Instance->GetId());
+		if (ReleaseAfterImport)
+		{
+			System->Release(Instance->GetId());
+			Instance = nullptr;
+		}
+
+		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Refresh();
+		return Instance;
 	}
 }
 

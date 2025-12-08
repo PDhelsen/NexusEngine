@@ -261,6 +261,8 @@ namespace NxEn
 		}
 		else
 		{
+			Instance->Id = Id;
+
 			Manager->Append(Id, AssetHandle(Instance));
 			Manager->Acquire(Id);
 		}
