@@ -1,5 +1,4 @@
 #include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 namespace NxEd
 {
@@ -125,7 +124,6 @@ namespace NxEd
 			Instance = nullptr;
 		}
 
-		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Refresh();
 		return Instance;
 	}
 }

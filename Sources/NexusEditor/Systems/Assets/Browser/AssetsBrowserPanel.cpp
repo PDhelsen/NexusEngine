@@ -1,6 +1,7 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
+#include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
 #include "NexusEditor/Systems/Assets/Importers/AssetImporterPopup.h"
 
 namespace NxEd
@@ -12,7 +13,7 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel AssetsBrowserPanel");
 	}));
 
-	const static NxEn::Command CmdAssetImport = NxEn::Command::Create("Assets.Ping"_Sid, "Ping path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	const static NxEn::Command CmdAssetPing = NxEn::Command::Create("Assets.Ping"_Sid, "Ping path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Select(Path);
 	}));
@@ -20,7 +21,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
 
 	AssetsBrowserPanel::AssetsBrowserPanel()
-		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64)
+		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64), Command(Action::None)
 	{
 	}
 
@@ -30,6 +31,12 @@ namespace NxEd
 
 	void AssetsBrowserPanel::Refresh()
 	{
+		Selection.Clear();
+		Selected = nullptr;
+		Filtered.Clear();
+		Filter.Clear();
+		Command = Action::None;
+
 		FetchFolder();
 	}
 
@@ -82,6 +89,8 @@ namespace NxEd
 	{
 		DrawHeader();
 		DrawItem(&Items[0]);
+
+		ProcessCommand();
 	}
 
 	void AssetsBrowserPanel::DrawHeader()
@@ -109,6 +118,7 @@ namespace NxEd
 		}
 
 		bool Browse = Filter.IsEmpty();
+		bool ExpandChanged = false;
 		if (Browse || Filtered.Contains(Item))
 		{
 			// Draw
@@ -119,7 +129,9 @@ namespace NxEd
 			if (Browse)
 			{
 				ImGui::SetNextItemOpen(Item->Expanded, ImGuiCond_Always);
-				Item->Expanded = ImGui::TreeNodeEx(Item->ImGuiText.C(), Flag);
+				bool State = ImGui::TreeNodeEx(Item->ImGuiText.C(), Flag);
+				ExpandChanged = Item->Expanded != State;
+				Item->Expanded = State;
 			}
 			else
 			{
@@ -129,33 +141,78 @@ namespace NxEd
 			// Inputs
 			if (ImGui::IsItemHovered())
 			{
-				if (Inputs->CheckButton(NxEn::Input::Button::MouseLeft))
+				if (Inputs->CheckButton(NxEn::Input::Button::MouseLeft, NxEn::Input::State::Pressed) && !ExpandChanged)
 				{
-					if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
-					{
-						Select(Item, true);
-					}
-					else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
-					{
-						Select(Item, true, true);
-					}
-					else
-					{
-						Select(Item);
-					}
+					SelectItem(Item);
+				}
+				if (Inputs->CheckButton(NxEn::Input::Button::MouseRight))
+				{
+					OpenContext(Item);
 				}
 			}
+
+			DrawContextActions(Item);
 		}
 
 		// Iterate
 		if (Item->ItemType == AssetsBrowserItem::Type::Directory && Item->Expanded)
 		{
-			if (Browse) ImGui::TreePush(Item->ImGuiText.C());
+			if (Browse)
+			{
+				ImGui::TreePush(Item->ImGuiText.C());
+			}
+
 			DrawItem(Item->Child);
-			if (Browse) ImGui::TreePop();
+
+			if (Browse)
+			{
+				ImGui::TreePop();
+			}
 		}
 
 		DrawItem(Item->Next);
+	}
+
+	void AssetsBrowserPanel::DrawContextActions(AssetsBrowserItem* Item)
+	{
+		if (ImGui::BeginPopup(Item->ImGuiText.C()))
+		{
+			if (Item->GetType() == AssetsBrowserItem::Type::File)
+			{
+				if (ImGui::MenuItem("Import")) Command = Action::Import;
+			}
+			else if (Item->GetType() == AssetsBrowserItem::Type::Directory)
+			{
+			}
+			else
+			{
+				if (ImGui::MenuItem("Reimport")) Command = Action::Reimport;
+				if (ImGui::MenuItem("Load")) Command = Action::Load;
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
+	void AssetsBrowserPanel::SelectItem(AssetsBrowserItem* Item)
+	{
+		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
+		{
+			Select(Item, true);
+		}
+		else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
+		{
+			Select(Item, true, true);
+		}
+		else
+		{
+			Select(Item);
+		}
+	}
+
+	void AssetsBrowserPanel::OpenContext(AssetsBrowserItem* Item)
+	{
+		ImGui::OpenPopup(Item->ImGuiText.C());
 	}
 
 	void AssetsBrowserPanel::FetchFolder()
@@ -342,6 +399,63 @@ namespace NxEd
 					break;
 				}
 			}
+		}
+	}
+
+	void AssetsBrowserPanel::ProcessCommand()
+	{
+		if (Command == Action::None)
+		{
+			return;
+		}
+			
+		for (const AssetsBrowserItem* I : Selection)
+		{
+			HandleAction(I);
+		}
+
+		Command = Action::None;
+	}
+
+	void AssetsBrowserPanel::HandleAction(const AssetsBrowserItem* Item)
+	{
+		switch (Command)
+		{
+		case NxEd::AssetsBrowserPanel::Action::Import:
+		{
+			if (Item->GetType() != AssetsBrowserItem::Type::File)
+			{
+				return;
+			}
+
+			AssetImporter::Run(AssetImporter::TryGetImporterId(Item->GetPath()), Item->GetPath());
+		}
+		break;
+		case NxEd::AssetsBrowserPanel::Action::Reimport:
+		{
+			if (Item->GetType() != AssetsBrowserItem::Type::Asset)
+			{
+				return;
+			}
+
+			AssetImporter::Run(AssetImporter::TryGetImporterId(Item->GetPath()), Item->GetId());
+		}
+		break;
+		case NxEd::AssetsBrowserPanel::Action::Load:
+		{
+			if (Item->GetType() != AssetsBrowserItem::Type::Asset)
+			{
+				return;
+			}
+
+			Assets->Load(Item->GetId());
+		}
+		break;
+
+		case NxEd::AssetsBrowserPanel::Action::None:
+		case NxEd::AssetsBrowserPanel::Action::COUNT:
+		default:
+			break;
 		}
 	}
 }
