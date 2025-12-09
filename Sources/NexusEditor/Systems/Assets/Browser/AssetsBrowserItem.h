@@ -55,8 +55,9 @@ namespace NxEd
 
 		NxFr::String ImGuiText;
 
-		int64 Parent;
-		int64 Next;
+		AssetsBrowserItem* Parent;
+		AssetsBrowserItem* Next;
+		AssetsBrowserItem* Child;
 		bool Expanded;
 		bool Selected;
 	};

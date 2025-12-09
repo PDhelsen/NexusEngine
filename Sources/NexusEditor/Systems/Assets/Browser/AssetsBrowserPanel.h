@@ -31,7 +31,7 @@ namespace NxEd
 
 	private:
 		void DrawHeader();
-		void DrawFolder(int64& Index);
+		void DrawItem(AssetsBrowserItem* Item);
 
 		void FetchFolder();
 		AssetsBrowserItem* AppendItem(NxFr::StringView Path, bool Replace = false);

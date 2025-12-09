@@ -5,7 +5,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItem)
 
 	AssetsBrowserItem::AssetsBrowserItem(NxFr::GUID Id, NxFr::StringView FilePath)
-		: Id(Id), ItemType(), Path(FilePath), PathWithoutExtension(), Directory(), Name(), Extension(), ImGuiText(), Depth(), Parent(-1), Next(-1), Expanded(false), Selected(false)
+		: Id(Id), ItemType(), Path(FilePath), PathWithoutExtension(), Directory(), Name(), Extension(), ImGuiText(), Depth(), Parent(nullptr), Next(nullptr), Child(nullptr), Expanded(false), Selected(false)
 	{
 		SetTickable(false);
 

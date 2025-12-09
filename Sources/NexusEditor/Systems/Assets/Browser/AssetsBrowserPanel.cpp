@@ -41,8 +41,7 @@ namespace NxEd
 			Id = NxFr::Hash<>::HashObject(Path);
 		}
 
-		AssetsBrowserItem* Item = &Items[Map[Id]];
-		Select(Item, Additive, List);
+		Select(&Items[Map[Id]], Additive, List);
 	}
 
 	void AssetsBrowserPanel::OnInitialize()
@@ -69,9 +68,7 @@ namespace NxEd
 	void AssetsBrowserPanel::OnGui(float TimeStep)
 	{
 		DrawHeader();
-
-		int64 Index = 0;
-		DrawFolder(Index);
+		DrawItem(&Items[0]);
 	}
 
 	void AssetsBrowserPanel::DrawHeader()
@@ -84,17 +81,20 @@ namespace NxEd
 		ImGui::Separator();
 	}
 
-	void AssetsBrowserPanel::DrawFolder(int64& Index)
+	void AssetsBrowserPanel::DrawItem(AssetsBrowserItem* Item)
 	{
-		AssetsBrowserItem& Item = Items[Index];
+		if (!Item)
+		{
+			return;
+		}
 
 		// Draw
 		uint64 Flag = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_OpenOnArrow
-			| (Item.ItemType != AssetsBrowserItem::Type::Directory ? ImGuiTreeNodeFlags_Leaf : 0)
-			| (Item.Selected ? ImGuiTreeNodeFlags_Selected : 0);
+			| (Item->ItemType != AssetsBrowserItem::Type::Directory ? ImGuiTreeNodeFlags_Leaf : 0)
+			| (Item->Selected ? ImGuiTreeNodeFlags_Selected : 0);
 
-		ImGui::SetNextItemOpen(Item.Expanded, ImGuiCond_Always);
-		Item.Expanded = ImGui::TreeNodeEx(Item.ImGuiText.C(), Flag);
+		ImGui::SetNextItemOpen(Item->Expanded, ImGuiCond_Always);
+		Item->Expanded = ImGui::TreeNodeEx(Item->ImGuiText.C(), Flag);
 
 		// Inputs
 		if (ImGui::IsItemHovered())
@@ -103,40 +103,28 @@ namespace NxEd
 			{
 				if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
 				{
-					Select(&Item, true);
+					Select(Item, true);
 				}
 				else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
 				{
-					Select(&Item, true, true);
+					Select(Item, true, true);
 				}
 				else
 				{
-					Select(&Item);
+					Select(Item);
 				}
 			}
 		}
 
 		// Iterate
-		Index++;
-
-		if (Item.ItemType == AssetsBrowserItem::Type::Directory)
+		if (Item->ItemType == AssetsBrowserItem::Type::Directory && Item->Expanded)
 		{
-			if (Item.Expanded)
-			{
-				ImGui::TreePush(Item.ImGuiText.C());
-
-				while (Index < Item.Next)
-				{
-					DrawFolder(Index);
-				}
-
-				ImGui::TreePop();
-			}
-			else
-			{
-				Index = Item.Next;
-			}
+			ImGui::TreePush(Item->ImGuiText.C());
+			DrawItem(Item->Child);
+			ImGui::TreePop();
 		}
+
+		DrawItem(Item->Next);
 	}
 
 	void AssetsBrowserPanel::FetchFolder()
@@ -147,6 +135,8 @@ namespace NxEd
 
 		Items.Clear();
 		Items.Reserve(Content.GetCount());
+		Map.Clear();
+		Map.Reserve(Content.GetCount());
 
 		AssetsBrowserItem* Item = AppendItem("Assets/");
 		Item->Depth = 0;
@@ -159,7 +149,7 @@ namespace NxEd
 			AssetsBrowserItem* Last = &Items.Last();
 			if (Last->GetPathWithoutExtension() == NxFr::Path::GetPathWithoutExtension(Path))
 			{
-				if (Last->ItemType == AssetsBrowserItem::Type::File)
+				if (Last->GetType() == AssetsBrowserItem::Type::File)
 				{
 					AppendItem(Path, true);
 				}
@@ -168,34 +158,31 @@ namespace NxEd
 			}
 
 			AssetsBrowserItem* Item = AppendItem(Path);
-			Last->Next = Items.GetCount() - 1;
-			Item->Parent = Map[Directories.Get()->GetId()];
 
-			if (Item->ItemType == AssetsBrowserItem::Type::Directory)
+			if (Last->Depth == Item->Depth)
 			{
-				while (!Directories.IsEmpty())
+				Last->Next = Item;
+			}
+			else if (Last->Depth < Item->Depth)
+			{
+				Last->Child = Item;
+			}
+			else if (Last->Depth > Item->Depth)
+			{
+				while (!Directories.IsEmpty() && Last->Depth > Item->Depth)
 				{
 					Last = Directories.Get();
-					if (Last->Depth < Item->Depth)
-					{
-						break;
-					}
-
-					Last->Next = Items.GetCount() - 1;
 					Directories.Remove();
 				}
 
-				Item->Parent = Map[Last->GetId()];
+				Last->Next = Item;
+			}
+
+			Item->Parent = Directories.Get();
+			if (Item->GetType() == AssetsBrowserItem::Type::Directory)
+			{
 				Directories.Append(Item);
 			}
-		}
-
-		while (!Directories.IsEmpty())
-		{
-			AssetsBrowserItem* Instance = Directories.Get();
-			Directories.Remove();
-
-			Instance->Next = Items.GetCount();
 		}
 	}
 
@@ -257,23 +244,23 @@ namespace NxEd
 
 	void AssetsBrowserPanel::Show(AssetsBrowserItem* Item)
 	{
-		AssetsBrowserItem* Parent = Item->Parent >= 0 ? &Items[Item->Parent] : nullptr;
+		AssetsBrowserItem* Parent = Item->Parent;
 		while (Parent)
 		{
 			Parent->Expanded = true;
-			Parent = Parent->Parent >= 0 ? &Items[Parent->Parent] : nullptr;
+			Parent = Parent->Parent;
 		}
 	}
 
 	bool AssetsBrowserPanel::IsVisible(AssetsBrowserItem* Item)
 	{
 		bool Visible = true;
-		AssetsBrowserItem* Parent = Item->Parent >= 0 ? &Items[Item->Parent] : nullptr;
+		AssetsBrowserItem* Parent = Item->Parent;
 
 		while (Parent)
 		{
 			Visible &= Parent->Expanded;
-			Parent = Parent->Parent >= 0 ? &Items[Parent->Parent] : nullptr;
+			Parent = Parent->Parent;
 		}
 
 		return Visible;
