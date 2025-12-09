@@ -22,7 +22,9 @@ namespace NxEd
 		NEXUS_EDITOR_API ~AssetsBrowserPanel();
 
 		NEXUS_EDITOR_API void Refresh();
+		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Additive = false, bool List = false);
 		NEXUS_EDITOR_API void Select(NxFr::StringView Path, bool Additive = false, bool List = false);
+		NEXUS_EDITOR_API void Find(NxFr::StringView Query);
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
@@ -40,6 +42,8 @@ namespace NxEd
 		void Show(AssetsBrowserItem* Item);
 		bool IsVisible(AssetsBrowserItem* Item);
 
+		void Find();
+
 	private:
 		NxEn::GUI::Style Style;
 
@@ -51,5 +55,8 @@ namespace NxEd
 
 		NxFr::Set<AssetsBrowserItem*> Selection;
 		AssetsBrowserItem* Selected;
+
+		NxFr::Set<AssetsBrowserItem*> Filtered;
+		NxFr::String Filter;
 	};
 }

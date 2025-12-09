@@ -20,7 +20,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
 
 	AssetsBrowserPanel::AssetsBrowserPanel()
-		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr)
+		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64)
 	{
 	}
 
@@ -33,6 +33,11 @@ namespace NxEd
 		FetchFolder();
 	}
 
+	void AssetsBrowserPanel::Select(NxFr::GUID Id, bool Additive, bool List)
+	{
+		Select(&Items[Map[Id]], Additive, List);
+	}
+
 	void AssetsBrowserPanel::Select(NxFr::StringView Path, bool Additive, bool List)
 	{
 		NxFr::GUID Id = Assets->PathToId(Path);
@@ -41,7 +46,15 @@ namespace NxEd
 			Id = NxFr::Hash<>::HashObject(Path);
 		}
 
-		Select(&Items[Map[Id]], Additive, List);
+		Select(Id, Additive, List);
+	}
+
+	void AssetsBrowserPanel::Find(NxFr::StringView Query)
+	{
+		Filter.Clear();
+		Filter += Query;
+
+		Find();
 	}
 
 	void AssetsBrowserPanel::OnInitialize()
@@ -78,6 +91,13 @@ namespace NxEd
 			Refresh();
 		}
 
+		if (NxEn::GUI::Drawer<NxFr::String>::Field(Filter, "Filter", "", &Style))
+		{
+			Find();
+		}
+
+		NxEn::GUI::Drawer<NxFr::String>::Property(Selected ? Selected->Path : "", "Selected", &Style);
+
 		ImGui::Separator();
 	}
 
@@ -88,30 +108,41 @@ namespace NxEd
 			return;
 		}
 
-		// Draw
-		uint64 Flag = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_OpenOnArrow
-			| (Item->ItemType != AssetsBrowserItem::Type::Directory ? ImGuiTreeNodeFlags_Leaf : 0)
-			| (Item->Selected ? ImGuiTreeNodeFlags_Selected : 0);
-
-		ImGui::SetNextItemOpen(Item->Expanded, ImGuiCond_Always);
-		Item->Expanded = ImGui::TreeNodeEx(Item->ImGuiText.C(), Flag);
-
-		// Inputs
-		if (ImGui::IsItemHovered())
+		bool Browse = Filter.IsEmpty();
+		if (Browse || Filtered.Contains(Item))
 		{
-			if (Inputs->CheckButton(NxEn::Input::Button::MouseLeft))
+			// Draw
+			uint64 Flag = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_OpenOnArrow
+				| (Item->ItemType != AssetsBrowserItem::Type::Directory ? ImGuiTreeNodeFlags_Leaf : 0)
+				| (Item->Selected ? ImGuiTreeNodeFlags_Selected : 0);
+
+			if (Browse)
 			{
-				if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
+				ImGui::SetNextItemOpen(Item->Expanded, ImGuiCond_Always);
+				Item->Expanded = ImGui::TreeNodeEx(Item->ImGuiText.C(), Flag);
+			}
+			else
+			{
+				ImGui::Selectable(Item->ImGuiText.C(), Item->Selected);
+			}
+
+			// Inputs
+			if (ImGui::IsItemHovered())
+			{
+				if (Inputs->CheckButton(NxEn::Input::Button::MouseLeft))
 				{
-					Select(Item, true);
-				}
-				else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
-				{
-					Select(Item, true, true);
-				}
-				else
-				{
-					Select(Item);
+					if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
+					{
+						Select(Item, true);
+					}
+					else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
+					{
+						Select(Item, true, true);
+					}
+					else
+					{
+						Select(Item);
+					}
 				}
 			}
 		}
@@ -119,9 +150,9 @@ namespace NxEd
 		// Iterate
 		if (Item->ItemType == AssetsBrowserItem::Type::Directory && Item->Expanded)
 		{
-			ImGui::TreePush(Item->ImGuiText.C());
+			if (Browse) ImGui::TreePush(Item->ImGuiText.C());
 			DrawItem(Item->Child);
-			ImGui::TreePop();
+			if (Browse) ImGui::TreePop();
 		}
 
 		DrawItem(Item->Next);
@@ -188,13 +219,17 @@ namespace NxEd
 
 	AssetsBrowserItem* AssetsBrowserPanel::AppendItem(NxFr::StringView Path, bool Replace)
 	{
-		NxFr::GUID Id = Assets->PathToId(Path);
+		NxFr::GUID Id = Assets->PathToId(NxFr::Path::GetPathWithoutExtension(Path));
 		if (Id == 0)
 		{
 			Id = NxFr::Hash<>::HashObject(Path);
 		}
 
-		Map.Append(Id, Items.GetCount());
+		if (!Replace)
+		{
+			Map.Append(Id, Items.GetCount());
+		}
+
 		return Replace ?
 			&Items.AssignConstruct(Items.GetCount() - 1, Id, Path) :
 			&Items.AppendConstruct(Id, Path);
@@ -211,6 +246,11 @@ namespace NxEd
 
 			Selection.Clear();
 			Selected = nullptr;
+		}
+
+		if (!Item)
+		{
+			return;
 		}
 
 		Item->Selected = !Item->Selected;
@@ -264,5 +304,44 @@ namespace NxEd
 		}
 
 		return Visible;
+	}
+
+	void AssetsBrowserPanel::Find()
+	{
+		Filtered.Clear();
+
+		if (Filter.IsEmpty())
+		{
+			return;
+		}
+
+		// Assets
+		NxFr::Array<NxFr::GUID> Ids = Assets->Find(Filter);
+		for (auto& Id : Ids)
+		{
+			AssetsBrowserItem* Item = &Items[Map[Id]];
+			Show(Item);
+			Filtered.Append(Item);
+		}
+
+		// File and Directory
+		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, "");
+		for (auto& Item : Items)
+		{
+			if (Item.GetType() == AssetsBrowserItem::Type::Asset)
+			{
+				continue;
+			}
+
+			for (auto& F : Filters)
+			{
+				if (NxFr::StringUtility::Contains(Item.GetPath(), F))
+				{
+					Show(&Item);
+					Filtered.Append(&Item);
+					break;
+				}
+			}
+		}
 	}
 }
