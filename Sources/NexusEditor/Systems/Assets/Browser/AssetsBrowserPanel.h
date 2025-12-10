@@ -8,15 +8,6 @@ namespace NxEd
 	class AssetsBrowserPanel : public NxEn::GUI::Panel
 	{
 	public:
-		enum class Action
-		{
-			None,
-			Import,
-			Reimport,
-			Load,
-			COUNT
-		};
-
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserPanel)
 
 		NEXUS_EDITOR_API AssetsBrowserPanel();
@@ -35,9 +26,7 @@ namespace NxEd
 	private:
 		void DrawHeader();
 		void DrawItem(AssetsBrowserItem* Item);
-		void DrawContextActions(AssetsBrowserItem* Item);
 		void SelectItem(AssetsBrowserItem* Item);
-		void OpenContext(AssetsBrowserItem* Item);
 
 		void FetchFolder();
 		AssetsBrowserItem* AppendItem(NxFr::StringView Path, bool Replace = false);
@@ -47,9 +36,6 @@ namespace NxEd
 		bool IsVisible(AssetsBrowserItem* Item);
 
 		void Find();
-
-		void ProcessCommand();
-		void HandleAction(const AssetsBrowserItem* Item);
 
 	private:
 		NxEn::GUI::Style Style;
@@ -65,10 +51,5 @@ namespace NxEd
 
 		NxFr::Set<AssetsBrowserItem*> Filtered;
 		NxFr::String Filter;
-
-		Action Command;
 	};
 }
-
-NEXUS_ENUM_STRING(NxEd::AssetsBrowserPanel::Action, (uint64)NxEd::AssetsBrowserPanel::Action::COUNT, "None", "Import", "Reimport", "Load")
-

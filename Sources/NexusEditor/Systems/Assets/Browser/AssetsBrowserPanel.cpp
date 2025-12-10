@@ -21,7 +21,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
 
 	AssetsBrowserPanel::AssetsBrowserPanel()
-		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64), Command(Action::None)
+		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64)
 	{
 	}
 
@@ -35,7 +35,6 @@ namespace NxEd
 		Selected = nullptr;
 		Filtered.Clear();
 		Filter.Clear();
-		Command = Action::None;
 
 		FetchFolder();
 	}
@@ -89,8 +88,6 @@ namespace NxEd
 	{
 		DrawHeader();
 		DrawItem(&Items[0]);
-
-		ProcessCommand();
 	}
 
 	void AssetsBrowserPanel::DrawHeader()
@@ -145,13 +142,7 @@ namespace NxEd
 				{
 					SelectItem(Item);
 				}
-				if (Inputs->CheckButton(NxEn::Input::Button::MouseRight))
-				{
-					OpenContext(Item);
-				}
 			}
-
-			DrawContextActions(Item);
 		}
 
 		// Iterate
@@ -173,27 +164,6 @@ namespace NxEd
 		DrawItem(Item->Next);
 	}
 
-	void AssetsBrowserPanel::DrawContextActions(AssetsBrowserItem* Item)
-	{
-		if (ImGui::BeginPopup(Item->ImGuiText.C()))
-		{
-			if (Item->GetType() == AssetsBrowserItem::Type::File)
-			{
-				if (ImGui::MenuItem("Import")) Command = Action::Import;
-			}
-			else if (Item->GetType() == AssetsBrowserItem::Type::Directory)
-			{
-			}
-			else
-			{
-				if (ImGui::MenuItem("Reimport")) Command = Action::Reimport;
-				if (ImGui::MenuItem("Load")) Command = Action::Load;
-			}
-
-			ImGui::EndPopup();
-		}
-	}
-
 	void AssetsBrowserPanel::SelectItem(AssetsBrowserItem* Item)
 	{
 		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
@@ -208,11 +178,6 @@ namespace NxEd
 		{
 			Select(Item);
 		}
-	}
-
-	void AssetsBrowserPanel::OpenContext(AssetsBrowserItem* Item)
-	{
-		ImGui::OpenPopup(Item->ImGuiText.C());
 	}
 
 	void AssetsBrowserPanel::FetchFolder()
@@ -399,63 +364,6 @@ namespace NxEd
 					break;
 				}
 			}
-		}
-	}
-
-	void AssetsBrowserPanel::ProcessCommand()
-	{
-		if (Command == Action::None)
-		{
-			return;
-		}
-			
-		for (const AssetsBrowserItem* I : Selection)
-		{
-			HandleAction(I);
-		}
-
-		Command = Action::None;
-	}
-
-	void AssetsBrowserPanel::HandleAction(const AssetsBrowserItem* Item)
-	{
-		switch (Command)
-		{
-		case NxEd::AssetsBrowserPanel::Action::Import:
-		{
-			if (Item->GetType() != AssetsBrowserItem::Type::File)
-			{
-				return;
-			}
-
-			AssetImporter::Run(AssetImporter::TryGetImporterId(Item->GetPath()), Item->GetPath());
-		}
-		break;
-		case NxEd::AssetsBrowserPanel::Action::Reimport:
-		{
-			if (Item->GetType() != AssetsBrowserItem::Type::Asset)
-			{
-				return;
-			}
-
-			AssetImporter::Run(AssetImporter::TryGetImporterId(Item->GetPath()), Item->GetId());
-		}
-		break;
-		case NxEd::AssetsBrowserPanel::Action::Load:
-		{
-			if (Item->GetType() != AssetsBrowserItem::Type::Asset)
-			{
-				return;
-			}
-
-			Assets->Load(Item->GetId());
-		}
-		break;
-
-		case NxEd::AssetsBrowserPanel::Action::None:
-		case NxEd::AssetsBrowserPanel::Action::COUNT:
-		default:
-			break;
 		}
 	}
 }
