@@ -46,7 +46,7 @@ namespace NxEn
 		NxFr::File(FilePath(Metadata.GetPath())).Move(FilePath(Path));
 		if (Metadata.GetContent().IsValid())
 		{
-			NxFr::File(ContentPath(Metadata.GetPath())).Move(ContentPath(Path));
+			NxFr::File(ContentPath(Metadata.GetContent())).Move(ContentPath(Path));
 		}
 
 		Paths.Remove(Metadata.GetPath().Data);
@@ -59,10 +59,14 @@ namespace NxEn
 	{
 		AssetMetadata& Metadata = Assets[Id];
 
-		if (Metadata.GetPath().IsValid() && Metadata.GetPath().Exist())
+		if (Metadata.GetPath().IsValid())
 		{
 			Paths.Remove(Metadata.GetPath().Data);
 			NxFr::File(FilePath(Metadata.GetPath())).Delete();
+			if (Metadata.GetContent().IsValid())
+			{
+				NxFr::File(ContentPath(Metadata.GetContent())).Delete();
+			}
 		}
 
 		Assets.Remove(Id);
