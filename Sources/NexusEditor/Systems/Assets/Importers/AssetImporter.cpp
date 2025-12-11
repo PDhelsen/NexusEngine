@@ -43,7 +43,7 @@ namespace NxEd
 	{
 		NxFr::StringView Extension = NxFr::Path::GetExtension(File);
 
-		if (Extension == NxEn::AssetMetadata::Extension)
+		if (Extension == NxEn::AssetMetadata::AssetExtension)
 		{
 			NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 			NxFr::StringView Path = NxFr::Path::GetPathWithoutExtension(File);

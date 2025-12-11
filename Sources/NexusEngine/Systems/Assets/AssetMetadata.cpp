@@ -26,20 +26,16 @@ namespace NxEn
 	}
 
 	AssetMetadata::AssetMetadata()
-		: Id(0), Type(0), Path(""), Content(""), Data(3)
+		: Id(0), Type(0), Path(""), Extension(""), Data(3)
 	{
 	}
 
 	AssetMetadata::AssetMetadata(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
-		: Id(Instance->GetId()), Type(Instance->GetObjectType()), Path(""), Content(""), Data(3)
+		: Id(Instance->GetId()), Type(Instance->GetObjectType()), Path(Path), Extension(Extension), Data(3)
 	{
-		if (!Path.IsEmpty())
+		if (this->Path.IsEmpty())
 		{
-			this->Path = Path;
-			if (!Extension.IsEmpty())
-			{
-				this->Content = Path + "." + Extension;
-			}
+			Extension = "";
 		}
 	}
 
@@ -53,7 +49,7 @@ namespace NxEn
 		Node["Id"] = Id;
 		Node["Type"] = Type;
 		Node["Path"] = Path.Data;
-		Node["Content"] = Content.Data;
+		Node["Extension"] = Extension;
 		Node["Dependencies"] = Dependencies;
 		Node["Data"] = Data;
 		return Node;
@@ -64,7 +60,7 @@ namespace NxEn
 		Id = Node["Id"].as<NxFr::GUID>();
 		Type = Node["Type"].as<NxFr::StringId>();
 		Path = Node["Path"].as<NxFr::String>();
-		Content = Node["Content"].as<NxFr::String>();
+		Extension = Node["Extension"].as<NxFr::String>();
 		Dependencies = Node["Dependencies"].as<NxFr::Array<NxFr::GUID>>();
 		Data = Node["Data"].as<NxFr::Dictionary<NxFr::String, NxFr::String>>();
 	}

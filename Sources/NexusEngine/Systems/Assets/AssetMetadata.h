@@ -32,7 +32,7 @@ namespace NxEn
 		friend class AssetsRegistry;
 
 	public:
-		static inline const NxFr::String Extension = "asset";
+		static inline const NxFr::String AssetExtension = "asset";
 
 		NEXUS_ENGINE_API AssetMetadata();
 		NEXUS_ENGINE_API AssetMetadata(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
@@ -40,8 +40,8 @@ namespace NxEn
 
 		NEXUS_ENGINE_API NxFr::GUID GetId() { return Id; }
 		NEXUS_ENGINE_API NxFr::StringId GetType() { return Type; }
-		NEXUS_ENGINE_API const NxFr::Path& GetPath() const { return Path; }
-		NEXUS_ENGINE_API const NxFr::Path& GetContent() const { return Content; }
+		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
+		NEXUS_ENGINE_API NxFr::StringView GetExtension() const { return Extension; }
 		NEXUS_ENGINE_API const NxFr::Array<NxFr::GUID>& GetDependencies() { return Dependencies; }
 		NEXUS_ENGINE_API NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
 
@@ -53,7 +53,7 @@ namespace NxEn
 		NxFr::GUID Id;
 		NxFr::StringId Type;
 		NxFr::Path Path;
-		NxFr::Path Content;
+		NxFr::String Extension;
 		NxFr::Array<NxFr::GUID> Dependencies;
 		NxFr::Dictionary<NxFr::String, NxFr::String> Data;
 	};	

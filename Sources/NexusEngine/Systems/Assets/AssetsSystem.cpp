@@ -54,7 +54,10 @@ namespace NxEn
 			return;
 		}
 
+		Load(Id);
 		Registry->Move(Id, Path);
+		Save(Id, true);
+
 		OnEvent.Invoke(EventMovedId, Id);
 	}
 
@@ -68,7 +71,7 @@ namespace NxEn
 		OnEvent.Invoke(EventDeletedId, Id);
 	}
 
-	void AssetsSystem::Save(NxFr::GUID Id)
+	void AssetsSystem::Save(NxFr::GUID Id, bool Force)
 	{
 		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
@@ -88,7 +91,7 @@ namespace NxEn
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
 
-		if (!Instance->IsDirty())
+		if (!Instance->IsDirty() && !Force)
 		{
 			return;
 		}
@@ -122,6 +125,8 @@ namespace NxEn
 
 		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
 		Manager->Append(Id, AssetHandle(Instance));
+
+		Instance->SetDirty();
 
 		OnEvent.Invoke(EventCreatedId, Id);
 	}

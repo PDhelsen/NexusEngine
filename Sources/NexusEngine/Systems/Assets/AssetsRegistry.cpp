@@ -11,7 +11,7 @@ namespace NxEn
 		for (uint64 Index = 0; Index < Files.GetCount(); ++Index)
 		{
 			NxFr::StringView File = Files[Index];
-			if (!NxFr::Path::HasExtension(File, AssetMetadata::Extension))
+			if (!NxFr::Path::HasExtension(File, AssetMetadata::AssetExtension))
 			{
 				continue;
 			}
@@ -20,7 +20,7 @@ namespace NxEn
 			Metadata.Deserialize(AssetSerializer::DeserializeMetadata(File));
 
 			Assets.Append(Metadata.GetId(), Metadata);
-			Paths.Append(Metadata.GetPath().Data, Metadata.GetId());
+			Paths.Append(Metadata.GetPath(), Metadata.GetId());
 		}
 	}
 
@@ -32,10 +32,14 @@ namespace NxEn
 	{
 		Assets.Append(Id, Metadata);
 
-		if (Metadata.GetPath().IsValid())
+		if (!Metadata.GetPath().IsEmpty())
 		{
-			Paths.Append(Metadata.GetPath().Data, Id);
-			NxFr::File(FilePath(Metadata.GetPath())).Create();
+			Paths.Append(Metadata.GetPath(), Id);
+			NxFr::File(FilePath(Metadata.GetPath(), AssetMetadata::AssetExtension)).Create();
+			if (!Metadata.GetExtension().IsEmpty())
+			{
+				NxFr::File(FilePath(Metadata.GetPath(), Metadata.GetExtension())).Create();
+			}
 		}
 	}
 
@@ -43,29 +47,34 @@ namespace NxEn
 	{
 		AssetMetadata& Metadata = Assets[Id];
 
-		NxFr::File(FilePath(Metadata.GetPath())).Move(FilePath(Path));
-		if (Metadata.GetContent().IsValid())
+		NxFr::String File = FilePath(Metadata.GetPath(), AssetMetadata::AssetExtension);
+		NxFr::String Target = FilePath(Path, AssetMetadata::AssetExtension);
+		NxFr::File(Target).EnsureParent();
+		NxFr::File(File).Move(Target);
+
+		if (!Metadata.GetExtension().IsEmpty())
 		{
-			NxFr::File(ContentPath(Metadata.GetContent())).Move(ContentPath(Path));
+			File = FilePath(Metadata.GetPath(), Metadata.GetExtension());
+			Target = FilePath(Path, Metadata.GetExtension());
+			NxFr::File(File).Move(Target);
 		}
 
-		Paths.Remove(Metadata.GetPath().Data);
-		Paths.Append(Metadata.GetPath().Data, Id);
-
+		Paths.Remove(Metadata.GetPath());
 		Metadata.Path = Path;
+		Paths.Append(Metadata.GetPath(), Id);
 	}
 
 	void AssetsRegistry::Remove(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
 
-		if (Metadata.GetPath().IsValid())
+		if (!Metadata.GetPath().IsEmpty())
 		{
-			Paths.Remove(Metadata.GetPath().Data);
-			NxFr::File(FilePath(Metadata.GetPath())).Delete();
-			if (Metadata.GetContent().IsValid())
+			Paths.Remove(Metadata.GetPath());
+			NxFr::File(FilePath(Metadata.GetPath(), AssetMetadata::AssetExtension)).Delete();
+			if (!Metadata.GetExtension().IsEmpty())
 			{
-				NxFr::File(ContentPath(Metadata.GetContent())).Delete();
+				NxFr::File(FilePath(Metadata.GetPath(), Metadata.GetExtension())).Delete();
 			}
 		}
 
@@ -81,7 +90,7 @@ namespace NxEn
 	{
 		AssetMetadata& Metadata = Assets[Id];
 		YAML::Node Meta = Metadata.Serialize();
-		AssetSerializer::Serialize(FilePath(Metadata.GetPath()), Meta, Node);
+		AssetSerializer::Serialize(FilePath(Metadata.GetPath(), AssetMetadata::AssetExtension), Meta, Node);
 	}
 
 	YAML::Node AssetsRegistry::Deserialize(NxFr::GUID Id)
@@ -89,7 +98,7 @@ namespace NxEn
 		AssetMetadata& Metadata = Assets[Id];
 
 		YAML::Node Meta, Data;
-		AssetSerializer::Deserialize(FilePath(Metadata.GetPath()), Meta, Data);
+		AssetSerializer::Deserialize(FilePath(Metadata.GetPath(), AssetMetadata::AssetExtension), Meta, Data);
 
 		Metadata.Deserialize(Meta);
 		return Data;
@@ -98,7 +107,7 @@ namespace NxEn
 	YAML::Node AssetsRegistry::GetImportData(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
-		return AssetSerializer::DeserializeData(FilePath(Metadata.GetPath()));
+		return AssetSerializer::DeserializeData(FilePath(Metadata.GetPath(), AssetMetadata::AssetExtension));
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsRegistry::Find(NxFr::StringView Filter) const
@@ -146,7 +155,7 @@ namespace NxEn
 
 			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 			{
-				NxFr::StringView Substring = Metadata.GetPath().Data;
+				NxFr::StringView Substring = Metadata.GetPath();
 				Substring = Path[Index] ? Substring : NxFr::Path::Split(Substring).Last();
 
 				MatchId |= Ids[Index] != 0 && Metadata.GetId() == Ids[Index];
@@ -172,28 +181,23 @@ namespace NxEn
 	NxFr::String AssetsRegistry::IdToPath(NxFr::GUID Id) const
 	{
 		const AssetMetadata* Metadata = Assets.TryGet(Id);
-		return Metadata ? Metadata->GetPath().Data : NxFr::StringUtility::Empty;
+		return Metadata ? NxFr::String(Metadata->GetPath()) : NxFr::StringUtility::Empty;
 	}
 
 	NxFr::String AssetsRegistry::IdToFile(NxFr::GUID Id) const
 	{
 		const AssetMetadata* Metadata = Assets.TryGet(Id);
-		return Metadata ? FilePath(Metadata->GetPath()) : NxFr::StringUtility::Empty;
+		return Metadata ? FilePath(Metadata->GetPath(), AssetMetadata::AssetExtension) : NxFr::StringUtility::Empty;
 	}
 
 	NxFr::String AssetsRegistry::IdToContent(NxFr::GUID Id) const
 	{
 		const AssetMetadata* Metadata = Assets.TryGet(Id);
-		return Metadata ? ContentPath(Metadata->GetContent()) : NxFr::StringUtility::Empty;
+		return Metadata ? FilePath(Metadata->GetPath(), Metadata->GetExtension()) : NxFr::StringUtility::Empty;
 	}
 
-	NxFr::String AssetsRegistry::FilePath(NxFr::StringView Path) const
+	NxFr::String AssetsRegistry::FilePath(NxFr::StringView Path, NxFr::StringView Extension) const
 	{
-		return NxFr::Path(Root + (Path + "." + AssetMetadata::Extension)).Data;
-	}
-
-	NxFr::String AssetsRegistry::ContentPath(NxFr::StringView Path) const
-	{
-		return NxFr::Path(Root + Path).Data;
+		return NxFr::Path(Root + (Path + "." + Extension)).Data;
 	}
 }

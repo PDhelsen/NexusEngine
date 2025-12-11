@@ -42,7 +42,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void Rename(NxFr::GUID Id, NxFr::StringView Name);
 		NEXUS_ENGINE_API void Move(NxFr::GUID Id, NxFr::StringView Path);
 		NEXUS_ENGINE_API void Delete(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Save(NxFr::GUID Id);
+		NEXUS_ENGINE_API void Save(NxFr::GUID Id, bool Force = false);
 		NEXUS_ENGINE_API void Save();
 
 		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
