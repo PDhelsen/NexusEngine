@@ -39,20 +39,14 @@ namespace NxEd
 		FetchFolder();
 	}
 
-	void AssetsBrowserPanel::Select(NxFr::GUID Id, bool Additive, bool List)
-	{
-		Select(&Items[Map[Id]], Additive, List);
-	}
-
 	void AssetsBrowserPanel::Select(NxFr::StringView Path, bool Additive, bool List)
 	{
-		NxFr::GUID Id = Assets->PathToId(Path);
-		if (Id == 0)
-		{
-			Id = NxFr::Hash<>::HashObject(Path);
-		}
+		Select(PathToId(Path), Additive, List);
+	}
 
-		Select(Id, Additive, List);
+	void AssetsBrowserPanel::Select(NxFr::GUID Id, bool Additive, bool List)
+	{
+		Select(Map[Id], Additive, List);
 	}
 
 	void AssetsBrowserPanel::Find(NxFr::StringView Query)
@@ -87,7 +81,7 @@ namespace NxEd
 	void AssetsBrowserPanel::OnGui(float TimeStep)
 	{
 		DrawHeader();
-		DrawItem(&Items[0]);
+		DrawItem(Items);
 	}
 
 	void AssetsBrowserPanel::DrawHeader()
@@ -102,7 +96,7 @@ namespace NxEd
 			Find();
 		}
 
-		NxEn::GUI::Drawer<NxFr::String>::Property(Selected ? Selected->Path : "", "Selected", &Style);
+		NxEn::GUI::Drawer<NxFr::String>::Property(Selected ? Selected->GetPath() : "", "Selected", &Style);
 
 		ImGui::Separator();
 	}
@@ -120,8 +114,8 @@ namespace NxEd
 		{
 			// Draw
 			uint64 Flag = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_OpenOnArrow
-				| (Item->ItemType != AssetsBrowserItem::Type::Directory ? ImGuiTreeNodeFlags_Leaf : 0)
-				| (Item->Selected ? ImGuiTreeNodeFlags_Selected : 0);
+				| (Item->IsLeaf() ? ImGuiTreeNodeFlags_Leaf : 0)
+				| (Item->IsSelected() ? ImGuiTreeNodeFlags_Selected : 0);
 
 			if (Browse)
 			{
@@ -146,7 +140,7 @@ namespace NxEd
 		}
 
 		// Iterate
-		if (Item->ItemType == AssetsBrowserItem::Type::Directory && Item->Expanded)
+		if (Item->GetObjectType() == AssetsBrowserItemDirectory::GetClassType() && Item->IsOpen())
 		{
 			if (Browse)
 			{
@@ -182,79 +176,125 @@ namespace NxEd
 
 	void AssetsBrowserPanel::FetchFolder()
 	{
-		NxFr::Directory Root = NxFr::Directory(NxFr::Paths::Assets);
-		NxFr::List<NxFr::String> Content = Root.GetContent(true);
-		NxFr::Stack<AssetsBrowserItem*> Directories;
-
-		Items.Clear();
-		Items.Reserve(Content.GetCount());
 		Map.Clear();
-		Map.Reserve(Content.GetCount());
-
-		AssetsBrowserItem* Item = AppendItem("Assets/");
-		Item->Depth = 0;
-		Directories.Append(Item);
-
-		for (auto& Path : Content)
-		{
-			NxFr::Path::ConvertAbsoluteToRelative(Path, NxFr::Paths::Assets);
-
-			AssetsBrowserItem* Last = &Items.Last();
-			if (Last->GetPathWithoutExtension() == NxFr::Path::GetPathWithoutExtension(Path))
-			{
-				if (Last->GetType() == AssetsBrowserItem::Type::File)
-				{
-					AppendItem(Path, true);
-				}
-
-				continue;
-			}
-
-			AssetsBrowserItem* Item = AppendItem(Path);
-
-			if (Last->Depth == Item->Depth)
-			{
-				Last->Next = Item;
-			}
-			else if (Last->Depth < Item->Depth)
-			{
-				Last->Child = Item;
-			}
-			else if (Last->Depth > Item->Depth)
-			{
-				while (!Directories.IsEmpty() && Last->Depth > Item->Depth)
-				{
-					Last = Directories.Get();
-					Directories.Remove();
-				}
-
-				Last->Next = Item;
-			}
-
-			Item->Parent = Directories.Get();
-			if (Item->GetType() == AssetsBrowserItem::Type::Directory)
-			{
-				Directories.Append(Item);
-			}
-		}
+		Items = FetchItems(NxFr::Paths::Assets, nullptr);
+		PurgeDuplicates(Items);
 	}
 
-	AssetsBrowserItem* AssetsBrowserPanel::AppendItem(NxFr::StringView Path, bool Replace)
+	AssetsBrowserItem* AssetsBrowserPanel::FetchItems(NxFr::StringView Path, AssetsBrowserItem* Parent)
 	{
-		NxFr::GUID Id = Assets->PathToId(NxFr::Path::GetPathWithoutExtension(Path));
-		if (Id == 0)
+		NxFr::String P = FileToPath(Path);
+		NxFr::GUID Id = PathToId(P);
+
+		AssetsBrowserItem* Instance = AppendItem(Id, P);
+
+		if (Parent)
 		{
-			Id = NxFr::Hash<>::HashObject(Path);
+			Instance->Parent = Parent;
+			if (Parent->Child == nullptr)
+			{
+				Parent->Child = Instance;
+			}
 		}
 
-		if (!Replace)
+		if (Instance->GetObjectType() == AssetsBrowserItemDirectory::GetClassType())
 		{
-			Map.Append(Id, Items.GetCount());
+			AssetsBrowserItem* Previous = nullptr;
+
+			NxFr::Directory Root(Path);
+			for (auto& Path : Root)
+			{
+				AssetsBrowserItem* Child = FetchItems(Path, Instance);
+				if (Previous)
+				{
+					Child->Previous = Previous;
+					Previous->Next = Child;
+				}
+				Previous = Child;
+			}
 		}
 
-		return Replace ?
-			&Items.AssignConstruct(Items.GetCount() - 1, Id, Path) :
-			&Items.AppendConstruct(Id, Path);
+		return Instance;
+	}
+
+	AssetsBrowserItem* AssetsBrowserPanel::PurgeDuplicates(AssetsBrowserItem* Item)
+	{
+		if (Item == nullptr)
+		{
+			return nullptr;
+		}
+
+		PurgeDuplicates(Item->Child);
+
+		if (Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
+		{
+			if (Item->Next && Item->Name == Item->Next->Name)
+			{
+				RemoveItem(Item->Next);
+			}
+			else if (Item->Previous && Item->Name == Item->Previous->Name)
+			{
+				RemoveItem(Item->Previous);
+			}
+		}
+
+		while (Item)
+		{
+			Item = PurgeDuplicates(Item->Next);
+		}
+
+		return Item ? Item->Next : nullptr;
+	}
+
+	AssetsBrowserItem* AssetsBrowserPanel::AppendItem(NxFr::GUID Id, NxFr::StringView Path)
+	{
+		AssetsBrowserItem* Item = nullptr;
+
+		if (NxFr::Path::IsDirectory(Path))
+		{
+			Item = new AssetsBrowserItemDirectory(Id, Path);
+		}
+		else
+		{
+			if (NxFr::Path::HasExtension(Path, NxEn::AssetMetadata::Extension))
+			{
+				Item = new AssetsBrowserItemAsset(Id, Path);
+			}
+			else
+			{
+				Item = new AssetsBrowserItemFile(Id, Path);
+			}
+		}
+
+		Map.Append(Item->GetId(), Item);
+		return Item;
+	}
+
+	void AssetsBrowserPanel::RemoveItem(AssetsBrowserItem* Item)
+	{
+		if (Item->Parent)
+		{
+			if (Item->Parent->Child == Item)
+			{
+				Item->Parent->Child = Item->Next;
+			}
+		}
+		if (Item->Previous)
+		{
+			Item->Previous->Next = Item->Next;
+		}
+		if (Item->Next)
+		{
+			Item->Next->Previous = Item->Previous;
+		}
+
+		while (Item->Child)
+		{
+			RemoveItem(Item->Child);
+		}
+
+		Map.Remove(Item->GetId());
+		delete Item;
 	}
 
 	void AssetsBrowserPanel::Select(AssetsBrowserItem* Item, bool Additive, bool List)
@@ -280,22 +320,26 @@ namespace NxEd
 		
 		if (List)
 		{
-			uint64 Start = Map[Item->GetId()];
-			uint64 End = Selected != nullptr ? Map[Selected->GetId()] : Start;
-			if (Start > End)
+			NxFr::StringView P1 = Item->GetPath();
+			NxFr::StringView P2 = Selected->GetPath();
+			AssetsBrowserItem* I1 = P1 < P2 ? Item : Selected;
+			AssetsBrowserItem* I2 = P1 >= P2 ? Item : Selected;
+			while (I1 && I1 != I2)
 			{
-				uint64 Temp = Start;
-				Start = End;
-				End = Temp;
-			}
-
-			for (uint64 Index = Start; Index <= End; ++Index)
-			{
-				AssetsBrowserItem* I = &Items[Index];
-				if (IsVisible(I))
+				if (IsVisible(I1))
 				{
-					I->Selected = Item->Selected;
-					Selection.Append(I);
+					I1->Selected = Item->Selected;
+					Selection.Append(I1);
+				}
+
+				I1 = I1->GetIterator();
+			}
+			if (I1)
+			{
+				if (IsVisible(I1))
+				{
+					I1->Selected = Item->Selected;
+					Selection.Append(I1);
 				}
 			}
 		}
@@ -341,29 +385,62 @@ namespace NxEd
 		NxFr::Array<NxFr::GUID> Ids = Assets->Find(Filter);
 		for (auto& Id : Ids)
 		{
-			AssetsBrowserItem* Item = &Items[Map[Id]];
+			AssetsBrowserItem* Item = Map[Id];
 			Show(Item);
 			Filtered.Append(Item);
 		}
 
 		// File and Directory
 		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, "");
-		for (auto& Item : Items)
+		AssetsBrowserItem* Item = Items;
+		while (Item)
 		{
-			if (Item.GetType() == AssetsBrowserItem::Type::Asset)
+			if (Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
 			{
+				Item = Item->GetIterator();
 				continue;
 			}
 
 			for (auto& F : Filters)
 			{
-				if (NxFr::StringUtility::Contains(Item.GetPath(), F))
+				if (NxFr::StringUtility::Contains(Item->GetPath(), F))
 				{
-					Show(&Item);
-					Filtered.Append(&Item);
+					Show(Item);
+					Filtered.Append(Item);
 					break;
 				}
 			}
+
+			Item = Item->GetIterator();
 		}
+	}
+
+	NxFr::GUID AssetsBrowserPanel::PathToId(NxFr::StringView Path)
+	{
+		NxFr::GUID Id = NxFr::Path::HasExtension(Path, NxEn::AssetMetadata::Extension) ? 
+			Assets->PathToId(NxFr::Path::GetPathWithoutExtension(Path)) :
+			NxFr::Hash<>::HashObject(Path);
+
+		return Id;
+	}
+
+	NxFr::String AssetsBrowserPanel::FileToPath(NxFr::StringView Path)
+	{
+		if (Path == NxFr::Paths::Assets)
+		{
+			return "Assets/";
+		}
+
+		return NxFr::Path::ConvertAbsoluteToRelative(Path, NxFr::Paths::Assets);
+	}
+
+	NxFr::String AssetsBrowserPanel::PathToFile(NxFr::StringView Path)
+	{
+		if (Path == "Assets/")
+		{
+			return NxFr::Paths::Assets.Data;
+		}
+
+		return NxFr::Path::ConvertRelativeToAbsolute(Path, NxFr::Paths::Assets);
 	}
 }

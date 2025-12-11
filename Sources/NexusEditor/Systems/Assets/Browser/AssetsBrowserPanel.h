@@ -14,8 +14,8 @@ namespace NxEd
 		NEXUS_EDITOR_API ~AssetsBrowserPanel();
 
 		NEXUS_EDITOR_API void Refresh();
-		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Additive = false, bool List = false);
 		NEXUS_EDITOR_API void Select(NxFr::StringView Path, bool Additive = false, bool List = false);
+		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Additive = false, bool List = false);
 		NEXUS_EDITOR_API void Find(NxFr::StringView Query);
 
 	protected:
@@ -29,7 +29,10 @@ namespace NxEd
 		void SelectItem(AssetsBrowserItem* Item);
 
 		void FetchFolder();
-		AssetsBrowserItem* AppendItem(NxFr::StringView Path, bool Replace = false);
+		AssetsBrowserItem* FetchItems(NxFr::StringView Path, AssetsBrowserItem* Parent);
+		AssetsBrowserItem* PurgeDuplicates(AssetsBrowserItem* Item);
+		AssetsBrowserItem* AppendItem(NxFr::GUID Id, NxFr::StringView Path);
+		void RemoveItem(AssetsBrowserItem* Item);
 
 		void Select(AssetsBrowserItem* Item, bool Additive = false, bool List = false);
 		void Show(AssetsBrowserItem* Item);
@@ -37,14 +40,18 @@ namespace NxEd
 
 		void Find();
 
+		NxFr::GUID PathToId(NxFr::StringView Path);
+		NxFr::String FileToPath(NxFr::StringView Path);
+		NxFr::String PathToFile(NxFr::StringView Path);
+
 	private:
 		NxEn::GUI::Style Style;
 
 		NxEn::AssetsSystem* Assets;
 		NxEn::InputSystem* Inputs;
 
-		NxFr::List<AssetsBrowserItem> Items;
-		NxFr::Dictionary<NxFr::GUID, uint64> Map;
+		NxFr::Dictionary<NxFr::GUID, AssetsBrowserItem*> Map;
+		AssetsBrowserItem* Items;
 
 		NxFr::Set<AssetsBrowserItem*> Selection;
 		AssetsBrowserItem* Selected;

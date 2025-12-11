@@ -3,68 +3,127 @@
 namespace NxEd
 {
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItem)
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItemDirectory)
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItemFile)
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItemAsset)
 
-	AssetsBrowserItem::AssetsBrowserItem(NxFr::GUID Id, NxFr::StringView FilePath)
-		: Id(Id), ItemType(), Path(FilePath), PathWithoutExtension(), Directory(), Name(), Extension(), ImGuiText(), Depth(), Parent(nullptr), Next(nullptr), Child(nullptr), Expanded(false), Selected(false)
+#pragma region AssetsBrowserItem
+
+	AssetsBrowserItem::AssetsBrowserItem(NxFr::GUID ItemId, NxFr::StringView FilePath)
+		: Parent(nullptr), Previous(nullptr), Next(nullptr), Child(nullptr),
+		Id(ItemId), Path(FilePath), ImGuiText(),
+		PrettyPath(), Directory(), Name(), Extension(),
+		Expanded(false), Selected(false)
 	{
 		SetTickable(false);
 
-		ItemType = NxFr::Path::IsDirectory(Path) ? Type::Directory :
-			NxFr::Path::HasExtension(Path, NxEn::AssetMetadata::Extension) ? Type::Asset : Type::File;
-
-		GeneratePathInfo();
-		GenerateImGuiText();
+		GenerateInfo();
 	}
 
 	AssetsBrowserItem::~AssetsBrowserItem()
 	{
 	}
 
-	void AssetsBrowserItem::GeneratePathInfo()
+	void AssetsBrowserItem::Update(NxFr::GUID ItemId, NxFr::StringView FilePath)
 	{
-		PathWithoutExtension = NxFr::Path::GetPathWithoutExtension(Path);
-		Directory = NxFr::Path::GetParent(Path);
-		Name = ItemType == Type::Directory ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path);
+		Id = ItemId;
+		Path = FilePath;
+
+		GenerateInfo();
+		GenerateImGui();
+	}
+
+	void AssetsBrowserItem::GenerateInfo()
+	{
+		PrettyPath = NxFr::Path::GetPathWithoutExtension(Path);
+		Directory = NxFr::Path::GetDirectoryPath(Path);
+		Name = NxFr::Path::IsDirectory(Path) ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path);
 		Extension = NxFr::Path::GetExtension(Path);
-		Depth = NxFr::Path::Split(Path).GetCount();
 	}
 
-	void AssetsBrowserItem::GenerateImGuiText()
+#pragma endregion
+
+#pragma region AssetsBrowserItemDirectory
+
+	AssetsBrowserItemDirectory::AssetsBrowserItemDirectory(NxFr::GUID ItemId, NxFr::StringView FilePath)
+		: AssetsBrowserItem(ItemId, FilePath)
 	{
-		ImGuiText = ItemType == Type::Directory ? "D" : ItemType == Type::Asset ? "A" : "F";
-		ImGuiText += " ";
-		ImGuiText += Name;
-		ImGuiText += "##";
-		ImGuiText += NxFr::StringUtility::ToString(Id);
+		GenerateImGui();
 	}
 
-	bool AssetsBrowserItem::operator==(const AssetsBrowserItem& Other) const
+	AssetsBrowserItemDirectory::~AssetsBrowserItemDirectory()
 	{
-		return Id == Other.Id;
 	}
 
-	bool AssetsBrowserItem::operator!=(const AssetsBrowserItem& Other) const
+	void AssetsBrowserItemDirectory::GenerateImGui()
 	{
-		return Id != Other.Id;
+		ImGuiText = "D " + Name + "##" + NxFr::StringUtility::ToString(Id);
 	}
 
-	bool AssetsBrowserItem::operator<(const AssetsBrowserItem& Other) const
+	AssetsBrowserItem* AssetsBrowserItem::GetIterator()
 	{
-		return Path < Other.Path;
+		if (Child)
+		{
+			return Child;
+		}
+
+		if (Next)
+		{
+			return Next;
+		}
+
+		AssetsBrowserItem* P = Parent;
+		while (P && !P->Next)
+		{
+			P = P->Parent;
+		}
+
+		if (P)
+		{
+			return P->Next;
+		}
+
+		return nullptr;
 	}
 
-	bool AssetsBrowserItem::operator<=(const AssetsBrowserItem& Other) const
+#pragma endregion
+
+#pragma region AssetsBrowserItemFile
+
+	AssetsBrowserItemFile::AssetsBrowserItemFile(NxFr::GUID ItemId, NxFr::StringView FilePath)
+		: AssetsBrowserItem(ItemId, FilePath)
 	{
-		return Path <= Other.Path;
+		GenerateImGui();
 	}
 
-	bool AssetsBrowserItem::operator>(const AssetsBrowserItem& Other) const
+	AssetsBrowserItemFile::~AssetsBrowserItemFile()
 	{
-		return Path > Other.Path;
 	}
 
-	bool AssetsBrowserItem::operator>=(const AssetsBrowserItem& Other) const
+	void AssetsBrowserItemFile::GenerateImGui()
 	{
-		return Path >= Other.Path;
+		ImGuiText = "F " + Name + "##" + NxFr::StringUtility::ToString(Id);
 	}
+
+#pragma endregion
+
+#pragma region AssetsBrowserItemAsset
+
+	AssetsBrowserItemAsset::AssetsBrowserItemAsset(NxFr::GUID ItemId, NxFr::StringView FilePath)
+		: AssetsBrowserItem(ItemId, FilePath)
+	{
+		GenerateImGui();
+	}
+
+	AssetsBrowserItemAsset::~AssetsBrowserItemAsset()
+	{
+	}
+
+	void AssetsBrowserItemAsset::GenerateImGui()
+	{
+		ImGuiText = "A " + Name + "##" + NxFr::StringUtility::ToString(Id);
+	}
+
+#pragma endregion
+
 }
