@@ -22,15 +22,15 @@ namespace NxEn
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NxFr::GUID PathToId(NxFr::StringView Path) const;
 		NxFr::String IdToPath(NxFr::GUID Id) const;
-		NxFr::String IdToFile(NxFr::GUID Id) const;
-		NxFr::String IdToContent(NxFr::GUID Id) const;
+		NxFr::String IdToFileAsset(NxFr::GUID Id) const;
+		NxFr::String IdToFileContent(NxFr::GUID Id) const;
 
 		bool IsValid(NxFr::GUID Id) const { return Assets.ContainsKey(Id); };
 		bool HasFile(NxFr::GUID Id) const { return !Assets[Id].GetPath().IsEmpty(); }
 		uint64 GetCount() const { return Assets.GetCount(); }
 
 	private:
-		NxFr::String FilePath(NxFr::StringView Path, NxFr::StringView Extension) const;
+		NxFr::String PathToFile(NxFr::StringView Path, NxFr::StringView Extension) const;
 
 	private:
 		NxFr::Path Root;

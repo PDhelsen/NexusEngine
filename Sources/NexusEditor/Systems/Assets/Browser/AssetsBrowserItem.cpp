@@ -9,9 +9,6 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItemFile)
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItemAsset)
 
-	NxFr::Delegate<NxFr::String(NxFr::StringView)> AssetsBrowserItem::PathToFile;
-	NxFr::Delegate<void(AssetsBrowserItem*, NxFr::StringView, bool)> AssetsBrowserItem::Update;
-
 #pragma region AssetsBrowserItem
 
 	AssetsBrowserItem::AssetsBrowserItem()
@@ -26,16 +23,19 @@ namespace NxEd
 	{
 	}
 
-	NxFr::String AssetsBrowserItem::GetFilePath()
+	void AssetsBrowserItem::Update(NxFr::StringView Target, bool UpdateId)
 	{
-		return PathToFile.Invoke(Path);
+		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->UpdateItem(this, Target, UpdateId);
 	}
 
-	void AssetsBrowserItem::ChangeFilePath(NxFr::StringView FilePath, NxFr::String& Before, NxFr::String& After)
+	NxFr::String AssetsBrowserItem::PathToDisk(NxFr::StringView Path)
 	{
-		Before = PathToFile.Invoke(Path);
-		Update.Invoke(this, FilePath, true);
-		After = PathToFile.Invoke(Path);
+		return AssetsBrowserPanel::PathToDisk(Path);
+	}
+
+	NxFr::String AssetsBrowserItem::PathToAsset(NxFr::StringView Path)
+	{
+		return AssetsBrowserPanel::PathToAsset(Path);
 	}
 
 #pragma endregion
@@ -50,21 +50,24 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserItemDirectory::Create(NxFr::StringView FilePath, NxFr::StringId Type)
+	void AssetsBrowserItemDirectory::Create(NxFr::StringView Target, NxFr::StringId Type)
 	{
+		NxFr::Directory(PathToDisk(Target)).Create();
+		Update(Target, true);
 	}
 
-	void AssetsBrowserItemDirectory::Move(NxFr::StringView FilePath)
+	void AssetsBrowserItemDirectory::Move(NxFr::StringView Target)
 	{
-		NxFr::String Before, After;
-		ChangeFilePath(FilePath, Before, After);
+		NxFr::String Before = PathToDisk(Path);
+		Update(Target, true);
+		NxFr::String After = PathToDisk(Path);
 
 		NxFr::Directory(After).EnsureParent().Create();
 
 		AssetsBrowserItem* Item = GetChild();
 		while (Item)
 		{
-			Item->Move(NxFr::Path::Combine(FilePath, Item->GetName()));
+			Item->Move(NxFr::Path::Combine(Target, Item->GetName()));
 			Item = Item->GetNext();
 		}
 
@@ -80,7 +83,7 @@ namespace NxEd
 			Item = Item->GetNext();
 		}
 
-		NxFr::Directory(GetFilePath()).Delete();
+		NxFr::Directory(PathToDisk(Path)).Delete();
 	}
 
 #pragma endregion
@@ -95,15 +98,17 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserItemFile::Create(NxFr::StringView FilePath, NxFr::StringId Type)
+	void AssetsBrowserItemFile::Create(NxFr::StringView Target, NxFr::StringId Type)
 	{
-		NEXUS_ASSERT(false, Default, "Unsupported");
+		NxFr::File(PathToDisk(Target)).Create();
+		Update(Target, true);
 	}
 
-	void AssetsBrowserItemFile::Move(NxFr::StringView FilePath)
+	void AssetsBrowserItemFile::Move(NxFr::StringView Target)
 	{
-		NxFr::String Before, After;
-		ChangeFilePath(FilePath, Before, After);
+		NxFr::String Before = PathToDisk(Path);
+		Update(Target, true);
+		NxFr::String After = PathToDisk(Path);
 
 		NxFr::File(After).EnsureParent();
 		NxFr::File(Before).Move(After);
@@ -111,7 +116,7 @@ namespace NxEd
 
 	void AssetsBrowserItemFile::Delete()
 	{
-		NxFr::File(GetFilePath()).Delete();
+		NxFr::File(PathToDisk(Path)).Delete();
 	}
 
 #pragma endregion
@@ -126,16 +131,20 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserItemAsset::Create(NxFr::StringView FilePath, NxFr::StringId Type)
+	void AssetsBrowserItemAsset::Create(NxFr::StringView Target, NxFr::StringId Type)
 	{
-		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Create(Type,
-			NxFr::Path::GetPathWithoutExtension(FilePath),
-			NxFr::Path::GetExtension(FilePath));
+		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		NxFr::StringView AssetPath = NxFr::Path::GetPathWithoutExtension(Target);
+		NxFr::StringView Extension = NxFr::Path::GetExtension(Target);
+
+		NxEn::Asset* Instance = System->Create(Type, AssetPath, Extension);
+		Update(PathToAsset(Target), true);
 	}
 
-	void AssetsBrowserItemAsset::Move(NxFr::StringView FilePath)
+	void AssetsBrowserItemAsset::Move(NxFr::StringView Target)
 	{
-		Update.Invoke(this, FilePath, false);
+		Update(Target, false);
+
 		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Move(Id, GetPrettyPath());
 	}
 

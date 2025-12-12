@@ -14,8 +14,8 @@ namespace NxEd
 		NEXUS_EDITOR_API AssetsBrowserItem();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserItem();
 
-		NEXUS_EDITOR_API virtual void Create(NxFr::StringView FilePath, NxFr::StringId Type) = 0;
-		NEXUS_EDITOR_API virtual void Move(NxFr::StringView FilePath) = 0;
+		NEXUS_EDITOR_API virtual void Create(NxFr::StringView Target, NxFr::StringId Type) = 0;
+		NEXUS_EDITOR_API virtual void Move(NxFr::StringView Target) = 0;
 		NEXUS_EDITOR_API virtual void Delete() = 0;
 
 		NEXUS_EDITOR_API AssetsBrowserItem* GetParent() const { return Parent; }
@@ -40,12 +40,9 @@ namespace NxEd
 	protected:
 		NEXUS_EDITOR_API virtual NxFr::StringView GetPrefix() const = 0;
 
-		NEXUS_EDITOR_API NxFr::String GetFilePath();
-		NEXUS_EDITOR_API void ChangeFilePath(NxFr::StringView FilePath, NxFr::String& Before, NxFr::String& After);
-
-
-		static NxFr::Delegate<NxFr::String(NxFr::StringView)> PathToFile;
-		static NxFr::Delegate<void(AssetsBrowserItem*, NxFr::StringView, bool)> Update;
+		NEXUS_EDITOR_API void Update(NxFr::StringView Target, bool UpdateId);
+		NEXUS_EDITOR_API NxFr::String PathToDisk(NxFr::StringView Path);
+		NEXUS_EDITOR_API NxFr::String PathToAsset(NxFr::StringView Path);
 
 	protected:
 		AssetsBrowserItem* Parent;
@@ -69,8 +66,8 @@ namespace NxEd
 		NEXUS_EDITOR_API AssetsBrowserItemDirectory();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserItemDirectory();
 
-		NEXUS_EDITOR_API void Create(NxFr::StringView FilePath, NxFr::StringId Type) override;
-		NEXUS_EDITOR_API void Move(NxFr::StringView FilePath) override;
+		NEXUS_EDITOR_API void Create(NxFr::StringView Target, NxFr::StringId Type) override;
+		NEXUS_EDITOR_API void Move(NxFr::StringView Target) override;
 		NEXUS_EDITOR_API void Delete() override;
 
 	protected:
@@ -85,8 +82,8 @@ namespace NxEd
 		NEXUS_EDITOR_API AssetsBrowserItemFile();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserItemFile();
 
-		NEXUS_EDITOR_API void Create(NxFr::StringView FilePath, NxFr::StringId Type) override;
-		NEXUS_EDITOR_API void Move(NxFr::StringView FilePath) override;
+		NEXUS_EDITOR_API void Create(NxFr::StringView Target, NxFr::StringId Type) override;
+		NEXUS_EDITOR_API void Move(NxFr::StringView Target) override;
 		NEXUS_EDITOR_API void Delete() override;
 
 	protected:
@@ -101,8 +98,8 @@ namespace NxEd
 		NEXUS_EDITOR_API AssetsBrowserItemAsset();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserItemAsset();
 
-		NEXUS_EDITOR_API void Create(NxFr::StringView FilePath, NxFr::StringId Type) override;
-		NEXUS_EDITOR_API void Move(NxFr::StringView FilePath) override;
+		NEXUS_EDITOR_API void Create(NxFr::StringView Target, NxFr::StringId Type) override;
+		NEXUS_EDITOR_API void Move(NxFr::StringView Target) override;
 		NEXUS_EDITOR_API void Delete() override;
 
 	protected:

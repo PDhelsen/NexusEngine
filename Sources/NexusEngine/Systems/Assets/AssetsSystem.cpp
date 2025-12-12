@@ -100,7 +100,7 @@ namespace NxEn
 		OnSave.Invoke(Instance);
 		Metadata.Dependencies = Instance->GetDependencies();
 
-		YAML::Node Node = Manager->Save(Id, Registry->IdToContent(Id));
+		YAML::Node Node = Manager->Save(Id, Registry->IdToFileContent(Id));
 		Registry->Serialize(Id, Node);
 
 		OnEvent.Invoke(EventSavedId, Id);
@@ -171,7 +171,7 @@ namespace NxEn
 
 			YAML::Node Node = Registry->Deserialize(Id);
 			Manager->Append(Id, AssetHandle(Instance));
-			Manager->Load(Id, Node, Registry->IdToContent(Id));
+			Manager->Load(Id, Node, Registry->IdToFileContent(Id));
 
 			Instance->Initialize();
 		}
@@ -187,7 +187,7 @@ namespace NxEn
 		Asset* Instance = Reset(Id);
 
 		YAML::Node Node = Registry->Deserialize(Id);
-		Manager->Load(Id, Node, Registry->IdToContent(Id));
+		Manager->Load(Id, Node, Registry->IdToFileContent(Id));
 
 		Instance->Initialize();
 
@@ -232,7 +232,7 @@ namespace NxEn
 		return nullptr;
 #endif
 		NxEn::Asset* Instance = Create(Type, Path, Extension);
-		Manager->Load(Instance->GetId(), Node, Registry->IdToContent(Instance->GetId()));
+		Manager->Load(Instance->GetId(), Node, Registry->IdToFileContent(Instance->GetId()));
 
 		Instance->SetDirty();
 		Instance->Initialize();
@@ -251,7 +251,7 @@ namespace NxEn
 		NEXUS_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%d)", Id);
 
 		Asset* Instance = Reset(Id);
-		Manager->Load(Id, Node, Registry->IdToContent(Id));
+		Manager->Load(Id, Node, Registry->IdToFileContent(Id));
 
 		Instance->SetDirty();
 		Instance->Initialize();

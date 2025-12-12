@@ -55,9 +55,9 @@ namespace NxEd
 		bool IsVisible(AssetsBrowserItem* Item);
 
 		NxFr::GUID PathToId(NxFr::StringView Path);
-		NxFr::String FileToPath(NxFr::StringView Path);
-		NxFr::String PathToFile(NxFr::StringView Path);
-		NxFr::String ConvertPath(NxFr::StringView Path);
+		static NxFr::String DiskToPath(NxFr::StringView Path);
+		static NxFr::String PathToDisk(NxFr::StringView Path);
+		static NxFr::String PathToAsset(NxFr::StringView Path);
 
 	private:
 		const inline static NxFr::String Root = "Assets/";

@@ -17,7 +17,11 @@ namespace NxEd
 	{
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Select(Path);
 	}));
-	const static NxEn::Command CmdAssetCreate = NxEn::Command::Create("Assets.Create"_Sid, "Create at path in the browser", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Path, NxFr::StringView Type)
+	const static NxEn::Command CmdAssetCreateDirectory = NxEn::Command::Create("Assets.Create.Directory"_Sid, "Create at path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Create(Path, 0);
+	}));
+	const static NxEn::Command CmdAssetCreateFile = NxEn::Command::Create("Assets.Create.File"_Sid, "Create at path in the browser", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Path, NxFr::StringView Type)
 	{
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Create(Path, NxFr::StringId(Type));
 	}));
@@ -35,8 +39,6 @@ namespace NxEd
 	AssetsBrowserPanel::AssetsBrowserPanel()
 		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64)
 	{
-		AssetsBrowserItem::Update = { this, &AssetsBrowserPanel::UpdateItem };
-		AssetsBrowserItem::PathToFile = { this, &AssetsBrowserPanel::PathToFile };
 	}
 
 	AssetsBrowserPanel::~AssetsBrowserPanel()
@@ -69,12 +71,11 @@ namespace NxEd
 
 	void AssetsBrowserPanel::Create(NxFr::StringView Path, NxFr::StringId Type)
 	{
-		NxFr::String P = ConvertPath(Path);
+		NxFr::String AssetPath = PathToAsset(Path);
 
-		AssetsBrowserItem* Item = AppendItem(P, false);
+		AssetsBrowserItem* Item = AppendItem(AssetPath, false);
 		Item->Create(Path, Type);
-		UpdateItem(Item, P, true);
-		AttachItem(Item, GetParent(P), true);
+		AttachItem(Item, GetParent(AssetPath), true);
 	}
 
 	void AssetsBrowserPanel::Move(NxFr::StringView Path, NxFr::StringView Target)
@@ -235,10 +236,9 @@ namespace NxEd
 
 	AssetsBrowserItem* AssetsBrowserPanel::FetchItems(NxFr::StringView Path, AssetsBrowserItem* Parent)
 	{
-		NxFr::String P = FileToPath(Path);
-
-		AssetsBrowserItem* Item = AppendItem(P, false);
-		UpdateItem(Item, P, true);
+		NxFr::String ItemPath = DiskToPath(Path);
+		AssetsBrowserItem* Item = AppendItem(ItemPath, true);
+		UpdateItem(Item, ItemPath, false);
 
 		if (Parent)
 		{
@@ -320,8 +320,8 @@ namespace NxEd
 
 		if (AppendId)
 		{
-			NxFr::GUID Id = PathToId(Path);
-			Map.Append(Id, Item);
+			Item->Id = PathToId(Path);
+			Map.Append(Item->Id, Item);
 		}
 
 		return Item;
@@ -366,6 +366,19 @@ namespace NxEd
 			Map[Item->Id] = nullptr;
 		}
 
+		if (Item == Selected)
+		{
+			Selected = nullptr;
+		}
+		if (Selection.Contains(Item))
+		{
+			Selection.Remove(Item);
+		}
+		if (Filtered.Contains(Item))
+		{
+			Filtered.Remove(Item);
+		}
+
 		delete Item;
 	}
 
@@ -377,10 +390,12 @@ namespace NxEd
 		}
 
 		Item->Parent = Parent;
-		Item->Previous = nullptr;
-		Item->Next = Parent->Child;
 
-		Parent->Child->Previous = Item;
+		Item->Next = Parent->Child;
+		if (Parent->Child)
+		{
+			Parent->Child->Previous = Item;
+		}
 		Parent->Child = Item;
 
 		if (Sort)
@@ -634,7 +649,7 @@ namespace NxEd
 			NxFr::Hash<>::HashObject(Path);
 	}
 
-	NxFr::String AssetsBrowserPanel::FileToPath(NxFr::StringView Path)
+	NxFr::String AssetsBrowserPanel::DiskToPath(NxFr::StringView Path)
 	{
 		if (Path == NxFr::Paths::Assets)
 		{
@@ -644,7 +659,7 @@ namespace NxEd
 		return NxFr::Path::ConvertAbsoluteToRelative(Path, NxFr::Paths::Assets);
 	}
 
-	NxFr::String AssetsBrowserPanel::PathToFile(NxFr::StringView Path)
+	NxFr::String AssetsBrowserPanel::PathToDisk(NxFr::StringView Path)
 	{
 		if (Path == Root)
 		{
@@ -654,7 +669,7 @@ namespace NxEd
 		return NxFr::Path::ConvertRelativeToAbsolute(Path, NxFr::Paths::Assets);
 	}
 
-	NxFr::String AssetsBrowserPanel::ConvertPath(NxFr::StringView Path)
+	NxFr::String AssetsBrowserPanel::PathToAsset(NxFr::StringView Path)
 	{
 		return NxFr::Path::ChangeExtension(Path, NxEn::AssetMetadata::AssetExtension);
 	}
