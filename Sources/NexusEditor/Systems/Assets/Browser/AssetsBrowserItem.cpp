@@ -1,4 +1,6 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
 
 namespace NxEd
 {
@@ -7,121 +9,139 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItemFile)
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserItemAsset)
 
+	NxFr::Delegate<NxFr::String(NxFr::StringView)> AssetsBrowserItem::PathToFile;
+	NxFr::Delegate<void(AssetsBrowserItem*, NxFr::StringView, bool)> AssetsBrowserItem::Update;
+
 #pragma region AssetsBrowserItem
 
-	AssetsBrowserItem::AssetsBrowserItem(NxFr::GUID ItemId, NxFr::StringView FilePath)
+	AssetsBrowserItem::AssetsBrowserItem()
 		: Parent(nullptr), Previous(nullptr), Next(nullptr), Child(nullptr),
-		Id(ItemId), Path(FilePath), ImGuiText(),
-		PrettyPath(), Directory(), Name(), Extension(),
+		Id(0), Path(), ImGuiText(),
 		Expanded(false), Selected(false)
 	{
 		SetTickable(false);
-
-		GenerateInfo();
 	}
 
 	AssetsBrowserItem::~AssetsBrowserItem()
 	{
 	}
 
-	void AssetsBrowserItem::Update(NxFr::GUID ItemId, NxFr::StringView FilePath)
+	NxFr::String AssetsBrowserItem::GetFilePath()
 	{
-		Id = ItemId;
-		Path = FilePath;
-
-		GenerateInfo();
-		GenerateImGui();
+		return PathToFile.Invoke(Path);
 	}
 
-	void AssetsBrowserItem::GenerateInfo()
+	void AssetsBrowserItem::ChangeFilePath(NxFr::StringView FilePath, NxFr::String& Before, NxFr::String& After)
 	{
-		PrettyPath = NxFr::Path::GetPathWithoutExtension(Path);
-		Directory = NxFr::Path::GetDirectoryPath(Path);
-		Name = NxFr::Path::IsDirectory(Path) ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path);
-		Extension = NxFr::Path::GetExtension(Path);
+		Before = PathToFile.Invoke(Path);
+		Update.Invoke(this, FilePath, true);
+		After = PathToFile.Invoke(Path);
 	}
 
 #pragma endregion
 
 #pragma region AssetsBrowserItemDirectory
 
-	AssetsBrowserItemDirectory::AssetsBrowserItemDirectory(NxFr::GUID ItemId, NxFr::StringView FilePath)
-		: AssetsBrowserItem(ItemId, FilePath)
+	AssetsBrowserItemDirectory::AssetsBrowserItemDirectory()
 	{
-		GenerateImGui();
 	}
 
 	AssetsBrowserItemDirectory::~AssetsBrowserItemDirectory()
 	{
 	}
 
-	void AssetsBrowserItemDirectory::GenerateImGui()
+	void AssetsBrowserItemDirectory::Create(NxFr::StringView FilePath, NxFr::StringId Type)
 	{
-		ImGuiText = "D " + Name + "##" + NxFr::StringUtility::ToString(Id);
 	}
 
-	AssetsBrowserItem* AssetsBrowserItem::GetIterator()
+	void AssetsBrowserItemDirectory::Move(NxFr::StringView FilePath)
 	{
-		if (Child)
+		NxFr::String Before, After;
+		ChangeFilePath(FilePath, Before, After);
+
+		NxFr::Directory(After).EnsureParent().Create();
+
+		AssetsBrowserItem* Item = GetChild();
+		while (Item)
 		{
-			return Child;
+			Item->Move(NxFr::Path::Combine(FilePath, Item->GetName()));
+			Item = Item->GetNext();
 		}
 
-		if (Next)
+		NxFr::Directory(Before).Delete();
+	}
+
+	void AssetsBrowserItemDirectory::Delete()
+	{
+		AssetsBrowserItem* Item = GetChild();
+		while (Item)
 		{
-			return Next;
+			Item->Delete();
+			Item = Item->GetNext();
 		}
 
-		AssetsBrowserItem* P = Parent;
-		while (P && !P->Next)
-		{
-			P = P->Parent;
-		}
-
-		if (P)
-		{
-			return P->Next;
-		}
-
-		return nullptr;
+		NxFr::Directory(GetFilePath()).Delete();
 	}
 
 #pragma endregion
 
 #pragma region AssetsBrowserItemFile
 
-	AssetsBrowserItemFile::AssetsBrowserItemFile(NxFr::GUID ItemId, NxFr::StringView FilePath)
-		: AssetsBrowserItem(ItemId, FilePath)
+	AssetsBrowserItemFile::AssetsBrowserItemFile()
 	{
-		GenerateImGui();
 	}
 
 	AssetsBrowserItemFile::~AssetsBrowserItemFile()
 	{
 	}
 
-	void AssetsBrowserItemFile::GenerateImGui()
+	void AssetsBrowserItemFile::Create(NxFr::StringView FilePath, NxFr::StringId Type)
 	{
-		ImGuiText = "F " + Name + "##" + NxFr::StringUtility::ToString(Id);
+		NEXUS_ASSERT(false, Default, "Unsupported");
+	}
+
+	void AssetsBrowserItemFile::Move(NxFr::StringView FilePath)
+	{
+		NxFr::String Before, After;
+		ChangeFilePath(FilePath, Before, After);
+
+		NxFr::File(After).EnsureParent();
+		NxFr::File(Before).Move(After);
+	}
+
+	void AssetsBrowserItemFile::Delete()
+	{
+		NxFr::File(GetFilePath()).Delete();
 	}
 
 #pragma endregion
 
 #pragma region AssetsBrowserItemAsset
 
-	AssetsBrowserItemAsset::AssetsBrowserItemAsset(NxFr::GUID ItemId, NxFr::StringView FilePath)
-		: AssetsBrowserItem(ItemId, FilePath)
+	AssetsBrowserItemAsset::AssetsBrowserItemAsset()
 	{
-		GenerateImGui();
 	}
 
 	AssetsBrowserItemAsset::~AssetsBrowserItemAsset()
 	{
 	}
 
-	void AssetsBrowserItemAsset::GenerateImGui()
+	void AssetsBrowserItemAsset::Create(NxFr::StringView FilePath, NxFr::StringId Type)
 	{
-		ImGuiText = "A " + Name + "##" + NxFr::StringUtility::ToString(Id);
+		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Create(Type,
+			NxFr::Path::GetPathWithoutExtension(FilePath),
+			NxFr::Path::GetExtension(FilePath));
+	}
+
+	void AssetsBrowserItemAsset::Move(NxFr::StringView FilePath)
+	{
+		Update.Invoke(this, FilePath, false);
+		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Move(Id, GetPrettyPath());
+	}
+
+	void AssetsBrowserItemAsset::Delete()
+	{
+		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Delete(Id);
 	}
 
 #pragma endregion

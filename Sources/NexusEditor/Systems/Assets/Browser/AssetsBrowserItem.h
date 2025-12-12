@@ -11,30 +11,41 @@ namespace NxEd
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserItem)
 
+		NEXUS_EDITOR_API AssetsBrowserItem();
+		NEXUS_EDITOR_API virtual ~AssetsBrowserItem();
+
+		NEXUS_EDITOR_API virtual void Create(NxFr::StringView FilePath, NxFr::StringId Type) = 0;
+		NEXUS_EDITOR_API virtual void Move(NxFr::StringView FilePath) = 0;
+		NEXUS_EDITOR_API virtual void Delete() = 0;
+
+		NEXUS_EDITOR_API AssetsBrowserItem* GetParent() const { return Parent; }
+		NEXUS_EDITOR_API AssetsBrowserItem* GetPrevious() const { return Previous; }
+		NEXUS_EDITOR_API AssetsBrowserItem* GetNext() const { return Next; }
+		NEXUS_EDITOR_API AssetsBrowserItem* GetChild() const { return Child; }
+		NEXUS_EDITOR_API bool IsRoot() const { return Parent == nullptr; }
+		NEXUS_EDITOR_API bool IsLeaf() const { return Child == nullptr; }
+
 		NEXUS_EDITOR_API NxFr::GUID GetId() const override { return Id; };
 		NEXUS_EDITOR_API NxFr::StringView GetPath() const { return Path; };
 
-		NEXUS_EDITOR_API NxFr::StringView GetPrettyPath() const { return PrettyPath; };
-		NEXUS_EDITOR_API NxFr::StringView GetDirectory() const { return Directory; };
-		NEXUS_EDITOR_API NxFr::StringView GetName() const { return Name; };
-		NEXUS_EDITOR_API NxFr::StringView GetExtension() const { return Extension; };
+		NEXUS_EDITOR_API NxFr::StringView GetPrettyPath() const { return NxFr::Path::GetPathWithoutExtension(Path); };
+		NEXUS_EDITOR_API NxFr::StringView GetDirectory() const { return NxFr::Path::GetParent(Path); };
+		NEXUS_EDITOR_API NxFr::StringView GetPrettyName() const { return NxFr::Path::IsDirectory(Path) ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path); };
+		NEXUS_EDITOR_API NxFr::StringView GetName() const { return NxFr::Path::IsDirectory(Path) ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path, true); };
+		NEXUS_EDITOR_API NxFr::StringView GetExtension() const { return NxFr::Path::GetExtension(Path); };
 
 		NEXUS_EDITOR_API bool IsOpen() const { return Expanded; }
 		NEXUS_EDITOR_API bool IsSelected() const { return Selected; }
 
 	protected:
-		NEXUS_EDITOR_API AssetsBrowserItem(NxFr::GUID ItemId, NxFr::StringView FilePath);
-		NEXUS_EDITOR_API virtual ~AssetsBrowserItem();
+		NEXUS_EDITOR_API virtual NxFr::StringView GetPrefix() const = 0;
 
-		NEXUS_EDITOR_API void Update(NxFr::GUID ItemId, NxFr::StringView FilePath);
+		NEXUS_EDITOR_API NxFr::String GetFilePath();
+		NEXUS_EDITOR_API void ChangeFilePath(NxFr::StringView FilePath, NxFr::String& Before, NxFr::String& After);
 
-		NEXUS_EDITOR_API void GenerateInfo();
-		NEXUS_EDITOR_API virtual void GenerateImGui() = 0;
 
-		NEXUS_EDITOR_API bool IsRoot() const { return Parent == nullptr; }
-		NEXUS_EDITOR_API bool IsLeaf() const { return Child == nullptr; }
-
-		NEXUS_EDITOR_API AssetsBrowserItem* GetIterator();
+		static NxFr::Delegate<NxFr::String(NxFr::StringView)> PathToFile;
+		static NxFr::Delegate<void(AssetsBrowserItem*, NxFr::StringView, bool)> Update;
 
 	protected:
 		AssetsBrowserItem* Parent;
@@ -46,54 +57,55 @@ namespace NxEd
 		NxFr::String Path;
 		NxFr::String ImGuiText;
 
-		NxFr::StringView PrettyPath;
-		NxFr::StringView Directory;
-		NxFr::StringView Name;
-		NxFr::StringView Extension;
-
 		bool Expanded;
 		bool Selected;
 	};
 
 	class AssetsBrowserItemDirectory : public AssetsBrowserItem
 	{
-		friend class AssetsBrowserPanel;
-
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserItemDirectory)
 
-	protected:
-		NEXUS_EDITOR_API AssetsBrowserItemDirectory(NxFr::GUID ItemId, NxFr::StringView FilePath);
+		NEXUS_EDITOR_API AssetsBrowserItemDirectory();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserItemDirectory();
 
-		NEXUS_EDITOR_API void GenerateImGui() override;
+		NEXUS_EDITOR_API void Create(NxFr::StringView FilePath, NxFr::StringId Type) override;
+		NEXUS_EDITOR_API void Move(NxFr::StringView FilePath) override;
+		NEXUS_EDITOR_API void Delete() override;
+
+	protected:
+		NEXUS_EDITOR_API NxFr::StringView GetPrefix() const override { return "D"; }
 	};
 
 	class AssetsBrowserItemFile : public AssetsBrowserItem
 	{
-		friend class AssetsBrowserPanel;
-
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserItemFile)
 
-	protected:
-		NEXUS_EDITOR_API AssetsBrowserItemFile(NxFr::GUID ItemId, NxFr::StringView FilePath);
+		NEXUS_EDITOR_API AssetsBrowserItemFile();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserItemFile();
 
-		NEXUS_EDITOR_API void GenerateImGui() override;
+		NEXUS_EDITOR_API void Create(NxFr::StringView FilePath, NxFr::StringId Type) override;
+		NEXUS_EDITOR_API void Move(NxFr::StringView FilePath) override;
+		NEXUS_EDITOR_API void Delete() override;
+
+	protected:
+		NEXUS_EDITOR_API NxFr::StringView GetPrefix() const override { return "F"; }
 	};
 
 	class AssetsBrowserItemAsset : public AssetsBrowserItem
 	{
-		friend class AssetsBrowserPanel;
-
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserItemAsset)
 
-	protected:
-		NEXUS_EDITOR_API AssetsBrowserItemAsset(NxFr::GUID ItemId, NxFr::StringView FilePath);
+		NEXUS_EDITOR_API AssetsBrowserItemAsset();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserItemAsset();
 
-		NEXUS_EDITOR_API void GenerateImGui() override;
+		NEXUS_EDITOR_API void Create(NxFr::StringView FilePath, NxFr::StringId Type) override;
+		NEXUS_EDITOR_API void Move(NxFr::StringView FilePath) override;
+		NEXUS_EDITOR_API void Delete() override;
+
+	protected:
+		NEXUS_EDITOR_API NxFr::StringView GetPrefix() const override { return "A"; }
 	};
 }

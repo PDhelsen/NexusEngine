@@ -7,6 +7,8 @@ namespace NxEd
 {
 	class AssetsBrowserPanel : public NxEn::GUI::Panel
 	{
+		friend class AssetsBrowserItem;
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserPanel)
 
@@ -14,9 +16,14 @@ namespace NxEd
 		NEXUS_EDITOR_API ~AssetsBrowserPanel();
 
 		NEXUS_EDITOR_API void Refresh();
-		NEXUS_EDITOR_API void Select(NxFr::StringView Path, bool Additive = false, bool List = false);
-		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Additive = false, bool List = false);
+
 		NEXUS_EDITOR_API void Find(NxFr::StringView Query);
+		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Additive = false, bool List = false);
+		NEXUS_EDITOR_API void Select(NxFr::StringView Path, bool Additive = false, bool List = false);
+
+		NEXUS_EDITOR_API void Create(NxFr::StringView Path, NxFr::StringId Type);
+		NEXUS_EDITOR_API void Move(NxFr::StringView Path, NxFr::StringView Target);
+		NEXUS_EDITOR_API void Delete(NxFr::StringView Path);
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
@@ -28,23 +35,33 @@ namespace NxEd
 		void DrawItem(AssetsBrowserItem* Item);
 		void SelectItem(AssetsBrowserItem* Item);
 
-		void FetchFolder();
+		void Clear();
+		void Fetch();
 		AssetsBrowserItem* FetchItems(NxFr::StringView Path, AssetsBrowserItem* Parent);
 		AssetsBrowserItem* PurgeDuplicates(AssetsBrowserItem* Item);
-		AssetsBrowserItem* AppendItem(NxFr::GUID Id, NxFr::StringView Path);
-		void RemoveItem(AssetsBrowserItem* Item);
 
+		AssetsBrowserItem* AppendItem(NxFr::StringView Path, bool AppendId);
+		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool UpdateId);
+		void RemoveItem(AssetsBrowserItem* Item, bool RemoveId);
+		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent, bool Sort);
+		void DetachItem(AssetsBrowserItem* Item, bool Sort);
+		void SortItem(AssetsBrowserItem* Item);
+		AssetsBrowserItem* GetParent(NxFr::StringView Path);
+		AssetsBrowserItem* GetIterator(AssetsBrowserItem* Item);
+
+		void Find();
 		void Select(AssetsBrowserItem* Item, bool Additive = false, bool List = false);
 		void Show(AssetsBrowserItem* Item);
 		bool IsVisible(AssetsBrowserItem* Item);
 
-		void Find();
-
 		NxFr::GUID PathToId(NxFr::StringView Path);
 		NxFr::String FileToPath(NxFr::StringView Path);
 		NxFr::String PathToFile(NxFr::StringView Path);
+		NxFr::String ConvertPath(NxFr::StringView Path);
 
 	private:
+		const inline static NxFr::String Root = "Assets/";
+
 		NxEn::GUI::Style Style;
 
 		NxEn::AssetsSystem* Assets;

@@ -29,6 +29,7 @@ namespace NxEn
 	{
 		NxEn::Asset* Instance = AssetsFactory::Create(Type);
 		Track(Instance, Path, Extension);
+		Instance->Initialize();
 		return Instance;
 	}
 

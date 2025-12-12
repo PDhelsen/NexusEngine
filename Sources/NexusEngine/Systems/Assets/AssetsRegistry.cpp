@@ -198,6 +198,6 @@ namespace NxEn
 
 	NxFr::String AssetsRegistry::FilePath(NxFr::StringView Path, NxFr::StringView Extension) const
 	{
-		return NxFr::Path(Root + (Path + "." + Extension)).Data;
+		return NxFr::Path::Combine(Root, (Path + "." + Extension));
 	}
 }
