@@ -30,6 +30,7 @@ namespace NxEn
 		NxEn::Asset* Instance = AssetsFactory::Create(Type);
 		Track(Instance, Path, Extension);
 		Instance->Initialize();
+		Save(Instance->Id);
 		return Instance;
 	}
 
@@ -55,11 +56,37 @@ namespace NxEn
 			return;
 		}
 
-		Load(Id);
 		Registry->Move(Id, Path);
-		Save(Id, true);
+		Registry->SerializeMetadata(Id);
 
 		OnEvent.Invoke(EventMovedId, Id);
+	}
+
+	void AssetsSystem::Copy(NxFr::GUID Id, NxFr::StringView Path)
+	{
+		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
+
+		if (Path.IsEmpty())
+		{
+			NEXUS_LOG(Warning, System, "Can't copy to empty path");
+			return;
+		}
+
+		if (!Registry->HasFile(Id))
+		{
+			NEXUS_LOG(Warning, System, "Asset %d has no associated path");
+			return;
+		}
+
+		AssetMetadata Metadata = GetMetadata(Id);
+		Metadata.Id = NxFr::Integer::GenerateGuid();
+		Metadata.Path = Path;
+		Metadata.Data.Clear();
+
+		Registry->Copy(Id, Metadata);
+		Registry->SerializeMetadata(Metadata.Id);
+
+		OnEvent.Invoke(EventCopiedId, Id);
 	}
 
 	void AssetsSystem::Delete(NxFr::GUID Id)
@@ -305,8 +332,7 @@ namespace NxEn
 	{
 		NEXUS_ASSERT(IsTracked(Id), System, "Unknown asset %d", Id);
 
-		YAML::Node Node = YAML::Node();
-		return Registry->GetImportData(Id);
+		return Registry->DeserializeData(Id);
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recusive)

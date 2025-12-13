@@ -29,6 +29,10 @@ namespace NxEd
 	{
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Move(Path, Target);
 	}));
+	const static NxEn::Command CmdAssetDuplicate = NxEn::Command::Create("Assets.Duplicate"_Sid, "Duplicate path in the browser", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Path, NxFr::StringView Target)
+	{
+		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Duplicate(Path, Target);
+	}));
 	const static NxEn::Command CmdAssetDelete = NxEn::Command::Create("Assets.Delete"_Sid, "Delete path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Delete(Path);
@@ -71,6 +75,8 @@ namespace NxEd
 
 	void AssetsBrowserPanel::Create(NxFr::StringView Path, NxFr::StringId Type)
 	{
+		NEXUS_ASSERT(Path != Root, Default, "Can't create the Assets/ folder");
+
 		NxFr::String AssetPath = PathToAsset(Path);
 
 		AssetsBrowserItem* Item = AppendItem(AssetPath, false);
@@ -80,6 +86,8 @@ namespace NxEd
 
 	void AssetsBrowserPanel::Move(NxFr::StringView Path, NxFr::StringView Target)
 	{
+		NEXUS_ASSERT(Path != Root, Default, "Can't move the Assets/ folder");
+
 		NxFr::GUID Id = PathToId(Path);
 
 		AssetsBrowserItem* Item = Map[Id];
@@ -88,8 +96,22 @@ namespace NxEd
 		AttachItem(Item, GetParent(Item->Path), true);
 	}
 
+	void AssetsBrowserPanel::Duplicate(NxFr::StringView Path, NxFr::StringView Target)
+	{
+		NEXUS_ASSERT(Path != Root, Default, "Can't duplicate the Assets/ folder");
+
+		NxFr::GUID Id = PathToId(Path);
+
+		AssetsBrowserItem* Item = Map[Id];
+		Item = DuplicateItem(Item);
+		Item->Duplicate(Target);
+		AttachItem(Item, GetParent(Item->Path), true);
+	}
+
 	void AssetsBrowserPanel::Delete(NxFr::StringView Path)
 	{
+		NEXUS_ASSERT(Path != Root, Default, "Can't delete the Assets/ folder");
+
 		NxFr::GUID Id = PathToId(Path);
 
 		AssetsBrowserItem* Item = Map[Id];
@@ -342,6 +364,32 @@ namespace NxEd
 
 		Item->Path = Path;
 		Item->ImGuiText = Item->GetPrefix() + " " + Item->GetPrettyName() + "##" + NxFr::StringUtility::ToString(Item->Id);
+	}
+
+	AssetsBrowserItem* AssetsBrowserPanel::DuplicateItem(AssetsBrowserItem* Item)
+	{
+		if (!Item)
+		{
+			return nullptr;
+		}
+
+		AssetsBrowserItem* Copy = AppendItem(Item->Path, false);
+		UpdateItem(Copy, Item->Path, false);
+		Copy->Id = Item->Id;
+
+		Copy->Parent = Item->Parent;
+		if (Item->Child)
+		{
+			Copy->Child = DuplicateItem(Item->Child);
+			Copy->Child->Parent = Copy;
+		}
+		if (Item->Next)
+		{
+			Copy->Next = DuplicateItem(Item->Next);
+			Copy->Next->Previous = Copy;
+		}
+
+		return Copy;
 	}
 
 	void AssetsBrowserPanel::RemoveItem(AssetsBrowserItem* Item, bool RemoveId)

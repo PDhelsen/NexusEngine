@@ -64,6 +64,24 @@ namespace NxEn
 		Paths.Append(Metadata.GetPath(), Id);
 	}
 
+	void AssetsRegistry::Copy(NxFr::GUID Id, const AssetMetadata& Metadata)
+	{
+		AssetMetadata& Reference = Assets[Id];
+
+		NxFr::String Before = PathToFile(Reference.GetPath(), AssetMetadata::AssetExtension);
+		NxFr::String After = PathToFile(Metadata.GetPath(), AssetMetadata::AssetExtension);
+		NxFr::File(Before).Copy(After);
+		if (!Reference.GetExtension().IsEmpty())
+		{
+			Before = PathToFile(Reference.GetPath(), Reference.GetExtension());
+			After = PathToFile(Metadata.GetPath(), Metadata.GetExtension());
+			NxFr::File(Before).Copy(After);
+		}
+
+		Assets.Append(Metadata.Id, Metadata);
+		Paths.Append(Metadata.GetPath(), Metadata.Id);
+	}
+
 	void AssetsRegistry::Remove(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
@@ -93,6 +111,13 @@ namespace NxEn
 		AssetSerializer::Serialize(PathToFile(Metadata.GetPath(), AssetMetadata::AssetExtension), Meta, Node);
 	}
 
+	void AssetsRegistry::SerializeMetadata(NxFr::GUID Id)
+	{
+		AssetMetadata& Metadata = Assets[Id];
+		YAML::Node Meta = Metadata.Serialize();
+		AssetSerializer::SerializeMetadata(PathToFile(Metadata.GetPath(), AssetMetadata::AssetExtension), Meta);
+	}
+
 	YAML::Node AssetsRegistry::Deserialize(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
@@ -104,7 +129,7 @@ namespace NxEn
 		return Data;
 	}
 
-	YAML::Node AssetsRegistry::GetImportData(NxFr::GUID Id)
+	YAML::Node AssetsRegistry::DeserializeData(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
 		return AssetSerializer::DeserializeData(PathToFile(Metadata.GetPath(), AssetMetadata::AssetExtension));

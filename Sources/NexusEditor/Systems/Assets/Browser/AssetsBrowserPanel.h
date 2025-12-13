@@ -23,6 +23,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Create(NxFr::StringView Path, NxFr::StringId Type);
 		NEXUS_EDITOR_API void Move(NxFr::StringView Path, NxFr::StringView Target);
+		NEXUS_EDITOR_API void Duplicate(NxFr::StringView Path, NxFr::StringView Target);
 		NEXUS_EDITOR_API void Delete(NxFr::StringView Path);
 
 	protected:
@@ -42,6 +43,7 @@ namespace NxEd
 
 		AssetsBrowserItem* AppendItem(NxFr::StringView Path, bool AppendId);
 		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool UpdateId);
+		AssetsBrowserItem* DuplicateItem(AssetsBrowserItem* Item);
 		void RemoveItem(AssetsBrowserItem* Item, bool RemoveId);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent, bool Sort);
 		void DetachItem(AssetsBrowserItem* Item, bool Sort);

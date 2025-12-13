@@ -59,8 +59,7 @@ namespace NxEd
 	void AssetsBrowserItemDirectory::Move(NxFr::StringView Target)
 	{
 		NxFr::String Before = PathToDisk(Path);
-		Update(Target, true);
-		NxFr::String After = PathToDisk(Path);
+		NxFr::String After = PathToDisk(Target);
 
 		NxFr::Directory(After).EnsureParent().Create();
 
@@ -72,6 +71,22 @@ namespace NxEd
 		}
 
 		NxFr::Directory(Before).Delete();
+
+		Update(Target, true);
+	}
+
+	void AssetsBrowserItemDirectory::Duplicate(NxFr::StringView Target)
+	{
+		NxFr::Directory(PathToDisk(Target)).EnsureParent().Create();
+
+		AssetsBrowserItem* Item = GetChild();
+		while (Item)
+		{
+			Item->Duplicate(NxFr::Path::Combine(Target, Item->GetName()));
+			Item = Item->GetNext();
+		}
+
+		Update(Target, true);
 	}
 
 	void AssetsBrowserItemDirectory::Delete()
@@ -107,11 +122,18 @@ namespace NxEd
 	void AssetsBrowserItemFile::Move(NxFr::StringView Target)
 	{
 		NxFr::String Before = PathToDisk(Path);
-		Update(Target, true);
-		NxFr::String After = PathToDisk(Path);
+		NxFr::String After = PathToDisk(Target);
 
 		NxFr::File(After).EnsureParent();
 		NxFr::File(Before).Move(After);
+
+		Update(Target, true);
+	}
+
+	void AssetsBrowserItemFile::Duplicate(NxFr::StringView Target)
+	{
+		NxFr::File(PathToDisk(Path)).Copy(PathToDisk(Target));
+		Update(Target, true);
 	}
 
 	void AssetsBrowserItemFile::Delete()
@@ -144,8 +166,13 @@ namespace NxEd
 	void AssetsBrowserItemAsset::Move(NxFr::StringView Target)
 	{
 		Update(Target, false);
-
 		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Move(Id, GetPrettyPath());
+	}
+
+	void AssetsBrowserItemAsset::Duplicate(NxFr::StringView Target)
+	{
+		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Copy(Id, NxFr::Path::GetPathWithoutExtension(Target));
+		Update(Target, true);
 	}
 
 	void AssetsBrowserItemAsset::Delete()

@@ -12,12 +12,14 @@ namespace NxEn
 
 		void Append(NxFr::GUID Id, const AssetMetadata& Metadata);
 		void Move(NxFr::GUID Id, NxFr::StringView Path);
+		void Copy(NxFr::GUID Id, const AssetMetadata& Metadata);
 		void Remove(NxFr::GUID Id);
 		AssetMetadata& Get(NxFr::GUID Id);
 
 		void Serialize(NxFr::GUID Id, const YAML::Node& Node);
+		void SerializeMetadata(NxFr::GUID Id);
 		YAML::Node Deserialize(NxFr::GUID Id);
-		YAML::Node GetImportData(NxFr::GUID Id);
+		YAML::Node DeserializeData(NxFr::GUID Id);
 
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NxFr::GUID PathToId(NxFr::StringView Path) const;

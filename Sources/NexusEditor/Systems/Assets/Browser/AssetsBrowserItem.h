@@ -16,6 +16,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API virtual void Create(NxFr::StringView Target, NxFr::StringId Type) = 0;
 		NEXUS_EDITOR_API virtual void Move(NxFr::StringView Target) = 0;
+		NEXUS_EDITOR_API virtual void Duplicate(NxFr::StringView Target) = 0;
 		NEXUS_EDITOR_API virtual void Delete() = 0;
 
 		NEXUS_EDITOR_API AssetsBrowserItem* GetParent() const { return Parent; }
@@ -68,6 +69,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Create(NxFr::StringView Target, NxFr::StringId Type) override;
 		NEXUS_EDITOR_API void Move(NxFr::StringView Target) override;
+		NEXUS_EDITOR_API void Duplicate(NxFr::StringView Target) override;
 		NEXUS_EDITOR_API void Delete() override;
 
 	protected:
@@ -84,6 +86,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Create(NxFr::StringView Target, NxFr::StringId Type) override;
 		NEXUS_EDITOR_API void Move(NxFr::StringView Target) override;
+		NEXUS_EDITOR_API void Duplicate(NxFr::StringView Target) override;
 		NEXUS_EDITOR_API void Delete() override;
 
 	protected:
@@ -100,6 +103,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Create(NxFr::StringView Target, NxFr::StringId Type) override;
 		NEXUS_EDITOR_API void Move(NxFr::StringView Target) override;
+		NEXUS_EDITOR_API void Duplicate(NxFr::StringView Target) override;
 		NEXUS_EDITOR_API void Delete() override;
 
 	protected:

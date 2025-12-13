@@ -9,19 +9,11 @@ namespace NxEn
 		const NxFr::String NodeMetadata = "Metadata";
 		const NxFr::String NodeData = "Data";
 
-		void Serialize(NxFr::StringView Path, const YAML::Node& Metadata, const YAML::Node& Data)
-		{
-			YAML::Node Root;
-			Root[NodeMetadata] = Metadata;
-			Root[NodeData] = Data;
-			NxFr::Yaml::SerializeFile(Root, Path);
-		}
-
 		void Deserialize(NxFr::StringView Path, YAML::Node& Metadata, YAML::Node& Data)
 		{
 			YAML::Node Root = NxFr::Yaml::DeserializeFile(Path);
 			Metadata = Root[NodeMetadata];
-			Data = Root[Data];
+			Data = Root[NodeData];
 		}
 
 		YAML::Node DeserializeMetadata(NxFr::StringView Path)
@@ -36,6 +28,26 @@ namespace NxEn
 			YAML::Node Metadata, Data;
 			Deserialize(Path, Metadata, Data);
 			return Data;
+		}
+
+		void Serialize(NxFr::StringView Path, const YAML::Node& Metadata, const YAML::Node& Data)
+		{
+			YAML::Node Root;
+			Root[NodeMetadata] = Metadata;
+			Root[NodeData] = Data;
+			NxFr::Yaml::SerializeFile(Root, Path);
+		}
+
+		void SerializeMetadata(NxFr::StringView Path, const YAML::Node& Metadata)
+		{
+			YAML::Node Data = DeserializeData(Path);
+			Serialize(Path, Metadata, Data);
+		}
+
+		void SeserializeData(NxFr::StringView Path, const YAML::Node& Data)
+		{
+			YAML::Node Metadata = DeserializeMetadata(Path);
+			Serialize(Path, Metadata, Data);
 		}
 	}
 }

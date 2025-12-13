@@ -19,6 +19,7 @@ namespace NxEn
 	public:
 		const NxFr::StringId EventCreatedId = "Created"_Sid;
 		const NxFr::StringId EventMovedId = "Renamed"_Sid;
+		const NxFr::StringId EventCopiedId = "Copied"_Sid;
 		const NxFr::StringId EventDeletedId = "Deleted"_Sid;
 		const NxFr::StringId EventSavedId = "Saved"_Sid;
 		const NxFr::StringId EventLoadedId = "Loaded"_Sid;
@@ -41,6 +42,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Asset* Create(NxFr::StringId Type, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		NEXUS_ENGINE_API void Rename(NxFr::GUID Id, NxFr::StringView Name);
 		NEXUS_ENGINE_API void Move(NxFr::GUID Id, NxFr::StringView Path);
+		NEXUS_ENGINE_API void Copy(NxFr::GUID Id, NxFr::StringView Path);
 		NEXUS_ENGINE_API void Delete(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Save(NxFr::GUID Id, bool Force = false);
 		NEXUS_ENGINE_API void Save();
