@@ -30,6 +30,7 @@ namespace NxEn
 	{
 		Popup::OnInitialize();
 
+		Input.Reserve(128);
 		SetTitle("Input Text");
 		SetMessage("Enter text:");
 		AddButton("Cancel");

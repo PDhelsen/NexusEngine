@@ -4,6 +4,11 @@
 #include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
 #include "NexusEditor/Systems/Assets/Importers/AssetImporterPopup.h"
 
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionCreate.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionMove.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDuplicate.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDelete.h"
+
 namespace NxEd
 {
 	static AssetsBrowserPanel* Panel = NxEn::GUI::Panel::Create<AssetsBrowserPanel>();
@@ -43,6 +48,11 @@ namespace NxEd
 	AssetsBrowserPanel::AssetsBrowserPanel()
 		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64)
 	{
+		Actions.Append(new AssetsBrowserActionCreate("Create", 0));
+		Actions.Append(new AssetsBrowserActionMove("Move", 1));
+		Actions.Append(new AssetsBrowserActionDuplicate("Duplicate", 2));
+		Actions.Append(new AssetsBrowserActionDelete("Delete", 3));
+		Actions.Sort([](AssetsBrowserAction* A, AssetsBrowserAction* B) { return *A <= *B; });
 	}
 
 	AssetsBrowserPanel::~AssetsBrowserPanel()
@@ -79,7 +89,7 @@ namespace NxEd
 
 		NxFr::String AssetPath = PathToAsset(Path);
 
-		AssetsBrowserItem* Item = AppendItem(AssetPath, false);
+		AssetsBrowserItem* Item = AppendItem(AssetPath);
 		Item->Create(Path, Type);
 		AttachItem(Item, GetParent(AssetPath), true);
 	}
@@ -117,7 +127,12 @@ namespace NxEd
 		AssetsBrowserItem* Item = Map[Id];
 		Item->Delete();
 		DetachItem(Item, true);
-		RemoveItem(Item, true);
+		RemoveItem(Item);
+	}
+
+	bool AssetsBrowserPanel::Exist(NxFr::StringView Path)
+	{
+		return NxFr::Path::Exist(PathToDisk(Path));
 	}
 
 	void AssetsBrowserPanel::OnInitialize()
@@ -200,6 +215,15 @@ namespace NxEd
 				{
 					SelectItem(Item);
 				}
+				if (Inputs->CheckButton(NxEn::Input::Button::MouseRight, NxEn::Input::State::Pressed))
+				{
+					OpenContext(Item);
+				}
+			}
+
+			if (DrawContext(Item))
+			{
+				return;
 			}
 		}
 
@@ -222,6 +246,33 @@ namespace NxEd
 		DrawItem(Item->Next);
 	}
 
+	bool AssetsBrowserPanel::DrawContext(AssetsBrowserItem* Item)
+	{
+		bool Executed = false;
+
+		if (!Item)
+		{
+			return Executed;
+		}
+
+		if (ImGui::BeginPopup(Item->ImGuiText.C()))
+		{
+			for (auto Action : Actions)
+			{
+				if (ImGui::MenuItem(Action->GetLabel().C()))
+				{
+					Action->Execute(Item);
+					Executed = true;
+					break;
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+
+		return Executed;
+	}
+
 	void AssetsBrowserPanel::SelectItem(AssetsBrowserItem* Item)
 	{
 		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
@@ -238,6 +289,11 @@ namespace NxEd
 		}
 	}
 
+	void AssetsBrowserPanel::OpenContext(AssetsBrowserItem* Item)
+	{
+		ImGui::OpenPopup(Item->ImGuiText.C());
+	}
+
 	void AssetsBrowserPanel::Clear()
 	{
 		Selection.Clear();
@@ -245,7 +301,7 @@ namespace NxEd
 		Filtered.Clear();
 		Filter.Clear();
 
-		RemoveItem(Items, false);
+		RemoveItem(Items);
 		Map.Clear();
 		Items = nullptr;
 	}
@@ -253,14 +309,17 @@ namespace NxEd
 	void AssetsBrowserPanel::Fetch()
 	{
 		Items = FetchItems(NxFr::Paths::Assets, nullptr);
+		Items->ImGuiText = RootImGui;
+		Items->Expanded = true;
+
 		PurgeDuplicates(Items);
 	}
 
 	AssetsBrowserItem* AssetsBrowserPanel::FetchItems(NxFr::StringView Path, AssetsBrowserItem* Parent)
 	{
 		NxFr::String ItemPath = DiskToPath(Path);
-		AssetsBrowserItem* Item = AppendItem(ItemPath, true);
-		UpdateItem(Item, ItemPath, false);
+		AssetsBrowserItem* Item = AppendItem(ItemPath);
+		UpdateItem(Item, ItemPath, true, false);
 
 		if (Parent)
 		{
@@ -305,11 +364,11 @@ namespace NxEd
 		{
 			if (Item->Next && Item->GetPrettyName() == Item->Next->GetPrettyName())
 			{
-				RemoveItem(Item->Next, true);
+				RemoveItem(Item->Next);
 			}
 			else if (Item->Previous && Item->GetPrettyName() == Item->Previous->GetPrettyName())
 			{
-				RemoveItem(Item->Previous, true);
+				RemoveItem(Item->Previous);
 			}
 		}
 
@@ -321,10 +380,10 @@ namespace NxEd
 		return Item ? Item->Next : nullptr;
 	}
 
-	AssetsBrowserItem* AssetsBrowserPanel::AppendItem(NxFr::StringView Path, bool AppendId)
+	AssetsBrowserItem* AssetsBrowserPanel::AppendItem(NxFr::StringView Path)
 	{
 		AssetsBrowserItem* Item = nullptr;
-		if (NxFr::Path::IsDirectory(Path))
+		if (NxFr::Path::IsDirectory(Path) || Path == Root)
 		{
 			Item = new AssetsBrowserItemDirectory();
 		}
@@ -340,30 +399,27 @@ namespace NxEd
 			}
 		}
 
-		if (AppendId)
-		{
-			Item->Id = PathToId(Path);
-			Map.Append(Item->Id, Item);
-		}
-
 		return Item;
 	}
 
-	void AssetsBrowserPanel::UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool UpdateId)
+	void AssetsBrowserPanel::UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool AddId, bool RemoveId)
 	{
-		if (UpdateId)
+		if (RemoveId)
 		{
 			if (Map.ContainsKey(Item->Id))
 			{
 				Map.Remove(Item->Id);
 			}
-
-			Item->Id = PathToId(Path);
-			Map.Append(Item->Id, Item);
 		}
 
+		Item->Id = PathToId(Path);
 		Item->Path = Path;
 		Item->ImGuiText = Item->GetPrefix() + " " + Item->GetPrettyName() + "##" + NxFr::StringUtility::ToString(Item->Id);
+
+		if (AddId)
+		{
+			Map.Append(Item->Id, Item);
+		}
 	}
 
 	AssetsBrowserItem* AssetsBrowserPanel::DuplicateItem(AssetsBrowserItem* Item)
@@ -373,9 +429,8 @@ namespace NxEd
 			return nullptr;
 		}
 
-		AssetsBrowserItem* Copy = AppendItem(Item->Path, false);
-		UpdateItem(Copy, Item->Path, false);
-		Copy->Id = Item->Id;
+		AssetsBrowserItem* Copy = AppendItem(Item->Path);
+		UpdateItem(Copy, Item->Path, false, false);
 
 		Copy->Parent = Item->Parent;
 		if (Item->Child)
@@ -392,7 +447,7 @@ namespace NxEd
 		return Copy;
 	}
 
-	void AssetsBrowserPanel::RemoveItem(AssetsBrowserItem* Item, bool RemoveId)
+	void AssetsBrowserPanel::RemoveItem(AssetsBrowserItem* Item)
 	{
 		if (!Item)
 		{
@@ -402,16 +457,7 @@ namespace NxEd
 		DetachItem(Item, false);
 		while (Item->Child)
 		{
-			RemoveItem(Item->Child, RemoveId);
-		}
-
-		if (RemoveId)
-		{
-			Map.Remove(Item->Id);
-		}
-		else
-		{
-			Map[Item->Id] = nullptr;
+			RemoveItem(Item->Child);
 		}
 
 		if (Item == Selected)
@@ -427,6 +473,7 @@ namespace NxEd
 			Filtered.Remove(Item);
 		}
 
+		Map.Remove(Item->Id);
 		delete Item;
 	}
 
@@ -692,6 +739,11 @@ namespace NxEd
 
 	NxFr::GUID AssetsBrowserPanel::PathToId(NxFr::StringView Path)
 	{
+		if (Path == Root)
+		{
+			return NxFr::Hash<>::HashObject(RootImGui);
+		}
+
 		return NxFr::Path::HasExtension(Path, NxEn::AssetMetadata::AssetExtension) ?
 			Assets->PathToId(NxFr::Path::GetPathWithoutExtension(Path)) :
 			NxFr::Hash<>::HashObject(Path);

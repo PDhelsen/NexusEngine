@@ -2,6 +2,7 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserAction.h"
 
 namespace NxEd
 {
@@ -26,6 +27,8 @@ namespace NxEd
 		NEXUS_EDITOR_API void Duplicate(NxFr::StringView Path, NxFr::StringView Target);
 		NEXUS_EDITOR_API void Delete(NxFr::StringView Path);
 
+		NEXUS_EDITOR_API bool Exist(NxFr::StringView Path);
+
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
 		NEXUS_EDITOR_API void OnEnable() override;
@@ -34,17 +37,19 @@ namespace NxEd
 	private:
 		void DrawHeader();
 		void DrawItem(AssetsBrowserItem* Item);
+		bool DrawContext(AssetsBrowserItem* Item);
 		void SelectItem(AssetsBrowserItem* Item);
+		void OpenContext(AssetsBrowserItem* Item);
 
 		void Clear();
 		void Fetch();
 		AssetsBrowserItem* FetchItems(NxFr::StringView Path, AssetsBrowserItem* Parent);
 		AssetsBrowserItem* PurgeDuplicates(AssetsBrowserItem* Item);
 
-		AssetsBrowserItem* AppendItem(NxFr::StringView Path, bool AppendId);
-		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool UpdateId);
+		AssetsBrowserItem* AppendItem(NxFr::StringView Path);
+		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool AddId, bool RemoveId);
 		AssetsBrowserItem* DuplicateItem(AssetsBrowserItem* Item);
-		void RemoveItem(AssetsBrowserItem* Item, bool RemoveId);
+		void RemoveItem(AssetsBrowserItem* Item);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent, bool Sort);
 		void DetachItem(AssetsBrowserItem* Item, bool Sort);
 		void SortItem(AssetsBrowserItem* Item);
@@ -62,7 +67,8 @@ namespace NxEd
 		static NxFr::String PathToAsset(NxFr::StringView Path);
 
 	private:
-		const inline static NxFr::String Root = "Assets/";
+		const inline static NxFr::String Root = "";
+		const inline static NxFr::String RootImGui = "Assets";
 
 		NxEn::GUI::Style Style;
 
@@ -77,5 +83,7 @@ namespace NxEd
 
 		NxFr::Set<AssetsBrowserItem*> Filtered;
 		NxFr::String Filter;
+
+		NxFr::List<AssetsBrowserAction*> Actions;
 	};
 }

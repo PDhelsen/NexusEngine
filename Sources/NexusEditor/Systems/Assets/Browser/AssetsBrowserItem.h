@@ -31,9 +31,10 @@ namespace NxEd
 
 		NEXUS_EDITOR_API NxFr::StringView GetPrettyPath() const { return NxFr::Path::GetPathWithoutExtension(Path); };
 		NEXUS_EDITOR_API NxFr::StringView GetDirectory() const { return NxFr::Path::GetParent(Path); };
-		NEXUS_EDITOR_API NxFr::StringView GetPrettyName() const { return NxFr::Path::IsDirectory(Path) ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path); };
-		NEXUS_EDITOR_API NxFr::StringView GetName() const { return NxFr::Path::IsDirectory(Path) ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path, true); };
+		NEXUS_EDITOR_API NxFr::StringView GetPrettyName() const { return IsDirectory() ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path); };
+		NEXUS_EDITOR_API NxFr::StringView GetName() const { return IsDirectory() ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path, true); };
 		NEXUS_EDITOR_API NxFr::StringView GetExtension() const { return NxFr::Path::GetExtension(Path); };
+		NEXUS_EDITOR_API bool IsDirectory() const { return NxFr::Path::IsDirectory(Path); }
 
 		NEXUS_EDITOR_API bool IsOpen() const { return Expanded; }
 		NEXUS_EDITOR_API bool IsSelected() const { return Selected; }
@@ -41,9 +42,9 @@ namespace NxEd
 	protected:
 		NEXUS_EDITOR_API virtual NxFr::StringView GetPrefix() const = 0;
 
-		NEXUS_EDITOR_API void Update(NxFr::StringView Target, bool UpdateId);
-		NEXUS_EDITOR_API NxFr::String PathToDisk(NxFr::StringView Path);
-		NEXUS_EDITOR_API NxFr::String PathToAsset(NxFr::StringView Path);
+		NEXUS_EDITOR_API void Update(NxFr::StringView Target, bool AddId, bool RemoveId);
+		NEXUS_EDITOR_API NxFr::String PathToDisk(NxFr::StringView Path) const;
+		NEXUS_EDITOR_API NxFr::String PathToAsset(NxFr::StringView Path) const;
 
 	protected:
 		AssetsBrowserItem* Parent;
