@@ -4,8 +4,8 @@
 
 namespace NxEd
 {
-	AssetsBrowserActionDelete::AssetsBrowserActionDelete(NxFr::StringView Label, int64 Priority)
-		: AssetsBrowserAction(Label, Priority)
+	AssetsBrowserActionDelete::AssetsBrowserActionDelete()
+		: AssetsBrowserAction("Delete", 5, false)
 	{
 	}
 
@@ -13,8 +13,29 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionDelete::Execute(AssetsBrowserItem* Item)
+	void AssetsBrowserActionDelete::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
 	{
-		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Delete(Item->GetPath());
+		NxFr::Array<NxFr::String> Paths(Items.GetCount());
+		for (uint64 Index = 0; Index < Paths.GetCount(); ++Index)
+		{
+			Paths[Index] = Items[Index]->GetPath();
+		}
+
+		Delete(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Paths);
+	}
+
+	void AssetsBrowserActionDelete::Delete(AssetsBrowserPanel* Browser, const NxFr::Array<NxFr::String>& Items) const
+	{
+		for (auto& Item : Items)
+		{
+			Delete(Browser, Item);
+		}
+	}
+	void AssetsBrowserActionDelete::Delete(AssetsBrowserPanel* Browser, NxFr::String Item) const
+	{
+		if (Browser->Exist(Item))
+		{
+			Browser->Delete(Item);
+		}
 	}
 }

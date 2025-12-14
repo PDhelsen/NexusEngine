@@ -4,8 +4,8 @@
 
 namespace NxEd
 {
-	AssetsBrowserActionCreate::AssetsBrowserActionCreate(NxFr::StringView Label, int64 Priority)
-		: AssetsBrowserAction(Label, Priority)
+	AssetsBrowserActionCreate::AssetsBrowserActionCreate()
+		: AssetsBrowserAction("Create", 1, false)
 	{
 	}
 
@@ -13,16 +13,31 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionCreate::Execute(AssetsBrowserItem* Item)
+	void AssetsBrowserActionCreate::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
 			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
-			NxFr::StringView Directory = Item->IsDirectory() ? Item->GetPath() : Item->GetDirectory();
-			NxFr::String Path = Directory.IsEmpty() ? NxFr::String(Name) : NxFr::Path::Combine(Directory, Name);
-			NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Create(Path, NxFr::StringId(Type));
+			Create(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items, Name, NxFr::StringId(Type));
 		});
+	}
+
+	void AssetsBrowserActionCreate::Create(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items, NxFr::StringView Name, NxFr::StringId Type) const
+	{
+		for (auto& Item : Items)
+		{
+			Create(Browser, Item, Name, Type);
+		}
+	}
+
+	void AssetsBrowserActionCreate::Create(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item, NxFr::StringView Name, NxFr::StringId Type) const
+	{
+		NxFr::StringView Directory = Item->IsDirectory() ? Item->GetPath() : Item->GetDirectory();
+		NxFr::String Path = NxFr::Path::Combine(Directory, Name);
+		Path = Browser->ValidatePath(Path);
+
+		Browser->Create(Path, Type);
 	}
 }

@@ -2,8 +2,8 @@
 
 namespace NxEd
 {
-	AssetsBrowserAction::AssetsBrowserAction(NxFr::StringView Label, int64 Priority)
-		: Label(Label), Priority(Priority)
+	AssetsBrowserAction::AssetsBrowserAction(NxFr::StringView Label, int64 Priority, bool Recursive)
+		: Label(Label), Priority(Priority), Recursive(Recursive)
 	{
 	}
 

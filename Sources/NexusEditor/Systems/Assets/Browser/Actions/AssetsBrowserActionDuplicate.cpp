@@ -4,8 +4,8 @@
 
 namespace NxEd
 {
-	AssetsBrowserActionDuplicate::AssetsBrowserActionDuplicate(NxFr::StringView Label, int64 Priority)
-		: AssetsBrowserAction(Label, Priority)
+	AssetsBrowserActionDuplicate::AssetsBrowserActionDuplicate()
+		: AssetsBrowserAction("Duplicate", 2, false)
 	{
 	}
 
@@ -13,33 +13,22 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionDuplicate::Execute(AssetsBrowserItem* Item)
+	void AssetsBrowserActionDuplicate::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
 	{
-		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+		Duplicate(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items);
+	}
 
-		NxFr::String Path = Item->GetPath();
-		NxFr::StringView Name = Item->GetPrettyName();
-		NxFr::StringView Extension = Item->GetExtension();
-		bool Directory = Item->IsDirectory();
-
-		uint64 Count = 1;
-		NxFr::String Target;
-		while (Browser->Exist(Path))
+	void AssetsBrowserActionDuplicate::Duplicate(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items) const
+	{
+		for (auto& Item : Items)
 		{
-			Target = Name + " " + NxFr::StringUtility::ToString(Count);
-			if (Directory)
-			{
-				NxFr::Path::ChangeDirectoryName(Path, Target);
-			}
-			else
-			{
-				Target += "." + Extension;
-				NxFr::Path::ChangeFileName(Path, Target);
-			}
-
-			Count++;
+			Duplicate(Browser, Item);
 		}
+	}
 
+	void AssetsBrowserActionDuplicate::Duplicate(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item) const
+	{
+		NxFr::String Path = Browser->ValidatePath(Item->GetPath());
 		Browser->Duplicate(Item->GetPath(), Path);
 	}
 }

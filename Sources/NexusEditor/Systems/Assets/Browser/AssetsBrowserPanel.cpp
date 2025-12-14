@@ -5,8 +5,9 @@
 #include "NexusEditor/Systems/Assets/Importers/AssetImporterPopup.h"
 
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionCreate.h"
-#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionMove.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDuplicate.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionRename.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionMove.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDelete.h"
 
 namespace NxEd
@@ -48,11 +49,11 @@ namespace NxEd
 	AssetsBrowserPanel::AssetsBrowserPanel()
 		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64)
 	{
-		Actions.Append(new AssetsBrowserActionCreate("Create", 0));
-		Actions.Append(new AssetsBrowserActionMove("Move", 1));
-		Actions.Append(new AssetsBrowserActionDuplicate("Duplicate", 2));
-		Actions.Append(new AssetsBrowserActionDelete("Delete", 3));
-		Actions.Sort([](AssetsBrowserAction* A, AssetsBrowserAction* B) { return *A <= *B; });
+		Actions.Append(new AssetsBrowserActionCreate());
+		Actions.Append(new AssetsBrowserActionDuplicate());
+		Actions.Append(new AssetsBrowserActionRename());
+		Actions.Append(new AssetsBrowserActionMove());
+		Actions.Append(new AssetsBrowserActionDelete());
 	}
 
 	AssetsBrowserPanel::~AssetsBrowserPanel()
@@ -113,7 +114,7 @@ namespace NxEd
 		NxFr::GUID Id = PathToId(Path);
 
 		AssetsBrowserItem* Item = Map[Id];
-		Item = DuplicateItem(Item);
+		Item = DuplicateItem(Item, nullptr);
 		Item->Duplicate(Target);
 		AttachItem(Item, GetParent(Item->Path), true);
 	}
@@ -133,6 +134,33 @@ namespace NxEd
 	bool AssetsBrowserPanel::Exist(NxFr::StringView Path)
 	{
 		return NxFr::Path::Exist(PathToDisk(Path));
+	}
+
+	NxFr::String AssetsBrowserPanel::ValidatePath(NxFr::String Path)
+	{
+		bool Directory = NxFr::Path::IsDirectory(Path);
+		NxFr::StringView Name = Directory ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path);
+		NxFr::StringView Extension = NxFr::Path::GetExtension(Path);
+
+		uint64 Count = 1;
+		NxFr::String Target;
+		while (Exist(Path))
+		{
+			Target = Name + " " + NxFr::StringUtility::ToString(Count);
+			if (Directory)
+			{
+				NxFr::Path::ChangeDirectoryName(Path, Target);
+			}
+			else
+			{
+				Target += "." + Extension;
+				NxFr::Path::ChangeFileName(Path, Target);
+			}
+
+			Count++;
+		}
+
+		return Path;
 	}
 
 	void AssetsBrowserPanel::OnInitialize()
@@ -261,7 +289,7 @@ namespace NxEd
 			{
 				if (ImGui::MenuItem(Action->GetLabel().C()))
 				{
-					Action->Execute(Item);
+					Action->Execute(GatherActionItems(Action));
 					Executed = true;
 					break;
 				}
@@ -422,7 +450,7 @@ namespace NxEd
 		}
 	}
 
-	AssetsBrowserItem* AssetsBrowserPanel::DuplicateItem(AssetsBrowserItem* Item)
+	AssetsBrowserItem* AssetsBrowserPanel::DuplicateItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent)
 	{
 		if (!Item)
 		{
@@ -432,15 +460,14 @@ namespace NxEd
 		AssetsBrowserItem* Copy = AppendItem(Item->Path);
 		UpdateItem(Copy, Item->Path, false, false);
 
-		Copy->Parent = Item->Parent;
+		Copy->Parent = Parent;
 		if (Item->Child)
 		{
-			Copy->Child = DuplicateItem(Item->Child);
-			Copy->Child->Parent = Copy;
+			Copy->Child = DuplicateItem(Item->Child, Copy);
 		}
-		if (Item->Next)
+		if (Item->Next && Parent)
 		{
-			Copy->Next = DuplicateItem(Item->Next);
+			Copy->Next = DuplicateItem(Item->Next, Parent);
 			Copy->Next->Previous = Copy;
 		}
 
@@ -735,6 +762,39 @@ namespace NxEd
 		}
 
 		return Visible;
+	}
+
+	NxFr::Array<AssetsBrowserItem*> AssetsBrowserPanel::GatherActionItems(AssetsBrowserAction* Action)
+	{
+		NxFr::Set<AssetsBrowserItem*> Result = Selection;
+
+		if (Action->IsRecursive())
+		{
+			for (auto S : Selection)
+			{
+				GatherChildren(S->Child, Result);
+			}
+		}
+
+		return NxFr::ContainersUtils::ToArray<AssetsBrowserItem*>(Result);
+	}
+
+	void AssetsBrowserPanel::GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*> Result)
+	{
+		if (Item == nullptr)
+		{
+			return;
+		}
+
+		Result.Append(Item);
+
+		GatherChildren(Item->Child, Result);
+
+		while (Item)
+		{
+			GatherChildren(Item->Next, Result);
+			Item = Item->Next;
+		}
 	}
 
 	NxFr::GUID AssetsBrowserPanel::PathToId(NxFr::StringView Path)

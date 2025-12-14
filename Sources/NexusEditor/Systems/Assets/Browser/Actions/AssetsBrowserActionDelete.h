@@ -7,9 +7,13 @@ namespace NxEd
 	class AssetsBrowserActionDelete : public AssetsBrowserAction
 	{
 	public:
-		NEXUS_EDITOR_API AssetsBrowserActionDelete(NxFr::StringView Label, int64 Priority = 0);
+		NEXUS_EDITOR_API AssetsBrowserActionDelete();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionDelete();
 
-		NEXUS_EDITOR_API void Execute(AssetsBrowserItem* Item) override;
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<AssetsBrowserItem*>& Items) override;
+
+	private:
+		void Delete(AssetsBrowserPanel* Browser, const NxFr::Array<NxFr::String>& Items) const;
+		void Delete(AssetsBrowserPanel* Browser, NxFr::String Item) const;
 	};
 }

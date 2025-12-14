@@ -28,6 +28,7 @@ namespace NxEd
 		NEXUS_EDITOR_API void Delete(NxFr::StringView Path);
 
 		NEXUS_EDITOR_API bool Exist(NxFr::StringView Path);
+		NEXUS_EDITOR_API NxFr::String ValidatePath(NxFr::String Path);
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
@@ -48,7 +49,7 @@ namespace NxEd
 
 		AssetsBrowserItem* AppendItem(NxFr::StringView Path);
 		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool AddId, bool RemoveId);
-		AssetsBrowserItem* DuplicateItem(AssetsBrowserItem* Item);
+		AssetsBrowserItem* DuplicateItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent);
 		void RemoveItem(AssetsBrowserItem* Item);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent, bool Sort);
 		void DetachItem(AssetsBrowserItem* Item, bool Sort);
@@ -60,6 +61,9 @@ namespace NxEd
 		void Select(AssetsBrowserItem* Item, bool Additive = false, bool List = false);
 		void Show(AssetsBrowserItem* Item);
 		bool IsVisible(AssetsBrowserItem* Item);
+
+		NxFr::Array<AssetsBrowserItem*> GatherActionItems(AssetsBrowserAction* Action);
+		void GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*> Result);
 
 		NxFr::GUID PathToId(NxFr::StringView Path);
 		static NxFr::String DiskToPath(NxFr::StringView Path);

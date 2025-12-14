@@ -4,8 +4,8 @@
 
 namespace NxEd
 {
-	AssetsBrowserActionMove::AssetsBrowserActionMove(NxFr::StringView Label, int64 Priority)
-		: AssetsBrowserAction(Label, Priority)
+	AssetsBrowserActionMove::AssetsBrowserActionMove()
+		: AssetsBrowserAction("Move", 4, false)
 	{
 	}
 
@@ -13,12 +13,33 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionMove::Execute(AssetsBrowserItem* Item)
+	void AssetsBrowserActionMove::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Move(Item->GetPath(), Input);
+			if (Items.GetCount() == 1)
+			{
+				Move(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items[0], Input);
+			}
+			else
+			{
+				Move(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items, Input);
+			}
 		});
 	}
+
+	void AssetsBrowserActionMove::Move(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items, NxFr::StringView Input) const
+	{
+		for (auto& Item : Items)
+		{
+			Browser->Move(Item->GetPath(), NxFr::Path::Combine(Input, Item->GetName()));
+		}
+	}
+
+	void AssetsBrowserActionMove::Move(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item, NxFr::StringView Input) const
+	{
+		Browser->Move(Item->GetPath(), Input);
+	}
+
 }
