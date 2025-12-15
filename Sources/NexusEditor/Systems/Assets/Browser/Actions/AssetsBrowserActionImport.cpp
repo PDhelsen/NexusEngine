@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionImport)
+
 	AssetsBrowserActionImport::AssetsBrowserActionImport()
 		: AssetsBrowserAction("Import", 7, true)
 	{

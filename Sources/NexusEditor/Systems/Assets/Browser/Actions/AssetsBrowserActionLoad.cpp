@@ -2,6 +2,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionLoad)
+
 	AssetsBrowserActionLoad::AssetsBrowserActionLoad()
 		: AssetsBrowserAction("Load", 6, true)
 	{

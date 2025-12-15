@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionDuplicate)
+
 	AssetsBrowserActionDuplicate::AssetsBrowserActionDuplicate()
 		: AssetsBrowserAction("Duplicate", 2, false)
 	{
@@ -28,7 +30,6 @@ namespace NxEd
 
 	void AssetsBrowserActionDuplicate::Duplicate(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item) const
 	{
-		NxFr::String Path = Browser->ValidatePath(Item->GetPath());
-		Browser->Duplicate(Item->GetPath(), Path);
+		Browser->Duplicate(Item->GetPath(), Item->GetPath());
 	}
 }

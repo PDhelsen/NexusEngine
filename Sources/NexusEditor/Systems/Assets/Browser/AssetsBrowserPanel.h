@@ -28,11 +28,19 @@ namespace NxEd
 		NEXUS_EDITOR_API void Delete(NxFr::StringView Path);
 
 		NEXUS_EDITOR_API bool Exist(NxFr::StringView Path);
-		NEXUS_EDITOR_API NxFr::String ValidatePath(NxFr::String Path);
+		NEXUS_EDITOR_API NxFr::StringView ValidatePath(NxFr::StringView Path);
+		NEXUS_EDITOR_API NxFr::String EnsureUniquePath(NxFr::String Path);
+
+		template<typename T>
+		void AppendAction();
+		template<typename T>
+		void RemoveAction();
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
+		NEXUS_EDITOR_API void OnShutdown() override;
 		NEXUS_EDITOR_API void OnEnable() override;
+		NEXUS_EDITOR_API void OnDisable() override;
 		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
 	private:
@@ -65,6 +73,7 @@ namespace NxEd
 		void ProcessAction();
 		NxFr::Array<AssetsBrowserItem*> GatherActionItems(AssetsBrowserAction* Action);
 		void GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*>& Result);
+		void SortActions();
 
 		NxFr::GUID PathToId(NxFr::StringView Path);
 		static NxFr::String DiskToPath(NxFr::StringView Path);
@@ -92,4 +101,31 @@ namespace NxEd
 		NxFr::List<AssetsBrowserAction*> Actions;
 		AssetsBrowserAction* ActionRequested;
 	};
+
+	template<typename T>
+	inline void AssetsBrowserPanel::AppendAction()
+	{
+		Actions.Append(new T());
+		SortActions();
+	}
+
+	template<typename T>
+	inline void AssetsBrowserPanel::RemoveAction()
+	{
+		uint64 Index = 0;
+		for (; Index < Actions.GetCount(); ++Index)
+		{
+			if (Actions[Index]->GetObjectType() == T::GetClassType())
+			{
+				break;
+			}
+		}
+
+		if (Index < Actions.GetCount())
+		{
+			delete Actions[Index];
+			Actions.Remove(Index);
+			SortActions();
+		}
+	}
 }

@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionRename)
+
 	AssetsBrowserActionRename::AssetsBrowserActionRename()
 		: AssetsBrowserAction("Rename", 3, false)
 	{
@@ -44,7 +46,6 @@ namespace NxEd
 			Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + "." + Item->GetExtension()));
 		}
 
-		Path = Browser->ValidatePath(Path);
 		Browser->Move(Item->GetPath(), Path);
 	}
 

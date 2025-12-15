@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionCreate)
+
 	AssetsBrowserActionCreate::AssetsBrowserActionCreate()
 		: AssetsBrowserAction("Create", 1, false)
 	{
@@ -36,8 +38,6 @@ namespace NxEd
 	{
 		NxFr::StringView Directory = Item->IsDirectory() ? Item->GetPath() : Item->GetDirectory();
 		NxFr::String Path = NxFr::Path::Combine(Directory, Name);
-		Path = Browser->ValidatePath(Path);
-
 		Browser->Create(Path, Type);
 	}
 }

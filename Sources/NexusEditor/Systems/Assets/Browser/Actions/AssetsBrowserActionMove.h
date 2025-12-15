@@ -7,6 +7,8 @@ namespace NxEd
 	class AssetsBrowserActionMove : public AssetsBrowserAction
 	{
 	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionMove)
+
 		NEXUS_EDITOR_API AssetsBrowserActionMove();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionMove();
 

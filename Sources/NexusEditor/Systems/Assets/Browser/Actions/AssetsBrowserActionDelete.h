@@ -7,6 +7,8 @@ namespace NxEd
 	class AssetsBrowserActionDelete : public AssetsBrowserAction
 	{
 	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionDelete)
+
 		NEXUS_EDITOR_API AssetsBrowserActionDelete();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionDelete();
 

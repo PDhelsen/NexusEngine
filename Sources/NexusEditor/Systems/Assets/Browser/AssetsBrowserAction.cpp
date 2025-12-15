@@ -2,6 +2,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserAction)
+
 	AssetsBrowserAction::AssetsBrowserAction(NxFr::StringView Label, int64 Priority, bool Recursive)
 		: Label(Label), Priority(Priority), Recursive(Recursive)
 	{

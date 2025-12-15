@@ -7,9 +7,11 @@ namespace NxEd
 {
 	class AssetsBrowserPanel;
 
-	class AssetsBrowserAction
+	class AssetsBrowserAction : public NxEn::Object
 	{
 	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserAction)
+
 		NEXUS_EDITOR_API AssetsBrowserAction(NxFr::StringView Label, int64 Priority, bool Recursive);
 		NEXUS_EDITOR_API virtual ~AssetsBrowserAction();
 

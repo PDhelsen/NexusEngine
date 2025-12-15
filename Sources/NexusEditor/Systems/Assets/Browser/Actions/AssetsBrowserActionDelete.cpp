@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionDelete)
+
 	AssetsBrowserActionDelete::AssetsBrowserActionDelete()
 		: AssetsBrowserAction("Delete", 5, false)
 	{

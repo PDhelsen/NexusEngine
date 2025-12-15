@@ -7,6 +7,8 @@ namespace NxEd
 	class AssetsBrowserActionDuplicate : public AssetsBrowserAction
 	{
 	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionDuplicate)
+
 		NEXUS_EDITOR_API AssetsBrowserActionDuplicate();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionDuplicate();
 

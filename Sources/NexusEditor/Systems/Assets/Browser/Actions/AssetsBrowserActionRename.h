@@ -7,6 +7,8 @@ namespace NxEd
 	class AssetsBrowserActionRename : public AssetsBrowserAction
 	{
 	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionRename)
+
 		NEXUS_EDITOR_API AssetsBrowserActionRename();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionRename();
 

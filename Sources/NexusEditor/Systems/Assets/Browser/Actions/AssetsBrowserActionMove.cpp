@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionMove)
+
 	AssetsBrowserActionMove::AssetsBrowserActionMove()
 		: AssetsBrowserAction("Move", 4, false)
 	{

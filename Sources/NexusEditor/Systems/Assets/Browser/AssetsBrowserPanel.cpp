@@ -50,16 +50,8 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
 
 	AssetsBrowserPanel::AssetsBrowserPanel()
-		: Style(), Assets(nullptr),Inputs(nullptr), Items(), Map(), Selection(), Selected(nullptr), Filter(64)
+		: Style(), Assets(nullptr),Inputs(nullptr), Map(), Items(), Selection(), Selected(nullptr), Filtered(), Filter(64), Actions(), ActionRequested(nullptr)
 	{
-		Actions.Append(new AssetsBrowserActionCreate());
-		Actions.Append(new AssetsBrowserActionDuplicate());
-		Actions.Append(new AssetsBrowserActionRename());
-		Actions.Append(new AssetsBrowserActionMove());
-		Actions.Append(new AssetsBrowserActionDelete());
-		Actions.Append(new AssetsBrowserActionLoad());
-		Actions.Append(new AssetsBrowserActionImport());
-		Actions.Append(new AssetsBrowserActionReimport());
 	}
 
 	AssetsBrowserPanel::~AssetsBrowserPanel()
@@ -87,14 +79,14 @@ namespace NxEd
 
 	void AssetsBrowserPanel::Select(NxFr::StringView Path, bool Additive, bool List)
 	{
-		Select(PathToId(Path), Additive, List);
+		Select(PathToId(ValidatePath(Path)), Additive, List);
 	}
 
 	void AssetsBrowserPanel::Create(NxFr::StringView Path, NxFr::StringId Type)
 	{
 		NEXUS_ASSERT(Path != Root, Default, "Can't create the Assets/ folder");
 
-		NxFr::String AssetPath = PathToAsset(Path);
+		NxFr::String AssetPath = PathToAsset(EnsureUniquePath(ValidatePath(Path)));
 
 		AssetsBrowserItem* Item = AppendItem(AssetPath);
 		Item->Create(Path, Type);
@@ -105,11 +97,11 @@ namespace NxEd
 	{
 		NEXUS_ASSERT(Path != Root, Default, "Can't move the Assets/ folder");
 
-		NxFr::GUID Id = PathToId(Path);
+		NxFr::GUID Id = PathToId(ValidatePath(Path));
 
 		AssetsBrowserItem* Item = Map[Id];
 		DetachItem(Item, true);
-		Item->Move(Target);
+		Item->Move(EnsureUniquePath(ValidatePath(Target)));
 		AttachItem(Item, GetParent(Item->Path), true);
 	}
 
@@ -117,11 +109,11 @@ namespace NxEd
 	{
 		NEXUS_ASSERT(Path != Root, Default, "Can't duplicate the Assets/ folder");
 
-		NxFr::GUID Id = PathToId(Path);
+		NxFr::GUID Id = PathToId(ValidatePath(Path));
 
 		AssetsBrowserItem* Item = Map[Id];
 		Item = DuplicateItem(Item, nullptr);
-		Item->Duplicate(Target);
+		Item->Duplicate(EnsureUniquePath(ValidatePath(Target)));
 		AttachItem(Item, GetParent(Item->Path), true);
 	}
 
@@ -129,7 +121,7 @@ namespace NxEd
 	{
 		NEXUS_ASSERT(Path != Root, Default, "Can't delete the Assets/ folder");
 
-		NxFr::GUID Id = PathToId(Path);
+		NxFr::GUID Id = PathToId(ValidatePath(Path));
 
 		AssetsBrowserItem* Item = Map[Id];
 		Item->Delete();
@@ -139,14 +131,32 @@ namespace NxEd
 
 	bool AssetsBrowserPanel::Exist(NxFr::StringView Path)
 	{
-		return NxFr::Path::Exist(PathToDisk(Path));
+		return NxFr::Path::Exist(PathToDisk(ValidatePath(Path)));
 	}
 
-	NxFr::String AssetsBrowserPanel::ValidatePath(NxFr::String Path)
+	NxFr::StringView AssetsBrowserPanel::ValidatePath(NxFr::StringView Path)
+	{
+		if (Path == Root)
+		{
+			return Root;
+		}
+
+		if (NxFr::StringUtility::Start(Path, "/"))
+		{
+			Path = NxFr::StringUtility::TrimLeading(Path, '/');
+		}
+
+		NEXUS_ASSERT(NxFr::Path::IsDirectory(Path) || (NxFr::Path::IsFile(Path) && NxFr::Path::HasExtension(Path, "")),
+			Default, "Path %s needs to have an extension or be a directory", Path.C());
+
+		return Path;
+	}
+
+	NxFr::String AssetsBrowserPanel::EnsureUniquePath(NxFr::String Path)
 	{
 		bool Directory = NxFr::Path::IsDirectory(Path);
-		NxFr::StringView Name = Directory ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path);
-		NxFr::StringView Extension = NxFr::Path::GetExtension(Path);
+		NxFr::String Name = Directory ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path);
+		NxFr::String Extension = NxFr::Path::GetExtension(Path);
 
 		uint64 Count = 1;
 		NxFr::String Target;
@@ -174,6 +184,23 @@ namespace NxEd
 		Panel::OnInitialize();
 
 		SetTitle("Assets Browser");
+
+		Actions.Append(new AssetsBrowserActionCreate());
+		Actions.Append(new AssetsBrowserActionDuplicate());
+		Actions.Append(new AssetsBrowserActionRename());
+		Actions.Append(new AssetsBrowserActionMove());
+		Actions.Append(new AssetsBrowserActionDelete());
+		Actions.Append(new AssetsBrowserActionLoad());
+		Actions.Append(new AssetsBrowserActionImport());
+		Actions.Append(new AssetsBrowserActionReimport());
+	}
+
+	void AssetsBrowserPanel::OnShutdown()
+	{
+		for (uint64 Index = 0; Index < Actions.GetCount(); ++Index)
+		{
+			delete Actions[Index];
+		}
 	}
 
 	void AssetsBrowserPanel::OnEnable()
@@ -188,6 +215,11 @@ namespace NxEd
 		Style.WidthLabel = 0.0f;
 
 		Refresh();
+	}
+
+	void AssetsBrowserPanel::OnDisable()
+	{
+		Clear();
 	}
 
 	void AssetsBrowserPanel::OnGui(float TimeStep)
@@ -809,6 +841,11 @@ namespace NxEd
 			GatherChildren(Item->Next, Result);
 			Item = Item->Next;
 		}
+	}
+
+	void AssetsBrowserPanel::SortActions()
+	{
+		Actions.Sort([](AssetsBrowserAction* A, AssetsBrowserAction* B) { return *A <= *B; });
 	}
 
 	NxFr::GUID AssetsBrowserPanel::PathToId(NxFr::StringView Path)
