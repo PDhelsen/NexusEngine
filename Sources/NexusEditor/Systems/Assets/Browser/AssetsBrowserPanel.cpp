@@ -805,6 +805,7 @@ namespace NxEd
 		}
 
 		NxFr::Array<AssetsBrowserItem*> ActionItems = GatherActionItems(ActionRequested);
+		ActionItems.Sort([](AssetsBrowserItem* A, AssetsBrowserItem* B) { return A->Path < B->Path; });
 		ActionRequested->Execute(ActionItems);
 
 		ActionRequested = nullptr;
