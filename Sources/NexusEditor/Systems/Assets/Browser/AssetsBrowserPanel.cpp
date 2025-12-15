@@ -9,6 +9,9 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionRename.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionMove.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDelete.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionLoad.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionImport.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReimport.h"
 
 namespace NxEd
 {
@@ -54,6 +57,9 @@ namespace NxEd
 		Actions.Append(new AssetsBrowserActionRename());
 		Actions.Append(new AssetsBrowserActionMove());
 		Actions.Append(new AssetsBrowserActionDelete());
+		Actions.Append(new AssetsBrowserActionLoad());
+		Actions.Append(new AssetsBrowserActionImport());
+		Actions.Append(new AssetsBrowserActionReimport());
 	}
 
 	AssetsBrowserPanel::~AssetsBrowserPanel()
@@ -188,6 +194,8 @@ namespace NxEd
 	{
 		DrawHeader();
 		DrawItem(Items);
+
+		ProcessAction();
 	}
 
 	void AssetsBrowserPanel::DrawHeader()
@@ -249,10 +257,7 @@ namespace NxEd
 				}
 			}
 
-			if (DrawContext(Item))
-			{
-				return;
-			}
+			DrawContext(Item);
 		}
 
 		// Iterate
@@ -274,13 +279,11 @@ namespace NxEd
 		DrawItem(Item->Next);
 	}
 
-	bool AssetsBrowserPanel::DrawContext(AssetsBrowserItem* Item)
+	void AssetsBrowserPanel::DrawContext(AssetsBrowserItem* Item)
 	{
-		bool Executed = false;
-
 		if (!Item)
 		{
-			return Executed;
+			return;
 		}
 
 		if (ImGui::BeginPopup(Item->ImGuiText.C()))
@@ -289,16 +292,13 @@ namespace NxEd
 			{
 				if (ImGui::MenuItem(Action->GetLabel().C()))
 				{
-					Action->Execute(GatherActionItems(Action));
-					Executed = true;
+					ActionRequested = Action;
 					break;
 				}
 			}
 
 			ImGui::EndPopup();
 		}
-
-		return Executed;
 	}
 
 	void AssetsBrowserPanel::SelectItem(AssetsBrowserItem* Item)
@@ -328,6 +328,7 @@ namespace NxEd
 		Selected = nullptr;
 		Filtered.Clear();
 		Filter.Clear();
+		ActionRequested = nullptr;
 
 		RemoveItem(Items);
 		Map.Clear();
@@ -764,6 +765,19 @@ namespace NxEd
 		return Visible;
 	}
 
+	void AssetsBrowserPanel::ProcessAction()
+	{
+		if (!ActionRequested)
+		{
+			return;
+		}
+
+		NxFr::Array<AssetsBrowserItem*> ActionItems = GatherActionItems(ActionRequested);
+		ActionRequested->Execute(ActionItems);
+
+		ActionRequested = nullptr;
+	}
+
 	NxFr::Array<AssetsBrowserItem*> AssetsBrowserPanel::GatherActionItems(AssetsBrowserAction* Action)
 	{
 		NxFr::Set<AssetsBrowserItem*> Result = Selection;
@@ -779,7 +793,7 @@ namespace NxEd
 		return NxFr::ContainersUtils::ToArray<AssetsBrowserItem*>(Result);
 	}
 
-	void AssetsBrowserPanel::GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*> Result)
+	void AssetsBrowserPanel::GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*>& Result)
 	{
 		if (Item == nullptr)
 		{

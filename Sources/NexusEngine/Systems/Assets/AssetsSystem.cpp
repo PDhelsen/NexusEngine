@@ -30,7 +30,6 @@ namespace NxEn
 		NxEn::Asset* Instance = AssetsFactory::Create(Type);
 		Track(Instance, Path, Extension);
 		Instance->Initialize();
-		Save(Instance->Id);
 		return Instance;
 	}
 
@@ -260,9 +259,6 @@ namespace NxEn
 #endif
 		NxEn::Asset* Instance = Create(Type, Path, Extension);
 		Manager->Load(Instance->GetId(), Node, Registry->IdToFileContent(Instance->GetId()));
-
-		Instance->SetDirty();
-		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
 		return Instance;

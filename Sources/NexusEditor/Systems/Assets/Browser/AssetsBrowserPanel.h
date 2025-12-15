@@ -38,7 +38,7 @@ namespace NxEd
 	private:
 		void DrawHeader();
 		void DrawItem(AssetsBrowserItem* Item);
-		bool DrawContext(AssetsBrowserItem* Item);
+		void DrawContext(AssetsBrowserItem* Item);
 		void SelectItem(AssetsBrowserItem* Item);
 		void OpenContext(AssetsBrowserItem* Item);
 
@@ -62,8 +62,9 @@ namespace NxEd
 		void Show(AssetsBrowserItem* Item);
 		bool IsVisible(AssetsBrowserItem* Item);
 
+		void ProcessAction();
 		NxFr::Array<AssetsBrowserItem*> GatherActionItems(AssetsBrowserAction* Action);
-		void GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*> Result);
+		void GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*>& Result);
 
 		NxFr::GUID PathToId(NxFr::StringView Path);
 		static NxFr::String DiskToPath(NxFr::StringView Path);
@@ -89,5 +90,6 @@ namespace NxEd
 		NxFr::String Filter;
 
 		NxFr::List<AssetsBrowserAction*> Actions;
+		AssetsBrowserAction* ActionRequested;
 	};
 }
