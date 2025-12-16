@@ -1,7 +1,6 @@
 #include "NexusEditor/Core/NexusEditorApplication.h"
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
-#include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
 {
@@ -13,7 +12,6 @@ namespace NxEd
 		NxEn::SystemManager& Systems = GetSystems();
 
 		Systems.CreateSystem<EditorSystem>();
-		Systems.CreateSystem<EditSystem>();
 
 		NxFr::Event<>& OnSave = Systems.GetSystem<EditorSystem>()->GetOnSave();
 		OnSave += [](){ Application::GetSystem<NxEn::GUISystem>()->SaveLayout(); };
@@ -33,7 +31,6 @@ namespace NxEd
 		NxEn::SystemManager& Systems = GetSystems();
 
 		Systems.DestroySystem<EditorSystem>();
-		Systems.DestroySystem<EditSystem>();
 	}
 
 	void NexusEditorApplication::OnInitialize()
@@ -42,7 +39,6 @@ namespace NxEd
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
 		Bootstrap.AppendSystem<EditorSystem>();
-		Bootstrap.AppendSystem<EditSystem>().AppendDependency<EditSystem, EditorSystem>();
 
 		if (!IsHeadless())
 		{
@@ -61,7 +57,6 @@ namespace NxEd
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
 		Unbootstrap.AppendSystem<EditorSystem>();
-		Unbootstrap.AppendSystem<EditSystem>();
 
 		if (!IsHeadless())
 		{
