@@ -45,6 +45,9 @@ namespace NxEn
 		NEXUS_ENGINE_API const NxFr::Array<NxFr::GUID>& GetDependencies() { return Dependencies; }
 		NEXUS_ENGINE_API NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
 
+		NEXUS_ENGINE_API NxFr::String GetAssetPath() const { return Path.Data + "." + AssetExtension; }
+		NEXUS_ENGINE_API NxFr::String GetContentPath() const { return Path.Data + "." + Extension; }
+
 	private:
 		YAML::Node Serialize();
 		void Deserialize(const YAML::Node& Node);

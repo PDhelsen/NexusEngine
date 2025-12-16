@@ -32,7 +32,7 @@ namespace NxEn
 		uint64 GetCount() const { return Assets.GetCount(); }
 
 	private:
-		NxFr::String PathToFile(NxFr::StringView Path, NxFr::StringView Extension) const;
+		NxFr::String PathToFile(NxFr::StringView Path) const;
 
 	private:
 		NxFr::Path Root;
