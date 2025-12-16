@@ -26,7 +26,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API Input::State GetButton(Input::Button Button) const;
 		NEXUS_ENGINE_API float GetAxis(Input::Axis Axis) const;
-		NEXUS_ENGINE_API NxFr::Vector2f GetMousePosition() const;
+		NEXUS_ENGINE_API NxFr::Vector2f GetMousePosition(bool Absolute = false) const;
 		NEXUS_ENGINE_API NxFr::Vector2f GetMouseDelta() const;
 		NEXUS_ENGINE_API Input::Modifier GetModifiers() const;
 
@@ -57,13 +57,15 @@ namespace NxEn
 		NxFr::Event<Input::Axis, float> OnAxisChange;
 		NxFr::Event<NxFr::Vector2f> OnMouseChange;
 
+		class WindowSystem* Window;
+
 		NxFr::Dictionary<NxFr::StringId, Input::Schema*> Schemas;
 
 		NxFr::Array<Input::State, (uint64)Input::Button::COUNT> Buttons;
 		NxFr::Array<float, (uint64)Input::Axis::COUNT> Axises;
+		NxEn::Input::Modifier Modifiers;
 		NxFr::Vector2f MousePosition;
 		NxFr::Vector2f MouseDelta;
-		NxEn::Input::Modifier Modifiers;
 
 		bool DirtyFlagButtons;
 		bool DirtyFlagAxises;
