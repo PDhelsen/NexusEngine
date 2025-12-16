@@ -12,7 +12,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsReferencesPanel)
 
 	AssetsReferencesPanel::AssetsReferencesPanel()
-		: Inputs(nullptr), Menu(), Style(), Buffer(64), Anchor(), Zoom(1.0f), Recenter(true), References(), Nodes(), Selection(), Selected(0), Full(false)
+		: Inputs(nullptr), Menu(), Style(), Buffer(64), Anchor(), Zoom(1.0f), Recenter(true), References(), Nodes(), Selection(), Selected(0), Inspected(0), Full(false)
 	{
 	}
 
@@ -117,12 +117,14 @@ namespace NxEd
 	void AssetsReferencesPanel::DrawNodes()
 	{
 		NxFr::Rectangle Rect = CreateCanvas();
-		HandleInputs();
+		HandleInputs(Rect);
 
 		for (const auto& N : Selection)
 		{
 			DrawNode(Rect, *N);
 		}
+
+		HandleInspect();
 	}
 
 	NxFr::Rectangle AssetsReferencesPanel::CreateCanvas()
@@ -146,8 +148,11 @@ namespace NxEd
 		return NxFr::Rectangle(Center, Extents);
 	}
 
-	void AssetsReferencesPanel::HandleInputs()
+	void AssetsReferencesPanel::HandleInputs(const NxFr::Rectangle& Canvas)
 	{
+		Inspected = 0;
+		Inspect = false;
+
 		if (ImGui::IsItemHovered())
 		{
 			if (Inputs->CheckAxis(NxEn::Input::Axis::ScrollY))
@@ -164,6 +169,19 @@ namespace NxEd
 				NxFr::Vector2f Delta = Inputs->GetMouseDelta();
 				Anchor += NxFr::Vector2f(Delta.x, Delta.y) / Zoom;
 			}
+			if (Inputs->CheckButton(NxEn::Input::Button::MouseRight))
+			{
+				Inspect = true;
+				Mouse = Inputs->GetMousePosition(true);
+			}
+		}
+	}
+
+	void AssetsReferencesPanel::HandleInspect()
+	{
+		if (Inspect)
+		{
+			Select(Inspected);
 		}
 	}
 
@@ -177,6 +195,11 @@ namespace NxEd
 		NxFr::Colors::Bits Bright = GetColorBright();
 
 		NxFr::Rectangle Box = NxFr::Rectangle(Anchor + Instance.Position * GetRectangleExtents() * 2.25f, GetRectangleExtents());
+
+		if (Inspect && NxFr::ShapeUtility::Contains(Box, Mouse))
+		{
+			Inspected = *Instance.Id;
+		}
 
 		Drawer->AddRectFilled(Box.GetBottomLeft(), Box.GetTopRight(), IM_COL32(Background.r, Background.g, Background.b, Background.a), 1);
 		Drawer->AddRect(Box.GetBottomLeft(), Box.GetTopRight(), IM_COL32(Border.r, Border.g, Border.b, Border.a), 1);
@@ -243,7 +266,7 @@ namespace NxEd
 		}
 
 		NxFr::GUID* Node = &References.Append(Id);
-		NxFr::String Label = NxFr::Path::Split(System->IdToPath(Id)).Last();
+		NxFr::String Label = System->IdToPath(Id) + NxFr::StringUtility::NewLine + NxFr::StringUtility::ToString(Id);
 		Nodes.AppendConstruct(NxFr::Move(Id), NxFr::Move(Node), NxFr::Move(Label));
 	}
 

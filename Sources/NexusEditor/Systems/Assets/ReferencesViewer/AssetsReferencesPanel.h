@@ -36,7 +36,8 @@ namespace NxEd
 		void DrawNodes();
 
 		NxFr::Rectangle CreateCanvas();
-		void HandleInputs();
+		void HandleInputs(const NxFr::Rectangle& Canvas);
+		void HandleInspect();
 		void DrawNode(const NxFr::Rectangle& Canvas, const Node& Instance);
 
 		void FetchDependencies();
@@ -59,6 +60,7 @@ namespace NxEd
 		NxEn::GUI::Style Style;
 		NxFr::String Buffer;
 		NxFr::Vector2f Anchor;
+		NxFr::Vector2f Mouse;
 		float Zoom;
 		bool Recenter;
 
@@ -66,6 +68,8 @@ namespace NxEd
 		NxFr::Dictionary<NxFr::GUID, Node> Nodes;
 		NxFr::Set<Node*> Selection;
 		NxFr::GUID Selected;
+		NxFr::GUID Inspected;
+		bool Inspect;
 		bool Full;
 	};
 }
