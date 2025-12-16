@@ -12,6 +12,7 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionLoad.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionImport.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReimport.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReferences.h"
 
 namespace NxEd
 {
@@ -193,6 +194,7 @@ namespace NxEd
 		Actions.Append(new AssetsBrowserActionLoad());
 		Actions.Append(new AssetsBrowserActionImport());
 		Actions.Append(new AssetsBrowserActionReimport());
+		Actions.Append(new AssetsBrowserActionReferences());
 	}
 
 	void AssetsBrowserPanel::OnShutdown()
