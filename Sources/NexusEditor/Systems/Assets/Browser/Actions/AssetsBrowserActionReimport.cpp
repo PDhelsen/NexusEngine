@@ -23,7 +23,7 @@ namespace NxEd
 				continue;
 			}
 
-			AssetImporter::Run(AssetImporter::TryGetImporterId(Item->GetPath()), Item->GetId());
+			AssetImporter::Run(Item->GetId());
 		}
 	}
 }

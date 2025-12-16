@@ -19,9 +19,11 @@ namespace NxEd
 		AssetImporter::Run(Id, File);
 	}));
 
-	AssetImporter* AssetImporter::GetImporter(NxFr::StringId Id)
+#pragma region Getter / Setter
+
+	AssetImporter* AssetImporter::GetImporter(NxFr::StringId Type)
 	{
-		return GetImporters()[Id];
+		return GetImporters()[Type];
 	}
 
 	void AssetImporter::SetImporter(AssetImporter* Instance)
@@ -29,53 +31,89 @@ namespace NxEd
 		GetImporters().AppendOrAssign(Instance->Type, Instance);
 	}
 
-	NxFr::StringId AssetImporter::GetExtension(NxFr::StringView Extension)
+	NxFr::StringId AssetImporter::GetType(NxFr::StringView Extension)
 	{
 		return GetExtensions()[Extension];
 	}
 
-	void AssetImporter::SetExtension(NxFr::StringView Extension, NxFr::StringId Id)
+	void AssetImporter::SetType(NxFr::StringView Extension, NxFr::StringId Type)
 	{
-		GetExtensions().AppendOrAssign(Extension, Id);
+		GetExtensions().AppendOrAssign(Extension, Type);
 	}
 
-	NxFr::StringId AssetImporter::TryGetImporterId(NxFr::StringView File)
+	AssetImporter* AssetImporter::TryGetImporter(NxFr::StringId Type)
 	{
+		AssetImporter** Importer = GetImporters().TryGet(Type);
+		return Importer ? *Importer : nullptr;
+	}
+
+	AssetImporter* AssetImporter::TryGetImporter(NxFr::GUID Asset)
+	{
+		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		if (!System->IsTracked(Asset))
+		{
+			return nullptr;
+		}
+
+		NxEn::AssetMetadata& Metadata = System->GetMetadata(Asset);
+		return TryGetImporter(Metadata.GetType());
+	}
+
+	NxFr::StringId AssetImporter::TryGetType(NxFr::StringView File)
+	{
+		NxFr::StringView Path = NxFr::Path::GetPathWithoutExtension(File);
 		NxFr::StringView Extension = NxFr::Path::GetExtension(File);
 
 		if (Extension == NxEn::AssetMetadata::AssetExtension)
 		{
 			NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-			NxFr::StringView Path = NxFr::Path::GetPathWithoutExtension(File);
-			NxFr::GUID Id = System->PathToId(Path);
-			return System->GetMetadata(Id).GetType();
+			return TryGetType(System->PathToId(Path));
 		}
-
-		return GetExtension(Extension);
-	}
-
-	NxEn::Asset* AssetImporter::Run(NxFr::StringId Id, NxFr::StringView File, bool Release)
-	{
-		if (Id.GetId() == 0)
+		else
 		{
-			Id = AssetImporter::TryGetImporterId(File);
+			NxFr::StringId* Type = GetExtensions().TryGet(Extension);
+			return Type ? *Type : NxFr::StringId();
+		}
+	}
+
+	NxFr::StringId AssetImporter::TryGetType(NxFr::GUID Asset)
+	{
+		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		if (!System->IsTracked(Asset))
+		{
+			return NxFr::StringId();
 		}
 
-		NEXUS_ASSERT(Id.GetId(), Default, "Asset importer requires an type id in order to import the asset at path %s", File.C());
-
-		AssetImporter* Importer = GetImporter(Id);
-		return Importer->Run(0, File, Release);
+		NxEn::AssetMetadata& Metadata = System->GetMetadata(Asset);
+		return Metadata.GetType();
 	}
 
-	NxEn::Asset* AssetImporter::Run(NxFr::StringId Id, NxFr::GUID Asset, bool Release)
+#pragma endregion
+
+#pragma region API
+
+	NxEn::Asset* AssetImporter::Run(NxFr::StringView File, NxFr::StringId Type, bool Release)
 	{
-		NEXUS_ASSERT(Id.GetId(), Default, "Asset importer requires an type id in order to reimport the asset %d", Asset);
+		if (Type.GetId() == 0)
+		{
+			Type = AssetImporter::TryGetType(File);
+		}
 
-		AssetImporter* Importer = GetImporter(Id);
-		return Importer->Run(Asset, "", Release);
+		AssetImporter* Importer = TryGetImporter(Type);
+		return AssetImporter::Run(Importer, File, Type, 0, Release);
 	}
 
-	NxEn::Asset* AssetImporter::Run(NxFr::GUID Asset, NxFr::StringView File, bool Release)
+	NxEn::Asset* AssetImporter::Run(NxFr::GUID Asset, bool Release)
+	{
+		AssetImporter* Importer = TryGetImporter(Asset);
+		return AssetImporter::Run(Importer, "", 0, Asset, Release);
+	}
+
+#pragma endregion
+
+#pragma region Pipeline
+
+	NxEn::Asset* AssetImporter::Run(AssetImporter* Importer, NxFr::StringView File, NxFr::StringId Type, NxFr::GUID Asset, bool Release)
 	{
 		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxEn::Asset* Instance = nullptr;
@@ -87,30 +125,40 @@ namespace NxEd
 		bool Exist = System->IsTracked(Asset);
 		Release &= !(Exist && System->IsLoaded(Asset));
 
+		NEXUS_ASSERT(!(!Exist && Type.GetId() == 0), Default, "AssetImporter needs a Type to import a file");
+		NEXUS_ASSERT(!(!Exist && (File.IsEmpty() || !NxFr::Path::HasExtension(File, "") || NxFr::Path::HasExtension(File, NxEn::AssetMetadata::AssetExtension))), Default, "AssetImporter needs a file path with an extension different to the asset extension to import a file");
+		NEXUS_ASSERT(!(Exist && Asset == 0), Default, "AssetImporter needs an Id to reimport an asset");
+
 		if (!Exist)
 		{
-			Instance = Import(System, File, Path, Extension);
+			Instance = Import(Importer, System, File, Type, Path, Extension);
 		}
 		else
 		{
-			Instance = Reimport(System, File, Asset);
+			Instance = Reimport(Importer, System, Asset);
 		}
 
 		return Finalize(System, Instance, Release);
 	}
 
-	NxEn::Asset* AssetImporter::Import(NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::StringView Path, NxFr::StringView Extension)
+	NxEn::Asset* AssetImporter::Import(AssetImporter* Importer, NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		YAML::Node Node = YAML::Node();
-		OnImport(Node, File, false);
+		if (Importer)
+		{
+			Importer->OnImport(Node, File, false);
+		}
 
 		return System->Import(Type, Node, Path, Extension);
 	}
 
-	NxEn::Asset* AssetImporter::Reimport(NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::GUID Asset)
+	NxEn::Asset* AssetImporter::Reimport(AssetImporter* Importer, NxEn::AssetsSystem* System, NxFr::GUID Asset)
 	{
 		YAML::Node Node = System->GetImportData(Asset);
-		OnImport(Node, File, true);
+		if (Importer)
+		{
+			Importer->OnImport(Node, System->GetMetadata(Asset).GetContentPath(), true);
+		}
 
 		return System->Reimport(Asset, Node);
 	}
@@ -126,5 +174,7 @@ namespace NxEd
 
 		return Instance;
 	}
+
+#pragma endregion
 }
 

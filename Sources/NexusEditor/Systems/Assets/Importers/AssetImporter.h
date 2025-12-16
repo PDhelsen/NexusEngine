@@ -7,14 +7,15 @@ namespace NxEd
 	class AssetImporter
 	{
 	public:
-		NEXUS_EDITOR_API static AssetImporter* GetImporter(NxFr::StringId Id);
+		NEXUS_EDITOR_API static AssetImporter* GetImporter(NxFr::StringId Type);
 		NEXUS_EDITOR_API static void SetImporter(AssetImporter* Instance);
-		NEXUS_EDITOR_API static NxFr::StringId GetExtension(NxFr::StringView Extension);
-		NEXUS_EDITOR_API static void SetExtension(NxFr::StringView Extension, NxFr::StringId Id);
-		NEXUS_EDITOR_API static NxFr::StringId TryGetImporterId(NxFr::StringView File);
+		NEXUS_EDITOR_API static NxFr::StringId GetType(NxFr::StringView Extension);
+		NEXUS_EDITOR_API static void SetType(NxFr::StringView Extension, NxFr::StringId Type);
 
-		NEXUS_EDITOR_API static NxEn::Asset* Run(NxFr::StringId Id, NxFr::StringView File, bool Release = false);
-		NEXUS_EDITOR_API static NxEn::Asset* Run(NxFr::StringId Id, NxFr::GUID Asset, bool Release = false);
+		NEXUS_EDITOR_API static AssetImporter* TryGetImporter(NxFr::StringId Type);
+		NEXUS_EDITOR_API static AssetImporter* TryGetImporter(NxFr::GUID Asset);
+		NEXUS_EDITOR_API static NxFr::StringId TryGetType(NxFr::StringView File);
+		NEXUS_EDITOR_API static NxFr::StringId TryGetType(NxFr::GUID Asset);
 
 		template<typename I, typename T>
 		static I* Create(NxFr::InitializerList<NxFr::StringView> Extensions = {});
@@ -23,17 +24,20 @@ namespace NxEd
 		template<typename T>
 		static T* Run(NxFr::GUID Asset, bool Release = false);
 
+		NEXUS_EDITOR_API static NxEn::Asset* Run(NxFr::StringView File, NxFr::StringId Type, bool Release = false);
+		NEXUS_EDITOR_API static NxEn::Asset* Run(NxFr::GUID Asset, bool Release = false);
+
+	private:
+		NEXUS_EDITOR_API static NxEn::Asset* Run(AssetImporter* Importer, NxFr::StringView File, NxFr::StringId Type, NxFr::GUID Asset, bool Release);
+		NEXUS_EDITOR_API static NxEn::Asset* Import(AssetImporter* Importer, NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension);
+		NEXUS_EDITOR_API static NxEn::Asset* Reimport(AssetImporter* Importer, NxEn::AssetsSystem* System, NxFr::GUID Asset);
+		NEXUS_EDITOR_API static NxEn::Asset* Finalize(NxEn::AssetsSystem* System, NxEn::Asset* Instance, bool Release);
+
 	protected:
 		NEXUS_EDITOR_API AssetImporter() = default;
 		NEXUS_EDITOR_API virtual ~AssetImporter() = default;
 
 		NEXUS_EDITOR_API virtual void OnImport(YAML::Node& Node, NxFr::StringView File, bool Reimport) = 0;
-
-	private:
-		NxEn::Asset* Run(NxFr::GUID Asset, NxFr::StringView Path, bool Release);
-		NxEn::Asset* Import(NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::StringView Path, NxFr::StringView Extension);
-		NxEn::Asset* Reimport(NxEn::AssetsSystem* System, NxFr::StringView File, NxFr::GUID Asset);
-		NxEn::Asset* Finalize(NxEn::AssetsSystem* System, NxEn::Asset* Instance, bool Release);
 
 	private:
 		NxFr::StringId Type;
@@ -48,7 +52,7 @@ namespace NxEd
 		SetImporter(Importer);
 		for (auto& Extension : Extensions)
 		{
-			SetExtension(Extension, Importer->Type);
+			SetType(Extension, Importer->Type);
 		}
 
 		return Importer;
@@ -63,6 +67,6 @@ namespace NxEd
 	template<typename T>
 	inline T* AssetImporter::Run(NxFr::GUID Asset, bool ReleaseAfterImport)
 	{
-		return static_cast<T*>(AssetImporter::Run(T::GetClassType(), Asset, ReleaseAfterImport));
+		return static_cast<T*>(AssetImporter::Run(Asset, ReleaseAfterImport));
 	}
 }

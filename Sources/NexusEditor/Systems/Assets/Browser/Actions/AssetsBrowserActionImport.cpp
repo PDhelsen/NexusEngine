@@ -26,7 +26,7 @@ namespace NxEd
 				continue;
 			}
 
-			AssetImporter::Run(AssetImporter::TryGetImporterId(Item->GetPath()), Item->GetPath());
+			AssetImporter::Run(Item->GetPath(), NxFr::StringId());
 			Dirty = true;
 		}
 
