@@ -227,16 +227,16 @@ namespace NxEn
 
 		Menu& Menu::Remove(NxFr::StringView Path)
 		{
-			Item* Instance = nullptr;
+			NxFr::Set<Item*> ToRemove;
 			for (auto& Item : Items)
 			{
-				if (Item.Path == Path)
+				if (NxFr::StringUtility::Contains(Item.Path, Path))
 				{
-					Instance = &Item;
+					ToRemove.Append(&Item);
 				}
 			}
 
-			if (Instance)
+			for (auto Instance : ToRemove)
 			{
 				RemoveItem(*Instance);
 			}
