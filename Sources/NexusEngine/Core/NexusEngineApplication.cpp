@@ -29,6 +29,7 @@ namespace NxEn
 		Systems.CreateSystem<InputSystem>();
 		Systems.CreateSystem<ResourcesSystem>();
 		Systems.CreateSystem<AssetsSystem>();
+		Systems.CreateSystem<WorldSystem>();
 		if (!IsHeadless())
 		{
 			Systems.CreateSystem<WindowSystem>();
@@ -55,6 +56,7 @@ namespace NxEn
 		Systems.DestroySystem<InputSystem>();
 		Systems.DestroySystem<ResourcesSystem>();
 		Systems.DestroySystem<AssetsSystem>();
+		Systems.DestroySystem<WorldSystem>();
 		if (!IsHeadless())
 		{
 			Systems.DestroySystem<WindowSystem>();
@@ -74,6 +76,7 @@ namespace NxEn
 		Bootstrap.AppendSystem<InputSystem>();
 		Bootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, DebugSystem>().AppendDependency<ResourcesSystem, MemorySystem>();
 		Bootstrap.AppendSystem<AssetsSystem>().AppendDependency<AssetsSystem, DebugSystem>().AppendDependency<AssetsSystem, MemorySystem>();
+		Bootstrap.AppendSystem<WorldSystem>().AppendDependency<WorldSystem, DebugSystem>().AppendDependency<WorldSystem, MemorySystem>();
 		if (!IsHeadless())
 		{
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, SettingsSystem>().AppendDependency<InputSystem, WindowSystem>();
@@ -98,8 +101,9 @@ namespace NxEn
 		Unbootstrap.AppendSystem<CommandsSystem>();
 		Unbootstrap.AppendSystem<ResourcesSystem>();
 		Unbootstrap.AppendSystem<AssetsSystem>();
+		Unbootstrap.AppendSystem<WorldSystem>();
 		Unbootstrap.AppendSystem<DebugSystem>();
-		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>().AppendDependency<MemorySystem, ResourcesSystem>().AppendDependency<MemorySystem, AssetsSystem>();
+		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>().AppendDependency<MemorySystem, ResourcesSystem>().AppendDependency<MemorySystem, AssetsSystem>().AppendDependency<MemorySystem, WorldSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
 		if (!IsHeadless())
 		{
@@ -121,6 +125,7 @@ namespace NxEn
 		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 		Ticks.AppendSystem<ResourcesSystem>(Ticker::TickBucket::Engine);
 		Ticks.AppendSystem<AssetsSystem>(Ticker::TickBucket::Engine);
+		Ticks.AppendSystem<WorldSystem>(Ticker::TickBucket::Engine);
 		if (!IsHeadless())
 		{
 			Ticks.AppendSystem<GUISystem>(Ticker::TickBucket::Output);
@@ -128,6 +133,7 @@ namespace NxEn
 		}
 
 		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands });
+		Ticks.AppendTickCallback(NxEn::Ticker::TickBucket::Project, "World Test", &WorldTest);
 	}
 
 	void NexusEngineApplication::ParseCommands()
