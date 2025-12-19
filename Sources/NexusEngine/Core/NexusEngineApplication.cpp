@@ -133,7 +133,6 @@ namespace NxEn
 		}
 
 		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands });
-		Ticks.AppendTickCallback(NxEn::Ticker::TickBucket::Project, "World Test", &WorldTest);
 	}
 
 	void NexusEngineApplication::ParseCommands()
