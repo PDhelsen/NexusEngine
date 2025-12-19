@@ -15,7 +15,7 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionCreate::Execute(const NxFr::Array<NxEn::GameObject*>& Items)
+	void HierarchyActionCreate::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
@@ -24,7 +24,7 @@ namespace NxEd
 		});
 	}
 
-	void HierarchyActionCreate::Create(NxEn::World* World, const NxFr::Array<NxEn::GameObject*>& Items, NxFr::StringView Name) const
+	void HierarchyActionCreate::Create(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::StringView Name) const
 	{
 		for (auto& Item : Items)
 		{
@@ -32,7 +32,7 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyActionCreate::Create(NxEn::World* World, NxEn::GameObject* Item, NxFr::StringView Name) const
+	void HierarchyActionCreate::Create(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::StringView Name) const
 	{
 		World->CreateGameObject(Name, Item);
 	}

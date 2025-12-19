@@ -12,10 +12,10 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyActionRename();
 		NEXUS_EDITOR_API virtual ~HierarchyActionRename();
 
-		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::GameObject*>& Items) override;
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) override;
 
 	private:
-		void Rename(NxEn::World* World, const NxFr::Array<NxEn::GameObject*>& Items, NxFr::StringView Input) const;
-		void Rename(NxEn::World* World, NxEn::GameObject* Item, NxFr::StringView Input) const;
+		void Rename(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::StringView Input) const;
+		void Rename(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::StringView Input) const;
 	};
 }

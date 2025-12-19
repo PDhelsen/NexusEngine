@@ -12,10 +12,10 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyActionCreate();
 		NEXUS_EDITOR_API virtual ~HierarchyActionCreate();
 
-		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::GameObject*>& Items) override;
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) override;
 
 	private:
-		void Create(NxEn::World* World, const NxFr::Array<NxEn::GameObject*>& Items, NxFr::StringView Name) const;
-		void Create(NxEn::World* World, NxEn::GameObject* Item, NxFr::StringView Name) const;
+		void Create(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::StringView Name) const;
+		void Create(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::StringView Name) const;
 	};
 }

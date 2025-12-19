@@ -4,7 +4,7 @@ namespace NxEd
 {
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyItem)
 
-	HierarchyItem::HierarchyItem(NxEn::GameObject* GameObject)
+	HierarchyItem::HierarchyItem(NxFr::Handle<NxEn::GameObject> GameObject)
 		: GameObject(GameObject), ImGuiText(), Selected(false), Expanded(false)
 	{
 	}

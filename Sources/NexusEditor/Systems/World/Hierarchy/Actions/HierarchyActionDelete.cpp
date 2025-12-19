@@ -15,12 +15,12 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionDelete::Execute(const NxFr::Array<NxEn::GameObject*>& Items)
+	void HierarchyActionDelete::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
 	{
 		Delete(Items[0]->GetWorld(), Items);
 	}
 
-	void HierarchyActionDelete::Delete(NxEn::World* World, const NxFr::Array<NxEn::GameObject*>& Items) const
+	void HierarchyActionDelete::Delete(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) const
 	{
 		for (auto& Item : Items)
 		{
@@ -28,7 +28,7 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyActionDelete::Delete(NxEn::World* World, NxEn::GameObject* Item) const
+	void HierarchyActionDelete::Delete(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item) const
 	{
 		World->DestroyGameObject(Item);
 	}

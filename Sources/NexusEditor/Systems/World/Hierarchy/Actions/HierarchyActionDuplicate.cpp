@@ -15,12 +15,12 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionDuplicate::Execute(const NxFr::Array<NxEn::GameObject*>& Items)
+	void HierarchyActionDuplicate::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
 	{
 		Duplicate(Items[0]->GetWorld(), Items);
 	}
 
-	void HierarchyActionDuplicate::Duplicate(NxEn::World* World, const NxFr::Array<NxEn::GameObject*>& Items) const
+	void HierarchyActionDuplicate::Duplicate(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) const
 	{
 		for (auto& Item : Items)
 		{
@@ -28,7 +28,7 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyActionDuplicate::Duplicate(NxEn::World* World, NxEn::GameObject* Item) const
+	void HierarchyActionDuplicate::Duplicate(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item) const
 	{
 		World->DuplicateGameObject(Item);
 	}

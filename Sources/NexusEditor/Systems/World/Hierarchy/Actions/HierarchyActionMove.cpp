@@ -15,12 +15,12 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionMove::Execute(const NxFr::Array<NxEn::GameObject*>& Items)
+	void HierarchyActionMove::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
 	{
 		Move(Items[0]->GetWorld(), Items, Items[0]);
 	}
 
-	void HierarchyActionMove::Move(NxEn::World* World, const NxFr::Array<NxEn::GameObject*>& Items, NxEn::GameObject* Parent) const
+	void HierarchyActionMove::Move(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::Handle<NxEn::GameObject> Parent) const
 	{
 		for (uint64 Index = 1; Index < Items.GetCount(); Index++)
 		{
@@ -28,7 +28,7 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyActionMove::Move(NxEn::World* World, NxEn::GameObject* Item, NxEn::GameObject* Parent) const
+	void HierarchyActionMove::Move(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::Handle<NxEn::GameObject> Parent) const
 	{
 		World->AttachGameObject(Item, Parent);
 	}

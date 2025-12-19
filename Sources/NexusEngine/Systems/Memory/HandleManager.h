@@ -25,12 +25,12 @@ namespace NxEn
 		template<typename T>
 		void UpdateHandle(NxFr::Handle<T>& Handle, T* Pointer)
 		{
-			GetHandlesManager(Handle).UpdateHandle(Handle, Pointer);
+			GetHandlesManager(Handle)->UpdateHandle(Handle, Pointer);
 		}
 		template<typename T>
 		void* ReleaseHandle(NxFr::Handle<T>& Handle)
 		{
-			GetHandlesManager(Handle).ReleaseHandle(Handle);
+			GetHandlesManager(Handle)->ReleaseHandle(Handle);
 		}
 		template<typename T>
 		NxFr::Handle<T> FindHandle(T* Pointer)

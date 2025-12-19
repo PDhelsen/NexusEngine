@@ -17,7 +17,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API bool operator<=(const HierarchyAction& Other);
 
-		NEXUS_EDITOR_API virtual void Execute(const NxFr::Array<NxEn::GameObject*>& Instances) = 0;
+		NEXUS_EDITOR_API virtual void Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Instances) = 0;
 
 		NEXUS_EDITOR_API NxFr::StringView GetLabel() const { return Label; }
 		NEXUS_EDITOR_API int64 GetPriority() const { return Priority; }

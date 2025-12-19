@@ -12,10 +12,10 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyActionMove();
 		NEXUS_EDITOR_API virtual ~HierarchyActionMove();
 
-		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::GameObject*>& Items) override;
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) override;
 
 	private:
-		void Move(NxEn::World* World, const NxFr::Array<NxEn::GameObject*>& Items, NxEn::GameObject* Parent) const;
-		void Move(NxEn::World* World, NxEn::GameObject* Item, NxEn::GameObject* Parent) const;
+		void Move(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::Handle<NxEn::GameObject> Parent) const;
+		void Move(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::Handle<NxEn::GameObject> Parent) const;
 	};
 }

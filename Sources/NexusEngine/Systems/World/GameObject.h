@@ -11,21 +11,21 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GameObject)
 
-		NEXUS_ENGINE_API GameObject(NxFr::StringId WorldId, NxFr::StringView Name);
+		NEXUS_ENGINE_API GameObject(NxFr::StringId WorldId);
 		NEXUS_ENGINE_API ~GameObject();
 
 		NEXUS_ENGINE_API World* GetWorld() const;
-		NEXUS_ENGINE_API GameObject* GetParent() const;
-		NEXUS_ENGINE_API GameObject* GetPrevious() const;
-		NEXUS_ENGINE_API GameObject* GetNext() const;
-		NEXUS_ENGINE_API GameObject* GetSibling() const;
-		NEXUS_ENGINE_API GameObject* GetChild() const;
-		NEXUS_ENGINE_API GameObject* GetSibling(uint64 Index) const;
-		NEXUS_ENGINE_API GameObject* GetChild(uint64 Index) const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetParent() const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetPrevious() const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetNext() const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetSibling() const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetChild() const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetSibling(uint64 Index) const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetChild(uint64 Index) const;
 		NEXUS_ENGINE_API uint64 GetSiblingCount() const;
 		NEXUS_ENGINE_API uint64 GetChildCount(bool Recursive = false) const;
 
-		NEXUS_ENGINE_API GameObject* GetIterator() const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetIterator() const;
 		NEXUS_ENGINE_API uint64 GetOrderIndex() const;
 
 		NEXUS_ENGINE_API void SetName(NxFr::StringView Name) { this->Name = Name; };
@@ -38,13 +38,14 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
-		NxFr::GUID Id;
 		NxFr::StringId WorldId;
+		NxFr::GUID Id;
+
 		NxFr::String Name;
 
-		GameObject* Parent;
-		GameObject* Prev;
-		GameObject* Next;
-		GameObject* Child;
+		NxFr::Handle<GameObject> Parent;
+		NxFr::Handle<GameObject> Prev;
+		NxFr::Handle<GameObject> Next;
+		NxFr::Handle<GameObject> Child;
 	};
 }

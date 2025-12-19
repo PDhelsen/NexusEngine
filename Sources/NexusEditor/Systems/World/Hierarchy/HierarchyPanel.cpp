@@ -42,7 +42,7 @@ namespace NxEd
 		FetchItems();
 	}
 
-	void HierarchyPanel::SelectGameObject(NxEn::GameObject* Target)
+	void HierarchyPanel::SelectGameObject(NxFr::Handle<NxEn::GameObject> Target)
 	{
 		if (!GetWorld()->Belong(Target))
 		{
@@ -122,7 +122,7 @@ namespace NxEd
 		ImGui::EndMenuBar();
 	}
 
-	void HierarchyPanel::DrawItem(NxEn::GameObject* Instance)
+	void HierarchyPanel::DrawItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		if (!Instance)
 		{
@@ -187,7 +187,7 @@ namespace NxEd
 		DrawItem(Item.GameObject->GetNext());
 	}
 
-	void HierarchyPanel::DrawContext(NxEn::GameObject* Instance)
+	void HierarchyPanel::DrawContext(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		if (!Instance)
 		{
@@ -209,7 +209,7 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyPanel::SelectItem(NxEn::GameObject* Instance)
+	void HierarchyPanel::SelectItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
 		{
@@ -225,7 +225,7 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyPanel::OpenContext(NxEn::GameObject* Instance)
+	void HierarchyPanel::OpenContext(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		ImGui::OpenPopup(Items[Instance].GetImGuiText().C());
 	}
@@ -233,7 +233,7 @@ namespace NxEd
 	void HierarchyPanel::ClearItems()
 	{
 		Selection.Clear();
-		Selected = nullptr;
+		Selected = NxFr::Handle<NxEn::GameObject>();
 		Filtered.Clear();
 		Filter.Clear();
 
@@ -245,18 +245,20 @@ namespace NxEd
 		NxEn::World* World = GetWorld();
 		Items.Reserve(World->GetObjectCount());
 
-		for (auto& Instance : World->GetObjects())
+		NxFr::Handle<NxEn::GameObject> Iterator = GetWorld()->GetRoot();
+		while (Iterator)
 		{
-			AddItem(&Instance);
+			AddItem(Iterator);
+			Iterator = Iterator->GetIterator();
 		}
 	}
 
-	void HierarchyPanel::AddItem(NxEn::GameObject* Instance)
+	void HierarchyPanel::AddItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		Items.Append(Instance, Instance);
 	}
 
-	void HierarchyPanel::RemoveItem(NxEn::GameObject* Instance)
+	void HierarchyPanel::RemoveItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		Items.Remove(Instance);
 		if (Selection.Contains(Instance))
@@ -277,7 +279,7 @@ namespace NxEd
 			return;
 		}
 
-		NxEn::GameObject* GameObject = World->GetGameObject(GameObjectId);
+		NxFr::Handle<NxEn::GameObject> GameObject = World->GetGameObject(GameObjectId);
 		if  (EventId == NxEn::WorldSystem::AppendedId)
 		{
 			AddItem(GameObject);
@@ -296,7 +298,7 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::Array<NxEn::GameObject*> Result = GetWorld()->Find(Filter);
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> Result = GetWorld()->Find(Filter);
 		for (auto Instance : Result)
 		{
 			Show(Instance);
@@ -304,7 +306,7 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyPanel::Select(NxEn::GameObject* Instance, bool Additive, bool List)
+	void HierarchyPanel::Select(NxFr::Handle<NxEn::GameObject> Instance, bool Additive, bool List)
 	{
 		if (!Instance || !Additive)
 		{
@@ -314,7 +316,7 @@ namespace NxEd
 			}
 
 			Selection.Clear();
-			Selected = nullptr;
+			Selected = NxFr::Handle<NxEn::GameObject>();
 		}
 
 		if (!Instance)
@@ -330,8 +332,8 @@ namespace NxEd
 		{
 			uint64 P1 = Instance->GetOrderIndex();
 			uint64 P2 = Selected->GetOrderIndex();
-			NxEn::GameObject* I1 = P1 < P2 ? Instance : Selected;
-			NxEn::GameObject* I2 = P1 >= P2 ? Instance : Selected;
+			NxFr::Handle<NxEn::GameObject> I1 = P1 < P2 ? Instance : Selected;
+			NxFr::Handle<NxEn::GameObject> I2 = P1 >= P2 ? Instance : Selected;
 			while (I1 && I1 != I2)
 			{
 				if (IsVisible(I1))
@@ -356,9 +358,9 @@ namespace NxEd
 		Selection.Append(Selected);
 	}
 
-	void HierarchyPanel::Show(NxEn::GameObject* Instance)
+	void HierarchyPanel::Show(NxFr::Handle<NxEn::GameObject> Instance)
 	{
-		NxEn::GameObject* Parent = Instance->GetParent();
+		NxFr::Handle<NxEn::GameObject> Parent = Instance->GetParent();
 		while (Parent)
 		{
 			Items[Parent].Expanded = true;
@@ -366,10 +368,10 @@ namespace NxEd
 		}
 	}
 
-	bool HierarchyPanel::IsVisible(NxEn::GameObject* Instance)
+	bool HierarchyPanel::IsVisible(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		bool Visible = true;
-		NxEn::GameObject* Parent = Instance->GetParent();
+		NxFr::Handle<NxEn::GameObject> Parent = Instance->GetParent();
 
 		while (Parent)
 		{
@@ -387,15 +389,20 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::Array<NxEn::GameObject*> ActionItems = GatherActionItems(ActionRequested);
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> ActionItems = GatherActionItems(ActionRequested);
 		ActionRequested->Execute(ActionItems);
 
 		ActionRequested = nullptr;
 	}
 
-	NxFr::Array<NxEn::GameObject*> HierarchyPanel::GatherActionItems(HierarchyAction* Action)
+	static bool operator<=(const NxFr::Handle<NxEn::GameObject>& A, const NxFr::Handle<NxEn::GameObject>& B)
 	{
-		NxFr::Set<NxEn::GameObject*> Result = Selection;
+		return A->GetOrderIndex() < B->GetOrderIndex();
+	}
+
+	NxFr::Array<NxFr::Handle<NxEn::GameObject>> HierarchyPanel::GatherActionItems(HierarchyAction* Action)
+	{
+		NxFr::Set<NxFr::Handle<NxEn::GameObject>> Result = Selection;
 
 		if (Action->IsRecursive())
 		{
@@ -410,20 +417,20 @@ namespace NxEd
 			Result.Remove(Selected);
 		}
 
-		NxFr::List<NxEn::GameObject*> Items;
+		NxFr::List<NxFr::Handle<NxEn::GameObject>> Items;
 		Items.AppendRange(Result);
-		Items.Sort([](NxEn::GameObject* A, NxEn::GameObject* B) { return A->GetOrderIndex() < B->GetOrderIndex(); });
+		Items.Sort();
 		if (Action->IsLastSelectedFirst())
 		{
 			Items.Insert(0, Selected);
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxEn::GameObject*>(Items);
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<NxEn::GameObject>>(Items);
 	}
 
-	void HierarchyPanel::GatherChildren(NxEn::GameObject* Item, NxFr::Set<NxEn::GameObject*>& Result)
+	void HierarchyPanel::GatherChildren(NxFr::Handle<NxEn::GameObject> Item, NxFr::Set<NxFr::Handle<NxEn::GameObject>>& Result)
 	{
-		if (Item == nullptr)
+		if (!Item)
 		{
 			return;
 		}

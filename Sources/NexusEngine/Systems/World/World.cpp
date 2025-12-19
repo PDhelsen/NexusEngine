@@ -6,7 +6,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
 	World::World(NxFr::StringId Id)
-		: Id(Id), Name(Id.GetString()), Objects(256), Root(nullptr)
+		: Id(Id), Name(Id.GetString()), Objects(), Root(), Infos(), Availables(), Handles(1024)
 	{
 		SetTickable(true);
 	}
@@ -15,17 +15,17 @@ namespace NxEn
 	{
 	}
 
-	GameObject* World::GetGameObject(NxFr::GUID Id)
+	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID Id)
 	{
-		uint64* Index = Ids.TryGet(Id);
-		return Index ? &Objects[*Index] : nullptr;
+		Info* Info = Infos.TryGet(Id);
+		return Info ? Info->Handle : NxFr::Handle<GameObject>();
 	}
 
-	GameObject* World::CreateGameObject(NxFr::StringView Name, GameObject* Parent)
+	NxFr::Handle<GameObject> World::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent)
 	{
-		GameObject* Instance = &Objects.AppendConstruct(Id, Name);
-		Ids.Append(Instance->GetId(), Objects.GetCount() - 1);
+		NxFr::Handle<GameObject> Instance = Allocate();
 		Instance->Initialize();
+		Instance->SetName(Name);
 
 		if (!Parent && Root)
 		{
@@ -40,15 +40,15 @@ namespace NxEn
 		return Instance;
 	}
 
-	GameObject* World::DuplicateGameObject(GameObject* Instance, GameObject* Parent)
+	NxFr::Handle<GameObject> World::DuplicateGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent)
 	{
-		if (Parent == nullptr)
+		if (!Parent)
 		{
 			Parent = Instance->GetParent();
 		}
 
-		GameObject* Copy = CreateGameObject(Instance->GetName(), Parent);
-		GameObject* Child = Instance->GetChild();
+		NxFr::Handle<GameObject> Copy = CreateGameObject(Instance->GetName(), Parent);
+		NxFr::Handle<GameObject> Child = Instance->GetChild();
 		while (Child)
 		{
 			DuplicateGameObject(Child, Copy);
@@ -58,7 +58,7 @@ namespace NxEn
 		return Copy;
 	}
 
-	void World::DestroyGameObject(GameObject* Instance)
+	void World::DestroyGameObject(NxFr::Handle<GameObject> Instance)
 	{
 		if (!Instance)
 		{
@@ -69,9 +69,10 @@ namespace NxEn
 
 		Detach(Instance);
 		Instance->Shutdown();
+		Free(Instance);
 	}
 
-	void World::AttachGameObject(GameObject* Instance, GameObject* Target, int64 Index)
+	void World::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
 	{
 		if (!Target)
 		{
@@ -88,14 +89,14 @@ namespace NxEn
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::ChangedId, Id, Instance->GetId());
 	}
 
-	bool World::Belong(GameObject* Instance)
+	bool World::Belong(NxFr::Handle<GameObject> Instance)
 	{
 		return Instance->WorldId == Id;
 	}
 
-	NxFr::Array<GameObject*> World::Find(NxFr::StringView Filter)
+	NxFr::Array<NxFr::Handle<GameObject>> World::Find(NxFr::StringView Filter)
 	{
-		NxFr::List<GameObject*> Result;
+		NxFr::List<NxFr::Handle<GameObject>> Result;
 
 		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
 		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
@@ -125,11 +126,11 @@ namespace NxEn
 
 			if (All || MatchId || MatchString)
 			{
-				Result.Append(&Instance);
+				Result.Append(Infos[Instance.GetId()].Handle);
 			}
 		}
 
-		return NxFr::ContainersUtils::ToArray<GameObject*>(Result);
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
 	void World::OnInitialize()
@@ -150,7 +151,52 @@ namespace NxEn
 		}
 	}
 
-	void World::Attach(GameObject* Instance, GameObject* Parent, uint64 Index)
+	NxFr::Handle<GameObject> World::Allocate()
+	{
+		GameObject* Instance = nullptr;
+		NxFr::GUID GameObjectId = NxFr::Integer::GenerateGuid();
+		uint64 Index = 0;
+
+		if (Availables.IsEmpty())
+		{
+			if (Objects.GetCount() >= Objects.GetCapacity())
+			{
+				Objects.Reserve(Objects.GetCapacity() * 2);
+				for (auto& [Id, Info] : Infos)
+				{
+					Handles.UpdateHandle(Info.Handle, &Objects[Info.Index]);
+				}
+			}
+
+			Index = Objects.GetCount();
+			Instance = &Objects.AppendConstruct(Id);
+		}
+		else
+		{
+			Index = Availables.Get();
+			Instance = &Objects[Index];
+
+			Availables.Remove();
+		}
+
+		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
+		Infos.Append(GameObjectId, Info{ .Index = Index , .Handle = Handle });
+		Instance->Id = GameObjectId;
+
+		return Handle;
+	}
+
+	void World::Free(NxFr::Handle<GameObject> Instance)
+	{
+		NxFr::GUID GameObjectId = Instance->GetId();
+
+		Info Info = Infos[GameObjectId];
+		Infos.Remove(GameObjectId);
+
+		Availables.Append(Info.Index);
+	}
+
+	void World::Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index)
 	{
 		Instance->Parent = Parent;
 
@@ -160,7 +206,7 @@ namespace NxEn
 		}
 		else
 		{
-			GameObject* Target = Parent->Child;
+			NxFr::Handle<GameObject> Target = Parent->Child;
 			while (Target->Next && Index > 0)
 			{
 				Index--;
@@ -185,7 +231,7 @@ namespace NxEn
 		}
 	}
 
-	void World::Detach(GameObject* Instance)
+	void World::Detach(NxFr::Handle<GameObject> Instance)
 	{
 		if (Instance->Parent && Instance->Parent->Child == Instance)
 		{
@@ -200,8 +246,8 @@ namespace NxEn
 			Instance->Next->Prev = Instance->Prev;
 		}
 
-		Instance->Parent = nullptr;
-		Instance->Prev = nullptr;
-		Instance->Next = nullptr;
+		Instance->Parent = NxFr::Handle<GameObject>();
+		Instance->Prev = NxFr::Handle<GameObject>();
+		Instance->Next = NxFr::Handle<GameObject>();
 	}
 }

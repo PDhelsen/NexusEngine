@@ -13,7 +13,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Refresh();
 		NEXUS_EDITOR_API void SelectWorld(NxFr::StringId Id);
-		NEXUS_EDITOR_API void SelectGameObject(NxEn::GameObject* Target);
+		NEXUS_EDITOR_API void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
 
 		template<typename T>
 		void AppendAction();
@@ -29,25 +29,25 @@ namespace NxEd
 
 	private:
 		void DrawHeader(float TimeStep);
-		void DrawItem(NxEn::GameObject* Instance);
-		void DrawContext(NxEn::GameObject* Instance);
-		void SelectItem(NxEn::GameObject* Instance);
-		void OpenContext(NxEn::GameObject* Instance);
+		void DrawItem(NxFr::Handle<NxEn::GameObject> Instance);
+		void DrawContext(NxFr::Handle<NxEn::GameObject> Instance);
+		void SelectItem(NxFr::Handle<NxEn::GameObject> Instance);
+		void OpenContext(NxFr::Handle<NxEn::GameObject> Instance);
 
 		void ClearItems();
 		void FetchItems();
-		void AddItem(NxEn::GameObject* Instance);
-		void RemoveItem(NxEn::GameObject* Instance);
+		void AddItem(NxFr::Handle<NxEn::GameObject> Instance);
+		void RemoveItem(NxFr::Handle<NxEn::GameObject> Instance);
 		void OnGameObjectChanged(NxFr::StringId EventId, NxFr::StringId WorldId, NxFr::GUID GameObjectId);
 
 		void Find();
-		void Select(NxEn::GameObject* Instance, bool Additive = false, bool List = false);
-		void Show(NxEn::GameObject* Instance);
-		bool IsVisible(NxEn::GameObject* Instance);
+		void Select(NxFr::Handle<NxEn::GameObject> Instance, bool Additive = false, bool List = false);
+		void Show(NxFr::Handle<NxEn::GameObject> Instance);
+		bool IsVisible(NxFr::Handle<NxEn::GameObject> Instance);
 
 		void ProcessAction();
-		NxFr::Array<NxEn::GameObject*> GatherActionItems(HierarchyAction* Action);
-		void GatherChildren(NxEn::GameObject* Instance, NxFr::Set<NxEn::GameObject*>& Result);
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GatherActionItems(HierarchyAction* Action);
+		void GatherChildren(NxFr::Handle<NxEn::GameObject> Instance, NxFr::Set<NxFr::Handle<NxEn::GameObject>>& Result);
 		void SortActions();
 
 		NxEn::World* GetWorld() { return Worlds->GetWorld(WorldsIds[WorldIndex]); }
@@ -63,12 +63,12 @@ namespace NxEd
 		NxFr::Array<NxFr::StringId> WorldsIds;
 		uint64 WorldIndex;
 
-		NxFr::Dictionary<NxEn::GameObject*, HierarchyItem> Items;
+		NxFr::Dictionary<NxFr::Handle<NxEn::GameObject>, HierarchyItem> Items;
 
-		NxFr::Set<NxEn::GameObject*> Selection;
-		NxEn::GameObject* Selected;
+		NxFr::Set<NxFr::Handle<NxEn::GameObject>> Selection;
+		NxFr::Handle<NxEn::GameObject> Selected;
 
-		NxFr::Set<NxEn::GameObject*> Filtered;
+		NxFr::Set<NxFr::Handle<NxEn::GameObject>> Filtered;
 		NxFr::String Filter;
 
 		NxFr::List<HierarchyAction*> Actions;

@@ -5,9 +5,9 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
 
-	GameObject::GameObject(NxFr::StringId WorldId, NxFr::StringView Name)
-		: Id(NxFr::Integer::GenerateGuid()), WorldId(WorldId), Name(Name),
-		Parent(nullptr), Prev(nullptr), Next(nullptr), Child(nullptr)
+	GameObject::GameObject(NxFr::StringId WorldId)
+		: Id(0), WorldId(WorldId), Name(""),
+		Parent(), Prev(), Next(), Child()
 	{
 		SetTickable(true);
 	}
@@ -21,34 +21,34 @@ namespace NxEn
 		return Application::GetSystem<WorldSystem>()->GetWorld(WorldId);
 	}
 
-	GameObject* GameObject::GetParent() const
+	NxFr::Handle<GameObject> GameObject::GetParent() const
 	{
 		return Parent;
 	}
 
-	GameObject* GameObject::GetPrevious() const
+	NxFr::Handle<GameObject> GameObject::GetPrevious() const
 	{
 		return Prev;
 	}
 
-	GameObject* GameObject::GetNext() const
+	NxFr::Handle<GameObject> GameObject::GetNext() const
 	{
 		return Next;
 	}
 
-	GameObject* GameObject::GetSibling() const
+	NxFr::Handle<GameObject> GameObject::GetSibling() const
 	{
 		return Parent->Child;
 	}
 
-	GameObject* GameObject::GetChild() const
+	NxFr::Handle<GameObject> GameObject::GetChild() const
 	{
 		return Child;
 	}
 
-	GameObject* GameObject::GetSibling(uint64 Index) const
+	NxFr::Handle<GameObject> GameObject::GetSibling(uint64 Index) const
 	{
-		GameObject* Target = GetSibling();
+		NxFr::Handle<GameObject> Target = GetSibling();
 
 		while (Target && Index > 0)
 		{
@@ -59,15 +59,15 @@ namespace NxEn
 		if (!Target || Index > 0)
 		{
 			NEXUS_LOG(Error, System, "Failed to find requested child on GameObject %s", Name.C());
-			return nullptr;
+			return NxFr::Handle<GameObject>();
 		}
 
 		return Target;
 	}
 
-	GameObject* GameObject::GetChild(uint64 Index) const
+	NxFr::Handle<GameObject> GameObject::GetChild(uint64 Index) const
 	{
-		GameObject* Target = GetChild();
+		NxFr::Handle<GameObject> Target = GetChild();
 
 		while (Target && Index > 0)
 		{
@@ -78,7 +78,7 @@ namespace NxEn
 		if (!Target || Index > 0)
 		{
 			NEXUS_LOG(Error, System, "Failed to find requested child on GameObject %s", Name.C());
-			return nullptr;
+			return NxFr::Handle<GameObject>();
 		}
 
 		return Target;
@@ -88,7 +88,7 @@ namespace NxEn
 	{
 		uint64 Count = 0;
 
-		GameObject* Instance = GetSibling();
+		NxFr::Handle<GameObject> Instance = GetSibling();
 		while (Instance)
 		{
 			Count++;
@@ -102,7 +102,7 @@ namespace NxEn
 	{
 		uint64 Count = 0;
 
-		GameObject* Instance = GetChild();
+		NxFr::Handle<GameObject> Instance = GetChild();
 		while (Instance)
 		{
 			Count++;
@@ -117,7 +117,7 @@ namespace NxEn
 		return Count;
 	}
 
-	GameObject* GameObject::GetIterator() const
+	NxFr::Handle<GameObject> GameObject::GetIterator() const
 	{
 		if (Child)
 		{
@@ -129,7 +129,7 @@ namespace NxEn
 			return Next;
 		}
 
-		GameObject* Iterator = Parent;
+		NxFr::Handle<GameObject> Iterator = Parent;
 		while (Iterator && !Iterator->Next)
 		{
 			Iterator = Iterator->Parent;
@@ -140,15 +140,15 @@ namespace NxEn
 			return Iterator->Next;
 		}
 
-		return nullptr;
+		return NxFr::Handle<GameObject>();
 	}
 
 	uint64 GameObject::GetOrderIndex() const
 	{
 		uint64 Order = 0;
 
-		GameObject* Iterator = GetWorld()->GetRoot();
-		while (Iterator != this)
+		NxFr::Handle<GameObject> Iterator = GetWorld()->GetRoot();
+		while (Iterator && Iterator.GetRedirectedPointer() != this)
 		{
 			Order++;
 			Iterator = Iterator->GetIterator();
@@ -159,6 +159,12 @@ namespace NxEn
 
 	void GameObject::OnInitialize()
 	{
+		Name = "";
+
+		Parent = NxFr::Handle<GameObject>();
+		Prev = NxFr::Handle<GameObject>();
+		Next = NxFr::Handle<GameObject>();
+		Child = NxFr::Handle<GameObject>();
 	}
 
 	void GameObject::OnShutdown()

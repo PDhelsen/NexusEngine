@@ -11,10 +11,10 @@ namespace NxEd
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyItem)
 
-		NEXUS_EDITOR_API HierarchyItem(NxEn::GameObject* GameObject);
+		NEXUS_EDITOR_API HierarchyItem(NxFr::Handle<NxEn::GameObject> GameObject);
 		NEXUS_EDITOR_API virtual ~HierarchyItem();
 
-		NEXUS_EDITOR_API NxEn::GameObject* GetGameObject() { return GameObject; }
+		NEXUS_EDITOR_API NxFr::Handle<NxEn::GameObject> GetGameObject() { return GameObject; }
 		NEXUS_EDITOR_API NxFr::StringView GetImGuiText() { EnsureImGuiText(); return ImGuiText; }
 		NEXUS_EDITOR_API bool IsOpen() const { return Expanded; }
 		NEXUS_EDITOR_API bool IsSelected() const { return Selected; }
@@ -23,7 +23,7 @@ namespace NxEd
 		void EnsureImGuiText();
 
 	private:
-		NxEn::GameObject* GameObject;
+		NxFr::Handle<NxEn::GameObject> GameObject;
 		NxFr::String ImGuiText;
 		bool Expanded;
 		bool Selected;
