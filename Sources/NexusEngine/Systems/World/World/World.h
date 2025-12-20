@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
-#include "NexusEngine/Systems/World/GameObject.h"
+#include "NexusEngine/Systems/World/World/GameObject.h"
 
 namespace NxEn
 {

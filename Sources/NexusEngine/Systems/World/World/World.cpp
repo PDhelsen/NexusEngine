@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/World/World.h"
+#include "NexusEngine/Systems/World/World/World.h"
 
 namespace NxEn
 {
