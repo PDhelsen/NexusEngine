@@ -5,36 +5,48 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(WorldSystem)
 
-	World* WorldSystem::CreateWorld(NxFr::StringId Id)
+	WorldSystem::WorldSystem()
+		: OnWorldEvent(), OnGameObjectEvent(), Worlds()
 	{
-		if (Worlds.ContainsKey(Id))
+	}
+
+	WorldSystem::~WorldSystem()
+	{
+	}
+
+	World* WorldSystem::CreateWorld(NxFr::GUID WorldId, NxFr::StringView Name)
+	{
+		if (Worlds.ContainsKey(WorldId))
 		{
-			NEXUS_LOG(Warning, System, "World %s already exist", Id.C());
-			return GetWorld(Id);
+			NEXUS_LOG(Warning, System, "World %d already exist", WorldId);
+			return GetWorld(WorldId);
 		}
 
-		World* Instance = Worlds.Append(Id, new World(Id));
+		World* Instance = new World(WorldId);
 		Instance->Initialize();
+		Instance->SetName(Name);
+		Worlds.Append(WorldId, Instance);
 
-		GetOnWorldEvent().Invoke(AppendedId, Id);
+		GetOnWorldEvent().Invoke(AppendedId, WorldId);
+
 		return Instance;
 	}
 
-	World* WorldSystem::GetWorld(NxFr::StringId Id)
+	World* WorldSystem::GetWorld(NxFr::GUID WorldId)
 	{
-		World** Instance = Worlds.TryGet(Id);
+		World** Instance = Worlds.TryGet(WorldId);
 		if (!Instance)
 		{
-			NEXUS_LOG(Error, System, "World %s doesn't exist", Id.C());
+			NEXUS_LOG(Error, System, "World %d doesn't exist", WorldId);
 			return nullptr;
 		}
 
 		return *Instance;
 	}
 
-	NxFr::Array<NxFr::StringId> WorldSystem::GetWorlds()
+	NxFr::Array<NxFr::GUID> WorldSystem::GetWorlds()
 	{
-		NxFr::Array<NxFr::StringId> Result(Worlds.GetCount());
+		NxFr::Array<NxFr::GUID> Result(Worlds.GetCount());
 		uint64 Index = 0;
 
 		for (auto& [Id, Instance] : Worlds)
@@ -45,31 +57,32 @@ namespace NxEn
 		return Result;
 	}
 
-	void WorldSystem::DestroyWorld(NxFr::StringId Id)
+	void WorldSystem::DestroyWorld(NxFr::GUID WorldId)
 	{
-		if (Worlds.ContainsKey(Id))
+		if (Worlds.ContainsKey(WorldId))
 		{
-			NEXUS_LOG(Warning, System, "World %s doesn't exist", Id.C());
+			NEXUS_LOG(Warning, System, "World %d doesn't exist", WorldId);
 			return;
 		}
 
-		GetOnWorldEvent().Invoke(RemovedId, Id);
+		GetOnWorldEvent().Invoke(RemovedId, WorldId);
 
-		World* Instance = Worlds[Id];
+		World* Instance = Worlds[WorldId];
+		Worlds.Remove(WorldId);
 		Instance->Shutdown();
-		Worlds.Remove(Id);
+		delete Instance;
 	}
 
 	void WorldSystem::OnInitialize()
 	{
 		System::OnInitialize();
 
-		CreateWorld(MainId);
+		CreateWorld(WorldId, WorldId);
 	}
 
 	void WorldSystem::OnShutdown()
 	{
-		DestroyWorld(MainId);
+		DestroyWorld(WorldId);
 
 		System::OnShutdown();
 	}

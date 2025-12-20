@@ -25,13 +25,13 @@ namespace NxEd
 
 		for (uint64 Index = 0; Index < WorldsIds.GetCount(); ++Index)
 		{
-			Labels[Index] = WorldsIds[Index];
+			Labels[Index] = Worlds->GetWorld(WorldsIds[Index])->GetName();
 		}
 
 		Menu.Remove("Worlds/");
 		Menu.AddMenuEnum("Worlds", &WorldIndex, Labels, [&]() { SelectWorld(WorldsIds[WorldIndex]); }, 1);
 
-		SelectWorld(NxEn::WorldSystem::MainId);
+		SelectWorld(NxEn::WorldSystem::WorldId);
 	}
 
 	void HierarchyPanel::SelectWorld(NxFr::StringId Id)
@@ -103,7 +103,7 @@ namespace NxEd
 	void HierarchyPanel::OnGui(float TimeStep)
 	{
 		DrawHeader(TimeStep);
-		DrawItem(GetWorld()->GetRoot());
+		DrawItem(GetWorld()->GetRootGameObject());
 
 		ProcessAction();
 	}
@@ -243,9 +243,9 @@ namespace NxEd
 	void HierarchyPanel::FetchItems()
 	{
 		NxEn::World* World = GetWorld();
-		Items.Reserve(World->GetObjectCount());
+		Items.Reserve(World->GetGameObjectsCount());
 
-		NxFr::Handle<NxEn::GameObject> Iterator = GetWorld()->GetRoot();
+		NxFr::Handle<NxEn::GameObject> Iterator = GetWorld()->GetRootGameObject();
 		while (Iterator)
 		{
 			AddItem(Iterator);
@@ -280,13 +280,20 @@ namespace NxEd
 		}
 
 		NxFr::Handle<NxEn::GameObject> GameObject = World->GetGameObject(GameObjectId);
-		if  (EventId == NxEn::WorldSystem::AppendedId)
+		if (EventId == NxEn::WorldSystem::AppendedId)
 		{
 			AddItem(GameObject);
 		}
 		else if (EventId == NxEn::WorldSystem::RemovedId)
 		{
 			RemoveItem(GameObject);
+		}
+
+		NxFr::Handle<NxEn::GameObject> Child = GameObject->GetChild();
+		while (Child)
+		{
+			OnGameObjectChanged(EventId, WorldId, Child->GetGameObjectId());
+			Child = Child->GetNext();
 		}
 	}
 

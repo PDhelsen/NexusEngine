@@ -60,7 +60,7 @@ namespace NxEd
 		NxEn::WorldSystem* Worlds;
 		NxEn::InputSystem* Inputs;
 
-		NxFr::Array<NxFr::StringId> WorldsIds;
+		NxFr::Array<NxFr::GUID> WorldsIds;
 		uint64 WorldIndex;
 
 		NxFr::Dictionary<NxFr::Handle<NxEn::GameObject>, HierarchyItem> Items;

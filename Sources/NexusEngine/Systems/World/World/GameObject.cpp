@@ -5,8 +5,8 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
 
-	GameObject::GameObject(NxFr::StringId WorldId)
-		: Id(0), WorldId(WorldId), Name(""),
+	GameObject::GameObject(NxFr::GUID WorldId)
+		: WorldId(WorldId), GameObjectId(0), Name(""),
 		Parent(), Prev(), Next(), Child()
 	{
 		SetTickable(true);
@@ -147,7 +147,7 @@ namespace NxEn
 	{
 		uint64 Order = 0;
 
-		NxFr::Handle<GameObject> Iterator = GetWorld()->GetRoot();
+		NxFr::Handle<GameObject> Iterator = GetWorld()->GetRootGameObject();
 		while (Iterator && Iterator.GetRedirectedPointer() != this)
 		{
 			Order++;
