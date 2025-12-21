@@ -100,22 +100,6 @@ namespace NxEn
 
 	void Prefab::OnUnload()
 	{
-		NxFr::Delegate<void(NxFr::Handle<GameObject>)> Unload = [&](NxFr::Handle<GameObject> Instance)
-		{
-			if (!Instance)
-			{
-				return;
-			}
-
-			NxFr::Handle<GameObject> InstanceChild = Instance->GetChild();
-			while (InstanceChild)
-			{
-				Unload(InstanceChild);
-			}
-
-			Factory.DestroyGameObject(Instance);
-		};
-
-		Unload(Root);
+		Factory.DestroyGameObject(Root);
 	}
 }
