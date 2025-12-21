@@ -3,10 +3,19 @@
 
 namespace NxEn
 {
+
+	const static NxEn::Command CmdWorldInstantiate = NxEn::Command::Create("World.Instantiate"_Sid, "Instantiate into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
+		NxFr::GUID Id = System->PathToId(Path);
+		Prefab* Instance = System->Acquire<Prefab>(Id);
+		Application::GetSystem<WorldSystem>()->GetWorld()->Instantiate(*Instance);
+	}));
+
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
 	World::World(NxFr::GUID WorldId)
-		: WorldId(WorldId), Factory(WorldId)
+		: WorldId(WorldId), Name(), Factory(WorldId), Root()
 	{
 		SetTickable(true);
 	}
@@ -15,20 +24,45 @@ namespace NxEn
 	{
 	}
 
-	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID GameObjectId)
+	NxFr::Handle<GameObject> World::Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent)
 	{
-		return Factory.GetGameObject(GameObjectId);
+		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
+
+		if (!Parent && Root)
+		{
+			Parent = Root;
+		}
+
+		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target.GetRoot(), Parent);
+		Instance->ReferenceId = Target.GetId();
+		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
+		return Instance;
 	}
 
 	NxFr::Handle<GameObject> World::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent)
 	{
-		NxFr::Handle<GameObject> Instance = Factory.CreateGameObject(Name, Parent);
+		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
+
+		if (!Parent && Root)
+		{
+			Parent = Root;
+		}
+
+		NxFr::Handle<GameObject> Instance = Factory.CreateGameObject(Name, 0, Parent);
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
 	}
 
 	NxFr::Handle<GameObject> World::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent)
 	{
+		NEXUS_ASSERT(Belong(Target), Default, "Target should belong to the same Factory");
+		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
+
+		if (!Parent)
+		{
+			Parent = Target->GetParent();
+		}
+
 		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent);
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
@@ -36,6 +70,8 @@ namespace NxEn
 
 	void World::DestroyGameObject(NxFr::Handle<GameObject> Instance)
 	{
+		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+
 		if (!Instance)
 		{
 			return;
@@ -47,6 +83,18 @@ namespace NxEn
 
 	void World::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
 	{
+		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+		NEXUS_ASSERT(Belong(Target), Default, "Target should belong to the same Factory");
+
+		if (!Target)
+		{
+			Target = Root;
+		}
+		if (Index < 0)
+		{
+			Index = Target->GetChildCount();
+		}
+
 		Factory.AttachGameObject(Instance, Target, Index);
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::ChangedId, WorldId, Instance->GetId());
 	}
@@ -61,15 +109,25 @@ namespace NxEn
 		return Factory.Find(Filter);
 	}
 
+	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID GameObjectId)
+	{
+		return Factory.GetGameObject(GameObjectId);
+	}
+
+	NxFr::Handle<GameObject> World::GetRootGameObject()
+	{
+		return Root;
+	}
+
 	uint64 World::GetGameObjectsCount() const
 	{
 		return Factory.GetGameObjectsCount();
 	}
 
-	NxFr::Handle<GameObject> World::GetRootGameObject()
+	void World::OnInitialize()
 	{
-		return Factory.GetRootGameObject();
-	};
+		Root = CreateGameObject("");
+	}
 
 	void World::OnTick(float TimeStep)
 	{

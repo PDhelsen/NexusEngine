@@ -6,6 +6,8 @@
 #include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionRename.h"
 #include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionMove.h"
 #include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionDelete.h"
+#include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionPrefabCreate.h"
+#include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionPrefabSave.h"
 
 namespace NxEd
 {
@@ -67,6 +69,8 @@ namespace NxEd
 		Actions.Append(new HierarchyActionRename());
 		Actions.Append(new HierarchyActionMove());
 		Actions.Append(new HierarchyActionDelete());
+		Actions.Append(new HierarchyActionPrefabCreate());
+		Actions.Append(new HierarchyActionPrefabSave());
 	}
 
 	void HierarchyPanel::OnShutdown()

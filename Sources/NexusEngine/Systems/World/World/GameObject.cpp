@@ -6,7 +6,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
 
 	GameObject::GameObject(NxFr::GUID WorldId)
-		: WorldId(WorldId), GameObjectId(0), Name(""),
+		: WorldId(WorldId), GameObjectId(0), ReferenceId(0), Name(""),
 		Parent(), Prev(), Next(), Child()
 	{
 		SetTickable(true);

@@ -9,6 +9,8 @@ namespace NxEn
 	class GameObject : public Object
 	{
 		friend class ObjectFactory;
+		friend class World;
+		friend class Prefab;
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GameObject)
@@ -33,6 +35,7 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetGameObjectId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
 		NEXUS_ENGINE_API NxFr::GUID GetGameObjectId() const { return GameObjectId; };
+		NEXUS_ENGINE_API NxFr::GUID GetReferenceId() const { return ReferenceId; };
 		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Name; };
 		NEXUS_ENGINE_API void SetName(NxFr::StringView Name) { this->Name = Name; };
 
@@ -44,6 +47,7 @@ namespace NxEn
 	private:
 		NxFr::GUID WorldId;
 		NxFr::GUID GameObjectId;
+		NxFr::GUID ReferenceId;
 		NxFr::String Name;
 
 		NxFr::Handle<GameObject> Parent;

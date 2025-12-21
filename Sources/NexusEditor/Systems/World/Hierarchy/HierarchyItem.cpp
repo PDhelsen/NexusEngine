@@ -20,6 +20,11 @@ namespace NxEd
 			return;
 		}
 
-		ImGuiText = GameObject->GetName() + "##" + NxFr::StringUtility::ToString(GameObject->GetId());
+		NxFr::StringView Prefix =
+			GameObject == GameObject->GetWorld()->GetRootGameObject() ? "W" :
+			GameObject->GetReferenceId() != 0 ? "P" :
+			"G";
+
+		ImGuiText = Prefix + " " + GameObject->GetName() + "##" + NxFr::StringUtility::ToString(GameObject->GetId());
 	}
 }

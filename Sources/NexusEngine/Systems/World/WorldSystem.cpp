@@ -59,7 +59,7 @@ namespace NxEn
 
 	void WorldSystem::DestroyWorld(NxFr::GUID WorldId)
 	{
-		if (Worlds.ContainsKey(WorldId))
+		if (!Worlds.ContainsKey(WorldId))
 		{
 			NEXUS_LOG(Warning, System, "World %d doesn't exist", WorldId);
 			return;
@@ -73,15 +73,35 @@ namespace NxEn
 		delete Instance;
 	}
 
+
+	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)
+	{
+		NxEn::Prefab* Instance = Application::GetSystem<AssetsSystem>()->Create<NxEn::Prefab>(Path, "prefab");
+		Instance->SetRoot(Target);
+		return Instance;
+	}
+
+	void WorldSystem::SavePrefab(NxFr::Handle<GameObject> Target)
+	{
+		NxEn::Prefab* Instance = Application::GetSystem<AssetsSystem>()->Load<NxEn::Prefab>(Target->GetReferenceId());
+		Instance->SetRoot(Target);
+	}
+
 	void WorldSystem::OnInitialize()
 	{
 		System::OnInitialize();
 
+#if NEXUS_EDITOR
+		CreateWorld(DummyId, DummyId);
+#endif
 		CreateWorld(WorldId, WorldId);
 	}
 
 	void WorldSystem::OnShutdown()
 	{
+#if NEXUS_EDITOR
+		DestroyWorld(DummyId);
+#endif
 		DestroyWorld(WorldId);
 
 		System::OnShutdown();

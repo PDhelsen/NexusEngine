@@ -4,9 +4,8 @@
 namespace NxEn
 {
 	ObjectFactory::ObjectFactory(NxFr::GUID WorldId)
-		: WorldId(WorldId), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables(), GameObjectRoot()
+		: WorldId(WorldId), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
 	{
-		GameObjectRoot = CreateGameObject("Root");
 	}
 
 	ObjectFactory::~ObjectFactory()
@@ -14,24 +13,24 @@ namespace NxEn
 		GameObjects.Clear();
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::GetGameObject(NxFr::GUID GameObjectId)
+	void ObjectFactory::Reserve(uint64 Size)
 	{
-		GameObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
-		return Info ? Info->Handle : NxFr::Handle<GameObject>();
+		Size += GameObjects.GetCount();
+		GameObjects.Reserve(Size);
+		GameObjectInfos.Reserve(Size);
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::GUID GameObjectId, NxFr::Handle<GameObject> Parent)
 	{
-		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
+		if (GameObjectId == 0)
+		{
+			GameObjectId = NxFr::Integer::GenerateGuid();
+		}
 
-		NxFr::Handle<GameObject> Instance = Allocate();
+		NxFr::Handle<GameObject> Instance = Allocate(GameObjectId);
 		Instance->Initialize();
 		Instance->SetName(Name);
 
-		if (!Parent && GameObjectRoot)
-		{
-			Parent = GameObjectRoot;
-		}
 		if (Parent)
 		{
 			Attach(Instance, Parent, Parent->GetChildCount());
@@ -40,36 +39,21 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
-		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
-
-		if (!Parent)
-		{
-			Parent = Instance->GetParent();
-		}
-
-		NxFr::Handle<GameObject> Copy = CreateGameObject(Instance->GetName(), Parent);
-		NxFr::Handle<GameObject> Child = Instance->GetChild();
+		NxFr::Handle<GameObject> Instance = CreateGameObject(Target->GetName(), 0, Parent);
+		NxFr::Handle<GameObject> Child = Target->GetChild();
 		while (Child)
 		{
-			DuplicateGameObject(Child, Copy);
+			DuplicateGameObject(Child, Instance);
 			Child = Child->GetNext();
 		}
 
-		return Copy;
+		return Instance;
 	}
 
 	void ObjectFactory::DestroyGameObject(NxFr::Handle<GameObject> Instance)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
-
-		if (!Instance)
-		{
-			return;
-		}
-
 		Detach(Instance);
 		Instance->Shutdown();
 		Free(Instance);
@@ -77,18 +61,6 @@ namespace NxEn
 
 	void ObjectFactory::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
-		NEXUS_ASSERT(Belong(Target), Default, "Target should belong to the same Factory");
-
-		if (!Target)
-		{
-			Target = GameObjectRoot;
-		}
-		if (Index < 0)
-		{
-			Index = Target->GetChildCount();
-		}
-
 		Detach(Instance);
 		Attach(Instance, Target, Index);
 	}
@@ -137,10 +109,25 @@ namespace NxEn
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::Allocate()
+	NxFr::Handle<GameObject> ObjectFactory::GetGameObject(NxFr::GUID GameObjectId)
+	{
+		GameObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
+		return Info ? Info->Handle : NxFr::Handle<GameObject>();
+	}
+
+	NxFr::List<GameObject>& ObjectFactory::GetGameObjects()
+	{
+		return GameObjects;
+	}
+
+	uint64 ObjectFactory::GetGameObjectsCount() const
+	{
+		return GameObjects.GetCount();
+	}
+
+	NxFr::Handle<GameObject> ObjectFactory::Allocate(NxFr::GUID GameObjectId)
 	{
 		GameObject* Instance = nullptr;
-		NxFr::GUID GameObjectId = NxFr::Integer::GenerateGuid();
 		uint64 Index = 0;
 
 		if (GameObjectAvailables.IsEmpty())

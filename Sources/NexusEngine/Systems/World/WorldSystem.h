@@ -10,6 +10,7 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, WorldSystem)
 
+		inline static const NxFr::StringId DummyId = "Dummy"_Sid;
 		inline static const NxFr::StringId WorldId = "World"_Sid;
 
 		inline static const NxFr::StringId AppendedId = "Added"_Sid;
@@ -23,6 +24,9 @@ namespace NxEn
 		NEXUS_ENGINE_API World* GetWorld(NxFr::GUID WorldId = WorldId);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetWorlds();
 		NEXUS_ENGINE_API void DestroyWorld(NxFr::GUID WorldId);
+
+		NEXUS_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
+		NEXUS_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldEvent() { return OnWorldEvent; }
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnGameObjectEvent() { return OnGameObjectEvent; }
