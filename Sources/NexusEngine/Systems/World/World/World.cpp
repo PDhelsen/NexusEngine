@@ -32,8 +32,7 @@ namespace NxEn
 			Parent = Root;
 		}
 
-		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target.GetRoot(), Parent);
-		Instance->ReferenceId = Target.GetId();
+		NxFr::Handle<GameObject> Instance = Factory.Instantiate(Target, Parent);
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
 	}

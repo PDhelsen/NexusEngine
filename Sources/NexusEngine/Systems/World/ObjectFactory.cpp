@@ -20,6 +20,13 @@ namespace NxEn
 		GameObjectInfos.Reserve(Size);
 	}
 
+	NxFr::Handle<GameObject> ObjectFactory::Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent)
+	{
+		NxFr::Handle<GameObject> Instance = DuplicateGameObject(Target.GetRoot(), Parent);
+		Instance->ReferenceId = Target.GetId();
+		return Instance;
+	}
+
 	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::GUID GameObjectId, NxFr::Handle<GameObject> Parent)
 	{
 		if (GameObjectId == 0)
@@ -42,6 +49,8 @@ namespace NxEn
 	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent)
 	{
 		NxFr::Handle<GameObject> Instance = CreateGameObject(Target->GetName(), 0, Parent);
+		Instance->ReferenceId = Target->ReferenceId;
+
 		NxFr::Handle<GameObject> Child = Target->GetChild();
 		while (Child)
 		{
@@ -54,8 +63,16 @@ namespace NxEn
 
 	void ObjectFactory::DestroyGameObject(NxFr::Handle<GameObject> Instance)
 	{
-		Detach(Instance);
+		NxFr::Handle<GameObject> Child = Instance->GetChild();
+		while (Child)
+		{
+			NxFr::Handle<GameObject> Next = Child->GetNext();
+			DestroyGameObject(Child);
+			Child = Next;
+		}
+
 		Instance->Shutdown();
+		Detach(Instance);
 		Free(Instance);
 	}
 
@@ -175,6 +192,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
 		GameObjectInfos.Append(GameObjectId, GameObjectInfo{ .Index = Index , .Handle = Handle });
 		Instance->GameObjectId = GameObjectId;
+		Instance->ReferenceId = 0;
 
 		return Handle;
 	}
