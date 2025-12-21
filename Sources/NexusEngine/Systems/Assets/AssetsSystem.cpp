@@ -18,9 +18,9 @@ namespace NxFr
 
 namespace NxEn
 {
-	const static Command CmdAssetPurge = Command::Create("Assets.Purge"_Sid, "Unload all unreferenced assets", NxFr::Delegate<void()>([]()
+	const static Command CmdAssetPurge = Command::Create("Assets.Purge"_Sid, "Unload all unreferenced assets", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Save)
 	{
-		Application::GetSystem<AssetsSystem>()->Purge();
+		Application::GetSystem<AssetsSystem>()->Purge(NxFr::StringUtility::FromString<bool>(Save));
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsSystem)
@@ -241,11 +241,16 @@ namespace NxEn
 		OnEvent.Invoke(EventUnloadedId, Id);
 	}
 
-	void AssetsSystem::Purge()
+	void AssetsSystem::Purge(bool SaveIfDirty)
 	{
 		NxFr::List<NxFr::GUID> Ids = Manager->GetUnused();
 		for (auto& Id : Ids)
 		{
+			if (SaveIfDirty)
+			{
+				Save(Id);
+			}
+
 			Unload(Id);
 		}
 

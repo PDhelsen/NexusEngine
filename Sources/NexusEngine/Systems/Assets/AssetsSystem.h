@@ -53,7 +53,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Asset* Load(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Reload(NxFr::GUID Id);
 		NEXUS_ENGINE_API void Unload(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Purge();
+		NEXUS_ENGINE_API void Purge(bool SaveIfDirty);
 
 		NEXUS_ENGINE_API Asset* Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
 		NEXUS_ENGINE_API Asset* Reimport(NxFr::GUID Id, const YAML::Node& Node);
