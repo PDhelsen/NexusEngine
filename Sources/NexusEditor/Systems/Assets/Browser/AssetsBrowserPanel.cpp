@@ -10,6 +10,7 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionMove.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDelete.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionLoad.h"
+#include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReload.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionImport.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReimport.h"
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReferences.h"
@@ -192,6 +193,7 @@ namespace NxEd
 		Actions.Append(new AssetsBrowserActionMove());
 		Actions.Append(new AssetsBrowserActionDelete());
 		Actions.Append(new AssetsBrowserActionLoad());
+		Actions.Append(new AssetsBrowserActionReload());
 		Actions.Append(new AssetsBrowserActionImport());
 		Actions.Append(new AssetsBrowserActionReimport());
 		Actions.Append(new AssetsBrowserActionReferences());

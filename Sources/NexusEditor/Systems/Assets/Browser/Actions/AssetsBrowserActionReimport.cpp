@@ -6,7 +6,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReimport)
 
 	AssetsBrowserActionReimport::AssetsBrowserActionReimport()
-		: AssetsBrowserAction("Reimport", 8, true)
+		: AssetsBrowserAction("Reimport", 9, true)
 	{
 	}
 

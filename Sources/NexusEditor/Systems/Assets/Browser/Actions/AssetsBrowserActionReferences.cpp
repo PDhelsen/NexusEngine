@@ -6,7 +6,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReferences)
 
 	AssetsBrowserActionReferences::AssetsBrowserActionReferences()
-		: AssetsBrowserAction("References", 9, true)
+		: AssetsBrowserAction("References", 10, true)
 	{
 	}
 
