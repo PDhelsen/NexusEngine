@@ -3,7 +3,6 @@
 
 namespace NxEn
 {
-
 	const static NxEn::Command CmdWorldInstantiate = NxEn::Command::Create("World.Instantiate"_Sid, "Instantiate into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
 		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
@@ -99,29 +98,34 @@ namespace NxEn
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::ChangedId, WorldId, Instance->GetId());
 	}
 
-	bool World::Belong(NxFr::Handle<GameObject> Instance)
+	bool World::Belong(NxFr::Handle<GameObject> Instance) const
 	{
 		return Instance->GetWorldId() == WorldId;
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> World::Find(NxFr::StringView Filter)
+	NxFr::Array<NxFr::Handle<GameObject>> World::Find(NxFr::StringView Filter) const
 	{
 		return Factory.Find(Filter);
 	}
 
-	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID GameObjectId)
+	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const
+	{
+		return Factory.GetGameObjects();
+	}
+
+	NxFr::Array<NxFr::Handle<GameObject>> World::GetPrefabs() const
+	{
+		return Factory.GetPrefabs();
+	}
+
+	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID GameObjectId) const
 	{
 		return Factory.GetGameObject(GameObjectId);
 	}
 
-	NxFr::Handle<GameObject> World::GetRootGameObject()
+	NxFr::Handle<GameObject> World::GetRootGameObject() const
 	{
 		return Root;
-	}
-
-	uint64 World::GetGameObjectsCount() const
-	{
-		return Factory.GetGameObjectsCount();
 	}
 
 	void World::OnInitialize()
@@ -131,10 +135,9 @@ namespace NxEn
 
 	void World::OnTick(float TimeStep)
 	{
-		NxFr::List<GameObject>& GameObjects = Factory.GetGameObjects();
-		for (auto& Instance : GameObjects)
+		for (auto It = Factory.IteratorGameObjectBegin(); It != Factory.IteratorGameObjectEnd(); ++It)
 		{
-			Instance.Tick(TimeStep);
+			It->Tick(TimeStep);
 		}
 	}
 }

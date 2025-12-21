@@ -16,6 +16,7 @@ namespace NxEd
 		NxFr::Event<>& OnSave = Systems.GetSystem<EditorSystem>()->GetOnSave();
 		OnSave += [](){ Application::GetSystem<NxEn::GUISystem>()->SaveLayout(); };
 		OnSave += [](){ Application::GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
+		OnSave += [](){ Application::GetSystem<NxEn::WorldSystem>()->SaveWorld(); };
 		OnSave += [](){ Application::GetSystem<NxEn::AssetsSystem>()->Save(); };
 
 		if (!IsHeadless())

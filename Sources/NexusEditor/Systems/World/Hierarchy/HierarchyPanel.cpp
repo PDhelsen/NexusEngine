@@ -246,14 +246,12 @@ namespace NxEd
 
 	void HierarchyPanel::FetchItems()
 	{
-		NxEn::World* World = GetWorld();
-		Items.Reserve(World->GetGameObjectsCount());
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> Instances = GetWorld()->GetGameObjects();
+		Items.Reserve(Instances.GetCount());
 
-		NxFr::Handle<NxEn::GameObject> Iterator = GetWorld()->GetRootGameObject();
-		while (Iterator)
+		for (auto& Instance : Instances)
 		{
-			AddItem(Iterator);
-			Iterator = Iterator->GetIterator();
+			AddItem(Instance);
 		}
 	}
 

@@ -24,6 +24,7 @@ namespace NxEn
 		NEXUS_ENGINE_API World* GetWorld(NxFr::GUID WorldId = WorldId);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetWorlds();
 		NEXUS_ENGINE_API void DestroyWorld(NxFr::GUID WorldId);
+		NEXUS_ENGINE_API void SaveWorld(NxFr::GUID WorldId = WorldId);
 
 		NEXUS_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
 		NEXUS_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);

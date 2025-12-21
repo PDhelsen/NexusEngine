@@ -65,12 +65,12 @@ namespace NxEn
 		Attach(Instance, Target, Index);
 	}
 
-	bool ObjectFactory::Belong(NxFr::Handle<GameObject> Instance)
+	bool ObjectFactory::Belong(NxFr::Handle<GameObject> Instance) const
 	{
 		return Instance->WorldId == WorldId;
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::Find(NxFr::StringView Filter)
+	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::Find(NxFr::StringView Filter) const
 	{
 		NxFr::List<NxFr::Handle<GameObject>> Result;
 
@@ -109,20 +109,40 @@ namespace NxEn
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::GetGameObject(NxFr::GUID GameObjectId)
+	NxFr::Handle<GameObject> ObjectFactory::GetGameObject(NxFr::GUID GameObjectId) const
 	{
-		GameObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
+		const GameObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
 		return Info ? Info->Handle : NxFr::Handle<GameObject>();
 	}
 
-	NxFr::List<GameObject>& ObjectFactory::GetGameObjects()
+	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::GetGameObjects() const
 	{
-		return GameObjects;
+		NxFr::List<NxFr::Handle<GameObject>> Result(GameObjects.GetCount());
+
+		for (auto& Instance : GameObjects)
+		{
+			if (Instance.IsInitialized())
+			{
+				Result.Append(GameObjectInfos[Instance.GetId()].Handle);
+			}
+		}
+
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
-	uint64 ObjectFactory::GetGameObjectsCount() const
+	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::GetPrefabs() const
 	{
-		return GameObjects.GetCount();
+		NxFr::List<NxFr::Handle<GameObject>> Result(GameObjects.GetCount());
+
+		for (auto& Instance : GameObjects)
+		{
+			if (Instance.IsInitialized() && Instance.GetReferenceId())
+			{
+				Result.Append(GameObjectInfos[Instance.GetId()].Handle);
+			}
+		}
+
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
 	NxFr::Handle<GameObject> ObjectFactory::Allocate(NxFr::GUID GameObjectId)

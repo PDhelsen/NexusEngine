@@ -73,6 +73,27 @@ namespace NxEn
 		delete Instance;
 	}
 
+	void WorldSystem::SaveWorld(NxFr::GUID WorldId)
+	{
+		if (!Worlds.ContainsKey(WorldId))
+		{
+			NEXUS_LOG(Warning, System, "World %d doesn't exist", WorldId);
+			return;
+		}
+
+		NxFr::Array<NxFr::Handle<GameObject>> PrefabInstances = GetWorld(WorldId)->GetPrefabs();
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> ReferencesInstance = PrefabInstances.GetCount();
+
+		for (auto& PrefabInstance : PrefabInstances)
+		{
+			ReferencesInstance.AppendOrAssign(PrefabInstance->GetReferenceId(), PrefabInstance);
+		}
+
+		for (auto& [Reference, Instance] : ReferencesInstance)
+		{
+			SavePrefab(Instance);
+		}
+	}
 
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)
 	{

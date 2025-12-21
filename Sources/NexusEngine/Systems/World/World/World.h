@@ -24,12 +24,14 @@ namespace NxEn
 		NEXUS_ENGINE_API void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		NEXUS_ENGINE_API void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 
-		NEXUS_ENGINE_API bool Belong(NxFr::Handle<GameObject> Instance);
-		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter);
+		NEXUS_ENGINE_API bool Belong(NxFr::Handle<GameObject> Instance) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter) const;
 
-		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId);
-		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetRootGameObject();
-		NEXUS_ENGINE_API uint64 GetGameObjectsCount() const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> GetPrefabs() const;
+
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetRootGameObject() const;
 
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetWorldId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };

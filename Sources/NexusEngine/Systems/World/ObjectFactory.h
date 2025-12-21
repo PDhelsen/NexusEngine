@@ -23,12 +23,15 @@ namespace NxEn
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 
-		bool Belong(NxFr::Handle<GameObject> Instance);
-		NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter);
+		bool Belong(NxFr::Handle<GameObject> Instance) const;
+		NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter) const;
 
-		NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId);
-		NxFr::List<GameObject>& GetGameObjects();
-		uint64 GetGameObjectsCount() const;
+		NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
+		NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
+		NxFr::Array<NxFr::Handle<GameObject>> GetPrefabs() const;
+
+		NxFr::List<GameObject>::I IteratorGameObjectBegin() const { return GameObjects.Begin(); }
+		NxFr::List<GameObject>::I IteratorGameObjectEnd() const { return GameObjects.End(); }
 
 	private:
 		NxFr::Handle<GameObject> Allocate(NxFr::GUID GameObjectId);
