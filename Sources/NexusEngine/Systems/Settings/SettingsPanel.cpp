@@ -43,6 +43,7 @@ namespace NxEn
 	void SettingsPanel::OnEnable()
 	{
 		Panel::OnEnable();
+		Menu.SetEnabled(true);
 
 		Style.Reset();
 		Style.Width = -1.0f;
@@ -50,6 +51,12 @@ namespace NxEn
 		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		Settings = Application::GetSystem<SettingsSystem>()->GetAllSettingsSorted();
+	}
+
+	void SettingsPanel::OnDisable()
+	{
+		Menu.SetEnabled(false);
+		Panel::OnDisable();
 	}
 
 	void SettingsPanel::OnGui(float TimeStep)

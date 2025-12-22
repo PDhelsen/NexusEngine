@@ -96,7 +96,7 @@ namespace NxEn
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 		Root = Load(Data, NxFr::Handle<GameObject>());
 
-		Root->Initialize(false);
+		Root->Initialize();
 		Root->SetEnabled(true);
 	}
 

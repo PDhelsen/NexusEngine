@@ -211,7 +211,7 @@ namespace NxEn
 		Imgui::Initialize();
 		LoadTheme();
 
-		GetMainWindow().Initialize(false);
+		GetMainWindow().Initialize();
 
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();

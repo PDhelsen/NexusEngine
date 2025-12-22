@@ -82,6 +82,7 @@ namespace NxEd
 	void HierarchyPanel::OnEnable()
 	{
 		Panel::OnEnable();
+		Menu.SetEnabled(true);
 
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
@@ -101,6 +102,7 @@ namespace NxEd
 
 		Worlds->GetOnGameObjectEvent() -= { this, &HierarchyPanel::OnGameObjectChanged };
 
+		Menu.SetEnabled(false);
 		Panel::OnDisable();
 	}
 

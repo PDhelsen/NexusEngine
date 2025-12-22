@@ -42,7 +42,8 @@ namespace NxEn
 		static T* Create(bool Enable = true)
 		{
 			T* Instance = new T();
-			Instance->Initialize(Enable);
+			Instance->Initialize();
+			Instance->SetEnabled(Enable);
 			return Instance;
 		}
 
@@ -54,6 +55,7 @@ namespace NxEn
 				return nullptr;
 			}
 
+			Instance->SetEnabled(false);
 			Instance->Shutdown();
 			delete Instance;
 			return nullptr;
@@ -62,7 +64,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Object();
 		NEXUS_ENGINE_API virtual ~Object();
 
-		NEXUS_ENGINE_API void Initialize(bool Enable = true);
+		NEXUS_ENGINE_API void Initialize();
 		NEXUS_ENGINE_API void Shutdown();
 		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f);
 

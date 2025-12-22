@@ -14,7 +14,7 @@ namespace NxEn
 	{
 	}
 
-	void Object::Initialize(bool Enable)
+	void Object::Initialize()
 	{
 		if (IsInitialized())
 		{
@@ -23,8 +23,6 @@ namespace NxEn
 		}
 
 		OnInitialize();
-		SetEnabled(Enable);
-
 		SetFlag(ObjectFlags::Initialized, true);
 	}
 
@@ -36,9 +34,7 @@ namespace NxEn
 			return;
 		}
 
-		SetEnabled(false);
 		OnShutdown();
-
 		SetFlag(ObjectFlags::Initialized, false);
 	}
 

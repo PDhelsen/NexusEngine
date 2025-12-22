@@ -58,6 +58,7 @@ namespace NxEn
 	void ConsolePanel::OnEnable()
 	{
 		Panel::OnEnable();
+		Menu.SetEnabled(true);
 
 		Style.Reset();
 		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
@@ -102,6 +103,7 @@ namespace NxEn
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->UnregisterCallback({ this, &ConsolePanel::AddLogs });
 
+		Menu.SetEnabled(false);
 		Panel::OnDisable();
 	}
 

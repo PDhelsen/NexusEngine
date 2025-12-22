@@ -87,9 +87,11 @@ namespace NxEn
 			if (Boot)
 			{
 				Instance->Initialize();
+				Instance->SetEnabled(true);
 			}
 			else
 			{
+				Instance->SetEnabled(false);
 				Instance->Shutdown();
 			}
 		}

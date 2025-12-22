@@ -162,7 +162,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
-			Iterator->Initialize(false);
+			Iterator->Initialize();
 			Iterator = Iterator->GetNext();
 		}
 	}

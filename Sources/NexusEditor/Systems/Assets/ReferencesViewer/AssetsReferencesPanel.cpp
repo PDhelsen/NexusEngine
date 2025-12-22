@@ -12,7 +12,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsReferencesPanel)
 
 	AssetsReferencesPanel::AssetsReferencesPanel()
-		: Inputs(nullptr), Menu(), Style(), Buffer(64), Anchor(), Zoom(1.0f), Recenter(true), References(), Nodes(), Selection(), Selected(0), Inspected(0), Full(false)
+		: Inputs(nullptr), Menu(), Style(), Buffer(64), Anchor(), Zoom(1.0f), Recenter(true), References(), Nodes(), Selection(), Selected(0), Inspected(0), Inspect(false), Full(false)
 	{
 	}
 
@@ -71,6 +71,7 @@ namespace NxEd
 	void AssetsReferencesPanel::OnEnable()
 	{
 		Panel::OnEnable();
+		Menu.SetEnabled(true);
 
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
 
@@ -85,6 +86,7 @@ namespace NxEd
 	void AssetsReferencesPanel::OnDisable()
 	{
 		Panel::OnDisable();
+		Menu.SetEnabled(false);
 
 		References.Clear();
 		Nodes.Clear();

@@ -24,6 +24,7 @@ namespace NxEn
 
 		World* Instance = new World(WorldId, Name);
 		Instance->Initialize();
+		Instance->SetEnabled(true);
 
 		Worlds.Append(WorldId, Instance);
 
@@ -68,10 +69,12 @@ namespace NxEn
 		GetOnWorldEvent().Invoke(RemovedId, WorldId);
 
 		World* Instance = Worlds[WorldId];
-		Worlds.Remove(WorldId);
 
+		Instance->SetEnabled(false);
 		Instance->Shutdown();
 		delete Instance;
+
+		Worlds.Remove(WorldId);
 	}
 
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)

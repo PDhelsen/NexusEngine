@@ -582,12 +582,12 @@ namespace NxEn
 
 		void Window::OnEnable()
 		{
-			MainMenu.Show();
+			MainMenu.SetEnabled(true);
 		}
 
 		void Window::OnDisable()
 		{
-			MainMenu.Hide();
+			MainMenu.SetEnabled(false);
 		}
 
 		void Window::OnGui(float TimeStep)

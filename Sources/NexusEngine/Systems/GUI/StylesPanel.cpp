@@ -27,9 +27,17 @@ namespace NxEn
 	void StylesPanel::OnEnable()
 	{
 		Panel::OnEnable();
+		Menu.SetEnabled(true);
+
 		Style.Reset();
 		Style.Width = GUI::Style::GetVar(GUI::Style::IdWidthButton);
 		Style.WidthLabel = -1.0f;
+	}
+
+	void StylesPanel::OnDisable()
+	{
+		Menu.SetEnabled(false);
+		Panel::OnDisable();
 	}
 
 	void StylesPanel::OnGui(float TimeStep)
