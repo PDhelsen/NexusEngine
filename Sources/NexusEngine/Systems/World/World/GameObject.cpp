@@ -159,19 +159,51 @@ namespace NxEn
 
 	void GameObject::OnInitialize()
 	{
-		Name = "";
-
-		Parent = NxFr::Handle<GameObject>();
-		Prev = NxFr::Handle<GameObject>();
-		Next = NxFr::Handle<GameObject>();
-		Child = NxFr::Handle<GameObject>();
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Initialize(false);
+			Iterator = Iterator->GetNext();
+		}
 	}
 
 	void GameObject::OnShutdown()
 	{
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Shutdown();
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	void GameObject::OnEnable()
+	{
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->SetEnabled(true);
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	void GameObject::OnDisable()
+	{
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->SetEnabled(false);
+			Iterator = Iterator->GetNext();
+		}
 	}
 
 	void GameObject::OnTick(float TimeStep)
 	{
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Tick(TimeStep);
+			Iterator = Iterator->GetNext();
+		}
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Systems/World/World/GameObject.h"
+#include "NexusEngine/Systems/World/Scene/Prefab.h"
 
 namespace NxEn
 {
@@ -25,7 +26,7 @@ namespace NxEn
 
 		NxFr::Handle<GameObject> Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 
-		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::GUID GameObjectId, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
+		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), bool HandleReferences = false);
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
@@ -36,9 +37,6 @@ namespace NxEn
 		NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
 		NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
 		NxFr::Array<NxFr::Handle<GameObject>> GetPrefabs() const;
-
-		NxFr::List<GameObject>::I IteratorGameObjectBegin() const { return GameObjects.Begin(); }
-		NxFr::List<GameObject>::I IteratorGameObjectEnd() const { return GameObjects.End(); }
 
 	private:
 		NxFr::Handle<GameObject> Allocate(NxFr::GUID GameObjectId);

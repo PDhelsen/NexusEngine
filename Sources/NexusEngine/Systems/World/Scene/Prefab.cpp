@@ -73,9 +73,9 @@ namespace NxEn
 			}
 			else
 			{
-				Instance = Factory.CreateGameObject(Data["Name"].as<NxFr::String>(), Id, Parent);
-				YAML::Node Children = Data["Children"];
+				Instance = Factory.CreateGameObject(Data["Name"].as<NxFr::String>(), Parent, Id);
 
+				YAML::Node Children = Data["Children"];
 				if (Children.size() > 0)
 				{
 					Instance->Child = Load(Children[0], Instance);
@@ -94,8 +94,10 @@ namespace NxEn
 
 		Factory.Reserve(Node["Count"].as<uint64>());
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
-
 		Root = Load(Data, NxFr::Handle<GameObject>());
+
+		Root->Initialize(false);
+		Root->SetEnabled(true);
 	}
 
 	void Prefab::OnUnload()
@@ -120,6 +122,9 @@ namespace NxEn
 				Child = Child->GetNext();
 			}
 		};
+
+		Root->SetEnabled(false);
+		Root->Shutdown();
 
 		Unload(Root);
 		Factory.DestroyGameObject(Root);

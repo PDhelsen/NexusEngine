@@ -22,9 +22,9 @@ namespace NxEn
 			return GetWorld(WorldId);
 		}
 
-		World* Instance = new World(WorldId);
+		World* Instance = new World(WorldId, Name);
 		Instance->Initialize();
-		Instance->SetName(Name);
+
 		Worlds.Append(WorldId, Instance);
 
 		GetOnWorldEvent().Invoke(AppendedId, WorldId);
@@ -69,6 +69,7 @@ namespace NxEn
 
 		World* Instance = Worlds[WorldId];
 		Worlds.Remove(WorldId);
+
 		Instance->Shutdown();
 		delete Instance;
 	}

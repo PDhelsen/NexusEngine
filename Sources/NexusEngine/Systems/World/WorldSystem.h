@@ -2,6 +2,8 @@
 
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/World/World/World.h"
+#include "NexusEngine/Systems/World/World/GameObject.h"
+#include "NexusEngine/Systems/World/Scene/Prefab.h"
 
 namespace NxEn
 {

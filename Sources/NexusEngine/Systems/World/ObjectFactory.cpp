@@ -38,7 +38,7 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::GUID GameObjectId, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
 	{
 		if (GameObjectId == 0)
 		{
@@ -46,7 +46,6 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Instance = Allocate(GameObjectId);
-		Instance->Initialize();
 		Instance->SetName(Name);
 
 		if (Parent)
@@ -59,7 +58,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent, bool HandleReferences)
 	{
-		NxFr::Handle<GameObject> Instance = CreateGameObject(Target->GetName(), 0, Parent);
+		NxFr::Handle<GameObject> Instance = CreateGameObject(Target->GetName(), Parent);
 		Instance->ReferenceId = Target->ReferenceId;
 
 		if (HandleReferences && Target->ReferenceId)
@@ -94,7 +93,6 @@ namespace NxEn
 			Child = Next;
 		}
 
-		Instance->Shutdown();
 		Detach(Instance);
 		Free(Instance);
 	}

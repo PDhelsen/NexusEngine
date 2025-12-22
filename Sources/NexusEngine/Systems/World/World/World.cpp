@@ -13,8 +13,8 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
-	World::World(NxFr::GUID WorldId)
-		: WorldId(WorldId), Name(), Factory(WorldId, ObjectFactory::ReferenceMode::Bake), Root()
+	World::World(NxFr::GUID WorldId, NxFr::StringView Name)
+		: WorldId(WorldId), Name(Name), Factory(WorldId, ObjectFactory::ReferenceMode::Bake), Root()
 	{
 		SetTickable(true);
 	}
@@ -33,6 +33,9 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Instance = Factory.Instantiate(Target, Parent);
+		Instance->Initialize(false);
+		Instance->SetEnabled(true);
+
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
 	}
@@ -46,7 +49,10 @@ namespace NxEn
 			Parent = Root;
 		}
 
-		NxFr::Handle<GameObject> Instance = Factory.CreateGameObject(Name, 0, Parent);
+		NxFr::Handle<GameObject> Instance = Factory.CreateGameObject(Name, Parent);
+		Instance->Initialize(false);
+		Instance->SetEnabled(true);
+
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
 	}
@@ -62,6 +68,9 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent);
+		Instance->Initialize(false);
+		Instance->SetEnabled(true);
+
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
 	}
@@ -76,6 +85,9 @@ namespace NxEn
 		}
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::RemovedId, WorldId, Instance->GetId());
+
+		Instance->SetEnabled(false);
+		Instance->Shutdown();
 		Factory.DestroyGameObject(Instance);
 	}
 
@@ -94,6 +106,7 @@ namespace NxEn
 		}
 
 		Factory.AttachGameObject(Instance, Target, Index);
+
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::ChangedId, WorldId, Instance->GetId());
 	}
 
@@ -129,14 +142,16 @@ namespace NxEn
 
 	void World::OnInitialize()
 	{
-		Root = CreateGameObject("");
+		Root = CreateGameObject("Root");
+	}
+
+	void World::OnShutdown()
+	{
+		DestroyGameObject(Root);
 	}
 
 	void World::OnTick(float TimeStep)
 	{
-		for (auto It = Factory.IteratorGameObjectBegin(); It != Factory.IteratorGameObjectEnd(); ++It)
-		{
-			It->Tick(TimeStep);
-		}
+		Root->Tick(TimeStep);
 	}
 }

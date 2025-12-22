@@ -14,7 +14,7 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, World)
 
-		NEXUS_ENGINE_API World(NxFr::GUID WorldId);
+		NEXUS_ENGINE_API World(NxFr::GUID WorldId, NxFr::StringView Name = "");
 		NEXUS_ENGINE_API ~World();
 
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
@@ -40,6 +40,7 @@ namespace NxEn
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
+		NEXUS_ENGINE_API void OnShutdown() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
