@@ -30,7 +30,7 @@ namespace NxEn
 		template<typename T>
 		void* ReleaseHandle(NxFr::Handle<T>& Handle)
 		{
-			GetHandlesManager(Handle)->ReleaseHandle(Handle);
+			return GetHandlesManager(Handle)->ReleaseHandle(Handle);
 		}
 		template<typename T>
 		NxFr::Handle<T> FindHandle(T* Pointer)

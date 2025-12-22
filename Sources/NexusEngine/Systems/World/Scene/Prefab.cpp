@@ -68,7 +68,7 @@ namespace NxEn
 
 			if (Reference)
 			{
-				Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Reference);
+				Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Acquire<Prefab>(Reference);
 				Instance = Factory.Instantiate(*PrefabInstance, Parent);
 			}
 			else
@@ -100,6 +100,57 @@ namespace NxEn
 
 	void Prefab::OnUnload()
 	{
+		NxFr::Delegate<void(NxFr::Handle<GameObject>)> Unload = [&](NxFr::Handle<GameObject> Instance)
+		{
+			if (!Instance)
+			{
+				return;
+			}
+
+			if (Instance->GetReferenceId())
+			{
+				Application::GetSystem<AssetsSystem>()->Release(Instance->GetReferenceId());
+				return;
+			}
+
+			NxFr::Handle<GameObject> Child = Instance->GetChild();
+			while (Child)
+			{
+				Unload(Child);
+				Child = Child->GetNext();
+			}
+		};
+
+		Unload(Root);
 		Factory.DestroyGameObject(Root);
+		Root = NxFr::Handle<GameObject>();
+	}
+
+	NxFr::Array<NxFr::GUID> Prefab::GetDependencies()
+	{
+		NxFr::Set<NxFr::GUID> Dependencies;
+		GetDependencies(Root, Dependencies);
+		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
+	}
+
+	void Prefab::GetDependencies(NxFr::Handle<GameObject> Instance, NxFr::Set<NxFr::GUID>& Result) const
+	{
+		if (!Instance)
+		{
+			return;
+		}
+
+		if (Instance->GetReferenceId())
+		{
+			Result.Append(Instance->GetReferenceId());
+			return;
+		}
+
+		NxFr::Handle<GameObject> Child = Instance->GetChild();
+		while (Child)
+		{
+			GetDependencies(Child, Result);
+			Child = Child->GetNext();
+		}
 	}
 }

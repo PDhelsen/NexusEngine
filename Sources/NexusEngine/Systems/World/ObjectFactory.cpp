@@ -16,8 +16,19 @@ namespace NxEn
 	void ObjectFactory::Reserve(uint64 Size)
 	{
 		Size += GameObjects.GetCount();
-		GameObjects.Reserve(Size);
-		GameObjectInfos.Reserve(Size);
+
+		if (Size > GameObjects.GetCapacity())
+		{
+			Size = NxFr::Math::Max(GameObjects.GetCapacity() * 2, Size);
+
+			GameObjects.Reserve(Size);
+			GameObjectInfos.Reserve(Size);
+
+			for (auto& [Id, Info] : GameObjectInfos)
+			{
+				Handles.UpdateHandle(Info.Handle, &GameObjects[Info.Index]);
+			}
+		}
 	}
 
 	NxFr::Handle<GameObject> ObjectFactory::Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent)
@@ -169,14 +180,7 @@ namespace NxEn
 
 		if (GameObjectAvailables.IsEmpty())
 		{
-			if (GameObjects.GetCount() >= GameObjects.GetCapacity())
-			{
-				GameObjects.Reserve(GameObjects.GetCapacity() * 2);
-				for (auto& [Id, Info] : GameObjectInfos)
-				{
-					Handles.UpdateHandle(Info.Handle, &GameObjects[Info.Index]);
-				}
-			}
+			Reserve(1);
 
 			Index = GameObjects.GetCount();
 			Instance = &GameObjects.AppendConstruct(WorldId);
@@ -200,6 +204,7 @@ namespace NxEn
 	void ObjectFactory::Free(NxFr::Handle<GameObject> Instance)
 	{
 		NxFr::GUID GameObjectId = Instance->GetId();
+		Handles.ReleaseHandle(Instance);
 
 		GameObjectInfo Info = GameObjectInfos[GameObjectId];
 		GameObjectInfos.Remove(GameObjectId);
