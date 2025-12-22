@@ -26,6 +26,12 @@ namespace NxEn
 		Initialized = 1 << 0,
 		Enabled = 1 << 1,
 		Tickable = 1 << 2,
+
+		Anonymous_1 = 1 << 3,
+		Anonymous_2 = 1 << 4,
+		Anonymous_3 = 1 << 5,
+		Anonymous_4 = 1 << 6,
+		Anonymous_5 = 1 << 7,
 	};
 }
 
@@ -64,18 +70,19 @@ namespace NxEn
 		NEXUS_ENGINE_API Object();
 		NEXUS_ENGINE_API virtual ~Object();
 
-		NEXUS_ENGINE_API void Initialize();
-		NEXUS_ENGINE_API void Shutdown();
-		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f);
+		NEXUS_ENGINE_API virtual void Initialize();
+		NEXUS_ENGINE_API virtual void Shutdown();
+		NEXUS_ENGINE_API virtual void Tick(float TimeStep = 0.0f);
 
-		NEXUS_ENGINE_API bool IsInitialized() const;
-		NEXUS_ENGINE_API bool IsEnabled() const;
-		NEXUS_ENGINE_API void SetEnabled(bool Enabled);
-		NEXUS_ENGINE_API bool IsTickable() const;
-		NEXUS_ENGINE_API void SetTickable(bool Tickable);
+		NEXUS_ENGINE_API virtual bool IsInitialized() const;
+		NEXUS_ENGINE_API virtual bool IsEnabled() const;
+		NEXUS_ENGINE_API virtual void SetEnabled(bool Enabled);
+		NEXUS_ENGINE_API virtual bool IsTickable() const;
+		NEXUS_ENGINE_API virtual void SetTickable(bool Tickable);
 
 		NEXUS_ENGINE_API virtual Object* Clone() const;
 		NEXUS_ENGINE_API virtual void Clone(Object* Target);
+		NEXUS_ENGINE_API virtual void Clone(const Object* Target);
 
 		NEXUS_ENGINE_API virtual NxFr::StringView GetName() const;
 		NEXUS_ENGINE_API virtual NxFr::GUID GetId() const;
@@ -87,7 +94,7 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnDisable() { };
 		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) { };
 
-	private:
+	protected:
 		NEXUS_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;
 		NEXUS_FORCE_INLINE void SetFlag(ObjectFlags Flag, bool Value);
 

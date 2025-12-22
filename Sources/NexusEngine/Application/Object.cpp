@@ -98,6 +98,11 @@ namespace NxEn
 		NEXUS_ASSERT(false, Default, "Not Implemented");
 	}
 
+	void Object::Clone(const Object* Target)
+	{
+		NEXUS_ASSERT(false, Default, "Not Implemented");
+	}
+
 	NxFr::StringView Object::GetName() const
 	{
 		return GetObjectType().GetString();

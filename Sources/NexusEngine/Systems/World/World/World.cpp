@@ -34,7 +34,7 @@ namespace NxEn
 
 		NxFr::Handle<GameObject> Instance = Factory.Instantiate(Target, Parent);
 		Instance->Initialize();
-		Instance->SetEnabled(true);
+		Instance->SetEnabled(Target.GetRoot()->IsEnabled());
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
@@ -69,7 +69,7 @@ namespace NxEn
 
 		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent);
 		Instance->Initialize();
-		Instance->SetEnabled(true);
+		Instance->SetEnabled(Target->IsEnabled());
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;

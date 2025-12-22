@@ -12,11 +12,28 @@ namespace NxEn
 		friend class World;
 		friend class Prefab;
 
+		const uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Anonymous_1;
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GameObject)
 
 		NEXUS_ENGINE_API GameObject(NxFr::GUID WorldId);
 		NEXUS_ENGINE_API ~GameObject();
+
+		NEXUS_ENGINE_API void Initialize() override;
+		NEXUS_ENGINE_API void Shutdown() override;
+		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f) override;
+
+		NEXUS_ENGINE_API void SetEnabled(bool Enabled) override;
+		NEXUS_ENGINE_API bool IsEnabledInHierarchy() const;
+
+		NEXUS_ENGINE_API YAML::Node Save();
+		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
+		NEXUS_ENGINE_API void Unload();
+
+		NEXUS_ENGINE_API Object* Clone() const override;
+		NEXUS_ENGINE_API void Clone(Object* Target) override;
+		NEXUS_ENGINE_API void Clone(const Object* Target) override;
 
 		NEXUS_ENGINE_API World* GetWorld() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetParent() const;
@@ -39,12 +56,8 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Name; };
 		NEXUS_ENGINE_API void SetName(NxFr::StringView Name) { this->Name = Name; };
 
-	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
-		NEXUS_ENGINE_API void OnEnable() override;
-		NEXUS_ENGINE_API void OnDisable() override;
-		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+	private:
+		NEXUS_ENGINE_API bool UpdateEnabledInHierarchy();
 
 	private:
 		NxFr::GUID WorldId;

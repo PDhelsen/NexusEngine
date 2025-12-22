@@ -16,6 +16,131 @@ namespace NxEn
 	{
 	}
 
+	void GameObject::Initialize()
+	{
+		Object::Initialize();
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Initialize();
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	void GameObject::Shutdown()
+	{
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Shutdown();
+			Iterator = Iterator->GetNext();
+		}
+
+		Object::Shutdown();
+	}
+
+	void GameObject::Tick(float TimeStep)
+	{
+		if (!IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		Object::Tick(TimeStep);
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Tick(TimeStep);
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	void GameObject::SetEnabled(bool Enabled)
+	{
+		if (IsEnabled() == Enabled)
+		{
+			return;
+		}
+
+		Object::SetEnabled(Enabled);
+
+		if (!UpdateEnabledInHierarchy())
+		{
+			return;
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->UpdateEnabledInHierarchy();
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	bool GameObject::IsEnabledInHierarchy() const
+	{
+		return GetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy);
+	}
+
+	YAML::Node GameObject::Save()
+	{
+		YAML::Node Node;
+		Node["Name"] = Name;
+		Node["Id"] = GameObjectId;
+		Node["Reference"] = ReferenceId;
+		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
+		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
+		return Node;
+	}
+
+	void GameObject::Load(const YAML::Node& Node)
+	{
+		Name = Node["Name"].as<NxFr::String>();
+		GameObjectId = Node["Id"].as<NxFr::GUID>();
+		ReferenceId = Node["Reference"].as<NxFr::GUID>();;
+		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
+		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
+
+		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
+	}
+
+	void GameObject::Unload()
+	{
+	}
+
+	Object* GameObject::Clone() const
+	{
+		GameObject* Instance = new GameObject(WorldId);
+		Instance->Clone(const_cast<GameObject*>(this));
+		return Instance;
+	}
+
+	void GameObject::Clone(Object* Target)
+	{
+		GameObject* Instance = static_cast<GameObject*>(Target);
+
+		Instance->ReferenceId = ReferenceId;
+		Instance->Name = Name;
+
+		Instance->SetFlag(ObjectFlags::Enabled, IsEnabled());
+		Instance->SetFlag(ObjectFlags::Tickable, IsTickable());
+		Instance->SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
+	}
+
+	void GameObject::Clone(const Object* Target)
+	{
+		const GameObject* Instance = static_cast<const GameObject*>(Target);
+
+		ReferenceId = Instance->ReferenceId;
+		Name = Instance->Name;
+
+		SetFlag(ObjectFlags::Enabled, Instance->IsEnabled());
+		SetFlag(ObjectFlags::Tickable, Instance->IsTickable());
+		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
+	}
+
 	World* GameObject::GetWorld() const
 	{
 		return Application::GetSystem<WorldSystem>()->GetWorld(WorldId);
@@ -157,53 +282,25 @@ namespace NxEn
 		return Order;
 	}
 
-	void GameObject::OnInitialize()
+	bool GameObject::UpdateEnabledInHierarchy()
 	{
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
+		bool Enabled = IsEnabled() && (Parent ? Parent->IsEnabledInHierarchy() : true);
+		if (Enabled == IsEnabledInHierarchy())
 		{
-			Iterator->Initialize();
-			Iterator = Iterator->GetNext();
+			return false;
 		}
-	}
 
-	void GameObject::OnShutdown()
-	{
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->Shutdown();
-			Iterator = Iterator->GetNext();
-		}
-	}
+		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, Enabled);
 
-	void GameObject::OnEnable()
-	{
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
+		if (Enabled)
 		{
-			Iterator->SetEnabled(true);
-			Iterator = Iterator->GetNext();
+			OnEnable();
 		}
-	}
+		else
+		{
+			OnDisable();
+		}
 
-	void GameObject::OnDisable()
-	{
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->SetEnabled(false);
-			Iterator = Iterator->GetNext();
-		}
-	}
-
-	void GameObject::OnTick(float TimeStep)
-	{
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->Tick(TimeStep);
-			Iterator = Iterator->GetNext();
-		}
+		return true;
 	}
 }

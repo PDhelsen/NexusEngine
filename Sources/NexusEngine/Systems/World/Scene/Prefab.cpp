@@ -31,12 +31,9 @@ namespace NxEn
 
 			Data << YAML::BeginMap;
 
-			Data << YAML::Key << "Id" << YAML::Value << Instance->GetId();
-			Data << YAML::Key << "Reference" << YAML::Value << Instance->GetReferenceId();
-
+			Data << YAML::Key << "GameObject" << YAML::Value << Instance->Save();
 			if (!IsPrefab)
 			{
-				Data << YAML::Key << "Name" << YAML::Value << Instance->GetName();
 				Data << YAML::Key << "Children" << YAML::Value;
 				Data << YAML::BeginSeq;
 				NxFr::Handle<GameObject> InstanceChild = Instance->GetChild();
@@ -63,8 +60,10 @@ namespace NxEn
 		NxFr::Delegate<NxFr::Handle<GameObject>(YAML::Node, NxFr::Handle<GameObject>)> Load = [&](YAML::Node Data, NxFr::Handle<GameObject> Parent)
 		{
 			NxFr::Handle<GameObject> Instance;
-			NxFr::GUID Id = Data["Id"].as<NxFr::GUID>();
-			NxFr::GUID Reference = Data["Reference"].as<NxFr::GUID>();
+			YAML::Node Go = Data["GameObject"];
+
+			NxFr::GUID Id = Go["Id"].as<NxFr::GUID>();
+			NxFr::GUID Reference = Go["Reference"].as<NxFr::GUID>();
 
 			if (Reference)
 			{
@@ -73,7 +72,8 @@ namespace NxEn
 			}
 			else
 			{
-				Instance = Factory.CreateGameObject(Data["Name"].as<NxFr::String>(), Parent, Id);
+				Instance = Factory.CreateGameObject("", Parent, Id);
+				Instance->Load(Go);
 
 				YAML::Node Children = Data["Children"];
 				if (Children.size() > 0)
@@ -109,6 +109,7 @@ namespace NxEn
 				return;
 			}
 
+			Instance->Unload();
 			if (Instance->GetReferenceId())
 			{
 				Application::GetSystem<AssetsSystem>()->Release(Instance->GetReferenceId());

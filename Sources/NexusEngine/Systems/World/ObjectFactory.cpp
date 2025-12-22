@@ -58,8 +58,8 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent, bool HandleReferences)
 	{
-		NxFr::Handle<GameObject> Instance = CreateGameObject(Target->GetName(), Parent);
-		Instance->ReferenceId = Target->ReferenceId;
+		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
+		Instance->Clone((const GameObject*)Target.GetRedirectedPointer());
 
 		if (HandleReferences && Target->ReferenceId)
 		{
