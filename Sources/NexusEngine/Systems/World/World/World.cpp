@@ -14,7 +14,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
 	World::World(NxFr::GUID WorldId)
-		: WorldId(WorldId), Name(), Factory(WorldId), Root()
+		: WorldId(WorldId), Name(), Factory(WorldId, ObjectFactory::ReferenceMode::Bake), Root()
 	{
 		SetTickable(true);
 	}

@@ -3,8 +3,8 @@
 
 namespace NxEn
 {
-	ObjectFactory::ObjectFactory(NxFr::GUID WorldId)
-		: WorldId(WorldId), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
+	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, ReferenceMode References)
+		: WorldId(WorldId), References(References), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
 	{
 	}
 
@@ -33,7 +33,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent)
 	{
-		NxFr::Handle<GameObject> Instance = DuplicateGameObject(Target.GetRoot(), Parent);
+		NxFr::Handle<GameObject> Instance = DuplicateGameObject(Target.GetRoot(), Parent, true);
 		Instance->ReferenceId = Target.GetId();
 		return Instance;
 	}
@@ -57,15 +57,27 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent, bool HandleReferences)
 	{
 		NxFr::Handle<GameObject> Instance = CreateGameObject(Target->GetName(), 0, Parent);
 		Instance->ReferenceId = Target->ReferenceId;
 
+		if (HandleReferences && Target->ReferenceId)
+		{
+			if (References == ReferenceMode::Reference)
+			{
+				return Instance;
+			}
+			else if (References == ReferenceMode::Bake)
+			{
+				Target = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Target->ReferenceId)->GetRoot();
+			}
+		}
+
 		NxFr::Handle<GameObject> Child = Target->GetChild();
 		while (Child)
 		{
-			DuplicateGameObject(Child, Instance);
+			DuplicateGameObject(Child, Instance, HandleReferences);
 			Child = Child->GetNext();
 		}
 

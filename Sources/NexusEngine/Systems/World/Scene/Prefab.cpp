@@ -4,7 +4,7 @@
 
 namespace NxEn
 {
-	static ObjectFactory Factory("Prefab"_Sid);
+	static ObjectFactory Factory("Prefab"_Sid, ObjectFactory::ReferenceMode::Reference);
 
 	NEXUS_ASSET_IMPLEMENTATION(Prefab)
 

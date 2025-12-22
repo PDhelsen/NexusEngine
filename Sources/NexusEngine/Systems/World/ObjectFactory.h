@@ -13,7 +13,12 @@ namespace NxEn
 		};
 
 	public:
-		ObjectFactory(NxFr::GUID WorldId);
+		enum class ReferenceMode
+		{
+			Reference, Bake
+		};
+
+		ObjectFactory(NxFr::GUID WorldId, ReferenceMode References);
 		~ObjectFactory();
 
 		void Reserve(uint64 Size);
@@ -21,7 +26,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::GUID GameObjectId, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
-		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
+		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), bool HandleReferences = false);
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 
@@ -43,6 +48,7 @@ namespace NxEn
 
 	private:
 		NxFr::GUID WorldId;
+		ReferenceMode References;
 		HandleManager Handles;
 
 		NxFr::List<GameObject> GameObjects;
