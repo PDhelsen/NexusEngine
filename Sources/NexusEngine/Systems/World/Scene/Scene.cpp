@@ -22,6 +22,8 @@ namespace NxEn
 
 		ObjectFactory& Factory = ObjectFactory::GetFactory();
 		Root = Factory.CreateGameObject(Metadata.GetName());
+		Root->Initialize();
+		Root->SetEnabled(true);
 	}
 
 	void Scene::OnSave(YAML::Node& Node, NxFr::StringView Content)
