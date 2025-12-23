@@ -1,10 +1,12 @@
 #include "NexusEditor/Systems/World/Scene/ScenesManager.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
 #include "NexusEngine/Systems/Settings/SettingTemplate.h"
+#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
 {
 	const static NxEn::GUI::Menu::Item MenuItemSceneRefresh = NxEn::GUI::Menu::Item::Create("Object/Scene/Refresh", &ScenesManager::Refresh);
+	const static NxEn::GUI::Menu::Item MenuItemSceneCreate = NxEn::GUI::Menu::Item::Create("Object/Scene/Create", &ScenesManager::Create);
 
 	static NxEn::SettingVar<bool>* SettingUnloadBeforeLoading = NxEn::SettingVar<bool>::Create("Editor", "Scene - Unload before loading", true);
 
@@ -85,6 +87,17 @@ namespace NxEd
 				NxFr::String Path = AssetSystem->IdToPath(Id);
 				MainMenu->AddMenuToggle("Object/Scene/Scenes/" + NxFr::Path::Split(Path).Last(), &Scenes[Id], [=]() { Toggle_Gui(Id); });
 			}
+		}
+
+		void Create()
+		{
+			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+			Popup->RegisterCallback([=](NxFr::StringView Input)
+			{
+				NxFr::GUID WorldId = NxEn::GUISystem::GetPanel<HierarchyPanel>()->GetWorldId();
+				NxEn::WorldSystem* WorldSystem = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+				WorldSystem->CreateScene(Input, WorldId);
+			});
 		}
 
 		bool GetShouldUnloadBeforeLoading()

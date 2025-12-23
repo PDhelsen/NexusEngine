@@ -236,7 +236,7 @@ namespace NxEn
 
 	void WorldSystem::SavePrefab(NxFr::Handle<GameObject> Target)
 	{
-		Prefab* Instance = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Target->GetId());
+		Prefab* Instance = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->GetReferenceId());
 		Instance->SetRoot(Target);
 	}
 
