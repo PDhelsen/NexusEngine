@@ -20,6 +20,8 @@ namespace NxEd
 		template<typename T>
 		void RemoveAction();
 
+		NxFr::GUID GetWorldId() { return WorldsIds[WorldIndex]; }
+
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
 		NEXUS_EDITOR_API void OnShutdown() override;

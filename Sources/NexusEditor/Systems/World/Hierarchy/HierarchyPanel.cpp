@@ -1,4 +1,3 @@
-#include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
 
 #include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionCreate.h"
@@ -13,7 +12,7 @@ namespace NxEd
 {
 	static HierarchyPanel* Panel = NxEn::GUI::Panel::Create<HierarchyPanel>();
 
-	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/World/Hierarchy", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemHierarchy = NxEn::GUI::Menu::Item::Create("Object/World/Hierarchy", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel HierarchyPanel");
 	}));
@@ -283,7 +282,7 @@ namespace NxEd
 	void HierarchyPanel::OnGameObjectChanged(NxFr::StringId EventId, NxFr::StringId WorldId, NxFr::GUID GameObjectId)
 	{
 		NxEn::World* World = GetWorld();
-		if (WorldId != World->GetId())
+		if (!World || World->GetId() != WorldId)
 		{
 			return;
 		}

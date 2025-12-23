@@ -3,7 +3,6 @@
 
 namespace NxEn
 {
-
 	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
 
 	GameObject::GameObject(NxFr::GUID WorldId)
