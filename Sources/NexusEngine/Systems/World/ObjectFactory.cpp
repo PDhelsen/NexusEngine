@@ -3,6 +3,12 @@
 
 namespace NxEn
 {
+	ObjectFactory& ObjectFactory::GetAssetsFactory()
+	{
+		static ObjectFactory Factory("Assets"_Sid, ObjectFactory::ReferenceMode::Reference);
+		return Factory;
+	}
+
 	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, ReferenceMode References)
 		: WorldId(WorldId), References(References), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
 	{

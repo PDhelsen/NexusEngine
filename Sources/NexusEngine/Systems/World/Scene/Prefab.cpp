@@ -4,8 +4,6 @@
 
 namespace NxEn
 {
-	static ObjectFactory Factory("Prefab"_Sid, ObjectFactory::ReferenceMode::Reference);
-
 	NEXUS_ASSET_IMPLEMENTATION(Prefab)
 
 	NxFr::Handle<GameObject> Prefab::GetRoot() const
@@ -15,7 +13,9 @@ namespace NxEn
 
 	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
 	{
-		Root = Factory.DuplicateGameObject(Instance);
+		ObjectFactory& AssetsFactory = ObjectFactory::GetAssetsFactory();
+
+		Root = AssetsFactory.DuplicateGameObject(Instance);
 		Root->ReferenceId = 0;
 
 		Instance->ReferenceId = GetId();
@@ -25,138 +25,37 @@ namespace NxEn
 
 	void Prefab::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
-		NxFr::Delegate<void(YAML::Emitter&, NxFr::Handle<GameObject>)> Save = [&](YAML::Emitter& Data, NxFr::Handle<GameObject> Instance)
-		{
-			bool IsPrefab = Instance->GetReferenceId();
-
-			Data << YAML::BeginMap;
-
-			Data << YAML::Key << "GameObject" << YAML::Value << Instance->Save();
-			if (!IsPrefab)
-			{
-				Data << YAML::Key << "Children" << YAML::Value;
-				Data << YAML::BeginSeq;
-				NxFr::Handle<GameObject> InstanceChild = Instance->GetChild();
-				while (InstanceChild)
-				{
-					Save(Data, InstanceChild);
-					InstanceChild = InstanceChild->GetNext();
-				}
-				Data << YAML::EndSeq;
-			}
-
-			Data << YAML::EndMap;
-		};
-
-		YAML::Emitter Data;
-		Save(Data, Root);
-
-		NxFr::Yaml::SerializeFile(Data, Content);
 		Node["Count"] = 1 + Root->GetChildCount(true);
+		NxFr::Yaml::SerializeFile(Root->Save(), Content);
 	}
 
 	void Prefab::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
-		NxFr::Delegate<NxFr::Handle<GameObject>(YAML::Node, NxFr::Handle<GameObject>)> Load = [&](YAML::Node Data, NxFr::Handle<GameObject> Parent)
-		{
-			NxFr::Handle<GameObject> Instance;
-			YAML::Node Go = Data["GameObject"];
+		ObjectFactory& AssetsFactory = ObjectFactory::GetAssetsFactory();
 
-			NxFr::GUID Id = Go["Id"].as<NxFr::GUID>();
-			NxFr::GUID Reference = Go["Reference"].as<NxFr::GUID>();
-
-			if (Reference)
-			{
-				Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Acquire<Prefab>(Reference);
-				Instance = Factory.Instantiate(*PrefabInstance, Parent);
-			}
-			else
-			{
-				Instance = Factory.CreateGameObject("", Parent, Id);
-				Instance->Load(Go);
-
-				YAML::Node Children = Data["Children"];
-				if (Children.size() > 0)
-				{
-					Instance->Child = Load(Children[0], Instance);
-					NxFr::Handle<GameObject> ChildInstance = Instance->GetChild();
-
-					for (uint64 Index = 1; Index < Children.size(); ++Index)
-					{
-						ChildInstance->Next = Load(Children[Index], Instance);
-						ChildInstance = ChildInstance->GetNext();
-					}
-				}
-			}
-
-			return Instance;
-		};
-
-		Factory.Reserve(Node["Count"].as<uint64>());
+		AssetsFactory.Reserve(Node["Count"].as<uint64>());
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
-		Root = Load(Data, NxFr::Handle<GameObject>());
 
+		Root = AssetsFactory.CreateGameObject("");
+		Root->Load(Data);
 		Root->Initialize();
 		Root->SetEnabled(true);
 	}
 
 	void Prefab::OnUnload()
 	{
-		NxFr::Delegate<void(NxFr::Handle<GameObject>)> Unload = [&](NxFr::Handle<GameObject> Instance)
-		{
-			if (!Instance)
-			{
-				return;
-			}
-
-			Instance->Unload();
-			if (Instance->GetReferenceId())
-			{
-				Application::GetSystem<AssetsSystem>()->Release(Instance->GetReferenceId());
-				return;
-			}
-
-			NxFr::Handle<GameObject> Child = Instance->GetChild();
-			while (Child)
-			{
-				Unload(Child);
-				Child = Child->GetNext();
-			}
-		};
+		ObjectFactory& AssetsFactory = ObjectFactory::GetAssetsFactory();
 
 		Root->SetEnabled(false);
 		Root->Shutdown();
+		Root->Unload();
 
-		Unload(Root);
-		Factory.DestroyGameObject(Root);
+		AssetsFactory.DestroyGameObject(Root);
 		Root = NxFr::Handle<GameObject>();
 	}
 
 	NxFr::Array<NxFr::GUID> Prefab::GetDependencies()
 	{
-		NxFr::Set<NxFr::GUID> Dependencies;
-		GetDependencies(Root, Dependencies);
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
-	}
-
-	void Prefab::GetDependencies(NxFr::Handle<GameObject> Instance, NxFr::Set<NxFr::GUID>& Result) const
-	{
-		if (!Instance)
-		{
-			return;
-		}
-
-		if (Instance->GetReferenceId())
-		{
-			Result.Append(Instance->GetReferenceId());
-			return;
-		}
-
-		NxFr::Handle<GameObject> Child = Instance->GetChild();
-		while (Child)
-		{
-			GetDependencies(Child, Result);
-			Child = Child->GetNext();
-		}
+		return Root->GetDependencies();
 	}
 }

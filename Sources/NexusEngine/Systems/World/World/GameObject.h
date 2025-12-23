@@ -10,6 +10,7 @@ namespace NxEn
 	{
 		friend class ObjectFactory;
 		friend class World;
+		friend class Scene;
 		friend class Prefab;
 
 		const uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Anonymous_1;
@@ -26,10 +27,6 @@ namespace NxEn
 
 		NEXUS_ENGINE_API void SetEnabled(bool Enabled) override;
 		NEXUS_ENGINE_API bool IsEnabledInHierarchy() const;
-
-		NEXUS_ENGINE_API YAML::Node Save();
-		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
-		NEXUS_ENGINE_API void Unload();
 
 		NEXUS_ENGINE_API Object* Clone() const override;
 		NEXUS_ENGINE_API void Clone(Object* Target) override;
@@ -56,8 +53,22 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Name; };
 		NEXUS_ENGINE_API void SetName(NxFr::StringView Name) { this->Name = Name; };
 
+	protected:
+		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node);
+		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node);
+		NEXUS_ENGINE_API virtual void OnUnload();
+
 	private:
 		NEXUS_ENGINE_API bool UpdateEnabledInHierarchy();
+
+		NEXUS_ENGINE_API YAML::Node Save();
+		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
+		NEXUS_ENGINE_API void Unload();
+
+		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies();
+		NEXUS_ENGINE_API void GetDependencies(NxFr::Handle<GameObject> Instance, NxFr::Set<NxFr::GUID>& Result) const;
+
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetThis() const;
 
 	private:
 		NxFr::GUID WorldId;

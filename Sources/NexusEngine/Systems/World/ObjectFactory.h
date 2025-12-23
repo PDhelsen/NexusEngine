@@ -19,6 +19,8 @@ namespace NxEn
 			Reference, Bake
 		};
 
+		static ObjectFactory& GetAssetsFactory();
+
 		ObjectFactory(NxFr::GUID WorldId, ReferenceMode References);
 		~ObjectFactory();
 
@@ -37,6 +39,8 @@ namespace NxEn
 		NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
 		NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
 		NxFr::Array<NxFr::Handle<GameObject>> GetPrefabs() const;
+
+		NxFr::GUID GetId() const { return WorldId; }
 
 	private:
 		NxFr::Handle<GameObject> Allocate(NxFr::GUID GameObjectId);

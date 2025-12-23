@@ -19,7 +19,6 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnUnload() override;
 
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies() override;
-		NEXUS_ENGINE_API void GetDependencies(NxFr::Handle<GameObject> Instance, NxFr::Set<NxFr::GUID>& Result) const;
 
 	private:
 		NxFr::Handle<GameObject> Root;
