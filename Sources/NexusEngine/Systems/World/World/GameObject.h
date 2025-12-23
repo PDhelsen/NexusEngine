@@ -49,7 +49,6 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetGameObjectId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
 		NEXUS_ENGINE_API NxFr::GUID GetGameObjectId() const { return GameObjectId; };
-		NEXUS_ENGINE_API NxFr::GUID GetReferenceId() const { return ReferenceId; };
 		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Name; };
 		NEXUS_ENGINE_API void SetName(NxFr::StringView Name) { this->Name = Name; };
 
@@ -65,20 +64,17 @@ namespace NxEn
 		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
 		NEXUS_ENGINE_API void Unload();
 
-		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies();
-		NEXUS_ENGINE_API void GetDependencies(NxFr::Handle<GameObject> Instance, NxFr::Set<NxFr::GUID>& Result) const;
-
-		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetThis() const;
+		static inline NxFr::GUID ReadIdFromYaml(const YAML::Node& Node) { return Node["Instance"]["Id"].as<NxFr::GUID>(); }
 
 	private:
 		NxFr::GUID WorldId;
 		NxFr::GUID GameObjectId;
-		NxFr::GUID ReferenceId;
-		NxFr::String Name;
 
 		NxFr::Handle<GameObject> Parent;
 		NxFr::Handle<GameObject> Prev;
 		NxFr::Handle<GameObject> Next;
 		NxFr::Handle<GameObject> Child;
+
+		NxFr::String Name;
 	};
 }

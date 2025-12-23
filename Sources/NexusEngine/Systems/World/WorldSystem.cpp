@@ -3,6 +3,40 @@
 
 namespace NxEn
 {
+	const static Command CmdWorldSceneCreate = Command::Create("World.Scene.Create"_Sid, "Create scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		Application::GetSystem<WorldSystem>()->CreateScene(Path);
+	}));
+
+	const static Command CmdWorldSceneSave = Command::Create("World.Scene.Save"_Sid, "Save scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
+		NxFr::GUID Id = System->PathToId(Path);
+		Application::GetSystem<WorldSystem>()->SaveScene(Id);
+	}));
+
+	const static Command CmdWorldSceneLoad = Command::Create("World.Scene.Load"_Sid, "Load scene into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
+		NxFr::GUID Id = System->PathToId(Path);
+		Application::GetSystem<WorldSystem>()->LoadScene(Id);
+	}));
+
+	const static Command CmdWorldSceneUnload = Command::Create("World.Scene.Unload"_Sid, "Unload scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
+		NxFr::GUID Id = System->PathToId(Path);
+		Application::GetSystem<WorldSystem>()->UnloadScene(Id);
+	}));
+
+	const static Command CmdWorldInstantiate = Command::Create("World.Prefab.Instantiate"_Sid, "Instantiate into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
+		NxFr::GUID Id = System->PathToId(Path);
+		Prefab* Instance = System->Load<Prefab>(Id);
+		Application::GetSystem<WorldSystem>()->GetWorld()->Instantiate(*Instance);
+	}));
+
 	NEXUS_OBJECT_IMPLEMENTATION(WorldSystem)
 
 	WorldSystem::WorldSystem()
@@ -68,6 +102,12 @@ namespace NxEn
 
 		GetOnWorldEvent().Invoke(RemovedId, WorldId);
 
+		NxFr::Array<NxFr::GUID> LoadedScene = GetScenes(WorldId);
+		for (auto& SceneId : LoadedScene)
+		{
+			UnloadScene(SceneId);
+		}
+
 		World* Instance = Worlds[WorldId];
 
 		Instance->SetEnabled(false);
@@ -77,16 +117,115 @@ namespace NxEn
 		Worlds.Remove(WorldId);
 	}
 
+	Scene* WorldSystem::CreateScene(NxFr::StringView Path, NxFr::GUID WorldId)
+	{
+		World* WorldInstance = GetWorld(WorldId);
+		ObjectFactory::SetFactory(&WorldInstance->Factory);
+
+		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Create<Scene>(Path, "scene");
+		SceneInstance->SetDirty();
+
+		WorldInstance->AttachGameObject(SceneInstance->GetRoot(), WorldInstance->GetRootGameObject());
+		Scenes.Append(SceneInstance->GetId(), WorldId);
+
+		ObjectFactory::SetFactory(nullptr);
+
+		return SceneInstance;
+	}
+
+	void WorldSystem::SaveScene(NxFr::GUID SceneId)
+	{
+		if (!IsSceneLoaded(SceneId))
+		{
+			NEXUS_LOG(Error, System, "Scene %d is not loaded", SceneId);
+			return;
+		}
+
+		Application::GetSystem<AssetsSystem>()->Save(SceneId, true);
+	}
+
+	void WorldSystem::SaveScenes()
+	{
+		for (auto& [IdScene, IdWorld] : Scenes)
+		{
+			SaveScene(IdScene);
+		}
+	}
+
+	Scene* WorldSystem::LoadScene(NxFr::GUID SceneId, NxFr::GUID WorldId)
+	{
+		if (IsSceneLoaded(SceneId))
+		{
+			NEXUS_LOG(Error, System, "Scene %d is already loaded", SceneId);
+			return nullptr;
+		}
+
+		World* WorldInstance = GetWorld(WorldId);
+		ObjectFactory::SetFactory(&WorldInstance->Factory);
+
+		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Load<Scene>(SceneId);
+		SceneInstance->SetDirty();
+
+		WorldInstance->AttachGameObject(SceneInstance->GetRoot(), WorldInstance->GetRootGameObject());
+		Scenes.Append(SceneId, WorldId);
+
+		ObjectFactory::SetFactory(nullptr);
+
+		return SceneInstance;
+	}
+
+	void WorldSystem::UnloadScene(NxFr::GUID SceneId)
+	{
+		NxFr::GUID WorldId = IsSceneLoaded(SceneId);
+		if (!WorldId)
+		{
+			NEXUS_LOG(Error, System, "Scene %d is not loaded", SceneId, WorldId);
+			return;
+		}
+
+		World* WorldInstance = GetWorld(WorldId);
+		ObjectFactory::SetFactory(&WorldInstance->Factory);
+
+		Scenes.Remove(SceneId);
+
+		Application::GetSystem<AssetsSystem>()->Unload(SceneId);
+
+		ObjectFactory::SetFactory(nullptr);
+	}
+
+	NxFr::GUID WorldSystem::IsSceneLoaded(NxFr::GUID SceneId)
+	{
+		bool Loaded = Application::GetSystem<AssetsSystem>()->IsLoaded(SceneId);
+		NxFr::GUID* WorldId = Scenes.TryGet(SceneId);
+		return Loaded && WorldId ? *WorldId : 0;
+	}
+
+	NxFr::Array<NxFr::GUID> WorldSystem::GetScenes(NxFr::GUID WorldId)
+	{
+		NxFr::List<NxFr::GUID> Result(Scenes.GetCount());
+		uint64 Index = 0;
+
+		for (auto& [IdScene, IdWorld] : Scenes)
+		{
+			if (WorldId == 0 || WorldId == IdWorld)
+			{
+				Result.Append(IdScene);
+			}
+		}
+
+		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Result);
+	}
+
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)
 	{
-		NxEn::Prefab* Instance = Application::GetSystem<AssetsSystem>()->Create<NxEn::Prefab>(Path, "prefab");
+		Prefab* Instance = Application::GetSystem<AssetsSystem>()->Create<Prefab>(Path, "prefab");
 		Instance->SetRoot(Target);
 		return Instance;
 	}
 
 	void WorldSystem::SavePrefab(NxFr::Handle<GameObject> Target)
 	{
-		NxEn::Prefab* Instance = Application::GetSystem<AssetsSystem>()->Load<NxEn::Prefab>(Target->GetReferenceId());
+		Prefab* Instance = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Target->GetId());
 		Instance->SetRoot(Target);
 	}
 

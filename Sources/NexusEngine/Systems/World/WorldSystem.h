@@ -3,6 +3,7 @@
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/World/World/World.h"
 #include "NexusEngine/Systems/World/World/GameObject.h"
+#include "NexusEngine/Systems/World/Scene/Scene.h"
 #include "NexusEngine/Systems/World/Scene/Prefab.h"
 
 namespace NxEn
@@ -27,6 +28,14 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetWorlds();
 		NEXUS_ENGINE_API void DestroyWorld(NxFr::GUID WorldId);
 
+		NEXUS_ENGINE_API Scene* CreateScene(NxFr::StringView Path, NxFr::GUID WorldId = WorldId);
+		NEXUS_ENGINE_API void SaveScene(NxFr::GUID SceneId);
+		NEXUS_ENGINE_API void SaveScenes();
+		NEXUS_ENGINE_API Scene* LoadScene(NxFr::GUID SceneId, NxFr::GUID WorldId = WorldId);
+		NEXUS_ENGINE_API void UnloadScene(NxFr::GUID SceneId);
+		NEXUS_ENGINE_API NxFr::GUID IsSceneLoaded(NxFr::GUID SceneId);
+		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetScenes(NxFr::GUID WorldId = 0);
+
 		NEXUS_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
 		NEXUS_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);
 
@@ -43,5 +52,6 @@ namespace NxEn
 		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID> OnGameObjectEvent;
 
 		NxFr::Dictionary<NxFr::GUID, World*> Worlds;
+		NxFr::Dictionary<NxFr::GUID, NxFr::GUID> Scenes;
 	};
 }

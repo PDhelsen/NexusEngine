@@ -17,6 +17,7 @@ namespace NxEd
 		OnSave += [](){ Application::GetSystem<NxEn::GUISystem>()->SaveLayout(); };
 		OnSave += [](){ Application::GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
 		OnSave += [](){ Application::GetSystem<NxEn::AssetsSystem>()->Save(); };
+		OnSave += [](){ Application::GetSystem<NxEn::WorldSystem>()->SaveScenes(); };
 
 		if (!IsHeadless())
 		{

@@ -28,8 +28,6 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter) const;
 
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
-		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> GetPrefabs() const;
-
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetRootGameObject() const;
 

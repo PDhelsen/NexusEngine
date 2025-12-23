@@ -21,9 +21,7 @@ namespace NxEd
 		}
 
 		NxFr::StringView Prefix =
-			GameObject == GameObject->GetWorld()->GetRootGameObject() ? "W" :
-			GameObject->GetReferenceId() != 0 ? "P" :
-			"G";
+			GameObject == GameObject->GetWorld()->GetRootGameObject() ? "W" : "G";
 
 		ImGuiText = Prefix + " " + GameObject->GetName() + "##" + NxFr::StringUtility::ToString(GameObject->GetId());
 	}

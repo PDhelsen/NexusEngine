@@ -38,6 +38,8 @@ namespace NxEn
 		T* Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
 		template<typename T>
 		T* Reimport(const YAML::Node& Node, NxFr::GUID Id);
+		template<typename T>
+		T* GetAsset(NxFr::GUID Id);
 
 		NEXUS_ENGINE_API Asset* Create(NxFr::StringId Type, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		NEXUS_ENGINE_API void Rename(NxFr::GUID Id, NxFr::StringView Name);
@@ -121,5 +123,11 @@ namespace NxEn
 	inline T* AssetsSystem::Reimport(const YAML::Node& Node, NxFr::GUID Id)
 	{
 		return static_cast<T*>(Reimport(Id, Node));
+	}
+
+	template<typename T>
+	inline T* AssetsSystem::GetAsset(NxFr::GUID Id)
+	{
+		return static_cast<T*>(GetAsset(Id));
 	}
 }

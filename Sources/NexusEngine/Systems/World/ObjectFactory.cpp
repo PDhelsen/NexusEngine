@@ -3,14 +3,21 @@
 
 namespace NxEn
 {
-	ObjectFactory& ObjectFactory::GetAssetsFactory()
+	static ObjectFactory AssetFactory("Assets"_Sid);
+	static ObjectFactory* SceneFactory = nullptr;
+
+	ObjectFactory& ObjectFactory::GetFactory()
 	{
-		static ObjectFactory Factory("Assets"_Sid, ObjectFactory::ReferenceMode::Reference);
-		return Factory;
+		return SceneFactory ? *SceneFactory : AssetFactory;
 	}
 
-	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, ReferenceMode References)
-		: WorldId(WorldId), References(References), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
+	void ObjectFactory::SetFactory(ObjectFactory* Factory)
+	{
+		SceneFactory = Factory;
+	}
+
+	ObjectFactory::ObjectFactory(NxFr::GUID WorldId)
+		: WorldId(WorldId), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
 	{
 	}
 
@@ -39,9 +46,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent)
 	{
-		NxFr::Handle<GameObject> Instance = DuplicateGameObject(Target.GetRoot(), Parent, true);
-		Instance->ReferenceId = Target.GetId();
-		return Instance;
+		return DuplicateGameObject(Target.GetRoot(), Parent, true);
 	}
 
 	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
@@ -66,18 +71,6 @@ namespace NxEn
 	{
 		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
 		Instance->Clone((const GameObject*)Target.GetRedirectedPointer());
-
-		if (HandleReferences && Target->ReferenceId)
-		{
-			if (References == ReferenceMode::Reference)
-			{
-				return Instance;
-			}
-			else if (References == ReferenceMode::Bake)
-			{
-				Target = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Target->ReferenceId)->GetRoot();
-			}
-		}
 
 		NxFr::Handle<GameObject> Child = Target->GetChild();
 		while (Child)
@@ -174,21 +167,6 @@ namespace NxEn
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::GetPrefabs() const
-	{
-		NxFr::List<NxFr::Handle<GameObject>> Result(GameObjects.GetCount());
-
-		for (auto& Instance : GameObjects)
-		{
-			if (Instance.IsInitialized() && Instance.GetReferenceId())
-			{
-				Result.Append(GameObjectInfos[Instance.GetId()].Handle);
-			}
-		}
-
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
-	}
-
 	NxFr::Handle<GameObject> ObjectFactory::Allocate(NxFr::GUID GameObjectId)
 	{
 		GameObject* Instance = nullptr;
@@ -212,7 +190,6 @@ namespace NxEn
 		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
 		GameObjectInfos.Append(GameObjectId, GameObjectInfo{ .Index = Index , .Handle = Handle });
 		Instance->GameObjectId = GameObjectId;
-		Instance->ReferenceId = 0;
 
 		return Handle;
 	}

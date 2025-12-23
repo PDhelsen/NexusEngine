@@ -14,14 +14,10 @@ namespace NxEn
 		};
 
 	public:
-		enum class ReferenceMode
-		{
-			Reference, Bake
-		};
+		static ObjectFactory& GetFactory();
+		static void SetFactory(ObjectFactory* Factory);
 
-		static ObjectFactory& GetAssetsFactory();
-
-		ObjectFactory(NxFr::GUID WorldId, ReferenceMode References);
+		ObjectFactory(NxFr::GUID WorldId);
 		~ObjectFactory();
 
 		void Reserve(uint64 Size);
@@ -38,7 +34,6 @@ namespace NxEn
 
 		NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
 		NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
-		NxFr::Array<NxFr::Handle<GameObject>> GetPrefabs() const;
 
 		NxFr::GUID GetId() const { return WorldId; }
 
@@ -50,7 +45,6 @@ namespace NxEn
 
 	private:
 		NxFr::GUID WorldId;
-		ReferenceMode References;
 		HandleManager Handles;
 
 		NxFr::List<GameObject> GameObjects;

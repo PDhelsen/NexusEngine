@@ -259,6 +259,11 @@ namespace NxEd
 
 	void HierarchyPanel::AddItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
+		if (Items.ContainsKey(Instance))
+		{
+			return;
+		}
+
 		Items.Append(Instance, Instance);
 	}
 
@@ -284,7 +289,7 @@ namespace NxEd
 		}
 
 		NxFr::Handle<NxEn::GameObject> GameObject = World->GetGameObject(GameObjectId);
-		if (EventId == NxEn::WorldSystem::AppendedId)
+		if (EventId == NxEn::WorldSystem::AppendedId || EventId == NxEn::WorldSystem::ChangedId)
 		{
 			AddItem(GameObject);
 		}

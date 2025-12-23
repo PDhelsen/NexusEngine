@@ -3,18 +3,10 @@
 
 namespace NxEn
 {
-	const static NxEn::Command CmdWorldInstantiate = NxEn::Command::Create("World.Instantiate"_Sid, "Instantiate into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
-	{
-		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
-		NxFr::GUID Id = System->PathToId(Path);
-		Prefab* Instance = System->Acquire<Prefab>(Id);
-		Application::GetSystem<WorldSystem>()->GetWorld()->Instantiate(*Instance);
-	}));
-
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
 	World::World(NxFr::GUID WorldId, NxFr::StringView Name)
-		: WorldId(WorldId), Name(Name), Factory(WorldId, ObjectFactory::ReferenceMode::Bake), Root()
+		: WorldId(WorldId), Name(Name), Factory(WorldId), Root()
 	{
 		SetTickable(true);
 	}
@@ -123,11 +115,6 @@ namespace NxEn
 	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const
 	{
 		return Factory.GetGameObjects();
-	}
-
-	NxFr::Array<NxFr::Handle<GameObject>> World::GetPrefabs() const
-	{
-		return Factory.GetPrefabs();
 	}
 
 	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID GameObjectId) const
