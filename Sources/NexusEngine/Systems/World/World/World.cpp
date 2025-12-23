@@ -99,7 +99,16 @@ namespace NxEn
 
 		Factory.AttachGameObject(Instance, Target, Index);
 
-		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::ChangedId, WorldId, Instance->GetId());
+		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
+	}
+
+	void World::DetachGameObject(NxFr::Handle<GameObject> Instance)
+	{
+		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+
+		Factory.DetachGameObject(Instance);
+
+		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::RemovedId, WorldId, Instance->GetId());
 	}
 
 	bool World::Belong(NxFr::Handle<GameObject> Instance) const

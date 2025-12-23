@@ -102,6 +102,11 @@ namespace NxEn
 		Attach(Instance, Target, Index);
 	}
 
+	void ObjectFactory::DetachGameObject(NxFr::Handle<GameObject> Instance)
+	{
+		Detach(Instance);
+	}
+
 	bool ObjectFactory::Belong(NxFr::Handle<GameObject> Instance) const
 	{
 		return Instance->WorldId == WorldId;

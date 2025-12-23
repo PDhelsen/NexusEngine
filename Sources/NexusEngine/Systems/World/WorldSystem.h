@@ -18,7 +18,6 @@ namespace NxEn
 
 		inline static const NxFr::StringId AppendedId = "Added"_Sid;
 		inline static const NxFr::StringId RemovedId = "Removed"_Sid;
-		inline static const NxFr::StringId ChangedId = "Changed"_Sid;
 
 		NEXUS_ENGINE_API WorldSystem();
 		NEXUS_ENGINE_API ~WorldSystem();

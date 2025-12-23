@@ -288,7 +288,7 @@ namespace NxEd
 		}
 
 		NxFr::Handle<NxEn::GameObject> GameObject = World->GetGameObject(GameObjectId);
-		if (EventId == NxEn::WorldSystem::AppendedId || EventId == NxEn::WorldSystem::ChangedId)
+		if (EventId == NxEn::WorldSystem::AppendedId)
 		{
 			AddItem(GameObject);
 		}

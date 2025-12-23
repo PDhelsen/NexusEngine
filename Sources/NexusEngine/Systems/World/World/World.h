@@ -23,6 +23,7 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 		NEXUS_ENGINE_API void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		NEXUS_ENGINE_API void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
+		NEXUS_ENGINE_API void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<GameObject> Instance) const;
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter) const;

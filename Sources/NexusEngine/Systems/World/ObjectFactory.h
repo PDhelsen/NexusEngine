@@ -28,6 +28,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), bool HandleReferences = false);
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
+		void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
 		bool Belong(NxFr::Handle<GameObject> Instance) const;
 		NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter) const;
