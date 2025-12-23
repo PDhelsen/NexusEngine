@@ -32,6 +32,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void SaveScene(NxFr::GUID SceneId);
 		NEXUS_ENGINE_API void SaveScenes();
 		NEXUS_ENGINE_API Scene* LoadScene(NxFr::GUID SceneId, NxFr::GUID WorldId = WorldId);
+		NEXUS_ENGINE_API Scene* LoadSceneSingle(NxFr::GUID SceneId, NxFr::GUID WorldId = WorldId);
 		NEXUS_ENGINE_API void UnloadScene(NxFr::GUID SceneId);
 		NEXUS_ENGINE_API NxFr::GUID IsSceneLoaded(NxFr::GUID SceneId);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetScenes(NxFr::GUID WorldId = 0);

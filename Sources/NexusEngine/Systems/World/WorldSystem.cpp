@@ -174,6 +174,17 @@ namespace NxEn
 		return SceneInstance;
 	}
 
+	Scene* WorldSystem::LoadSceneSingle(NxFr::GUID SceneId, NxFr::GUID WorldId)
+	{
+		NxFr::Array<NxFr::GUID> Ids = GetScenes(WorldId);
+		for (auto Id : Ids)
+		{
+			UnloadScene(Id);
+		}
+
+		return LoadScene(SceneId);
+	}
+
 	void WorldSystem::UnloadScene(NxFr::GUID SceneId)
 	{
 		NxFr::GUID WorldId = IsSceneLoaded(SceneId);
