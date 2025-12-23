@@ -27,11 +27,11 @@ namespace NxEn
 		Enabled = 1 << 1,
 		Tickable = 1 << 2,
 
-		Anonymous_1 = 1 << 3,
-		Anonymous_2 = 1 << 4,
-		Anonymous_3 = 1 << 5,
-		Anonymous_4 = 1 << 6,
-		Anonymous_5 = 1 << 7,
+		Flag_1 = 1 << 3,
+		Flag_2 = 1 << 4,
+		Flag_3 = 1 << 5,
+		Flag_4 = 1 << 6,
+		Flag_5 = 1 << 7,
 	};
 }
 

@@ -13,7 +13,7 @@ namespace NxEn
 		friend class Scene;
 		friend class Prefab;
 
-		const uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Anonymous_1;
+		const uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GameObject)
