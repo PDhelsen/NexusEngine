@@ -8,6 +8,8 @@ namespace NxEn
 
 	struct FactoryContext
 	{
+		static ObjectFactory& GetFactory();
+
 		FactoryContext(ObjectFactory& Instance);
 		~FactoryContext();
 	};
@@ -21,8 +23,6 @@ namespace NxEn
 		};
 
 	public:
-		static ObjectFactory& GetFactory();
-
 		ObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
 		~ObjectFactory();
 

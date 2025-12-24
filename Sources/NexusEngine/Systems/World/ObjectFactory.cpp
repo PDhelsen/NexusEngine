@@ -5,6 +5,11 @@ namespace NxEn
 {
 	static NxFr::Stack<ObjectFactory*> Factories;
 
+	ObjectFactory& FactoryContext::GetFactory()
+	{
+		return *Factories.Get();
+	}
+
 	FactoryContext::FactoryContext(ObjectFactory& Instance)
 	{
 		Factories.Append(&Instance);
@@ -13,11 +18,6 @@ namespace NxEn
 	FactoryContext::~FactoryContext()
 	{
 		Factories.Remove();
-	}
-
-	ObjectFactory& ObjectFactory::GetFactory()
-	{
-		return *Factories.Get();
 	}
 
 	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, bool KeepReferences)

@@ -19,7 +19,7 @@ namespace NxEn
 		}
 
 		AssetMetadata& Metadata = Application::GetSystem<AssetsSystem>()->GetMetadata(GetId());
-		ObjectFactory& Factory = ObjectFactory::GetFactory();
+		ObjectFactory& Factory = FactoryContext::GetFactory();
 
 		Root = Factory.CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
 
@@ -37,7 +37,7 @@ namespace NxEn
 
 	void Scene::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
-		ObjectFactory& Factory = ObjectFactory::GetFactory();
+		ObjectFactory& Factory = FactoryContext::GetFactory();
 
 		Factory.Reserve(Node["Count"].as<uint64>());
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
@@ -51,7 +51,7 @@ namespace NxEn
 
 	void Scene::OnUnload()
 	{
-		ObjectFactory& Factory = ObjectFactory::GetFactory();
+		ObjectFactory& Factory = FactoryContext::GetFactory();
 
 		Root->SetEnabled(false);
 		Root->Shutdown();

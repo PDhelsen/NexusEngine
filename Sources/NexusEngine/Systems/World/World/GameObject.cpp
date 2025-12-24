@@ -342,7 +342,7 @@ namespace NxEn
 
 	void GameObject::Load(const YAML::Node& Node)
 	{
-		ObjectFactory& Factory = ObjectFactory::GetFactory();
+		ObjectFactory& Factory = FactoryContext::GetFactory();
 		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
 
 		YAML::Node Instance = Node["Instance"];
