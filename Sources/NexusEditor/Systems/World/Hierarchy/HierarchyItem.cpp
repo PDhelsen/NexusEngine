@@ -20,8 +20,14 @@ namespace NxEd
 			return;
 		}
 
+		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		NxEn::AssetMetadata* Metadata = System->IsTracked(GameObject->GetReferenceId()) ? &System->GetMetadata(GameObject->GetReferenceId()) : nullptr;
+
 		NxFr::StringView Prefix =
-			GameObject == GameObject->GetWorld()->GetRootGameObject() ? "W" : "G";
+			GameObject == GameObject->GetWorld()->GetRootGameObject() ? "W" :
+			Metadata && Metadata->GetType() == NxEn::Scene::GetClassType() ? "S" :
+			Metadata && Metadata->GetType() == NxEn::Prefab::GetClassType() ? "P" :
+			"G";
 
 		ImGuiText = Prefix + " " + GameObject->GetName() + "##" + NxFr::StringUtility::ToString(GameObject->GetId());
 	}
