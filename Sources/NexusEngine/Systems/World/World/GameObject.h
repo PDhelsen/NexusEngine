@@ -66,6 +66,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
 		NEXUS_ENGINE_API void Unload();
 
+		NEXUS_ENGINE_API void GatherDependencies(NxFr::Set<NxFr::GUID>& Result);
+
 		static inline NxFr::GUID ReadIdFromYaml(const YAML::Node& Node) { return Node["Instance"]["Id"].as<NxFr::GUID>(); }
 		static inline NxFr::GUID ReadReferenceFromYaml(const YAML::Node& Node) { return Node["Instance"]["Reference"].as<NxFr::GUID>(); }
 

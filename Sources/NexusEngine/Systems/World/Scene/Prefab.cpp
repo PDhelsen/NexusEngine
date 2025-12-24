@@ -59,6 +59,8 @@ namespace NxEn
 
 	NxFr::Array<NxFr::GUID> Prefab::GetDependencies()
 	{
-		return NxFr::Array<NxFr::GUID>();
+		NxFr::Set<NxFr::GUID> Dependencies;
+		Root->GatherDependencies(Dependencies);
+		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
 	}
 }

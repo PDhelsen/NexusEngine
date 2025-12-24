@@ -398,4 +398,22 @@ namespace NxEn
 			Iterator = Iterator->GetNext();
 		}
 	}
+
+	void GameObject::GatherDependencies(NxFr::Set<NxFr::GUID>& Result)
+	{
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			if (Iterator->GetReferenceId())
+			{
+				Result.Append(Iterator->GetReferenceId());
+			}
+			else
+			{
+				Iterator->GatherDependencies(Result);
+			}
+
+			Iterator = Iterator->GetNext();
+		}
+	}
 }
