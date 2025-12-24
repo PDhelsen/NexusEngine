@@ -4,6 +4,8 @@
 
 namespace NxEn
 {
+	static ObjectFactory Factory("Prefab"_Sid, true);
+
 	NEXUS_ASSET_IMPLEMENTATION(Prefab)
 
 	NxFr::Handle<GameObject> Prefab::GetRoot() const
@@ -13,9 +15,12 @@ namespace NxEn
 
 	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
 	{
-		ObjectFactory& Factory = ObjectFactory::GetFactory();
+		FactoryContext Context(Factory);
 
-		Root = Factory.DuplicateGameObject(Instance);
+		Root = Factory.DuplicateGameObject(Instance, NxFr::Handle<GameObject>(), true);
+
+		Root->ReferenceId = GetId();
+		Instance->ReferenceId = GetId();
 
 		SetDirty();
 	}
@@ -28,12 +33,13 @@ namespace NxEn
 
 	void Prefab::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
-		ObjectFactory& Factory = ObjectFactory::GetFactory();
+		FactoryContext Context(Factory);
 
 		Factory.Reserve(Node["Count"].as<uint64>());
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 
 		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
+
 		Root->Load(Data);
 		Root->Initialize();
 		Root->SetEnabled(true);
@@ -41,7 +47,7 @@ namespace NxEn
 
 	void Prefab::OnUnload()
 	{
-		ObjectFactory& Factory = ObjectFactory::GetFactory();
+		FactoryContext Context(Factory);
 
 		Root->SetEnabled(false);
 		Root->Shutdown();

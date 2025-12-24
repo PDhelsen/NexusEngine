@@ -6,7 +6,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
 
 	GameObject::GameObject(NxFr::GUID WorldId)
-		: WorldId(WorldId), GameObjectId(0),
+		: WorldId(WorldId), GameObjectId(0), ReferenceId(0),
 		Parent(), Prev(), Next(), Child(),
 		Name("")
 	{
@@ -96,6 +96,8 @@ namespace NxEn
 	{
 		GameObject* Instance = static_cast<GameObject*>(Target);
 
+		Instance->ReferenceId = ReferenceId;
+
 		Instance->Name = Name;
 
 		Instance->SetFlag(ObjectFlags::Enabled, IsEnabled());
@@ -106,6 +108,8 @@ namespace NxEn
 	void GameObject::Clone(const Object* Target)
 	{
 		const GameObject* Instance = static_cast<const GameObject*>(Target);
+
+		ReferenceId = Instance->ReferenceId;
 
 		Name = Instance->Name;
 
@@ -259,6 +263,7 @@ namespace NxEn
 	{
 		Node["Name"] = Name;
 		Node["Id"] = GameObjectId;
+		Node["Reference"] = ReferenceId;
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
 	}
@@ -267,6 +272,7 @@ namespace NxEn
 	{
 		Name = Node["Name"].as<NxFr::String>();
 		NEXUS_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
+		ReferenceId = Node["Reference"].as<NxFr::GUID>();
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
 		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
@@ -310,7 +316,23 @@ namespace NxEn
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
-			Children.push_back(Iterator->Save());
+			if (Iterator->GetReferenceId())
+			{
+				YAML::Node ChildNode;
+
+				YAML::Node ChildInstance;
+				Iterator->OnSave(ChildInstance);
+				ChildNode["Instance"] = ChildInstance;
+				ChildNode["Children"] = YAML::Node();
+
+				Children.push_back(ChildNode);
+
+			}
+			else
+			{
+				Children.push_back(Iterator->Save());
+			}
+
 			Iterator = Iterator->GetNext();
 		}
 		Node["Children"] = Children;
@@ -326,18 +348,34 @@ namespace NxEn
 		YAML::Node Instance = Node["Instance"];
 		OnLoad(Instance);
 
+		NxFr::Delegate<NxFr::Handle<GameObject>(const YAML::Node&)> ChildLoad = [&](const YAML::Node& ChildNode)
+		{
+			NxFr::Handle<GameObject> ChildInstance;
+			NxFr::GUID ChildReference = ReadReferenceFromYaml(ChildNode);
+
+			if (ChildReference)
+			{
+				Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Acquire<Prefab>(ChildReference);
+				ChildInstance = Factory.Instantiate(*PrefabInstance, This);
+			}
+			else
+			{
+				ChildInstance = Factory.CreateGameObject("", This, ReadIdFromYaml(ChildNode));
+				ChildInstance->Load(ChildNode);
+			}
+
+			return ChildInstance;
+		};
+
 		YAML::Node Children = Node["Children"];
 		if (Children.size() > 0)
 		{
-			Child = Factory.CreateGameObject("", This, ReadIdFromYaml(Children[0]));
-			Child->Load(Children[0]);
+			Child = ChildLoad.Invoke(Children[0]);
 
 			NxFr::Handle<GameObject> Iterator = GetChild();
 			for (uint64 Index = 1; Index < Children.size(); ++Index)
 			{
-				Iterator->Next = Factory.CreateGameObject("", This, ReadIdFromYaml(Children[Index]));
-				Iterator->Next->Load(Children[Index]);
-
+				Iterator->Next = ChildLoad.Invoke(Children[Index]);
 				Iterator = Iterator->GetNext();
 			}
 		}
@@ -348,7 +386,15 @@ namespace NxEn
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
-			Iterator->Unload();
+			if (Iterator->GetReferenceId())
+			{
+				Application::GetSystem<AssetsSystem>()->Release(Iterator->GetReferenceId());
+			}
+			else
+			{
+				Iterator->Unload();
+			}
+
 			Iterator = Iterator->GetNext();
 		}
 	}

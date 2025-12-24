@@ -6,7 +6,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
 	World::World(NxFr::GUID WorldId, NxFr::StringView Name)
-		: WorldId(WorldId), Name(Name), Factory(WorldId), Root()
+		: WorldId(WorldId), Name(Name), Factory(WorldId, false), Root()
 	{
 		SetTickable(true);
 	}

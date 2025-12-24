@@ -5,6 +5,14 @@
 
 namespace NxEn
 {
+	class ObjectFactory;
+
+	struct FactoryContext
+	{
+		FactoryContext(ObjectFactory& Instance);
+		~FactoryContext();
+	};
+
 	class ObjectFactory
 	{
 		struct GameObjectInfo
@@ -17,7 +25,7 @@ namespace NxEn
 		static ObjectFactory& GetFactory();
 		static void SetFactory(ObjectFactory* Factory);
 
-		ObjectFactory(NxFr::GUID WorldId);
+		ObjectFactory(NxFr::GUID WorldId, bool References);
 		~ObjectFactory();
 
 		void Reserve(uint64 Size);
@@ -46,6 +54,7 @@ namespace NxEn
 
 	private:
 		NxFr::GUID WorldId;
+		bool References;
 		HandleManager Handles;
 
 		NxFr::List<GameObject> GameObjects;

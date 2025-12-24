@@ -49,8 +49,10 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetGameObjectId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
 		NEXUS_ENGINE_API NxFr::GUID GetGameObjectId() const { return GameObjectId; };
+		NEXUS_ENGINE_API NxFr::GUID GetReferenceId() const { return ReferenceId; };
 		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Name; };
 		NEXUS_ENGINE_API void SetName(NxFr::StringView Name) { this->Name = Name; };
+		NEXUS_ENGINE_API bool IsRoot() const { return !Parent && !Prev && !Next; };
 
 	protected:
 		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node);
@@ -65,10 +67,12 @@ namespace NxEn
 		NEXUS_ENGINE_API void Unload();
 
 		static inline NxFr::GUID ReadIdFromYaml(const YAML::Node& Node) { return Node["Instance"]["Id"].as<NxFr::GUID>(); }
+		static inline NxFr::GUID ReadReferenceFromYaml(const YAML::Node& Node) { return Node["Instance"]["Reference"].as<NxFr::GUID>(); }
 
 	private:
 		NxFr::GUID WorldId;
 		NxFr::GUID GameObjectId;
+		NxFr::GUID ReferenceId;
 
 		NxFr::Handle<GameObject> Parent;
 		NxFr::Handle<GameObject> Prev;

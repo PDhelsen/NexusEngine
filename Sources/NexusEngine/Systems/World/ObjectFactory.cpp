@@ -3,21 +3,25 @@
 
 namespace NxEn
 {
-	static ObjectFactory AssetFactory("Assets"_Sid);
-	static ObjectFactory* SceneFactory = nullptr;
+	static NxFr::Stack<ObjectFactory*> Factories;
+
+	FactoryContext::FactoryContext(ObjectFactory& Instance)
+	{
+		Factories.Append(&Instance);
+	}
+
+	FactoryContext::~FactoryContext()
+	{
+		Factories.Remove();
+	}
 
 	ObjectFactory& ObjectFactory::GetFactory()
 	{
-		return SceneFactory ? *SceneFactory : AssetFactory;
+		return *Factories.Get();
 	}
 
-	void ObjectFactory::SetFactory(ObjectFactory* Factory)
-	{
-		SceneFactory = Factory;
-	}
-
-	ObjectFactory::ObjectFactory(NxFr::GUID WorldId)
-		: WorldId(WorldId), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
+	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, bool References)
+		: WorldId(WorldId), References(References), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
 	{
 	}
 
@@ -75,7 +79,24 @@ namespace NxEn
 		NxFr::Handle<GameObject> Child = Target->GetChild();
 		while (Child)
 		{
-			DuplicateGameObject(Child, Instance, HandleReferences);
+			if (Child->GetReferenceId() && HandleReferences)
+			{
+				if (References)
+				{
+					NxFr::Handle<GameObject> ChildInstance = CreateGameObject("", Instance);
+					ChildInstance->Clone((const GameObject*)Child.GetRedirectedPointer());
+				}
+				else
+				{
+					NxFr::Handle<GameObject> ChildTarget = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Child->GetReferenceId())->GetRoot();
+					DuplicateGameObject(ChildTarget, Instance, HandleReferences);
+				}
+			}
+			else
+			{
+				DuplicateGameObject(Child, Instance, HandleReferences);
+			}
+
 			Child = Child->GetNext();
 		}
 

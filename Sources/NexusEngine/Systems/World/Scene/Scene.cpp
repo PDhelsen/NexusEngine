@@ -21,7 +21,10 @@ namespace NxEn
 		AssetMetadata& Metadata = Application::GetSystem<AssetsSystem>()->GetMetadata(GetId());
 
 		ObjectFactory& Factory = ObjectFactory::GetFactory();
-		Root = Factory.CreateGameObject(Metadata.GetName());
+		Root = Factory.CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
+
+		Root->ReferenceId = GetId();
+
 		Root->Initialize();
 		Root->SetEnabled(true);
 	}
@@ -40,6 +43,7 @@ namespace NxEn
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 
 		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
+
 		Root->Load(Data);
 		Root->Initialize();
 		Root->SetEnabled(true);

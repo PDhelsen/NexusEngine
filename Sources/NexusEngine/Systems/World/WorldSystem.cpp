@@ -120,15 +120,13 @@ namespace NxEn
 	Scene* WorldSystem::CreateScene(NxFr::StringView Path, NxFr::GUID WorldId)
 	{
 		World* WorldInstance = GetWorld(WorldId);
-		ObjectFactory::SetFactory(&WorldInstance->Factory);
+		FactoryContext Context(WorldInstance->Factory);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Create<Scene>(Path, "scene");
 		WorldInstance->AttachGameObject(SceneInstance->GetRoot(), WorldInstance->GetRootGameObject());
 		SceneInstance->SetDirty();
 
-		ObjectFactory::SetFactory(nullptr);
 		Scenes.Append(SceneInstance->GetId(), WorldId);
-
 		return SceneInstance;
 	}
 
@@ -160,15 +158,13 @@ namespace NxEn
 		}
 
 		World* WorldInstance = GetWorld(WorldId);
-		ObjectFactory::SetFactory(&WorldInstance->Factory);
+		FactoryContext Context(WorldInstance->Factory);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Load<Scene>(SceneId);
 		WorldInstance->AttachGameObject(SceneInstance->GetRoot(), WorldInstance->GetRootGameObject());
 		SceneInstance->SetDirty();
 
-		ObjectFactory::SetFactory(nullptr);
 		Scenes.Append(SceneId, WorldId);
-
 		return SceneInstance;
 	}
 
@@ -193,13 +189,12 @@ namespace NxEn
 		}
 
 		World* WorldInstance = GetWorld(WorldId);
-		ObjectFactory::SetFactory(&WorldInstance->Factory);
+		FactoryContext Context(WorldInstance->Factory);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Scene>(SceneId);
 		WorldInstance->DetachGameObject(SceneInstance->GetRoot());
 		Application::GetSystem<AssetsSystem>()->Unload(SceneId);
 
-		ObjectFactory::SetFactory(nullptr);
 		Scenes.Remove(SceneId);
 	}
 
