@@ -388,7 +388,7 @@ namespace NxEn
 		{
 			if (Iterator->GetReferenceId())
 			{
-				Application::GetSystem<AssetsSystem>()->Release(Iterator->GetReferenceId());
+				Application::GetSystem<AssetsSystem>()->Release(Iterator->GetReferenceId(), true);
 			}
 			else
 			{
