@@ -1,8 +1,9 @@
 #pragma once
 
 #include "NexusEngine/Application/Systems/System.h"
-#include "NexusEngine/Systems/World/World/World.h"
+#include "NexusEngine/Systems/World/ObjectFactory.h"
 #include "NexusEngine/Systems/World/World/GameObject.h"
+#include "NexusEngine/Systems/World/World/World.h"
 #include "NexusEngine/Systems/World/Scene/Scene.h"
 #include "NexusEngine/Systems/World/Scene/Prefab.h"
 
@@ -38,6 +39,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
 		NEXUS_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> InstantiatePrefab(NxFr::GUID PrefabId, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = WorldId);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldEvent() { return OnWorldEvent; }
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnGameObjectEvent() { return OnGameObjectEvent; }

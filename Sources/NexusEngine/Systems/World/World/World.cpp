@@ -15,23 +15,6 @@ namespace NxEn
 	{
 	}
 
-	NxFr::Handle<GameObject> World::Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent)
-	{
-		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
-
-		if (!Parent && Root)
-		{
-			Parent = Root;
-		}
-
-		NxFr::Handle<GameObject> Instance = Factory.Instantiate(Target, Parent);
-		Instance->Initialize();
-		Instance->SetEnabled(Target.GetRoot()->IsEnabled());
-
-		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
-		return Instance;
-	}
-
 	NxFr::Handle<GameObject> World::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent)
 	{
 		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
@@ -49,17 +32,20 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> World::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> World::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent, bool Instantiate)
 	{
-		NEXUS_ASSERT(Belong(Target), Default, "Target should belong to the same Factory");
 		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
 
 		if (!Parent)
 		{
 			Parent = Target->GetParent();
 		}
+		if (!Parent && Root)
+		{
+			Parent = Root;
+		}
 
-		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent);
+		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent, Instantiate);
 		Instance->Initialize();
 		Instance->SetEnabled(Target->IsEnabled());
 

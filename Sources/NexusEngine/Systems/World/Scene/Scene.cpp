@@ -19,8 +19,8 @@ namespace NxEn
 		}
 
 		AssetMetadata& Metadata = Application::GetSystem<AssetsSystem>()->GetMetadata(GetId());
-
 		ObjectFactory& Factory = ObjectFactory::GetFactory();
+
 		Root = Factory.CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
 
 		Root->ReferenceId = GetId();

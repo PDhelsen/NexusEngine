@@ -33,8 +33,7 @@ namespace NxEn
 	{
 		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
 		NxFr::GUID Id = System->PathToId(Path);
-		Prefab* Instance = System->Load<Prefab>(Id);
-		Application::GetSystem<WorldSystem>()->GetWorld()->Instantiate(*Instance);
+		Application::GetSystem<WorldSystem>()->InstantiatePrefab(Id);
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(WorldSystem)
@@ -223,15 +222,23 @@ namespace NxEn
 
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)
 	{
-		Prefab* Instance = Application::GetSystem<AssetsSystem>()->Create<Prefab>(Path, "prefab");
-		Instance->SetRoot(Target);
-		return Instance;
+		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Create<Prefab>(Path, "prefab");
+		PrefabInstance->SetRoot(Target);
+		return PrefabInstance;
 	}
 
 	void WorldSystem::SavePrefab(NxFr::Handle<GameObject> Target)
 	{
-		Prefab* Instance = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->GetReferenceId());
-		Instance->SetRoot(Target);
+		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->GetReferenceId());
+		PrefabInstance->SetRoot(Target);
+	}
+
+	NxFr::Handle<GameObject> WorldSystem::InstantiatePrefab(NxFr::GUID PrefabId, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
+	{
+		World* WorldInstance = GetWorld(WorldId);
+
+		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Load<Prefab>(PrefabId);
+		return WorldInstance->DuplicateGameObject(PrefabInstance->GetRoot(), Parent, true);
 	}
 
 	void WorldSystem::OnInitialize()

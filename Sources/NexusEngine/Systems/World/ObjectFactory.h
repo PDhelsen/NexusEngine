@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NexusEngine/Systems/World/World/GameObject.h"
-#include "NexusEngine/Systems/World/Scene/Prefab.h"
 
 namespace NxEn
 {
@@ -23,14 +22,11 @@ namespace NxEn
 
 	public:
 		static ObjectFactory& GetFactory();
-		static void SetFactory(ObjectFactory* Factory);
 
-		ObjectFactory(NxFr::GUID WorldId, bool References);
+		ObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
 		~ObjectFactory();
 
 		void Reserve(uint64 Size);
-
-		NxFr::Handle<GameObject> Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), bool HandleReferences = false);
@@ -54,7 +50,7 @@ namespace NxEn
 
 	private:
 		NxFr::GUID WorldId;
-		bool References;
+		bool KeepReferences;
 		HandleManager Handles;
 
 		NxFr::List<GameObject> GameObjects;

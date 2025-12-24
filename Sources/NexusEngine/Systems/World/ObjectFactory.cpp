@@ -20,8 +20,8 @@ namespace NxEn
 		return *Factories.Get();
 	}
 
-	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, bool References)
-		: WorldId(WorldId), References(References), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
+	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
+		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
 	{
 	}
 
@@ -46,11 +46,6 @@ namespace NxEn
 				Handles.UpdateHandle(Info.Handle, &GameObjects[Info.Index]);
 			}
 		}
-	}
-
-	NxFr::Handle<GameObject> ObjectFactory::Instantiate(const Prefab& Target, NxFr::Handle<GameObject> Parent)
-	{
-		return DuplicateGameObject(Target.GetRoot(), Parent, true);
 	}
 
 	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
@@ -81,7 +76,7 @@ namespace NxEn
 		{
 			if (Child->GetReferenceId() && HandleReferences)
 			{
-				if (References)
+				if (KeepReferences)
 				{
 					NxFr::Handle<GameObject> ChildInstance = CreateGameObject("", Instance);
 					ChildInstance->Clone((const GameObject*)Child.GetRedirectedPointer());
@@ -89,7 +84,7 @@ namespace NxEn
 				else
 				{
 					NxFr::Handle<GameObject> ChildTarget = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Child->GetReferenceId())->GetRoot();
-					DuplicateGameObject(ChildTarget, Instance, HandleReferences);
+					DuplicateGameObject(ChildTarget, Instance, true);
 				}
 			}
 			else

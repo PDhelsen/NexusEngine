@@ -356,7 +356,7 @@ namespace NxEn
 			if (ChildReference)
 			{
 				Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Acquire<Prefab>(ChildReference);
-				ChildInstance = Factory.Instantiate(*PrefabInstance, This);
+				ChildInstance = Factory.DuplicateGameObject(PrefabInstance->GetRoot(), This, true);
 			}
 			else
 			{
