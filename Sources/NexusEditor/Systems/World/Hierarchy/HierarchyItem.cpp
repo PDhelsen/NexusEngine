@@ -15,7 +15,7 @@ namespace NxEd
 
 	void HierarchyItem::EnsureImGuiText()
 	{
-		if (NxFr::StringUtility::Split(ImGuiText, "##") == GetGameObject()->GetName())
+		if (Name == GameObject->GetName() && Reference == GameObject->GetReferenceId())
 		{
 			return;
 		}
@@ -30,5 +30,8 @@ namespace NxEd
 			"G";
 
 		ImGuiText = Prefix + " " + GameObject->GetName() + "##" + NxFr::StringUtility::ToString(GameObject->GetId());
+
+		Name = NxFr::StringUtility::Split(ImGuiText, "##");
+		Reference = GameObject->GetReferenceId();
 	}
 }

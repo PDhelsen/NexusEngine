@@ -27,5 +27,8 @@ namespace NxEd
 		NxFr::String ImGuiText;
 		bool Expanded;
 		bool Selected;
+
+		NxFr::StringView Name;
+		NxFr::GUID Reference;
 	};
 }

@@ -50,11 +50,6 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
 	{
-		if (GameObjectId == 0)
-		{
-			GameObjectId = NxFr::Integer::GenerateGuid();
-		}
-
 		NxFr::Handle<GameObject> Instance = Allocate(GameObjectId);
 		Instance->SetName(Name);
 
@@ -190,6 +185,11 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::Allocate(NxFr::GUID GameObjectId)
 	{
+		if (GameObjectId == 0)
+		{
+			GameObjectId = NxFr::Integer::GenerateGuid();
+		}
+
 		GameObject* Instance = nullptr;
 		uint64 Index = 0;
 
@@ -211,6 +211,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
 		GameObjectInfos.Append(GameObjectId, GameObjectInfo{ .Index = Index , .Handle = Handle });
 		Instance->GameObjectId = GameObjectId;
+		Instance->ReferenceId = 0;
 
 		return Handle;
 	}

@@ -39,6 +39,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
 		NEXUS_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);
+		NEXUS_ENGINE_API void UnpackPrefab(NxFr::Handle<GameObject> Target);
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> InstantiatePrefab(NxFr::GUID PrefabId, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = WorldId);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldEvent() { return OnWorldEvent; }

@@ -233,6 +233,16 @@ namespace NxEn
 		PrefabInstance->SetRoot(Target);
 	}
 
+	void WorldSystem::UnpackPrefab(NxFr::Handle<GameObject> Target)
+	{
+		if (!Target->GetReferenceId() || Target->IsRoot())
+		{
+			return;
+		}
+
+		Target->ReferenceId = 0;
+	}
+
 	NxFr::Handle<GameObject> WorldSystem::InstantiatePrefab(NxFr::GUID PrefabId, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
 		World* WorldInstance = GetWorld(WorldId);
