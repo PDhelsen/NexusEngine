@@ -50,8 +50,8 @@ namespace NxEn
 
 		NxFr::Dictionary<NxFr::GUID, GameObjectInfo>::I BeginGameObjects() const { return GameObjectInfos.Begin(); }
 		NxFr::Dictionary<NxFr::GUID, GameObjectInfo>::I EndGameObjects() const { return GameObjectInfos.End(); }
-		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>>::I BeginBehaviour() const { return Behaviours.Begin(); }
-		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>>::I EndBehaviour() const { return Behaviours.End(); }
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>>::I BeginBehaviour() const { return BehavioursInfos.Begin(); }
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>>::I EndBehaviour() const { return BehavioursInfos.End(); }
 
 		NxFr::GUID GetId() const { return WorldId; }
 
@@ -59,7 +59,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> AllocateGameObject(NxFr::GUID GameObjectId);
 		void FreeGameObject(NxFr::Handle<GameObject> Instance);
 		NxFr::Handle<Behaviour> AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId);
-		void FreeBehaviour(NxFr::Handle<Behaviour> Target);
+		void FreeBehaviour(NxFr::Handle<Behaviour> Instance);
 		void Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index);
 		void Detach(NxFr::Handle<GameObject> Instance);
 
@@ -72,6 +72,8 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, GameObjectInfo> GameObjectInfos;
 		NxFr::Stack<uint64> GameObjectAvailables;
 
-		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>> Behaviours;
+		NxFr::Dictionary<NxFr::StringId, NxFr::List<Behaviour*>> Behaviours;
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>> BehavioursInfos;
+		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<Behaviour*>> BehavioursAvailable;
 	};
 }
