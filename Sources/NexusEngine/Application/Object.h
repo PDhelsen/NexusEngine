@@ -70,6 +70,9 @@ namespace NxEn
 		NEXUS_ENGINE_API Object();
 		NEXUS_ENGINE_API virtual ~Object();
 
+		NEXUS_ENGINE_API bool operator==(const Object& Other) const;
+		NEXUS_ENGINE_API bool operator!=(const Object& Other) const;
+
 		NEXUS_ENGINE_API virtual void Initialize();
 		NEXUS_ENGINE_API virtual void Shutdown();
 		NEXUS_ENGINE_API virtual void Tick(float TimeStep = 0.0f);

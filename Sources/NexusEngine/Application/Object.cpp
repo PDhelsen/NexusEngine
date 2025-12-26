@@ -14,6 +14,16 @@ namespace NxEn
 	{
 	}
 
+	bool Object::operator==(const Object& Other) const
+	{
+		return GetId() == Other.GetId();
+	}
+
+	bool Object::operator!=(const Object& Other) const
+	{
+		return !(*this == Other);
+	}
+
 	void Object::Initialize()
 	{
 		if (IsInitialized())

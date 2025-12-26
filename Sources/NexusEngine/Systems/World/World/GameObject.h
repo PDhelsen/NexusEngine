@@ -5,6 +5,7 @@
 namespace NxEn
 {
 	class World;
+	class Behaviour;
 
 	class GameObject : public Object
 	{
@@ -47,6 +48,10 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetIterator() const;
 		NEXUS_ENGINE_API uint64 GetOrderIndex() const;
 
+		template<typename T> NxFr::Handle<T> GetBehaviour();
+		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviourById(NxFr::GUID Id);
+		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviourByType(NxFr::StringId Id);
+
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetGameObjectId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
 		NEXUS_ENGINE_API NxFr::GUID GetGameObjectId() const { return GameObjectId; };
@@ -61,13 +66,12 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnUnload();
 
 	private:
-		NEXUS_ENGINE_API bool UpdateEnabledInHierarchy();
-
 		NEXUS_ENGINE_API YAML::Node Save();
 		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
 		NEXUS_ENGINE_API void Unload();
-
 		NEXUS_ENGINE_API void GatherDependencies(NxFr::Set<NxFr::GUID>& Result);
+
+		NEXUS_ENGINE_API bool UpdateEnabledInHierarchy();
 
 		static inline NxFr::GUID ReadIdFromYaml(const YAML::Node& Node) { return Node["Instance"]["Id"].as<NxFr::GUID>(); }
 		static inline NxFr::GUID ReadReferenceFromYaml(const YAML::Node& Node) { return Node["Instance"]["Reference"].as<NxFr::GUID>(); }
@@ -77,11 +81,19 @@ namespace NxEn
 		NxFr::GUID GameObjectId;
 		NxFr::GUID ReferenceId;
 
+		NxFr::String Name;
+
 		NxFr::Handle<GameObject> Parent;
 		NxFr::Handle<GameObject> Prev;
 		NxFr::Handle<GameObject> Next;
 		NxFr::Handle<GameObject> Child;
 
-		NxFr::String Name;
+		NxFr::List<NxFr::Handle<Behaviour>> Behaviours;
 	};
+
+	template<typename T>
+	inline NxFr::Handle<T> GameObject::GetBehaviour()
+	{
+		return static_cast<NxFr::Handle<T>>(GetBehaviourByType(T::GetClassType()));
+	}
 }

@@ -315,7 +315,7 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::Array<NxFr::Handle<NxEn::GameObject>> Result = GetWorld()->Find(Filter);
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> Result = GetWorld()->FindGameObjects(Filter);
 		for (auto Instance : Result)
 		{
 			Show(Instance);

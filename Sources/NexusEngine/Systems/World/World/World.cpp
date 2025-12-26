@@ -97,14 +97,49 @@ namespace NxEn
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::RemovedId, WorldId, Instance->GetId());
 	}
 
-	bool World::Belong(NxFr::Handle<GameObject> Instance) const
+	NxFr::Handle<Behaviour> World::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
-		return Instance->GetWorldId() == WorldId;
+		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
+
+		NxFr::Handle<Behaviour> Instance = Factory.CreateBehaviour(Type, Target);
+		Instance->Initialize();
+		Instance->SetEnabled(true);
+
+		return Instance;
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> World::Find(NxFr::StringView Filter) const
+	void World::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
-		return Factory.Find(Filter);
+		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+
+		if (!Instance)
+		{
+			return;
+		}
+
+		Instance->SetEnabled(false);
+		Instance->Shutdown();
+		Factory.DestroyGameObject(Instance);
+	}
+
+	bool World::Belong(NxFr::Handle<GameObject> Instance) const
+	{
+		return Factory.Belong(Instance);
+	}
+
+	bool World::Belong(NxFr::Handle<Behaviour> Instance) const
+	{
+		return Factory.Belong(Instance);
+	}
+
+	NxFr::Array<NxFr::Handle<GameObject>> World::FindGameObjects(NxFr::StringView Filter) const
+	{
+		return Factory.FindGameObjects(Filter);
+	}
+
+	NxFr::Array<NxFr::Handle<Behaviour>> World::FindBehaviours(NxFr::StringView Filter) const
+	{
+		return Factory.FindBehaviours(Filter);
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const
@@ -122,6 +157,16 @@ namespace NxEn
 		return Root;
 	}
 
+	NxFr::Array<NxFr::Handle<Behaviour>> World::GetBehaviours() const
+	{
+		return Factory.GetBehaviours();
+	}
+
+	NxFr::Handle<Behaviour> World::GetBehaviour(NxFr::GUID BehaviourId) const
+	{
+		return Factory.GetBehaviour(BehaviourId);
+	}
+
 	void World::OnInitialize()
 	{
 		Root = CreateGameObject("Root");
@@ -135,5 +180,10 @@ namespace NxEn
 	void World::OnTick(float TimeStep)
 	{
 		Root->Tick(TimeStep);
+
+		for (auto Iterator = Factory.BeginBehaviour(); Iterator != Factory.EndBehaviour(); ++Iterator)
+		{
+			Iterator->Value->Tick(TimeStep);
+		}
 	}
 }

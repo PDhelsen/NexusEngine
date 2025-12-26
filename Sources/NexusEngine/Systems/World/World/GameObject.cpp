@@ -7,8 +7,9 @@ namespace NxEn
 
 	GameObject::GameObject(NxFr::GUID WorldId)
 		: WorldId(WorldId), GameObjectId(0), ReferenceId(0),
+		Name(""),
 		Parent(), Prev(), Next(), Child(),
-		Name("")
+		Behaviours()
 	{
 		SetTickable(true);
 	}
@@ -259,6 +260,32 @@ namespace NxEn
 		return Order;
 	}
 
+	NxFr::Handle<Behaviour> GameObject::GetBehaviourById(NxFr::GUID Id)
+	{
+		for (auto& B : Behaviours)
+		{
+			if (B->GetId() == Id)
+			{
+				return B;
+			}
+		}
+
+		return NxFr::Handle<Behaviour>();
+	}
+
+	NxFr::Handle<Behaviour> GameObject::GetBehaviourByType(NxFr::StringId Id)
+	{
+		for (auto& B : Behaviours)
+		{
+			if (B->GetObjectType() == Id)
+			{
+				return B;
+			}
+		}
+
+		return NxFr::Handle<Behaviour>();
+	}
+
 	void GameObject::OnSave(YAML::Node& Node)
 	{
 		Node["Name"] = Name;
@@ -280,28 +307,6 @@ namespace NxEn
 
 	void GameObject::OnUnload()
 	{
-	}
-
-	bool GameObject::UpdateEnabledInHierarchy()
-	{
-		bool Enabled = IsEnabled() && (Parent ? Parent->IsEnabledInHierarchy() : true);
-		if (Enabled == IsEnabledInHierarchy())
-		{
-			return false;
-		}
-
-		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, Enabled);
-
-		if (Enabled)
-		{
-			OnEnable();
-		}
-		else
-		{
-			OnDisable();
-		}
-
-		return true;
 	}
 
 	YAML::Node GameObject::Save()
@@ -415,5 +420,27 @@ namespace NxEn
 
 			Iterator = Iterator->GetNext();
 		}
+	}
+
+	bool GameObject::UpdateEnabledInHierarchy()
+	{
+		bool Enabled = IsEnabled() && (Parent ? Parent->IsEnabledInHierarchy() : true);
+		if (Enabled == IsEnabledInHierarchy())
+		{
+			return false;
+		}
+
+		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, Enabled);
+
+		if (Enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
+
+		return true;
 	}
 }

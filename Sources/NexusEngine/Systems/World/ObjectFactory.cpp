@@ -50,7 +50,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
 	{
-		NxFr::Handle<GameObject> Instance = Allocate(GameObjectId);
+		NxFr::Handle<GameObject> Instance = AllocateGameObject(GameObjectId);
 		Instance->SetName(Name);
 
 		if (Parent)
@@ -104,7 +104,7 @@ namespace NxEn
 		}
 
 		Detach(Instance);
-		Free(Instance);
+		FreeGameObject(Instance);
 	}
 
 	void ObjectFactory::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
@@ -118,12 +118,34 @@ namespace NxEn
 		Detach(Instance);
 	}
 
+	NxFr::Handle<Behaviour> ObjectFactory::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId)
+	{
+		NxFr::Handle<Behaviour> Instance = AllocateBehaviour(Type, BehaviourId);
+		Instance->Target = Target;
+		Target->Behaviours.Append(Instance);
+		return Instance;
+	}
+
+	void ObjectFactory::DestroyBehaviour(NxFr::Handle<Behaviour> Instance, NxFr::Handle<GameObject> Target)
+	{
+		uint64 Index = Target->Behaviours.Find(Target).Id();
+		Target->Behaviours.RemoveSwap(Index);
+
+		Instance->Target = NxFr::Handle<GameObject>();
+		FreeBehaviour(Instance);
+	}
+
 	bool ObjectFactory::Belong(NxFr::Handle<GameObject> Instance) const
 	{
 		return Instance->WorldId == WorldId;
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::Find(NxFr::StringView Filter) const
+	bool ObjectFactory::Belong(NxFr::Handle<Behaviour> Instance) const
+	{
+		return Belong(Instance->GetGameObject());
+	}
+
+	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::FindGameObjects(NxFr::StringView Filter) const
 	{
 		NxFr::List<NxFr::Handle<GameObject>> Result;
 
@@ -162,6 +184,59 @@ namespace NxEn
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
+	NxFr::Array<NxFr::Handle<Behaviour>> ObjectFactory::FindBehaviours(NxFr::StringView Filter) const
+	{
+		NxFr::List<NxFr::Handle<Behaviour>> Result;
+
+		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
+		NxFr::Array<NxFr::StringId> Types = Filters.GetCount();
+		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
+		bool All = Filter == "*";
+		bool TypeAndString = false;
+
+		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
+		{
+			Types[Index] = 0;
+			Ids[Index] = 0;
+
+			if (NxFr::StringUtility::Start(Filters[Index], "t:"))
+			{
+				NxFr::StringView Substring = Filters[Index].Substring(2, Filters[Index].GetCount() - 2);
+				Types[Index] = Substring;
+				TypeAndString = true;
+			}
+			else if (NxFr::StringUtility::Start(Filters[Index], "id:"))
+			{
+				NxFr::StringView Substring = Filters[Index].Substring(3, Filters[Index].GetCount() - 3);
+				Ids[Index] = NxFr::StringUtility::FromString<NxFr::GUID>(Substring);
+			}
+		}
+
+		// Check if should filter by type and string;
+		TypeAndString &= Filters.GetCount() > 1;
+
+		for (auto [Id, Instance] : Behaviours)
+		{
+			bool MatchId = false;
+			bool MatchType = false;
+			bool MatchString = false;
+
+			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
+			{
+				MatchId |= Ids[Index] != 0 && Id == Ids[Index];
+				MatchType |= Types[Index].GetId() != 0 && Instance->GetObjectType() == Types[Index];
+				MatchString |= NxFr::StringUtility::Contains(Instance->GetGameObject()->GetName(), Filters[Index]);
+			}
+
+			if (All || MatchId || (MatchType && !TypeAndString) || (MatchString && !TypeAndString) || (MatchType && MatchString && TypeAndString))
+			{
+				Result.Append(Instance);
+			}
+		}
+
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+	}
+
 	NxFr::Handle<GameObject> ObjectFactory::GetGameObject(NxFr::GUID GameObjectId) const
 	{
 		const GameObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
@@ -183,7 +258,25 @@ namespace NxEn
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::Allocate(NxFr::GUID GameObjectId)
+	NxFr::Handle<Behaviour> ObjectFactory::GetBehaviour(NxFr::GUID BehaviourId) const
+	{
+		const NxFr::Handle<Behaviour>* Instance = Behaviours.TryGet(BehaviourId);
+		return Instance ? *Instance : NxFr::Handle<Behaviour>();
+	}
+
+	NxFr::Array<NxFr::Handle<Behaviour>> ObjectFactory::GetBehaviours() const
+	{
+		NxFr::List<NxFr::Handle<GameObject>> Result(Behaviours.GetCount());
+
+		for (auto& [Id, Instance] : Behaviours)
+		{
+			Result.Append(Instance);
+		}
+
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+	}
+
+	NxFr::Handle<GameObject> ObjectFactory::AllocateGameObject(NxFr::GUID GameObjectId)
 	{
 		if (GameObjectId == 0)
 		{
@@ -216,7 +309,7 @@ namespace NxEn
 		return Handle;
 	}
 
-	void ObjectFactory::Free(NxFr::Handle<GameObject> Instance)
+	void ObjectFactory::FreeGameObject(NxFr::Handle<GameObject> Instance)
 	{
 		NxFr::GUID GameObjectId = Instance->GetId();
 		Handles.ReleaseHandle(Instance);
@@ -225,6 +318,31 @@ namespace NxEn
 		GameObjectInfos.Remove(GameObjectId);
 
 		GameObjectAvailables.Append(Info.Index);
+	}
+
+	NxFr::Handle<Behaviour> ObjectFactory::AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId)
+	{
+		if (BehaviourId == 0)
+		{
+			BehaviourId = NxFr::Integer::GenerateGuid();
+		}
+
+		Behaviour* Instance = BehavioursFactory::Create(Type);
+		Instance->BehaviourId = BehaviourId;
+
+		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
+		Behaviours.Append(Instance->GetId(), Handle);
+		return Handle;
+	}
+
+	void ObjectFactory::FreeBehaviour(NxFr::Handle<Behaviour> Target)
+	{
+		Behaviour* Instance = Target.GetRedirectedPointer();
+
+		Behaviours.Remove(Target->GetId());
+		Handles.ReleaseHandle(Target);
+
+		delete Instance;
 	}
 
 	void ObjectFactory::Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index)

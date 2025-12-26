@@ -6,6 +6,7 @@
 #include "NexusEngine/Systems/World/World/World.h"
 #include "NexusEngine/Systems/World/Scene/Scene.h"
 #include "NexusEngine/Systems/World/Scene/Prefab.h"
+#include "NexusEngine/Systems/World/Behaviour/Behaviour.h"
 
 namespace NxEn
 {

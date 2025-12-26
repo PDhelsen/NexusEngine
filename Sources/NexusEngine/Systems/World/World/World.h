@@ -22,12 +22,20 @@ namespace NxEn
 		NEXUS_ENGINE_API void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		NEXUS_ENGINE_API void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
+		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target);
+		NEXUS_ENGINE_API NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
+		NEXUS_ENGINE_API void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
+
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<GameObject> Instance) const;
-		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Filter) const;
+		NEXUS_ENGINE_API bool Belong(NxFr::Handle<Behaviour> Instance) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Filter) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Filter) const;
 
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetRootGameObject() const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> GetBehaviours() const;
+		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviour(NxFr::GUID BehaviourId) const;
 
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetWorldId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
@@ -46,5 +54,11 @@ namespace NxEn
 		ObjectFactory Factory;
 		NxFr::Handle<GameObject> Root;
 	};
+
+	template<typename T>
+	inline NxFr::Handle<T> World::CreateBehaviour(NxFr::Handle<GameObject> Target)
+	{
+		return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target));
+	}
 }
 
