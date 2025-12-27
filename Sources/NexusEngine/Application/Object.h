@@ -75,6 +75,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API virtual void Initialize();
 		NEXUS_ENGINE_API virtual void Shutdown();
+		NEXUS_ENGINE_API virtual void Start();
 		NEXUS_ENGINE_API virtual void Tick(float TimeStep = 0.0f);
 
 		NEXUS_ENGINE_API virtual bool IsInitialized() const;
@@ -95,6 +96,7 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnShutdown() { };
 		NEXUS_ENGINE_API virtual void OnEnable() { };
 		NEXUS_ENGINE_API virtual void OnDisable() { };
+		NEXUS_ENGINE_API virtual void OnStart() { };
 		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) { };
 
 	protected:

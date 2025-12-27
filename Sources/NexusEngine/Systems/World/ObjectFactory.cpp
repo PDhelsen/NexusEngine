@@ -4,10 +4,16 @@
 namespace NxEn
 {
 	static NxFr::Stack<ObjectFactory*> Factories;
+	static ObjectFactory AssetsFactory("Assets"_Sid, true);
 
 	ObjectFactory& FactoryContext::GetFactory()
 	{
 		return *Factories.Get();
+	}
+
+	ObjectFactory& FactoryContext::GetAssetsFactory()
+	{
+		return AssetsFactory;
 	}
 
 	FactoryContext::FactoryContext(ObjectFactory& Instance)
@@ -41,24 +47,23 @@ namespace NxEn
 	void ObjectFactory::Reserve(uint64 Size)
 	{
 		Size += GameObjects.GetCount();
-
 		if (Size > GameObjects.GetCapacity())
 		{
-			Size = NxFr::Math::Max(GameObjects.GetCapacity() * 2, Size);
-
-			GameObjects.Reserve(Size);
-			GameObjectInfos.Reserve(Size);
-
-			for (auto& [Id, Info] : GameObjectInfos)
-			{
-				Handles.UpdateHandle(static_cast<NxFr::Handle<GameObject>>(Info.Handle), &GameObjects[Info.Index]);
-			}
+			ReallocateAndUpdateHandles(Size);
 		}
+	}
+
+	void ObjectFactory::Pending()
+	{
+		AssetsFactory.ProcessPendings();
+		ProcessPendings();
 	}
 
 	NxFr::Handle<GameObject> ObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
 	{
-		NxFr::Handle<GameObject> Instance = AllocateGameObject(GameObjectId);
+		PendingInfo& Info = AllocateGameObject(GameObjectId);
+
+		NxFr::Handle<GameObject> Instance = Info.Handle;
 		Instance->SetName(Name);
 
 		if (Parent)
@@ -112,7 +117,8 @@ namespace NxEn
 		}
 
 		Detach(Instance);
-		FreeGameObject(Instance);
+
+		PendingInfo& Info = FreeGameObject(Instance);
 	}
 
 	void ObjectFactory::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
@@ -128,7 +134,9 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> ObjectFactory::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId)
 	{
-		NxFr::Handle<Behaviour> Instance = AllocateBehaviour(Type, BehaviourId);
+		PendingInfo& Info = AllocateBehaviour(Type, BehaviourId);
+
+		NxFr::Handle<Behaviour> Instance = Info.Handle;
 		Instance->Target = Target;
 		Target->Behaviours.Append(Instance);
 		return Instance;
@@ -138,9 +146,9 @@ namespace NxEn
 	{
 		uint64 Index = Target->Behaviours.Find(Target).Id();
 		Target->Behaviours.RemoveSwap(Index);
-
 		Instance->Target = NxFr::Handle<GameObject>();
-		FreeBehaviour(Instance);
+
+		PendingInfo& Info = FreeBehaviour(Instance);
 	}
 
 	bool ObjectFactory::Belong(NxFr::Handle<GameObject> Instance) const
@@ -247,8 +255,21 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::GetGameObject(NxFr::GUID GameObjectId) const
 	{
-		const ObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
-		return Info ? static_cast<NxFr::Handle<GameObject>>(Info->Handle) : NxFr::Handle<GameObject>();
+		const ObjectInfo* OInfo = GameObjectInfos.TryGet(GameObjectId);
+		if (OInfo)
+		{
+			return OInfo->Handle;
+		}
+
+		for (auto& PInfo : Pendings)
+		{
+			if (PInfo.Id == GameObjectId)
+			{
+				return PInfo.Handle;
+			}
+		}
+
+		return NxFr::Handle<GameObject>();
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::GetGameObjects() const
@@ -257,7 +278,12 @@ namespace NxEn
 
 		for (auto& [Id, Info] : GameObjectInfos)
 		{
-			if (Info.Handle->IsInitialized())
+			Result.Append(Info.Handle);
+		}
+
+		for (auto& Info : Pendings)
+		{
+			if (!Info.IsBehaviour)
 			{
 				Result.Append(Info.Handle);
 			}
@@ -268,8 +294,19 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> ObjectFactory::GetBehaviour(NxFr::GUID BehaviourId) const
 	{
-		const ObjectInfo* Info = BehavioursInfos.TryGet(BehaviourId);
-		return Info ? static_cast<NxFr::Handle<Behaviour>>(Info->Handle) : NxFr::Handle<Behaviour>();
+		const ObjectInfo* OInfo = BehavioursInfos.TryGet(BehaviourId);
+		if (OInfo)
+		{
+			return OInfo->Handle;
+		}
+
+		for (auto& PInfo : Pendings)
+		{
+			if (PInfo.Id == BehaviourId)
+			{
+				return PInfo.Handle;
+			}
+		}
 	}
 
 	NxFr::Array<NxFr::Handle<Behaviour>> ObjectFactory::GetBehaviours() const
@@ -278,7 +315,12 @@ namespace NxEn
 
 		for (auto& [Id, Info] : BehavioursInfos)
 		{
-			if (Info.Handle->IsInitialized())
+			Result.Append(Info.Handle);
+		}
+
+		for (auto& Info : Pendings)
+		{
+			if (Info.IsBehaviour)
 			{
 				Result.Append(Info.Handle);
 			}
@@ -287,7 +329,7 @@ namespace NxEn
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
 	}
 
-	NxFr::Handle<GameObject> ObjectFactory::AllocateGameObject(NxFr::GUID GameObjectId)
+	ObjectFactory::PendingInfo& ObjectFactory::AllocateGameObject(NxFr::GUID GameObjectId)
 	{
 		if (GameObjectId == 0)
 		{
@@ -313,24 +355,36 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
-		GameObjectInfos.Append(GameObjectId, ObjectInfo{ .Handle = Handle, .Index = Index });
 		Instance->GameObjectId = GameObjectId;
 		Instance->ReferenceId = 0;
 
-		return Handle;
+		return Pendings.Append(PendingInfo{
+			.Id = GameObjectId,
+			.Handle = Handle,
+			.Index = Index,
+			.Start = true,
+			.IsBehaviour = false
+			});
 	}
 
-	void ObjectFactory::FreeGameObject(NxFr::Handle<GameObject> Instance)
+	ObjectFactory::PendingInfo& ObjectFactory::FreeGameObject(NxFr::Handle<GameObject> Instance)
 	{
 		NxFr::GUID GameObjectId = Instance->GetId();
 		ObjectInfo Info = GameObjectInfos[GameObjectId];
 
 		Handles.ReleaseHandle(Instance);
-		GameObjectInfos.Remove(GameObjectId);
 		GameObjectAvailables.Append(Info.Index);
+
+		return Pendings.Append(PendingInfo{
+			.Id = GameObjectId,
+			.Handle = NxFr::Handle<GameObject>(),
+			.Index = Info.Index,
+			.Start = false,
+			.IsBehaviour = false
+			});
 	}
 
-	NxFr::Handle<Behaviour> ObjectFactory::AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId)
+	ObjectFactory::PendingInfo& ObjectFactory::AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId)
 	{
 		if (BehaviourId == 0)
 		{
@@ -360,26 +414,38 @@ namespace NxEn
 		}
 
 		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
-		BehavioursInfos.Append(BehaviourId, ObjectInfo{ .Handle = Handle, .Index = Index });
 		Instance->BehaviourId = BehaviourId;
 
-		return Handle;
+		return Pendings.Append(PendingInfo{
+			.Id = BehaviourId,
+			.Handle = Handle,
+			.Index = Index,
+			.Start = true,
+			.IsBehaviour = false
+		});
 	}
 
-	void ObjectFactory::FreeBehaviour(NxFr::Handle<Behaviour> Instance)
+	ObjectFactory::PendingInfo& ObjectFactory::FreeBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
 		NxFr::StringId Type = Instance->GetObjectType();
 		NxFr::GUID BehaviourId = Instance->GetId();
 		ObjectInfo Info = BehavioursInfos[BehaviourId];
 
 		Handles.ReleaseHandle(Instance);
-		BehavioursInfos.Remove(BehaviourId);
 
 		if (!BehavioursAvailable.ContainsKey(Type))
 		{
 			BehavioursAvailable.Append(Type, NxFr::Stack<uint64>());
 		}
 		BehavioursAvailable[Type].Append(Info.Index);
+
+		return Pendings.Append(PendingInfo{
+			.Id = BehaviourId,
+			.Handle = NxFr::Handle<GameObject>(),
+			.Index = Info.Index,
+			.Start = false,
+			.IsBehaviour = false
+		});
 	}
 
 	void ObjectFactory::Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index)
@@ -435,5 +501,47 @@ namespace NxEn
 		Instance->Parent = NxFr::Handle<GameObject>();
 		Instance->Prev = NxFr::Handle<GameObject>();
 		Instance->Next = NxFr::Handle<GameObject>();
+	}
+
+	void ObjectFactory::ReallocateAndUpdateHandles(uint64 Size)
+	{
+		Size = NxFr::Math::Max(GameObjects.GetCapacity() * 2, Size);
+
+		GameObjects.Reserve(Size);
+		GameObjectInfos.Reserve(Size);
+
+		for (auto& [Id, Info] : GameObjectInfos)
+		{
+			Handles.UpdateHandle(static_cast<NxFr::Handle<GameObject>>(Info.Handle), &GameObjects[Info.Index]);
+		}
+	}
+
+	void ObjectFactory::ProcessPendings()
+	{
+		for (uint64 Index = Pendings.GetCount(); Index > 0; --Index)
+		{
+			PendingInfo& Info = Pendings[Index - 1];
+			if (!Info.Handle->IsInitialized() || !Info.Handle->IsEnabled())
+			{
+				continue;
+			}
+
+			if (Info.Start)
+			{
+				Info.Handle->Start();
+			}
+
+			NxFr::Dictionary<NxFr::GUID, ObjectInfo>& Infos = Info.IsBehaviour ? BehavioursInfos : GameObjectInfos;
+			if (Info.Start)
+			{
+				Infos.Append(Info.Id, ObjectInfo{ .Handle = Info.Handle, .Index = Info.Index });
+			}
+			else
+			{
+				Infos.Remove(Info.Id);
+			}
+
+			Pendings.Remove(Index - 1);
+		}
 	}
 }

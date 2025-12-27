@@ -179,11 +179,15 @@ namespace NxEn
 
 	void World::OnTick(float TimeStep)
 	{
+		Factory.Pending();
+
 		Root->Tick(TimeStep);
 
 		for (auto Iterator = Factory.BeginBehaviour(); Iterator != Factory.EndBehaviour(); ++Iterator)
 		{
 			Iterator->Value.Handle->Tick(TimeStep);
 		}
+
+		Factory.Pending();
 	}
 }

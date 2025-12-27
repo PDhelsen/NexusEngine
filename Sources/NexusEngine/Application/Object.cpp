@@ -48,6 +48,16 @@ namespace NxEn
 		SetFlag(ObjectFlags::Initialized, false);
 	}
 
+	void Object::Start()
+	{
+		if (!IsInitialized() || !IsEnabled())
+		{
+			return;
+		}
+
+		OnStart();
+	}
+
 	void Object::Tick(float TimeStep)
 	{
 		if (!IsTickable() || !IsEnabled())
