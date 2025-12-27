@@ -22,6 +22,11 @@ namespace NxEn
 	{
 		Object::Initialize();
 
+		for (auto& B : Behaviours)
+		{
+			B->Initialize();
+		}
+
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -37,6 +42,11 @@ namespace NxEn
 		{
 			Iterator->Shutdown();
 			Iterator = Iterator->GetNext();
+		}
+
+		for (auto& B : Behaviours)
+		{
+			B->Shutdown();
 		}
 
 		Object::Shutdown();
@@ -84,39 +94,6 @@ namespace NxEn
 	bool GameObject::IsEnabledInHierarchy() const
 	{
 		return GetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy);
-	}
-
-	Object* GameObject::Clone() const
-	{
-		GameObject* Instance = new GameObject(WorldId);
-		Instance->Clone(const_cast<GameObject*>(this));
-		return Instance;
-	}
-
-	void GameObject::Clone(Object* Target)
-	{
-		GameObject* Instance = static_cast<GameObject*>(Target);
-
-		Instance->ReferenceId = ReferenceId;
-
-		Instance->Name = Name;
-
-		Instance->SetFlag(ObjectFlags::Enabled, IsEnabled());
-		Instance->SetFlag(ObjectFlags::Tickable, IsTickable());
-		Instance->SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
-	}
-
-	void GameObject::Clone(const Object* Target)
-	{
-		const GameObject* Instance = static_cast<const GameObject*>(Target);
-
-		ReferenceId = Instance->ReferenceId;
-
-		Name = Instance->Name;
-
-		SetFlag(ObjectFlags::Enabled, Instance->IsEnabled());
-		SetFlag(ObjectFlags::Tickable, Instance->IsTickable());
-		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
 	}
 
 	World* GameObject::GetWorld() const
@@ -286,6 +263,18 @@ namespace NxEn
 		return NxFr::Handle<Behaviour>();
 	}
 
+	void GameObject::OnClone(const Object& Other)
+	{
+		const GameObject& Instance = static_cast<const GameObject&>(Other);
+
+		ReferenceId = Instance.ReferenceId;
+		Name = Instance.Name;
+
+		SetFlag(ObjectFlags::Enabled, Instance.IsEnabled());
+		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
+		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
+	}
+
 	void GameObject::OnSave(YAML::Node& Node)
 	{
 		Node["Name"] = Name;
@@ -293,20 +282,45 @@ namespace NxEn
 		Node["Reference"] = ReferenceId;
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
+
+		YAML::Node NodeBehaviours;
+		for (auto& B : Behaviours)
+		{
+			NodeBehaviours.push_back(B->Save());
+		}
+		Node["Behaviours"] = NodeBehaviours;
 	}
 
 	void GameObject::OnLoad(const YAML::Node& Node)
 	{
+		ObjectFactory& Factory = FactoryContext::GetFactory();
+		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
+
 		Name = Node["Name"].as<NxFr::String>();
 		NEXUS_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		ReferenceId = Node["Reference"].as<NxFr::GUID>();
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
 		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
+
+		YAML::Node NodeBehaviours = Node["Behaviours"];
+		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
+		{
+			YAML::Node NodeBehaviour = NodeBehaviours[Index];
+			NxFr::StringId Type = Behaviour::ReadTypeFromYaml(NodeBehaviour);
+			NxFr::GUID Id = Behaviour::ReadIdFromYaml(NodeBehaviour);
+
+			NxFr::Handle<Behaviour> B = Factory.CreateBehaviour(Type, This, Id);
+			B->Load(NodeBehaviour);
+		}
 	}
 
 	void GameObject::OnUnload()
 	{
+		for(auto& B : Behaviours)
+		{
+			B->Unload();
+		}
 	}
 
 	YAML::Node GameObject::Save()

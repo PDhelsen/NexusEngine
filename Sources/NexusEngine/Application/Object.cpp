@@ -113,14 +113,14 @@ namespace NxEn
 		return nullptr;
 	}
 
-	void Object::Clone(Object* Target)
+	void Object::Clone(Object* Other) const
 	{
-		NEXUS_ASSERT(false, Default, "Not Implemented");
+		Other->Clone(this);
 	}
 
-	void Object::Clone(const Object* Target)
+	void Object::Clone(const Object* Other)
 	{
-		NEXUS_ASSERT(false, Default, "Not Implemented");
+		OnClone(*Other);
 	}
 
 	NxFr::StringView Object::GetName() const

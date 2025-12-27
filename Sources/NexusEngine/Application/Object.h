@@ -85,8 +85,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void SetTickable(bool Tickable);
 
 		NEXUS_ENGINE_API virtual Object* Clone() const;
-		NEXUS_ENGINE_API virtual void Clone(Object* Target);
-		NEXUS_ENGINE_API virtual void Clone(const Object* Target);
+		NEXUS_ENGINE_API virtual void Clone(Object* Other) const;
+		NEXUS_ENGINE_API virtual void Clone(const Object* Other);
 
 		NEXUS_ENGINE_API virtual NxFr::StringView GetName() const;
 		NEXUS_ENGINE_API virtual NxFr::GUID GetId() const;
@@ -98,6 +98,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnDisable() { };
 		NEXUS_ENGINE_API virtual void OnStart() { };
 		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) { };
+		NEXUS_ENGINE_API virtual void OnClone(const Object& Other) {};
+
 
 	protected:
 		NEXUS_ENGINE_API NEXUS_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;

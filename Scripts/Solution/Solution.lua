@@ -329,12 +329,14 @@ project (Sandbox .. "-App")
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. LinkFramework
+		NexusFramework .. "Builds/NexusFramework" .. LinkFramework,
+		NexusFramework .. "Builds/yaml-cpp" .. LinkFramework
 	}
 
 	links
 	{
 		Framework,
+		Yaml,
 		Engine,
 		App,
 		ImGui
@@ -378,12 +380,14 @@ project (Sandbox .. "-Editor")
 
 	libdirs
 	{
-		NexusFramework .. "Builds/NexusFramework" .. LinkFramework
+		NexusFramework .. "Builds/NexusFramework" .. LinkFramework,
+		NexusFramework .. "Builds/yaml-cpp" .. LinkFramework
 	}
 
 	links
 	{
 		Framework,
+		Yaml,
 		Engine,
 		App,
 		Editor,

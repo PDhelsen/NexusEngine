@@ -27,21 +27,41 @@ namespace NxEn
 	}
 
 	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
-		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(1024), GameObjects(), GameObjectInfos(), GameObjectAvailables()
+		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(1024),
+		GameObjects(), GameObjectInfos(), GameObjectAvailables(),
+		Behaviours(), BehavioursInfos(), BehavioursAvailable()
 	{
 	}
 
 	ObjectFactory::~ObjectFactory()
 	{
-		GameObjects.Clear();
+		Clear();
+	}
 
+	void ObjectFactory::Clear()
+	{
 		for (auto& [Id, Instances] : Behaviours)
 		{
-			for (auto& Instance : Instances)
+			for (auto Instance : Instances)
 			{
 				delete Instance;
 			}
+
+			Instances.Clear();
 		}
+
+		for (auto& [Id, Instances] : BehavioursAvailable)
+		{
+			Instances.Clear();
+		}
+
+		Behaviours.Clear();
+		BehavioursInfos.Clear();
+		BehavioursAvailable.Clear();
+
+		GameObjects.Clear();
+		GameObjectInfos.Clear();
+		GameObjectAvailables.Clear();
 	}
 
 	void ObjectFactory::Reserve(uint64 Size)
@@ -55,7 +75,6 @@ namespace NxEn
 
 	void ObjectFactory::Pending()
 	{
-		AssetsFactory.ProcessPendings();
 		ProcessPendings();
 	}
 
@@ -78,6 +97,12 @@ namespace NxEn
 	{
 		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
 		Instance->Clone((const GameObject*)Target.GetRedirectedPointer());
+
+		for (auto& TargetBehaviour : Target->Behaviours)
+		{
+			NxFr::Handle<Behaviour> InstanceBehaviour = CreateBehaviour(TargetBehaviour->GetObjectType(), Instance);
+			InstanceBehaviour->Clone((const Behaviour*)TargetBehaviour.GetRedirectedPointer());
+		}
 
 		NxFr::Handle<GameObject> Child = Target->GetChild();
 		while (Child)
@@ -116,6 +141,11 @@ namespace NxEn
 			Child = Next;
 		}
 
+		while (Instance->Behaviours.GetCount())
+		{
+			DestroyBehaviour(Instance->Behaviours[0], Instance);
+		}
+
 		Detach(Instance);
 
 		PendingInfo& Info = FreeGameObject(Instance);
@@ -144,7 +174,7 @@ namespace NxEn
 
 	void ObjectFactory::DestroyBehaviour(NxFr::Handle<Behaviour> Instance, NxFr::Handle<GameObject> Target)
 	{
-		uint64 Index = Target->Behaviours.Find(Target).Id();
+		uint64 Index = Target->Behaviours.Find(Instance).Id();
 		Target->Behaviours.RemoveSwap(Index);
 		Instance->Target = NxFr::Handle<GameObject>();
 
@@ -307,6 +337,8 @@ namespace NxEn
 				return PInfo.Handle;
 			}
 		}
+
+		return NxFr::Handle<GameObject>();
 	}
 
 	NxFr::Array<NxFr::Handle<Behaviour>> ObjectFactory::GetBehaviours() const
@@ -421,7 +453,7 @@ namespace NxEn
 			.Handle = Handle,
 			.Index = Index,
 			.Start = true,
-			.IsBehaviour = false
+			.IsBehaviour = true
 		});
 	}
 
@@ -444,7 +476,7 @@ namespace NxEn
 			.Handle = NxFr::Handle<GameObject>(),
 			.Index = Info.Index,
 			.Start = false,
-			.IsBehaviour = false
+			.IsBehaviour = true
 		});
 	}
 
@@ -521,19 +553,16 @@ namespace NxEn
 		for (uint64 Index = Pendings.GetCount(); Index > 0; --Index)
 		{
 			PendingInfo& Info = Pendings[Index - 1];
-			if (!Info.Handle->IsInitialized() || !Info.Handle->IsEnabled())
-			{
-				continue;
-			}
-
-			if (Info.Start)
-			{
-				Info.Handle->Start();
-			}
-
 			NxFr::Dictionary<NxFr::GUID, ObjectInfo>& Infos = Info.IsBehaviour ? BehavioursInfos : GameObjectInfos;
+
 			if (Info.Start)
 			{
+				if (!Info.Handle->IsInitialized() || !Info.Handle->IsEnabled())
+				{
+					continue;
+				}
+
+				Info.Handle->Start();
 				Infos.Append(Info.Id, ObjectInfo{ .Handle = Info.Handle, .Index = Info.Index });
 			}
 			else

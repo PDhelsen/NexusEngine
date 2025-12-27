@@ -38,6 +38,7 @@ namespace NxEn
 		ObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
 		~ObjectFactory();
 
+		void Clear();
 		void Reserve(uint64 Size);
 		void Pending();
 

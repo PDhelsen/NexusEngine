@@ -267,6 +267,7 @@ namespace NxEn
 		DestroyWorld(DummyId);
 #endif
 		DestroyWorld(WorldId);
+		FactoryContext::GetAssetsFactory().Clear();
 
 		System::OnShutdown();
 	}

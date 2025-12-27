@@ -30,10 +30,6 @@ namespace NxEn
 		NEXUS_ENGINE_API void SetEnabled(bool Enabled) override;
 		NEXUS_ENGINE_API bool IsEnabledInHierarchy() const;
 
-		NEXUS_ENGINE_API Object* Clone() const override;
-		NEXUS_ENGINE_API void Clone(Object* Target) override;
-		NEXUS_ENGINE_API void Clone(const Object* Target) override;
-
 		NEXUS_ENGINE_API World* GetWorld() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetParent() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetPrevious() const;
@@ -61,6 +57,7 @@ namespace NxEn
 		NEXUS_ENGINE_API bool IsRoot() const { return !Parent && !Prev && !Next; };
 
 	protected:
+		NEXUS_ENGINE_API void OnClone(const Object& Other) override;
 		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node);
 		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node);
 		NEXUS_ENGINE_API virtual void OnUnload();
