@@ -17,10 +17,10 @@ namespace NxEn
 
 	class ObjectFactory
 	{
-		struct GameObjectInfo
+		struct ObjectInfo
 		{
+			NxFr::Handle<Object> Handle;
 			uint64 Index;
-			NxFr::Handle<GameObject> Handle;
 		};
 
 	public:
@@ -48,10 +48,10 @@ namespace NxEn
 		NxFr::Handle<Behaviour> GetBehaviour(NxFr::GUID BehaviourId) const;
 		NxFr::Array<NxFr::Handle<Behaviour>> GetBehaviours() const;
 
-		NxFr::Dictionary<NxFr::GUID, GameObjectInfo>::I BeginGameObjects() const { return GameObjectInfos.Begin(); }
-		NxFr::Dictionary<NxFr::GUID, GameObjectInfo>::I EndGameObjects() const { return GameObjectInfos.End(); }
-		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>>::I BeginBehaviour() const { return BehavioursInfos.Begin(); }
-		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>>::I EndBehaviour() const { return BehavioursInfos.End(); }
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginGameObjects() const { return GameObjectInfos.Begin(); }
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndGameObjects() const { return GameObjectInfos.End(); }
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginBehaviour() const { return BehavioursInfos.Begin(); }
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndBehaviour() const { return BehavioursInfos.End(); }
 
 		NxFr::GUID GetId() const { return WorldId; }
 
@@ -69,11 +69,11 @@ namespace NxEn
 		HandleManager Handles;
 
 		NxFr::List<GameObject> GameObjects;
-		NxFr::Dictionary<NxFr::GUID, GameObjectInfo> GameObjectInfos;
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo> GameObjectInfos;
 		NxFr::Stack<uint64> GameObjectAvailables;
 
 		NxFr::Dictionary<NxFr::StringId, NxFr::List<Behaviour*>> Behaviours;
-		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<Behaviour>> BehavioursInfos;
-		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<Behaviour*>> BehavioursAvailable;
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo> BehavioursInfos;
+		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<uint64>> BehavioursAvailable;
 	};
 }

@@ -23,12 +23,12 @@ namespace NxEn
 			return GetHandlesManager()->AcquireHandle(Pointer);
 		}
 		template<typename T>
-		void UpdateHandle(NxFr::Handle<T>& Handle, T* Pointer)
+		void UpdateHandle(NxFr::Handle<T> Handle, T* Pointer)
 		{
 			GetHandlesManager(Handle)->UpdateHandle(Handle, Pointer);
 		}
 		template<typename T>
-		void* ReleaseHandle(NxFr::Handle<T>& Handle)
+		void* ReleaseHandle(NxFr::Handle<T> Handle)
 		{
 			return GetHandlesManager(Handle)->ReleaseHandle(Handle);
 		}

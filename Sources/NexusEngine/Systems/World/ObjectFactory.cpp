@@ -51,7 +51,7 @@ namespace NxEn
 
 			for (auto& [Id, Info] : GameObjectInfos)
 			{
-				Handles.UpdateHandle(Info.Handle, &GameObjects[Info.Index]);
+				Handles.UpdateHandle(static_cast<NxFr::Handle<GameObject>>(Info.Handle), &GameObjects[Info.Index]);
 			}
 		}
 	}
@@ -172,20 +172,20 @@ namespace NxEn
 			}
 		}
 
-		for (auto& Instance : GameObjects)
+		for (auto& [Id, Info] : GameObjectInfos)
 		{
 			bool MatchId = false;
 			bool MatchString = false;
 
 			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 			{
-				MatchId |= Ids[Index] != 0 && Instance.GetId() == Ids[Index];
-				MatchString |= NxFr::StringUtility::Contains(Instance.GetName(), Filters[Index]);
+				MatchId |= Ids[Index] != 0 && Id == Ids[Index];
+				MatchString |= NxFr::StringUtility::Contains(Info.Handle->GetName(), Filters[Index]);
 			}
 
 			if (All || MatchId || MatchString)
 			{
-				Result.Append(GameObjectInfos[Instance.GetId()].Handle);
+				Result.Append(GameObjectInfos[Id].Handle);
 			}
 		}
 
@@ -223,7 +223,7 @@ namespace NxEn
 		// Check if should filter by type and string;
 		TypeAndString &= Filters.GetCount() > 1;
 
-		for (auto [Id, Instance] : BehavioursInfos)
+		for (auto [Id, Info] : BehavioursInfos)
 		{
 			bool MatchId = false;
 			bool MatchType = false;
@@ -232,13 +232,13 @@ namespace NxEn
 			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
 			{
 				MatchId |= Ids[Index] != 0 && Id == Ids[Index];
-				MatchType |= Types[Index].GetId() != 0 && Instance->GetObjectType() == Types[Index];
-				MatchString |= NxFr::StringUtility::Contains(Instance->GetGameObject()->GetName(), Filters[Index]);
+				MatchType |= Types[Index].GetId() != 0 && Info.Handle->GetObjectType() == Types[Index];
+				MatchString |= NxFr::StringUtility::Contains(Info.Handle->GetName(), Filters[Index]);
 			}
 
 			if (All || MatchId || (MatchType && !TypeAndString) || (MatchString && !TypeAndString) || (MatchType && MatchString && TypeAndString))
 			{
-				Result.Append(Instance);
+				Result.Append(Info.Handle);
 			}
 		}
 
@@ -247,19 +247,19 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> ObjectFactory::GetGameObject(NxFr::GUID GameObjectId) const
 	{
-		const GameObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
-		return Info ? Info->Handle : NxFr::Handle<GameObject>();
+		const ObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
+		return Info ? static_cast<NxFr::Handle<GameObject>>(Info->Handle) : NxFr::Handle<GameObject>();
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> ObjectFactory::GetGameObjects() const
 	{
-		NxFr::List<NxFr::Handle<GameObject>> Result(GameObjects.GetCount());
+		NxFr::List<NxFr::Handle<GameObject>> Result(GameObjectInfos.GetCount());
 
-		for (auto& Instance : GameObjects)
+		for (auto& [Id, Info] : GameObjectInfos)
 		{
-			if (Instance.IsInitialized())
+			if (Info.Handle->IsInitialized())
 			{
-				Result.Append(GameObjectInfos[Instance.GetId()].Handle);
+				Result.Append(Info.Handle);
 			}
 		}
 
@@ -268,17 +268,20 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> ObjectFactory::GetBehaviour(NxFr::GUID BehaviourId) const
 	{
-		const NxFr::Handle<Behaviour>* Instance = BehavioursInfos.TryGet(BehaviourId);
-		return Instance ? *Instance : NxFr::Handle<Behaviour>();
+		const ObjectInfo* Info = BehavioursInfos.TryGet(BehaviourId);
+		return Info ? static_cast<NxFr::Handle<Behaviour>>(Info->Handle) : NxFr::Handle<Behaviour>();
 	}
 
 	NxFr::Array<NxFr::Handle<Behaviour>> ObjectFactory::GetBehaviours() const
 	{
 		NxFr::List<NxFr::Handle<GameObject>> Result(BehavioursInfos.GetCount());
 
-		for (auto& [Id, Instance] : BehavioursInfos)
+		for (auto& [Id, Info] : BehavioursInfos)
 		{
-			Result.Append(Instance);
+			if (Info.Handle->IsInitialized())
+			{
+				Result.Append(Info.Handle);
+			}
 		}
 
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
@@ -310,7 +313,7 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
-		GameObjectInfos.Append(GameObjectId, GameObjectInfo{ .Index = Index , .Handle = Handle });
+		GameObjectInfos.Append(GameObjectId, ObjectInfo{ .Handle = Handle, .Index = Index });
 		Instance->GameObjectId = GameObjectId;
 		Instance->ReferenceId = 0;
 
@@ -320,11 +323,10 @@ namespace NxEn
 	void ObjectFactory::FreeGameObject(NxFr::Handle<GameObject> Instance)
 	{
 		NxFr::GUID GameObjectId = Instance->GetId();
+		ObjectInfo Info = GameObjectInfos[GameObjectId];
+
 		Handles.ReleaseHandle(Instance);
-
-		GameObjectInfo Info = GameObjectInfos[GameObjectId];
 		GameObjectInfos.Remove(GameObjectId);
-
 		GameObjectAvailables.Append(Info.Index);
 	}
 
@@ -336,6 +338,7 @@ namespace NxEn
 		}
 
 		Behaviour* Instance = nullptr;
+		uint64 Index = 0;
 
 		if (!BehavioursAvailable.ContainsKey(Type) || BehavioursAvailable[Type].IsEmpty())
 		{
@@ -344,16 +347,20 @@ namespace NxEn
 			{
 				Behaviours.Append(Type, NxFr::List<Behaviour*>());
 			}
+
+			Index = Behaviours[Type].GetCount();
 			Behaviours[Type].Append(Instance);
 		}
 		else
 		{
-			Instance = BehavioursAvailable[Type].Get();
+			Index = BehavioursAvailable[Type].Get();
+			Instance = Behaviours[Type][Index];
+
 			BehavioursAvailable[Type].Remove();
 		}
 
 		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
-		BehavioursInfos.Append(BehaviourId, Handle);
+		BehavioursInfos.Append(BehaviourId, ObjectInfo{ .Handle = Handle, .Index = Index });
 		Instance->BehaviourId = BehaviourId;
 
 		return Handle;
@@ -362,14 +369,17 @@ namespace NxEn
 	void ObjectFactory::FreeBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
 		NxFr::StringId Type = Instance->GetObjectType();
+		NxFr::GUID BehaviourId = Instance->GetId();
+		ObjectInfo Info = BehavioursInfos[BehaviourId];
+
+		Handles.ReleaseHandle(Instance);
+		BehavioursInfos.Remove(BehaviourId);
+
 		if (!BehavioursAvailable.ContainsKey(Type))
 		{
-			BehavioursAvailable.Append(Type, NxFr::Stack<Behaviour*>());
+			BehavioursAvailable.Append(Type, NxFr::Stack<uint64>());
 		}
-		BehavioursAvailable[Type].Append(Instance.GetRedirectedPointer());
-
-		BehavioursInfos.Remove(Instance->GetId());
-		Handles.ReleaseHandle(Instance);
+		BehavioursAvailable[Type].Append(Info.Index);
 	}
 
 	void ObjectFactory::Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index)

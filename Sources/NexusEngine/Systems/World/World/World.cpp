@@ -183,7 +183,7 @@ namespace NxEn
 
 		for (auto Iterator = Factory.BeginBehaviour(); Iterator != Factory.EndBehaviour(); ++Iterator)
 		{
-			Iterator->Value->Tick(TimeStep);
+			Iterator->Value.Handle->Tick(TimeStep);
 		}
 	}
 }
