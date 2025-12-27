@@ -255,6 +255,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
+		FactoryContext::GetAssetsFactory();
 #if NEXUS_EDITOR
 		CreateWorld(DummyId, DummyId);
 #endif

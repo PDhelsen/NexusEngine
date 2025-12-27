@@ -9,8 +9,8 @@ namespace NxEn
 
 	struct FactoryContext
 	{
-		static ObjectFactory& GetFactory();
 		static ObjectFactory& GetAssetsFactory();
+		static ObjectFactory& GetFactory();
 
 		FactoryContext(ObjectFactory& Instance);
 		~FactoryContext();
