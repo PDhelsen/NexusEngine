@@ -387,7 +387,7 @@ project (Sandbox .. "-Editor")
 		Engine,
 		App,
 		Editor,
-		SandboxApp,
+		Sandbox .. "-App",
 		ImGui
 	}
 
