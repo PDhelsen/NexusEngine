@@ -97,6 +97,7 @@ namespace NxEn
 
 			bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag)
 			{
+				Data.Reserve(128);
 				bool Result = ImGui::InputText(Id.C(), Data.Characters(), Data.GetCapacity(), Flag);
 				if (Result)
 				{

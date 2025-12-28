@@ -8,6 +8,7 @@
 #include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionPrefabCreate.h"
 #include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionPrefabSave.h"
 #include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionPrefabUnpack.h"
+#include "NexusEditor/Systems/World/Hierarchy/Actions/HierarchyActionInspect.h"
 
 namespace NxEd
 {
@@ -72,6 +73,7 @@ namespace NxEd
 		Actions.Append(new HierarchyActionPrefabCreate());
 		Actions.Append(new HierarchyActionPrefabSave());
 		Actions.Append(new HierarchyActionPrefabUnpack());
+		Actions.Append(new HierarchyActionInspect());
 	}
 
 	void HierarchyPanel::OnShutdown()

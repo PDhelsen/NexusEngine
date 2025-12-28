@@ -24,11 +24,13 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual ~Behaviour();
 
 		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f) override;
+		NEXUS_ENGINE_API void DrawGui(float TimeStep = 0.0f);
 
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return BehaviourId; };
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject() const { return Target; };
 
 	protected:
+		NEXUS_ENGINE_API virtual void OnGui(float TimeStep);
 		NEXUS_ENGINE_API void OnClone(const Object& Other) override;
 		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node) {};
 		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node) {};

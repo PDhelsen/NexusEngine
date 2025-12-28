@@ -30,6 +30,17 @@ namespace NxEn
 		OnTick(TimeStep);
 	}
 
+	void Behaviour::DrawGui(float TimeStep)
+	{
+		OnGui(TimeStep);
+	}
+
+	void Behaviour::OnGui(float TimeStep)
+	{
+		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
+		GUI::Drawer<NxFr::GUID>::Property(BehaviourId, "Id");
+	}
+
 	void Behaviour::OnClone(const Object& Other)
 	{
 		const Behaviour& Instance = static_cast<const Behaviour&>(Other);

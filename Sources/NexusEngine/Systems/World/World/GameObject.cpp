@@ -69,6 +69,20 @@ namespace NxEn
 		}
 	}
 
+	void GameObject::DrawGui(float TimeStep)
+	{
+		OnGui(TimeStep);
+		ImGui::Separator();
+
+		for (auto& B : Behaviours)
+		{
+			ImGui::PushID(B->GetId());
+			B->DrawGui(TimeStep);
+			ImGui::Separator();
+			ImGui::PopID();
+		}
+	}
+
 	void GameObject::SetEnabled(bool Enabled)
 	{
 		if (IsEnabled() == Enabled)
@@ -261,6 +275,20 @@ namespace NxEn
 		}
 
 		return NxFr::Handle<Behaviour>();
+	}
+
+	void GameObject::OnGui(float TimeStep)
+	{
+		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
+		GUI::Drawer<NxFr::GUID>::Property(ReferenceId, "Reference");
+		GUI::Drawer<NxFr::String>::Field(Name, "Name", "");
+
+		bool Enabled = IsEnabled();
+		GUI::Drawer<bool>::Field(Enabled, "Enabled", "");
+		if (Enabled != IsEnabled())
+		{
+			SetEnabled(Enabled);
+		}
 	}
 
 	void GameObject::OnClone(const Object& Other)

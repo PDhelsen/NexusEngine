@@ -26,6 +26,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void Initialize() override;
 		NEXUS_ENGINE_API void Shutdown() override;
 		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f) override;
+		NEXUS_ENGINE_API void DrawGui(float TimeStep = 0.0f);
 
 		NEXUS_ENGINE_API void SetEnabled(bool Enabled) override;
 		NEXUS_ENGINE_API bool IsEnabledInHierarchy() const;
@@ -57,6 +58,7 @@ namespace NxEn
 		NEXUS_ENGINE_API bool IsRoot() const { return !Parent && !Prev && !Next; };
 
 	protected:
+		NEXUS_ENGINE_API void OnGui(float TimeStep);
 		NEXUS_ENGINE_API void OnClone(const Object& Other) override;
 		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node);
 		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node);

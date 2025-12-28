@@ -146,8 +146,8 @@ namespace NxEn
 			ImGuiStyle& Style = ImGui::GetStyle();
 
 			Position = -NxFr::Vector2f::One;
-			Width = 0.0f;
-			WidthLabel = 0.0f;
+			Width = -1.0f;
+			WidthLabel = -1.0f;
 			Height = 0.0f;
 			Color = Style.Colors[21];
 			ColorText = Style.Colors[0];
