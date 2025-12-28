@@ -281,6 +281,8 @@ namespace NxEn
 
 		CreateWorld(DummyId, DummyId, true);
 		CreateWorld(WorldId, WorldId);
+
+		GetWorld(DummyId)->SetTickable(false);
 	}
 
 	void WorldSystem::OnShutdown()
