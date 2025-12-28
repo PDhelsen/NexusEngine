@@ -23,6 +23,7 @@ namespace NxEn
 		NEXUS_ENGINE_API Behaviour();
 		NEXUS_ENGINE_API virtual ~Behaviour();
 
+		NEXUS_ENGINE_API void Start();
 		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f) override;
 		NEXUS_ENGINE_API void DrawGui(float TimeStep = 0.0f);
 

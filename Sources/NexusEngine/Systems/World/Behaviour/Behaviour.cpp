@@ -15,6 +15,21 @@ namespace NxEn
 	{
 	}
 
+	void Behaviour::Start()
+	{
+		if (!Target.IsValid() || !Target->IsTickable() || !Target->IsEnabled())
+		{
+			return;
+		}
+
+		if (!IsTickable() || !IsEnabled())
+		{
+			return;
+		}
+
+		OnStart();
+	}
+
 	void Behaviour::Tick(float TimeStep)
 	{
 		if (!Target.IsValid() || !Target->IsTickable() || !Target->IsEnabled())

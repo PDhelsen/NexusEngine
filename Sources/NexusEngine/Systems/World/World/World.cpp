@@ -181,7 +181,18 @@ namespace NxEn
 	{
 		Factory.Pending();
 
-		Root->Tick(TimeStep);
+		NxFr::List<NxFr::Handle<Behaviour>>& Starting = Factory.Starting();
+		for (uint64 Index = Starting.GetCount(); Index > 0; --Index)
+		{
+			NxFr::Handle<Behaviour> Instance = Starting[Index - 1];
+			if (!Instance->IsInitialized() || !Instance->IsEnabled())
+			{
+				continue;
+			}
+
+			Instance->Start();
+			Starting.Remove(Index - 1);
+		}
 
 		for (auto Iterator = Factory.BeginBehaviour(); Iterator != Factory.EndBehaviour(); ++Iterator)
 		{

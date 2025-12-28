@@ -20,7 +20,14 @@ namespace NxEn
 
 	void GameObject::Initialize()
 	{
-		Object::Initialize();
+		if (IsInitialized())
+		{
+			NEXUS_LOG(Warning, Default, "Object (%s) is already initialized", GetName().C());
+			return;
+		}
+
+		OnInitialize();
+		SetFlag(ObjectFlags::Initialized, true);
 
 		for (auto& B : Behaviours)
 		{
@@ -37,6 +44,12 @@ namespace NxEn
 
 	void GameObject::Shutdown()
 	{
+		if (!IsInitialized())
+		{
+			NEXUS_LOG(Warning, Default, "Object (%s) is already shutdown", GetName().C());
+			return;
+		}
+
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -49,17 +62,35 @@ namespace NxEn
 			B->Shutdown();
 		}
 
-		Object::Shutdown();
+		OnShutdown();
+		SetFlag(ObjectFlags::Initialized, false);
 	}
 
-	void GameObject::Tick(float TimeStep)
+	void GameObject::Start()
 	{
-		if (!IsEnabledInHierarchy())
+		if (!IsInitialized() || !IsEnabledInHierarchy())
 		{
 			return;
 		}
 
-		Object::Tick(TimeStep);
+		OnStart();
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Start();
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	void GameObject::Tick(float TimeStep)
+	{
+		if (!IsInitialized() || !IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		OnTick(TimeStep);
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)

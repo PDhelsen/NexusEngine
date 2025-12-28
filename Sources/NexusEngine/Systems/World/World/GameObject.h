@@ -25,6 +25,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API void Initialize() override;
 		NEXUS_ENGINE_API void Shutdown() override;
+		NEXUS_ENGINE_API void Start();
 		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f) override;
 		NEXUS_ENGINE_API void DrawGui(float TimeStep = 0.0f);
 

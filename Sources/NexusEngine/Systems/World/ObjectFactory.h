@@ -65,6 +65,7 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndGameObjects() const { return GameObjectInfos.End(); }
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginBehaviour() const { return BehavioursInfos.Begin(); }
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndBehaviour() const { return BehavioursInfos.End(); }
+		NxFr::List<NxFr::Handle<Behaviour>>& Starting() { return BehavioursStarting; }
 
 		NxFr::GUID GetId() const { return WorldId; }
 
@@ -91,5 +92,6 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::StringId, NxFr::List<Behaviour*>> Behaviours;
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo> BehavioursInfos;
 		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<uint64>> BehavioursAvailable;
+		NxFr::List<NxFr::Handle<Behaviour>> BehavioursStarting;
 	};
 }
