@@ -141,6 +141,11 @@ namespace NxEd
 		}
 
 		HierarchyItem& Item = Items[Instance];
+		if (!Item.GameObject)
+		{
+			return;
+		}
+
 		bool Browse = Filter.IsEmpty();
 		bool ExpandChanged = false;
 

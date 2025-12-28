@@ -5,8 +5,8 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
-	World::World(NxFr::GUID WorldId, NxFr::StringView Name)
-		: WorldId(WorldId), Name(Name), Factory(WorldId, false), Root()
+	World::World(NxFr::GUID WorldId, NxFr::StringView Name, bool Reference)
+		: WorldId(WorldId), Name(Name), Factory(WorldId, Reference), Root()
 	{
 		SetTickable(true);
 	}
@@ -149,6 +149,11 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID GameObjectId) const
 	{
+		if (GameObjectId == 0)
+		{
+			return NxFr::Handle<GameObject>();
+		}
+
 		return Factory.GetGameObject(GameObjectId);
 	}
 
@@ -164,6 +169,11 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> World::GetBehaviour(NxFr::GUID BehaviourId) const
 	{
+		if (BehaviourId == 0)
+		{
+			return NxFr::Handle<Behaviour>();
+		}
+
 		return Factory.GetBehaviour(BehaviourId);
 	}
 

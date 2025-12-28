@@ -13,7 +13,7 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, World)
 
-		NEXUS_ENGINE_API World(NxFr::GUID WorldId, NxFr::StringView Name = "");
+		NEXUS_ENGINE_API World(NxFr::GUID WorldId, NxFr::StringView Name = "", bool References = false);
 		NEXUS_ENGINE_API ~World();
 
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());

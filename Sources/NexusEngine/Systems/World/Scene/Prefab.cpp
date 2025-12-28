@@ -13,7 +13,6 @@ namespace NxEn
 
 	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
 	{
-		FactoryContext Context(FactoryContext::GetAssetsFactory());
 		ObjectFactory& Factory = FactoryContext::GetFactory();
 
 		Root = Factory.DuplicateGameObject(Instance, NxFr::Handle<GameObject>(), true);
@@ -32,7 +31,6 @@ namespace NxEn
 
 	void Prefab::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
-		FactoryContext Context(FactoryContext::GetAssetsFactory());
 		ObjectFactory& Factory = FactoryContext::GetFactory();
 
 		Factory.Reserve(Node["Count"].as<uint64>());
@@ -47,7 +45,6 @@ namespace NxEn
 
 	void Prefab::OnUnload()
 	{
-		FactoryContext Context(FactoryContext::GetAssetsFactory());
 		ObjectFactory& Factory = FactoryContext::GetFactory();
 
 		Root->SetEnabled(false);

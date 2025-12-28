@@ -31,9 +31,12 @@ namespace NxEn
 
 	const static Command CmdWorldInstantiate = Command::Create("World.Prefab.Instantiate"_Sid, "Instantiate into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
-		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
-		NxFr::GUID Id = System->PathToId(Path);
-		Application::GetSystem<WorldSystem>()->InstantiatePrefab(Id);
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		WorldSystem* Worlds = Application::GetSystem<WorldSystem>();
+
+		NxFr::GUID Id = Assets->PathToId(Path);
+		Prefab* Instance = Worlds->LoadPrefab(Id);
+		Worlds->InstantiatePrefab(Instance);
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(WorldSystem)
@@ -47,7 +50,7 @@ namespace NxEn
 	{
 	}
 
-	World* WorldSystem::CreateWorld(NxFr::GUID WorldId, NxFr::StringView Name)
+	World* WorldSystem::CreateWorld(NxFr::GUID WorldId, NxFr::StringView Name, bool References)
 	{
 		if (Worlds.ContainsKey(WorldId))
 		{
@@ -55,7 +58,7 @@ namespace NxEn
 			return GetWorld(WorldId);
 		}
 
-		World* Instance = new World(WorldId, Name);
+		World* Instance = new World(WorldId, Name, References);
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
@@ -222,6 +225,9 @@ namespace NxEn
 
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)
 	{
+		World* WorldInstance = GetWorld(DummyId);
+		FactoryContext Context(WorldInstance->Factory);
+
 		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Create<Prefab>(Path, "prefab");
 		PrefabInstance->SetRoot(Target);
 		return PrefabInstance;
@@ -229,10 +235,28 @@ namespace NxEn
 
 	void WorldSystem::SavePrefab(NxFr::Handle<GameObject> Target)
 	{
+		World* WorldInstance = GetWorld(DummyId);
+		FactoryContext Context(WorldInstance->Factory);
+
 		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->GetReferenceId());
 		PrefabInstance->SetRoot(Target);
 	}
 
+	Prefab* WorldSystem::LoadPrefab(NxFr::GUID PrefabId)
+	{
+		World* WorldInstance = GetWorld(DummyId);
+		FactoryContext Context(WorldInstance->Factory);
+
+		return Application::GetSystem<AssetsSystem>()->Load<Prefab>(PrefabId);
+	}
+
+	void WorldSystem::UnloadPrefab(NxFr::GUID PrefabId)
+	{
+		World* WorldInstance = GetWorld(DummyId);
+		FactoryContext Context(WorldInstance->Factory);
+
+		Application::GetSystem<AssetsSystem>()->Unload(PrefabId);
+	}
 	void WorldSystem::UnpackPrefab(NxFr::Handle<GameObject> Target)
 	{
 		if (!Target->GetReferenceId() || Target->IsRoot())
@@ -243,32 +267,26 @@ namespace NxEn
 		Target->ReferenceId = 0;
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::InstantiatePrefab(NxFr::GUID PrefabId, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
+	NxFr::Handle<GameObject> WorldSystem::InstantiatePrefab(Prefab* Instance, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
 		World* WorldInstance = GetWorld(WorldId);
+		FactoryContext Context(WorldInstance->Factory);
 
-		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Load<Prefab>(PrefabId);
-		return WorldInstance->DuplicateGameObject(PrefabInstance->GetRoot(), Parent, true);
+		return WorldInstance->DuplicateGameObject(Instance->GetRoot(), Parent, true);
 	}
 
 	void WorldSystem::OnInitialize()
 	{
 		System::OnInitialize();
 
-		FactoryContext::GetAssetsFactory();
-#if NEXUS_EDITOR
-		CreateWorld(DummyId, DummyId);
-#endif
+		CreateWorld(DummyId, DummyId, true);
 		CreateWorld(WorldId, WorldId);
 	}
 
 	void WorldSystem::OnShutdown()
 	{
-#if NEXUS_EDITOR
-		DestroyWorld(DummyId);
-#endif
 		DestroyWorld(WorldId);
-		FactoryContext::GetAssetsFactory().Clear();
+		DestroyWorld(DummyId);
 
 		System::OnShutdown();
 	}

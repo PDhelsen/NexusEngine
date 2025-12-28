@@ -24,7 +24,7 @@ namespace NxEn
 		NEXUS_ENGINE_API WorldSystem();
 		NEXUS_ENGINE_API ~WorldSystem();
 
-		NEXUS_ENGINE_API World* CreateWorld(NxFr::GUID WorldId, NxFr::StringView Name = "");
+		NEXUS_ENGINE_API World* CreateWorld(NxFr::GUID WorldId, NxFr::StringView Name = "", bool References = false);
 		NEXUS_ENGINE_API World* GetWorld(NxFr::GUID WorldId = WorldId);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetWorlds();
 		NEXUS_ENGINE_API void DestroyWorld(NxFr::GUID WorldId);
@@ -40,8 +40,10 @@ namespace NxEn
 
 		NEXUS_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
 		NEXUS_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);
+		NEXUS_ENGINE_API Prefab* LoadPrefab(NxFr::GUID PrefabId);
+		NEXUS_ENGINE_API void UnloadPrefab(NxFr::GUID PrefabId);
 		NEXUS_ENGINE_API void UnpackPrefab(NxFr::Handle<GameObject> Target);
-		NEXUS_ENGINE_API NxFr::Handle<GameObject> InstantiatePrefab(NxFr::GUID PrefabId, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = WorldId);
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> InstantiatePrefab(Prefab* Instance, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = WorldId);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldEvent() { return OnWorldEvent; }
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnGameObjectEvent() { return OnGameObjectEvent; }

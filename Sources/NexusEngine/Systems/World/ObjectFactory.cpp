@@ -5,12 +5,6 @@ namespace NxEn
 {
 	static NxFr::Stack<ObjectFactory*> Factories;
 
-	ObjectFactory& FactoryContext::GetAssetsFactory()
-	{
-		static ObjectFactory AssetsFactory("Assets"_Sid, true);
-		return AssetsFactory;
-	}
-
 	ObjectFactory& FactoryContext::GetFactory()
 	{
 		return *Factories.Get();
