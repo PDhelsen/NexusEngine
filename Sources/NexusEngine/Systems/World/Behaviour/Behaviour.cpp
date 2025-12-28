@@ -39,6 +39,13 @@ namespace NxEn
 	{
 		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
 		GUI::Drawer<NxFr::GUID>::Property(BehaviourId, "Id");
+
+		bool Enabled = IsEnabled();
+		GUI::Drawer<bool>::Field(Enabled, "Enabled", "");
+		if (Enabled != IsEnabled())
+		{
+			SetEnabled(Enabled);
+		}
 	}
 
 	void Behaviour::OnClone(const Object& Other)
