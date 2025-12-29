@@ -72,6 +72,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void GatherDependencies(NxFr::Set<NxFr::GUID>& Result);
 
 		NEXUS_ENGINE_API bool UpdateEnabledInHierarchy();
+		NEXUS_ENGINE_API void PatchReferences();
 
 		static inline NxFr::GUID ReadIdFromYaml(const YAML::Node& Node) { return Node["Instance"]["Id"].as<NxFr::GUID>(); }
 		static inline NxFr::GUID ReadReferenceFromYaml(const YAML::Node& Node) { return Node["Instance"]["Reference"].as<NxFr::GUID>(); }

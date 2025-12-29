@@ -45,6 +45,7 @@ namespace NxEn
 		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
 
 		Root->Load(Data);
+		Root->PatchReferences();
 		Root->Initialize();
 		Root->SetEnabled(true);
 	}

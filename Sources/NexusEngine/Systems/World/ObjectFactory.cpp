@@ -4,6 +4,7 @@
 namespace NxEn
 {
 	static NxFr::Stack<ObjectFactory*> Factories;
+	static NxFr::Stack<FactoryReferences*> References;
 
 	ObjectFactory& FactoryContext::GetFactory()
 	{
@@ -18,6 +19,27 @@ namespace NxEn
 	FactoryContext::~FactoryContext()
 	{
 		Factories.Remove();
+	}
+
+	FactoryReferences* FactoryReferences::GetReferences()
+	{
+		return References.GetCount() ? References.Get() : nullptr;
+	}
+
+	NxFr::GUID FactoryReferences::Resolve(NxFr::GUID Id)
+	{
+		FactoryReferences* Map = GetReferences();
+		return Map && Id != 0 ? Map->Ids[Id] : Id;
+	}
+
+	FactoryReferences::FactoryReferences()
+	{
+		References.Append(this);
+	}
+
+	FactoryReferences::~FactoryReferences()
+	{
+		References.Remove();
 	}
 
 	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
@@ -84,18 +106,34 @@ namespace NxEn
 			Attach(Instance, Parent, Parent->GetChildCount());
 		}
 
+		FactoryReferences* Refs = FactoryReferences::GetReferences();
+		if (Refs)
+		{
+			Refs->Ids.Append(Instance->GetId(), Instance->GetId());
+		}
+
 		return Instance;
 	}
 
 	NxFr::Handle<GameObject> ObjectFactory::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent, bool HandleReferences)
 	{
+		FactoryReferences* Refs = FactoryReferences::GetReferences();
+
 		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
 		Instance->Clone((const GameObject*)Target.GetRedirectedPointer());
+		if (Refs)
+		{
+			Refs->Ids.Append(Target->GetId(), Instance->GetId());
+		}
 
 		for (auto& TargetBehaviour : Target->Behaviours)
 		{
 			NxFr::Handle<Behaviour> InstanceBehaviour = CreateBehaviour(TargetBehaviour->GetObjectType(), Instance);
 			InstanceBehaviour->Clone((const Behaviour*)TargetBehaviour.GetRedirectedPointer());
+			if (Refs)
+			{
+				Refs->Ids.Append(TargetBehaviour->GetId(), InstanceBehaviour->GetId());
+			}
 		}
 
 		NxFr::Handle<GameObject> Child = Target->GetChild();
@@ -163,6 +201,13 @@ namespace NxEn
 		NxFr::Handle<Behaviour> Instance = Info.Handle;
 		Instance->Target = Target;
 		Target->Behaviours.Append(Instance);
+
+		FactoryReferences* Refs = FactoryReferences::GetReferences();
+		if (Refs)
+		{
+			Refs->Ids.Append(Instance->GetId(), Instance->GetId());
+		}
+
 		return Instance;
 	}
 

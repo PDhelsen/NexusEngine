@@ -46,6 +46,7 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent, Instantiate);
+		Instance->PatchReferences();
 		Instance->Initialize();
 		Instance->SetEnabled(Target->IsEnabled());
 

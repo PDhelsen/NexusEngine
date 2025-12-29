@@ -17,6 +17,14 @@ namespace NxEn
 		friend class ObjectFactory;
 		friend class GameObject;
 
+	protected:
+		template<typename T>
+		union SerializedReference
+		{
+			NxFr::GUID Id;
+			NxFr::Handle<T> Handle;
+		};
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Behaviour)
 
@@ -41,6 +49,8 @@ namespace NxEn
 		NEXUS_ENGINE_API YAML::Node Save();
 		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
 		NEXUS_ENGINE_API void Unload();
+
+		NEXUS_ENGINE_API virtual void PatchReferences() {};
 
 		static inline NxFr::GUID ReadIdFromYaml(const YAML::Node& Node) { return Node["Id"].as<NxFr::GUID>(); }
 		static inline NxFr::StringId ReadTypeFromYaml(const YAML::Node& Node) { return Node["Type"].as<NxFr::StringId>(); }

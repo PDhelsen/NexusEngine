@@ -15,6 +15,17 @@ namespace NxEn
 		~FactoryContext();
 	};
 
+	struct FactoryReferences
+	{
+		static FactoryReferences* GetReferences();
+		static NxFr::GUID Resolve(NxFr::GUID Id);
+
+		FactoryReferences();
+		~FactoryReferences();
+
+		NxFr::Dictionary<NxFr::GUID, NxFr::GUID> Ids;
+	};
+
 	class ObjectFactory
 	{
 		struct ObjectInfo

@@ -20,6 +20,7 @@ namespace NxEn
 		Root->ReferenceId = GetId();
 		Instance->ReferenceId = GetId();
 
+		Root->PatchReferences();
 		SetDirty();
 	}
 
@@ -39,6 +40,7 @@ namespace NxEn
 		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
 
 		Root->Load(Data);
+		Root->PatchReferences();
 		Root->Initialize();
 		Root->SetEnabled(true);
 	}

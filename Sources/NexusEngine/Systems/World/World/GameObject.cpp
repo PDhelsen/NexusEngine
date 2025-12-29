@@ -516,4 +516,19 @@ namespace NxEn
 
 		return true;
 	}
+
+	void GameObject::PatchReferences()
+	{
+		for (auto& B : Behaviours)
+		{
+			B->PatchReferences();
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->PatchReferences();
+			Iterator = Iterator->GetNext();
+		}
+	}
 }
