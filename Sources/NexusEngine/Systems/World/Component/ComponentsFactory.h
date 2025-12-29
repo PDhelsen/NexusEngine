@@ -5,83 +5,69 @@
 namespace NxEn
 {
 	class Component;
+	template<typename T>
+	class ComponentsStorage;
 
 	class ComponentsFactory
 	{
-		struct Factory
-		{
-			virtual Factory* Clone() = 0;
-
-			virtual Component* Append() = 0;
-			virtual void Remove(uint64 Index) = 0;
-			virtual Component* Get(uint64 Index) = 0;
-
-			virtual void Reserve(uint64 Size) = 0;
-			virtual void Clear() = 0;
-
-			virtual NxFr::Iterator::IteratorBlock<Component> Begin() const = 0;
-			virtual NxFr::Iterator::IteratorBlock<Component> End() const = 0;
-
-			virtual uint64 GetCount() const = 0;
-			virtual uint64 GetCapacity() const = 0;
-		};
-
-		template<typename T>
-		struct FactoryTyped : public Factory
-		{
-			Factory* Clone() override { return new FactoryTyped<T>(); };
-
-			Component* Append() override { return &Instances.AppendConstruct(); }
-			void Remove(uint64 Index) override { return Instances.RemoveSwap(Index); }
-			Component* Get(uint64 Index) override { return &Instances[Index]; }
-
-			void Reserve(uint64 Size) override { Instances.Reserve(Size); }
-			void Clear() override { Instances.Clear(); }
-
-			NxFr::Iterator::IteratorBlock<Component> Begin() const override { return Instances.Begin(); }
-			NxFr::Iterator::IteratorBlock<Component> End() const override { return Instances.End(); }
-
-			uint64 GetCount() const override { return Instances.GetCount(); }
-			uint64 GetCapacity() const override { return Instances.GetCapacity(); }
-
-			NxFr::List<T> Instances;
-		};
-
 	public:
 		template<typename T>
 		static ComponentsFactory* Register()
 		{
-			ComponentsFactory* Instance = new ComponentsFactory(new FactoryTyped<T>());
+			ComponentsFactory* Instance = new ComponentsStorage<T>();
 			SetFactory(T::GetClassType(), Instance);
 			return Instance;
 		}
 
-		static ComponentsFactory* Create(NxFr::StringId Type)
-		{
-			ComponentsFactory* Template = GetFactory(Type);
-			return new ComponentsFactory(Template->Instance->Clone());
-		}
+		NEXUS_ENGINE_API static ComponentsFactory* Create(NxFr::StringId Type);
+		NEXUS_ENGINE_API static ComponentsFactory * GetFactory(NxFr::StringId Id);
+		NEXUS_ENGINE_API static void SetFactory(NxFr::StringId Id, ComponentsFactory * Instance);
 
-		NEXUS_ENGINE_API static ComponentsFactory* GetFactory(NxFr::StringId Id);
-		NEXUS_ENGINE_API static void SetFactory(NxFr::StringId Id, ComponentsFactory* Instance);
+		NEXUS_ENGINE_API ComponentsFactory() = default;
+		NEXUS_ENGINE_API ComponentsFactory(const ComponentsFactory& Other) = delete;
+		NEXUS_ENGINE_API ComponentsFactory(ComponentsFactory&& Other) = delete;
+		NEXUS_ENGINE_API virtual ~ComponentsFactory() = default;
 
-		NEXUS_ENGINE_API ComponentsFactory(Factory* Instance);
-		NEXUS_ENGINE_API ~ComponentsFactory();
+		NEXUS_ENGINE_API virtual Component* Append() = 0;
+		NEXUS_ENGINE_API virtual void Remove(uint64 Index) = 0;
+		NEXUS_ENGINE_API virtual Component* Get(uint64 Index) = 0;
 
-		NEXUS_ENGINE_API Component* Append();
-		NEXUS_ENGINE_API void Remove(uint64 Index);
-		NEXUS_ENGINE_API Component* Get(uint64 Index);
+		NEXUS_ENGINE_API virtual void Reserve(uint64 Size) = 0;
+		NEXUS_ENGINE_API virtual void Clear() = 0;
 
-		NEXUS_ENGINE_API void Reserve(uint64 Size);
-		NEXUS_ENGINE_API void Clear();
+		virtual uint64 GetCount() const = 0;
+		virtual uint64 GetCapacity() const = 0;
 
-		NEXUS_ENGINE_API NxFr::Iterator::IteratorBlock<Component> Begin();
-		NEXUS_ENGINE_API NxFr::Iterator::IteratorBlock<Component> End();
+	protected:
+		virtual ComponentsFactory* Clone() const = 0;
+	};
 
-		NEXUS_ENGINE_API uint64 GetCount() const;
-		NEXUS_ENGINE_API uint64 GetCapacity() const;
+	template<typename T>
+	class ComponentsStorage : public ComponentsFactory
+	{
+	public:
+		ComponentsStorage() = default;
+		ComponentsStorage(const ComponentsStorage<T>& Other) = delete;
+		ComponentsStorage(ComponentsStorage&& Other) = delete;
+		virtual ~ComponentsStorage() { Clear(); }
+
+		Component* Append() override { return &Instances.AppendConstruct(); }
+		void Remove(uint64 Index) override { return Instances.RemoveSwap(Index); }
+		Component* Get(uint64 Index) override { return &Instances[Index]; }
+
+		void Reserve(uint64 Size) override { Instances.Reserve(Size); }
+		void Clear() override { Instances.Clear(); }
+
+		NxFr::List<T>::I Begin() const { return Instances.Begin(); }
+		NxFr::List<T>::I End() const { return Instances.End(); }
+
+		uint64 GetCount() const override { return Instances.GetCount(); }
+		uint64 GetCapacity() const override { return Instances.GetCapacity(); }
+
+	protected:
+		virtual ComponentsFactory* Clone() const override { return new ComponentsStorage<T>(); };
 
 	private:
-		Factory* Instance;
+		NxFr::List<T> Instances;
 	};
 }

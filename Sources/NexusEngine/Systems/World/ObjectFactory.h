@@ -82,12 +82,13 @@ namespace NxEn
 		NxFr::Handle<Component> GetComponent(NxFr::GUID ComponentId) const;
 		NxFr::Array<NxFr::Handle<Component>> GetComponents() const;
 
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginGameObjects() const { return GameObjectInfos.Begin(); }
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndGameObjects() const { return GameObjectInfos.End(); }
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginBehaviour() const { return BehavioursInfos.Begin(); }
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndBehaviour() const { return BehavioursInfos.End(); }
-
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginGameObjects() { return GameObjectInfos.Begin(); }
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndGameObjects() { return GameObjectInfos.End(); }
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginBehaviour() { return BehavioursInfos.Begin(); }
+		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndBehaviour() { return BehavioursInfos.End(); }
 		NxFr::List<NxFr::Handle<Behaviour>>& Starting() { return BehavioursStarting; }
+		template<typename T> NxFr::List<T>::I BeginComponent() { return GetComponentStorage<T>().Begin(); }
+		template<typename T> NxFr::List<T>::I EndComponent() { return GetComponentStorage<T>().End(); }
 
 		NxFr::GUID GetId() const { return WorldId; }
 
@@ -103,6 +104,8 @@ namespace NxEn
 		void ReallocateAndUpdateGameObject();
 		void ReallocateAndUpdateComponent(NxFr::StringId Type);
 		void ProcessPendings();
+
+		template<typename T> ComponentsStorage<T>& GetComponentStorage();
 
 	private:
 		NxFr::GUID WorldId;
@@ -123,4 +126,16 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo> ComponentsInfos;
 		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<uint64>> ComponentsAvailable;
 	};
+
+	template<typename T>
+	inline ComponentsStorage<T>& ObjectFactory::GetComponentStorage()
+	{
+		NxFr::StringId Type = T::GetClassType();
+		auto Instance = Components.TryGet(Type);
+		if (!Instance)
+		{
+			Instance = &Components.Append(Type, ComponentsFactory::Create(Type));
+		}
+		return *static_cast<ComponentsStorage<T>*>(*Instance);
+	}
 }
