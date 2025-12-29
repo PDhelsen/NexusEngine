@@ -103,6 +103,7 @@ namespace NxEn
 		void Detach(NxFr::Handle<GameObject> Instance);
 		void ReallocateAndUpdateGameObject();
 		void ReallocateAndUpdateComponent(NxFr::StringId Type);
+		void UpdateComponent(NxFr::StringId Type, uint64 Index);
 		void ProcessPendings();
 
 		template<typename T> ComponentsStorage<T>& GetComponentStorage();
@@ -124,18 +125,19 @@ namespace NxEn
 
 		NxFr::Dictionary<NxFr::StringId, ComponentsFactory*> Components;
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo> ComponentsInfos;
-		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<uint64>> ComponentsAvailable;
 	};
 
 	template<typename T>
 	inline ComponentsStorage<T>& ObjectFactory::GetComponentStorage()
 	{
 		NxFr::StringId Type = T::GetClassType();
-		auto Instance = Components.TryGet(Type);
+		ComponentsFactory** Instance = Components.TryGet(Type);
+
 		if (!Instance)
 		{
 			Instance = &Components.Append(Type, ComponentsFactory::Create(Type));
 		}
+
 		return *static_cast<ComponentsStorage<T>*>(*Instance);
 	}
 }

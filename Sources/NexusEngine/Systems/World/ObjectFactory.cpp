@@ -46,7 +46,7 @@ namespace NxEn
 		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(1024),
 		GameObjects(), GameObjectInfos(), GameObjectAvailables(),
 		Behaviours(), BehavioursInfos(), BehavioursAvailable(), BehavioursStarting(),
-		Components(), ComponentsInfos(), ComponentsAvailable()
+		Components(), ComponentsInfos()
 	{
 	}
 
@@ -60,11 +60,6 @@ namespace NxEn
 		for (auto [Id, Components] : Components)
 		{
 			delete Components;
-		}
-
-		for (auto& [Id, Instances] : ComponentsAvailable)
-		{
-			Instances.Clear();
 		}
 
 		for (auto& [Id, Instances] : Behaviours)
@@ -84,7 +79,6 @@ namespace NxEn
 
 		Components.Clear();
 		ComponentsInfos.Clear();
-		ComponentsAvailable.Clear();
 
 		Behaviours.Clear();
 		BehavioursInfos.Clear();
@@ -687,27 +681,17 @@ namespace NxEn
 		Component* Instance = nullptr;
 		uint64 Index = 0;
 
-		if (!ComponentsAvailable.ContainsKey(Type) || ComponentsAvailable[Type].IsEmpty())
+		if (!Components.ContainsKey(Type))
 		{
-			if (!Components.ContainsKey(Type))
-			{
-				Components.Append(Type, ComponentsFactory::Create(Type));
-			}
-			else
-			{
-				ReallocateAndUpdateComponent(Type);
-			}
-
-			Instance = Components[Type]->Append();
-			Index = Components[Type]->GetCount() - 1;
+			Components.Append(Type, ComponentsFactory::Create(Type));
 		}
 		else
 		{
-			Index = ComponentsAvailable[Type].Get();
-			Instance = Components[Type]->Get(Index);
-
-			ComponentsAvailable[Type].Remove();
+			ReallocateAndUpdateComponent(Type);
 		}
+
+		Instance = Components[Type]->Append();
+		Index = Components[Type]->GetCount() - 1;
 
 		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
 		BehavioursStarting.Append(Handle);
@@ -730,11 +714,11 @@ namespace NxEn
 
 		Handles.ReleaseHandle(Instance);
 
-		if (!ComponentsAvailable.ContainsKey(Type))
-		{
-			ComponentsAvailable.Append(Type, NxFr::Stack<uint64>());
-		}
-		ComponentsAvailable[Type].Append(Info.Index);
+		// Component Remove use a RemoveSwap
+		// So after the remove, the last element is now at Info.Index
+		// Since that element was moved, its handle has to be updated 
+		Components[Type]->Remove(Info.Index);
+		UpdateComponent(Type, Info.Index);
 
 		return Pendings.Append(PendingInfo{
 			.Id = ComponentId,
@@ -853,6 +837,21 @@ namespace NxEn
 				Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(Components[Type]->Get(Info.Index)));
 			}
 		}
+	}
+
+	void ObjectFactory::UpdateComponent(NxFr::StringId Type, uint64 Index)
+	{
+		uint64 Count = Components[Type]->GetCount();
+		if (Count == 0 || Count == Index)
+		{
+			return;
+		}
+
+		NxFr::GUID Id = Components[Type]->Get(Index)->GetId();
+		ObjectInfo& Info = ComponentsInfos[Id];
+
+		Info.Index = Index;
+		Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(Components[Type]->Get(Info.Index)));
 	}
 
 	void ObjectFactory::ProcessPendings()
