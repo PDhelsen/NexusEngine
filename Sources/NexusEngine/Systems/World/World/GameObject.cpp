@@ -9,7 +9,7 @@ namespace NxEn
 		: WorldId(WorldId), GameObjectId(0), ReferenceId(0),
 		Name(""),
 		Parent(), Prev(), Next(), Child(),
-		Behaviours()
+		Behaviours(), Components()
 	{
 		SetTickable(true);
 	}
@@ -34,6 +34,11 @@ namespace NxEn
 			B->Initialize();
 		}
 
+		for (auto& C : Components)
+		{
+			C->Initialize();
+		}
+
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -55,6 +60,11 @@ namespace NxEn
 		{
 			Iterator->Shutdown();
 			Iterator = Iterator->GetNext();
+		}
+
+		for (auto& C : Components)
+		{
+			C->Shutdown();
 		}
 
 		for (auto& B : Behaviours)
@@ -109,6 +119,14 @@ namespace NxEn
 		{
 			ImGui::PushID(B->GetId());
 			B->DrawGui(TimeStep);
+			ImGui::Separator();
+			ImGui::PopID();
+		}
+
+		for (auto& C : Components)
+		{
+			ImGui::PushID(C->GetId());
+			C->DrawGui(TimeStep);
 			ImGui::Separator();
 			ImGui::PopID();
 		}
@@ -308,6 +326,32 @@ namespace NxEn
 		return NxFr::Handle<Behaviour>();
 	}
 
+	NxFr::Handle<Component> GameObject::GetComponentById(NxFr::GUID Id)
+	{
+		for (auto& C : Components)
+		{
+			if (C->GetId() == Id)
+			{
+				return C;
+			}
+		}
+
+		return NxFr::Handle<Component>();
+	}
+
+	NxFr::Handle<Component> GameObject::GetComponentByType(NxFr::StringId Id)
+	{
+		for (auto& C : Components)
+		{
+			if (C->GetObjectType() == Id)
+			{
+				return C;
+			}
+		}
+
+		return NxFr::Handle<Component>();
+	}
+
 	void GameObject::OnGui(float TimeStep)
 	{
 		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
@@ -348,6 +392,13 @@ namespace NxEn
 			NodeBehaviours.push_back(B->Save());
 		}
 		Node["Behaviours"] = NodeBehaviours;
+
+		YAML::Node NodeComponents;
+		for (auto& C : Components)
+		{
+			NodeComponents.push_back(C->Save());
+		}
+		Node["Components"] = NodeComponents;
 	}
 
 	void GameObject::OnLoad(const YAML::Node& Node)
@@ -372,6 +423,17 @@ namespace NxEn
 			NxFr::Handle<Behaviour> B = Factory.CreateBehaviour(Type, This, Id);
 			B->Load(NodeBehaviour);
 		}
+
+		YAML::Node NodeComponents = Node["Components"];
+		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
+		{
+			YAML::Node NodeComponent = NodeComponents[Index];
+			NxFr::StringId Type = Component::ReadTypeFromYaml(NodeComponent);
+			NxFr::GUID Id = Component::ReadIdFromYaml(NodeComponent);
+
+			NxFr::Handle<Behaviour> B = Factory.CreateComponent(Type, This, Id);
+			B->Load(NodeComponent);
+		}
 	}
 
 	void GameObject::OnUnload()
@@ -379,6 +441,11 @@ namespace NxEn
 		for(auto& B : Behaviours)
 		{
 			B->Unload();
+		}
+
+		for (auto& C : Components)
+		{
+			C->Unload();
 		}
 	}
 
@@ -522,6 +589,11 @@ namespace NxEn
 		for (auto& B : Behaviours)
 		{
 			B->PatchReferences();
+		}
+
+		for (auto& C : Components)
+		{
+			C->PatchReferences();
 		}
 
 		NxFr::Handle<GameObject> Iterator = GetChild();

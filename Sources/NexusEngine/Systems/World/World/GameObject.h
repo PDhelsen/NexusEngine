@@ -6,6 +6,7 @@ namespace NxEn
 {
 	class World;
 	class Behaviour;
+	class Component;
 
 	class GameObject : public Object
 	{
@@ -50,6 +51,10 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviourById(NxFr::GUID Id);
 		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviourByType(NxFr::StringId Id);
 
+		template<typename T> NxFr::Handle<T> GetComponent();
+		NEXUS_ENGINE_API NxFr::Handle<Component> GetComponentById(NxFr::GUID Id);
+		NEXUS_ENGINE_API NxFr::Handle<Component> GetComponentByType(NxFr::StringId Id);
+
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetGameObjectId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
 		NEXUS_ENGINE_API NxFr::GUID GetGameObjectId() const { return GameObjectId; };
@@ -90,11 +95,18 @@ namespace NxEn
 		NxFr::Handle<GameObject> Child;
 
 		NxFr::List<NxFr::Handle<Behaviour>> Behaviours;
+		NxFr::List<NxFr::Handle<Component>> Components;
 	};
 
 	template<typename T>
 	inline NxFr::Handle<T> GameObject::GetBehaviour()
 	{
 		return static_cast<NxFr::Handle<T>>(GetBehaviourByType(T::GetClassType()));
+	}
+
+	template<typename T>
+	inline NxFr::Handle<T> GameObject::GetComponent()
+	{
+		return static_cast<NxFr::Handle<T>>(GetComponentByType(T::GetClassType()));
 	}
 }

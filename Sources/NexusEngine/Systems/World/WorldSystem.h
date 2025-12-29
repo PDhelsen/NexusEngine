@@ -7,6 +7,7 @@
 #include "NexusEngine/Systems/World/Scene/Scene.h"
 #include "NexusEngine/Systems/World/Scene/Prefab.h"
 #include "NexusEngine/Systems/World/Behaviour/Behaviour.h"
+#include "NexusEngine/Systems/World/Component/Component.h"
 
 namespace NxEn
 {

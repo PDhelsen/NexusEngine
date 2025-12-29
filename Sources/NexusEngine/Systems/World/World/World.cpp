@@ -123,12 +123,42 @@ namespace NxEn
 		Factory.DestroyBehaviour(Instance);
 	}
 
+	NxFr::Handle<Component> World::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
+	{
+		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
+
+		NxFr::Handle<Component> Instance = Factory.CreateComponent(Type, Target);
+		Instance->Initialize();
+		Instance->SetEnabled(true);
+
+		return Instance;
+	}
+
+	void World::DestroyComponent(NxFr::Handle<Component> Instance)
+	{
+		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+
+		if (!Instance)
+		{
+			return;
+		}
+
+		Instance->SetEnabled(false);
+		Instance->Shutdown();
+		Factory.DestroyComponent(Instance);
+	}
+
 	bool World::Belong(NxFr::Handle<GameObject> Instance) const
 	{
 		return Factory.Belong(Instance);
 	}
 
 	bool World::Belong(NxFr::Handle<Behaviour> Instance) const
+	{
+		return Factory.Belong(Instance);
+	}
+
+	bool World::Belong(NxFr::Handle<Component> Instance) const
 	{
 		return Factory.Belong(Instance);
 	}
@@ -141,6 +171,11 @@ namespace NxEn
 	NxFr::Array<NxFr::Handle<Behaviour>> World::FindBehaviours(NxFr::StringView Filter) const
 	{
 		return Factory.FindBehaviours(Filter);
+	}
+
+	NxFr::Array<NxFr::Handle<Component>> World::FindComponents(NxFr::StringView Filter) const
+	{
+		return Factory.FindComponents(Filter);
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const
@@ -176,6 +211,21 @@ namespace NxEn
 		}
 
 		return Factory.GetBehaviour(BehaviourId);
+	}
+
+	NxFr::Array<NxFr::Handle<Component>> World::GetComponents() const
+	{
+		return Factory.GetComponents();
+	}
+
+	NxFr::Handle<Component> World::GetComponent(NxFr::GUID ComponentId) const
+	{
+		if (ComponentId == 0)
+		{
+			return NxFr::Handle<Component>();
+		}
+
+		return Factory.GetComponent(ComponentId);
 	}
 
 	void World::OnInitialize()

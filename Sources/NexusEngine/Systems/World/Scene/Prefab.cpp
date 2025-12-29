@@ -26,19 +26,15 @@ namespace NxEn
 
 	void Prefab::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
-		Node["Count"] = 1 + Root->GetChildCount(true);
 		NxFr::Yaml::SerializeFile(Root->Save(), Content);
 	}
 
 	void Prefab::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
 		ObjectFactory& Factory = FactoryContext::GetFactory();
-
-		Factory.Reserve(Node["Count"].as<uint64>());
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 
 		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
-
 		Root->Load(Data);
 		Root->PatchReferences();
 		Root->Initialize();

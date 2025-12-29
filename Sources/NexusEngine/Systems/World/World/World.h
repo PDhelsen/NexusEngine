@@ -26,16 +26,24 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
 		NEXUS_ENGINE_API void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
 
+		template<typename T> NxFr::Handle<T> CreateComponent(NxFr::Handle<GameObject> Target);
+		NEXUS_ENGINE_API NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
+		NEXUS_ENGINE_API void DestroyComponent(NxFr::Handle<Component> Instance);
+
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<GameObject> Instance) const;
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<Behaviour> Instance) const;
+		NEXUS_ENGINE_API bool Belong(NxFr::Handle<Component> Instance) const;
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Filter) const;
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Filter) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> FindComponents(NxFr::StringView Filter) const;
 
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetRootGameObject() const;
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> GetBehaviours() const;
 		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviour(NxFr::GUID BehaviourId) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> GetComponents() const;
+		NEXUS_ENGINE_API NxFr::Handle<Component> GetComponent(NxFr::GUID ComponentId) const;
 
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetWorldId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
@@ -59,6 +67,12 @@ namespace NxEn
 	inline NxFr::Handle<T> World::CreateBehaviour(NxFr::Handle<GameObject> Target)
 	{
 		return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target));
+	}
+
+	template<typename T>
+	inline NxFr::Handle<T> World::CreateComponent(NxFr::Handle<GameObject> Target)
+	{
+		return static_cast<NxFr::Handle<T>>(CreateComponent(T::GetClassType(), Target));
 	}
 }
 
