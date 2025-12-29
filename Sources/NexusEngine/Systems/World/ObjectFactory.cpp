@@ -426,8 +426,14 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
+		Instance->WorldId = WorldId;
 		Instance->GameObjectId = GameObjectId;
 		Instance->ReferenceId = 0;
+
+		Instance->Parent = NxFr::Handle<GameObject>();
+		Instance->Prev = NxFr::Handle<GameObject>();
+		Instance->Next = NxFr::Handle<GameObject>();
+		Instance->Child = NxFr::Handle<GameObject>();
 
 		return Pendings.Append(PendingInfo{
 			.Id = GameObjectId,
@@ -529,6 +535,7 @@ namespace NxEn
 	{
 		Instance->Parent = Parent;
 
+
 		if (!Parent->Child)
 		{
 			Parent->Child = Instance;
@@ -589,7 +596,15 @@ namespace NxEn
 
 		for (auto& [Id, Info] : GameObjectInfos)
 		{
-			Handles.UpdateHandle(static_cast<NxFr::Handle<GameObject>>(Info.Handle), &GameObjects[Info.Index]);
+			Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(&GameObjects[Info.Index]));
+		}
+
+		for (auto& Info : Pendings)
+		{
+			if (!Info.IsBehaviour)
+			{
+				Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(&GameObjects[Info.Index]));
+			}
 		}
 	}
 
