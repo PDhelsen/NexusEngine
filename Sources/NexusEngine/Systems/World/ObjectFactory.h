@@ -59,7 +59,7 @@ namespace NxEn
 		void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
 		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId = 0);
-		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance, NxFr::Handle<GameObject> Target);
+		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
 
 		bool Belong(NxFr::Handle<GameObject> Instance) const;
 		bool Belong(NxFr::Handle<Behaviour> Instance) const;

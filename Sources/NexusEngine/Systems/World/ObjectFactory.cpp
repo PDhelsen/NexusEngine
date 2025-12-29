@@ -175,7 +175,7 @@ namespace NxEn
 
 		while (Instance->Behaviours.GetCount())
 		{
-			DestroyBehaviour(Instance->Behaviours[0], Instance);
+			DestroyBehaviour(Instance->Behaviours[0]);
 		}
 
 		Detach(Instance);
@@ -211,8 +211,9 @@ namespace NxEn
 		return Instance;
 	}
 
-	void ObjectFactory::DestroyBehaviour(NxFr::Handle<Behaviour> Instance, NxFr::Handle<GameObject> Target)
+	void ObjectFactory::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
+		NxFr::Handle<GameObject> Target = Instance->GetGameObject();
 		uint64 Index = Target->Behaviours.Find(Instance).Id();
 		Target->Behaviours.RemoveSwap(Index);
 		Instance->Target = NxFr::Handle<GameObject>();

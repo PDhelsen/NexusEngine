@@ -120,7 +120,7 @@ namespace NxEn
 
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
-		Factory.DestroyGameObject(Instance);
+		Factory.DestroyBehaviour(Instance);
 	}
 
 	bool World::Belong(NxFr::Handle<GameObject> Instance) const
