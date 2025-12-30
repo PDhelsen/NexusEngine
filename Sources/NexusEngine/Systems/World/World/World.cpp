@@ -85,6 +85,7 @@ namespace NxEn
 		}
 
 		Factory.AttachGameObject(Instance, Target, Index);
+		Instance->UpdateEnabledInHierarchy();
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 	}
@@ -127,11 +128,7 @@ namespace NxEn
 	{
 		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
 
-		NxFr::Handle<Component> Instance = Factory.CreateComponent(Type, Target);
-		Instance->Initialize();
-		Instance->SetEnabled(true);
-
-		return Instance;
+		return Factory.CreateComponent(Type, Target);
 	}
 
 	void World::DestroyComponent(NxFr::Handle<Component> Instance)
@@ -143,8 +140,6 @@ namespace NxEn
 			return;
 		}
 
-		Instance->SetEnabled(false);
-		Instance->Shutdown();
 		Factory.DestroyComponent(Instance);
 	}
 
@@ -242,23 +237,7 @@ namespace NxEn
 	{
 		Factory.Pending();
 
-		NxFr::List<NxFr::Handle<Behaviour>>& Starting = Factory.Starting();
-		for (uint64 Index = Starting.GetCount(); Index > 0; --Index)
-		{
-			NxFr::Handle<Behaviour> Instance = Starting[Index - 1];
-			if (!Instance->IsInitialized() || !Instance->IsEnabled())
-			{
-				continue;
-			}
-
-			Instance->Start();
-			Starting.Remove(Index - 1);
-		}
-
-		for (auto Iterator = Factory.BeginBehaviour(); Iterator != Factory.EndBehaviour(); ++Iterator)
-		{
-			Iterator->Value.Handle->Tick(TimeStep);
-		}
+		Root->Tick();
 
 		Factory.Pending();
 	}

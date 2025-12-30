@@ -8,29 +8,26 @@ namespace NxEn
 	Component::Component()
 		: ComponentId(0), Target()
 	{
-		SetTickable(true);
 	}
 
 	Component::~Component()
 	{
 	}
 
-	void Component::DrawGui(float TimeStep)
-	{
-		OnGui(TimeStep);
-	}
-
 	void Component::OnGui(float TimeStep)
 	{
-		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
-		GUI::Drawer<NxFr::GUID>::Property(ComponentId, "Id");
-
 		bool Enabled = IsEnabled();
-		GUI::Drawer<bool>::Field(Enabled, "Enabled", "");
+		GUI::Drawer<bool>::Field(Enabled);
 		if (Enabled != IsEnabled())
 		{
 			SetEnabled(Enabled);
 		}
+
+		ImGui::SameLine();
+
+		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
+
+		GUI::Drawer<NxFr::GUID>::Property(ComponentId, "Id");
 	}
 
 	void Component::OnClone(const Object& Other)
@@ -41,32 +38,22 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	YAML::Node Component::Save()
+	void Component::OnSave(YAML::Node& Node)
 	{
-		YAML::Node Node;
 		Node["Type"] = GetObjectType();
 		Node["Id"] = ComponentId;
 		Node["Target"] = Target->GetId();
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
-
-		YAML::Node Data;
-		OnSave(Data);
-		Node["Data"] = Data;
-
-		return Node;
 	}
 
-	void Component::Load(const YAML::Node& Node)
+	void Component::OnLoad(const YAML::Node& Node)
 	{
 		NEXUS_ASSERT(ComponentId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		NEXUS_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
-
-		OnLoad(Node["Data"]);
 	}
 
-	void Component::Unload()
+	void Component::OnUnload()
 	{
-		OnUnload();
 	}
 }

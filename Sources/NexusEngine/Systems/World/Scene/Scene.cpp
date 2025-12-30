@@ -58,10 +58,4 @@ namespace NxEn
 		Root = NxFr::Handle<GameObject>();
 	}
 
-	NxFr::Array<NxFr::GUID> Scene::GetDependencies()
-	{
-		NxFr::Set<NxFr::GUID> Dependencies;
-		Root->GatherDependencies(Dependencies);
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
-	}
 }

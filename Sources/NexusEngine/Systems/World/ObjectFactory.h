@@ -86,7 +86,6 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndGameObjects() { return GameObjectInfos.End(); }
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginBehaviour() { return BehavioursInfos.Begin(); }
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndBehaviour() { return BehavioursInfos.End(); }
-		NxFr::List<NxFr::Handle<Behaviour>>& Starting() { return BehavioursStarting; }
 		template<typename T> NxFr::List<T>::I BeginComponent() { return GetComponentStorage<T>().Begin(); }
 		template<typename T> NxFr::List<T>::I EndComponent() { return GetComponentStorage<T>().End(); }
 
@@ -121,7 +120,6 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::StringId, NxFr::List<Behaviour*>> Behaviours;
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo> BehavioursInfos;
 		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<uint64>> BehavioursAvailable;
-		NxFr::List<NxFr::Handle<Behaviour>> BehavioursStarting;
 
 		NxFr::Dictionary<NxFr::StringId, ComponentsFactory*> Components;
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo> ComponentsInfos;

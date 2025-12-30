@@ -15,52 +15,37 @@ namespace NxEn
 	{
 	}
 
-	void Behaviour::Start()
+	void Behaviour::SetEnabled(bool Enabled)
 	{
-		if (!Target.IsValid() || !Target->IsTickable() || !Target->IsEnabled())
-		{
-			return;
-		}
+		SetFlag(ObjectFlags::Enabled, Enabled);
 
-		if (!IsTickable() || !IsEnabled())
-		{
-			return;
-		}
-
-		OnStart();
+		UpdateEnabledInHierarchy();
 	}
 
-	void Behaviour::Tick(float TimeStep)
+	bool Behaviour::IsEnabledInHierarchy() const
 	{
-		if (!Target.IsValid() || !Target->IsTickable() || !Target->IsEnabled())
-		{
-			return;
-		}
-
-		if (!IsTickable() || !IsEnabled())
-		{
-			return;
-		}
-
-		OnTick(TimeStep);
+		return GetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy);
 	}
 
-	void Behaviour::DrawGui(float TimeStep)
+	bool Behaviour::IsTicking() const
 	{
-		OnGui(TimeStep);
+		return IsEnabledInHierarchy() && IsTickable() && GetGameObject()->IsTickable();
 	}
 
 	void Behaviour::OnGui(float TimeStep)
 	{
-		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
-		GUI::Drawer<NxFr::GUID>::Property(BehaviourId, "Id");
-
 		bool Enabled = IsEnabled();
-		GUI::Drawer<bool>::Field(Enabled, "Enabled", "");
+		GUI::Drawer<bool>::Field(Enabled);
 		if (Enabled != IsEnabled())
 		{
 			SetEnabled(Enabled);
 		}
+
+		ImGui::SameLine();
+
+		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
+
+		GUI::Drawer<NxFr::GUID>::Property(BehaviourId, "Id");
 	}
 
 	void Behaviour::OnClone(const Object& Other)
@@ -71,32 +56,38 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	YAML::Node Behaviour::Save()
+	void Behaviour::OnSave(YAML::Node& Node)
 	{
-		YAML::Node Node;
 		Node["Type"] = GetObjectType();
 		Node["Id"] = BehaviourId;
 		Node["Target"] = Target->GetId();
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
-
-		YAML::Node Data;
-		OnSave(Data);
-		Node["Data"] = Data;
-
-		return Node;
 	}
 
-	void Behaviour::Load(const YAML::Node& Node)
+	void Behaviour::OnLoad(const YAML::Node& Node)
 	{
 		NEXUS_ASSERT(BehaviourId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		NEXUS_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
-
-		OnLoad(Node["Data"]);
 	}
 
-	void Behaviour::Unload()
+	void Behaviour::UpdateEnabledInHierarchy()
 	{
-		OnUnload();
+		bool Enabled = IsEnabled() && GetGameObject()->IsEnabledInHierarchy();
+		if (Enabled == IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, Enabled);
+
+		if (Enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
 	}
 }

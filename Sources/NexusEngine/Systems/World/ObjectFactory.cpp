@@ -45,7 +45,7 @@ namespace NxEn
 	ObjectFactory::ObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
 		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(1024),
 		GameObjects(), GameObjectInfos(), GameObjectAvailables(),
-		Behaviours(), BehavioursInfos(), BehavioursAvailable(), BehavioursStarting(),
+		Behaviours(), BehavioursInfos(), BehavioursAvailable(),
 		Components(), ComponentsInfos()
 	{
 	}
@@ -631,7 +631,6 @@ namespace NxEn
 		}
 
 		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
-		BehavioursStarting.Append(Handle);
 		Instance->BehaviourId = BehaviourId;
 
 		return Pendings.Append(PendingInfo{
@@ -648,12 +647,7 @@ namespace NxEn
 		NxFr::StringId Type = Instance->GetObjectType();
 		NxFr::GUID BehaviourId = Instance->GetId();
 		ObjectInfo Info = BehavioursInfos[BehaviourId];
-		uint64 StartingIndex = BehavioursStarting.Find(Instance).Id();
 
-		if (StartingIndex != BehavioursStarting.GetCount())
-		{
-			BehavioursStarting.RemoveSwap(StartingIndex);
-		}
 		Handles.ReleaseHandle(Instance);
 
 		if (!BehavioursAvailable.ContainsKey(Type))
@@ -694,7 +688,6 @@ namespace NxEn
 		Index = Components[Type]->GetCount() - 1;
 
 		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
-		BehavioursStarting.Append(Handle);
 		Instance->ComponentId = ComponentId;
 
 		return Pendings.Append(PendingInfo{

@@ -31,15 +31,15 @@ namespace NxEn
 
 	void Tags::OnSave(YAML::Node& Node)
 	{
+		Component::OnSave(Node);
+
 		Node["Items"] = Items;
 	}
 
 	void Tags::OnLoad(const YAML::Node& Node)
 	{
-		Items = Node["Items"].as<NxFr::Set<NxFr::String>>();
-	}
+		Component::OnLoad(Node);
 
-	void Tags::OnUnload()
-	{
+		Items = Node["Items"].as<NxFr::Set<NxFr::String>>();
 	}
 }

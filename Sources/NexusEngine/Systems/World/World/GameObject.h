@@ -26,12 +26,16 @@ namespace NxEn
 
 		NEXUS_ENGINE_API void Initialize() override;
 		NEXUS_ENGINE_API void Shutdown() override;
-		NEXUS_ENGINE_API void Start();
 		NEXUS_ENGINE_API void Tick(float TimeStep = 0.0f) override;
 		NEXUS_ENGINE_API void DrawGui(float TimeStep = 0.0f);
 
 		NEXUS_ENGINE_API void SetEnabled(bool Enabled) override;
 		NEXUS_ENGINE_API bool IsEnabledInHierarchy() const;
+		NEXUS_ENGINE_API bool IsTicking() const override;
+
+		NEXUS_ENGINE_API YAML::Node Save() override;
+		NEXUS_ENGINE_API void Load(const YAML::Node& Node) override;
+		NEXUS_ENGINE_API void Unload() override;
 
 		NEXUS_ENGINE_API World* GetWorld() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetParent() const;
@@ -64,23 +68,18 @@ namespace NxEn
 		NEXUS_ENGINE_API bool IsRoot() const { return !Parent && !Prev && !Next; };
 
 	protected:
-		NEXUS_ENGINE_API void OnGui(float TimeStep);
+		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 		NEXUS_ENGINE_API void OnClone(const Object& Other) override;
-		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node);
-		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node);
-		NEXUS_ENGINE_API virtual void OnUnload();
+		NEXUS_ENGINE_API void OnSave(YAML::Node& Node) override;
+		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node) override;
+		NEXUS_ENGINE_API void OnUnload() override;
+		NEXUS_ENGINE_API void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) override;
 
 	private:
-		NEXUS_ENGINE_API YAML::Node Save();
-		NEXUS_ENGINE_API void Load(const YAML::Node& Node);
-		NEXUS_ENGINE_API void Unload();
-		NEXUS_ENGINE_API void GatherDependencies(NxFr::Set<NxFr::GUID>& Result);
-
-		NEXUS_ENGINE_API bool UpdateEnabledInHierarchy();
+		NEXUS_ENGINE_API void UpdateEnabledInHierarchy();
 		NEXUS_ENGINE_API void PatchReferences();
 
-		static inline NxFr::GUID ReadIdFromYaml(const YAML::Node& Node) { return Node["Instance"]["Id"].as<NxFr::GUID>(); }
-		static inline NxFr::GUID ReadReferenceFromYaml(const YAML::Node& Node) { return Node["Instance"]["Reference"].as<NxFr::GUID>(); }
+		static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
 
 	private:
 		NxFr::GUID WorldId;

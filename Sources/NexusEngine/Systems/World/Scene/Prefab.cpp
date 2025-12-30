@@ -52,11 +52,4 @@ namespace NxEn
 		Factory.DestroyGameObject(Root);
 		Root = NxFr::Handle<GameObject>();
 	}
-
-	NxFr::Array<NxFr::GUID> Prefab::GetDependencies()
-	{
-		NxFr::Set<NxFr::GUID> Dependencies;
-		Root->GatherDependencies(Dependencies);
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
-	}
 }

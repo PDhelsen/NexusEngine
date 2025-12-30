@@ -3,6 +3,12 @@
 
 namespace NxEn
 {
+	static const NxFr::String YamlRoot = "GameObject";
+	static const NxFr::String YamlChildren = "Children";
+	static const NxFr::String YamlType = "Type";
+	static const NxFr::String YamlId = "Id";
+	static const NxFr::String YamlReference = "Reference";
+
 	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
 
 	GameObject::GameObject(NxFr::GUID WorldId)
@@ -20,23 +26,15 @@ namespace NxEn
 
 	void GameObject::Initialize()
 	{
-		if (IsInitialized())
+		if (!IsInitialized())
 		{
-			NEXUS_LOG(Warning, Default, "Object (%s) is already initialized", GetName().C());
-			return;
+			OnInitialize();
+			SetFlag(ObjectFlags::Initialized, true);
 		}
-
-		OnInitialize();
-		SetFlag(ObjectFlags::Initialized, true);
 
 		for (auto& B : Behaviours)
 		{
 			B->Initialize();
-		}
-
-		for (auto& C : Components)
-		{
-			C->Initialize();
 		}
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
@@ -49,12 +47,6 @@ namespace NxEn
 
 	void GameObject::Shutdown()
 	{
-		if (!IsInitialized())
-		{
-			NEXUS_LOG(Warning, Default, "Object (%s) is already shutdown", GetName().C());
-			return;
-		}
-
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -62,45 +54,29 @@ namespace NxEn
 			Iterator = Iterator->GetNext();
 		}
 
-		for (auto& C : Components)
-		{
-			C->Shutdown();
-		}
-
 		for (auto& B : Behaviours)
 		{
 			B->Shutdown();
 		}
 
-		OnShutdown();
-		SetFlag(ObjectFlags::Initialized, false);
-	}
-
-	void GameObject::Start()
-	{
-		if (!IsInitialized() || !IsEnabledInHierarchy())
+		if (IsInitialized())
 		{
-			return;
-		}
-
-		OnStart();
-
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->Start();
-			Iterator = Iterator->GetNext();
+			OnShutdown();
+			SetFlag(ObjectFlags::Initialized, false);
 		}
 	}
 
 	void GameObject::Tick(float TimeStep)
 	{
-		if (!IsInitialized() || !IsEnabledInHierarchy())
+		if (IsTicking())
 		{
-			return;
+			OnTick(TimeStep);
 		}
 
-		OnTick(TimeStep);
+		for (auto& B : Behaviours)
+		{
+			B->Tick();
+		}
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
@@ -113,6 +89,7 @@ namespace NxEn
 	void GameObject::DrawGui(float TimeStep)
 	{
 		OnGui(TimeStep);
+
 		ImGui::Separator();
 
 		for (auto& B : Behaviours)
@@ -122,6 +99,8 @@ namespace NxEn
 			ImGui::Separator();
 			ImGui::PopID();
 		}
+
+		ImGui::Separator();
 
 		for (auto& C : Components)
 		{
@@ -134,29 +113,114 @@ namespace NxEn
 
 	void GameObject::SetEnabled(bool Enabled)
 	{
-		if (IsEnabled() == Enabled)
-		{
-			return;
-		}
+		SetFlag(ObjectFlags::Enabled, Enabled);
 
-		Object::SetEnabled(Enabled);
-
-		if (!UpdateEnabledInHierarchy())
-		{
-			return;
-		}
-
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->UpdateEnabledInHierarchy();
-			Iterator = Iterator->GetNext();
-		}
+		UpdateEnabledInHierarchy();
 	}
 
 	bool GameObject::IsEnabledInHierarchy() const
 	{
 		return GetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy);
+	}
+
+	bool GameObject::IsTicking() const
+	{
+		return IsEnabledInHierarchy() && IsTickable();
+	}
+
+	YAML::Node GameObject::Save()
+	{
+		YAML::Node Node;
+
+		YAML::Node Instance;
+		OnSave(Instance);
+		Node[YamlRoot] = Instance;
+
+		YAML::Node Children;
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			if (Iterator->GetReferenceId())
+			{
+				YAML::Node ChildNode;
+
+				YAML::Node ChildInstance;
+				Iterator->OnSave(ChildInstance);
+				ChildNode[YamlRoot] = ChildInstance;
+				ChildNode[YamlChildren] = YAML::Node();
+
+				Children.push_back(ChildNode);
+
+			}
+			else
+			{
+				Children.push_back(Iterator->Save());
+			}
+
+			Iterator = Iterator->GetNext();
+		}
+		Node[YamlChildren] = Children;
+
+		return Node;
+	}
+
+	void GameObject::Load(const YAML::Node& Node)
+	{
+		ObjectFactory& Factory = FactoryContext::GetFactory();
+		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
+
+		YAML::Node Instance = Node[YamlRoot];
+		OnLoad(Instance);
+
+		NxFr::Delegate<NxFr::Handle<GameObject>(const YAML::Node&)> ChildLoad = [&](const YAML::Node& ChildNode)
+			{
+				NxFr::Handle<GameObject> ChildInstance;
+				NxFr::GUID ChildReference = ChildNode[YamlRoot][YamlReference].as<NxFr::GUID>();
+
+				if (ChildReference)
+				{
+					Prefab* PrefabInstance = Application::GetSystem<WorldSystem>()->LoadPrefab(ChildReference);
+					ChildInstance = Factory.DuplicateGameObject(PrefabInstance->GetRoot(), This, true);
+				}
+				else
+				{
+					ChildInstance = Factory.CreateGameObject("", This, ChildNode[YamlRoot][YamlId].as<NxFr::GUID>());
+					ChildInstance->Load(ChildNode);
+				}
+
+				return ChildInstance;
+			};
+
+		YAML::Node Children = Node[YamlChildren];
+		if (Children.size() > 0)
+		{
+			Child = ChildLoad.Invoke(Children[0]);
+
+			NxFr::Handle<GameObject> Iterator = GetChild();
+			for (uint64 Index = 1; Index < Children.size(); ++Index)
+			{
+				Iterator->Next = ChildLoad.Invoke(Children[Index]);
+				Iterator = Iterator->GetNext();
+			}
+		}
+	}
+
+	void GameObject::Unload()
+	{
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			if (Iterator->GetReferenceId())
+			{
+				Application::GetSystem<AssetsSystem>()->Release(Iterator->GetReferenceId(), true);
+			}
+			else
+			{
+				Iterator->Unload();
+			}
+
+			Iterator = Iterator->GetNext();
+		}
 	}
 
 	World* GameObject::GetWorld() const
@@ -354,15 +418,26 @@ namespace NxEn
 
 	void GameObject::OnGui(float TimeStep)
 	{
-		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
-		GUI::Drawer<NxFr::GUID>::Property(ReferenceId, "Reference");
-		GUI::Drawer<NxFr::String>::Field(Name, "Name", "");
-
 		bool Enabled = IsEnabled();
-		GUI::Drawer<bool>::Field(Enabled, "Enabled", "");
+		GUI::Drawer<bool>::Field(Enabled);
 		if (Enabled != IsEnabled())
 		{
 			SetEnabled(Enabled);
+		}
+
+		ImGui::SameLine();
+
+		GUI::Drawer<NxFr::String>::Field(Name, "Name");
+
+
+		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
+		GUI::Drawer<NxFr::GUID>::Property(ReferenceId, "Reference");
+
+		bool Tickable = IsTickable();
+		GUI::Drawer<bool>::Field(Tickable, "Tickable");
+		if (Tickable != IsTickable())
+		{
+			SetTickable(Tickable);
 		}
 	}
 
@@ -417,8 +492,8 @@ namespace NxEn
 		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
 		{
 			YAML::Node NodeBehaviour = NodeBehaviours[Index];
-			NxFr::StringId Type = Behaviour::ReadTypeFromYaml(NodeBehaviour);
-			NxFr::GUID Id = Behaviour::ReadIdFromYaml(NodeBehaviour);
+			NxFr::StringId Type = NodeBehaviour["Type"].as<NxFr::StringId>();
+			NxFr::GUID Id = NodeBehaviour["Id"].as<NxFr::GUID>();
 
 			NxFr::Handle<Behaviour> B = Factory.CreateBehaviour(Type, This, Id);
 			B->Load(NodeBehaviour);
@@ -428,8 +503,8 @@ namespace NxEn
 		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
 		{
 			YAML::Node NodeComponent = NodeComponents[Index];
-			NxFr::StringId Type = Component::ReadTypeFromYaml(NodeComponent);
-			NxFr::GUID Id = Component::ReadIdFromYaml(NodeComponent);
+			NxFr::StringId Type = NodeComponent["Type"].as<NxFr::StringId>();
+			NxFr::GUID Id = NodeComponent["Id"].as<NxFr::GUID>();
 
 			NxFr::Handle<Behaviour> B = Factory.CreateComponent(Type, This, Id);
 			B->Load(NodeComponent);
@@ -449,125 +524,30 @@ namespace NxEn
 		}
 	}
 
-	YAML::Node GameObject::Save()
-	{
-		YAML::Node Node;
-
-		YAML::Node Instance;
-		OnSave(Instance);
-		Node["Instance"] = Instance;
-
-		YAML::Node Children;
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			if (Iterator->GetReferenceId())
-			{
-				YAML::Node ChildNode;
-
-				YAML::Node ChildInstance;
-				Iterator->OnSave(ChildInstance);
-				ChildNode["Instance"] = ChildInstance;
-				ChildNode["Children"] = YAML::Node();
-
-				Children.push_back(ChildNode);
-
-			}
-			else
-			{
-				Children.push_back(Iterator->Save());
-			}
-
-			Iterator = Iterator->GetNext();
-		}
-		Node["Children"] = Children;
-
-		return Node;
-	}
-
-	void GameObject::Load(const YAML::Node& Node)
-	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
-		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
-
-		YAML::Node Instance = Node["Instance"];
-		OnLoad(Instance);
-
-		NxFr::Delegate<NxFr::Handle<GameObject>(const YAML::Node&)> ChildLoad = [&](const YAML::Node& ChildNode)
-		{
-			NxFr::Handle<GameObject> ChildInstance;
-			NxFr::GUID ChildReference = ReadReferenceFromYaml(ChildNode);
-
-			if (ChildReference)
-			{
-				Prefab* PrefabInstance = Application::GetSystem<WorldSystem>()->LoadPrefab(ChildReference);
-				ChildInstance = Factory.DuplicateGameObject(PrefabInstance->GetRoot(), This, true);
-			}
-			else
-			{
-				ChildInstance = Factory.CreateGameObject("", This, ReadIdFromYaml(ChildNode));
-				ChildInstance->Load(ChildNode);
-			}
-
-			return ChildInstance;
-		};
-
-		YAML::Node Children = Node["Children"];
-		if (Children.size() > 0)
-		{
-			Child = ChildLoad.Invoke(Children[0]);
-
-			NxFr::Handle<GameObject> Iterator = GetChild();
-			for (uint64 Index = 1; Index < Children.size(); ++Index)
-			{
-				Iterator->Next = ChildLoad.Invoke(Children[Index]);
-				Iterator = Iterator->GetNext();
-			}
-		}
-	}
-
-	void GameObject::Unload()
+	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
 	{
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
 			if (Iterator->GetReferenceId())
 			{
-				Application::GetSystem<AssetsSystem>()->Release(Iterator->GetReferenceId(), true);
+				Ids.Append(Iterator->GetReferenceId());
 			}
 			else
 			{
-				Iterator->Unload();
+				Iterator->OnGetDependencies(Ids);
 			}
 
 			Iterator = Iterator->GetNext();
 		}
 	}
 
-	void GameObject::GatherDependencies(NxFr::Set<NxFr::GUID>& Result)
-	{
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			if (Iterator->GetReferenceId())
-			{
-				Result.Append(Iterator->GetReferenceId());
-			}
-			else
-			{
-				Iterator->GatherDependencies(Result);
-			}
-
-			Iterator = Iterator->GetNext();
-		}
-	}
-
-	bool GameObject::UpdateEnabledInHierarchy()
+	void GameObject::UpdateEnabledInHierarchy()
 	{
 		bool Enabled = IsEnabled() && (Parent ? Parent->IsEnabledInHierarchy() : true);
 		if (Enabled == IsEnabledInHierarchy())
 		{
-			return false;
+			return;
 		}
 
 		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, Enabled);
@@ -581,7 +561,17 @@ namespace NxEn
 			OnDisable();
 		}
 
-		return true;
+		for (auto& B : Behaviours)
+		{
+			B->UpdateEnabledInHierarchy();
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->UpdateEnabledInHierarchy();
+			Iterator = Iterator->Next;
+		}
 	}
 
 	void GameObject::PatchReferences()
@@ -602,5 +592,10 @@ namespace NxEn
 			Iterator->PatchReferences();
 			Iterator = Iterator->GetNext();
 		}
+	}
+
+	NxFr::GUID GameObject::ReadIdFromYaml(const YAML::Node& Node)
+	{
+		return Node[YamlRoot][YamlId].as<NxFr::GUID>();
 	}
 }

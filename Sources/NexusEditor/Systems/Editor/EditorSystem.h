@@ -12,7 +12,7 @@ namespace NxEd
 		NEXUS_EDITOR_API EditorSystem();
 		NEXUS_EDITOR_API ~EditorSystem();
 
-		NEXUS_EDITOR_API void Save();
+		NEXUS_EDITOR_API void SaveAll();
 
 		NEXUS_EDITOR_API NxFr::Event<>& GetOnSave() { return OnSave; }
 

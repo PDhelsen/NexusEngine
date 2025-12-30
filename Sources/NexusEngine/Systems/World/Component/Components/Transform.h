@@ -17,7 +17,6 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnClone(const Object& Other) override;
 		NEXUS_ENGINE_API void OnSave(YAML::Node& Node) override;
 		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node) override;
-		NEXUS_ENGINE_API void OnUnload() override;
 
 	private:
 		NxFr::Vector3f Position;

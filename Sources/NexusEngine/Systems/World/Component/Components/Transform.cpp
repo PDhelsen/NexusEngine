@@ -35,6 +35,8 @@ namespace NxEn
 
 	void Transform::OnSave(YAML::Node& Node)
 	{
+		Component::OnSave(Node);
+
 		Node["Position"] = Position;
 		Node["Rotation"] = Rotation;
 		Node["Scale"] = Scale;
@@ -42,12 +44,10 @@ namespace NxEn
 
 	void Transform::OnLoad(const YAML::Node& Node)
 	{
+		Component::OnLoad(Node);
+
 		Position = Node["Position"].as<NxFr::Vector3f>();
 		Rotation = Node["Rotation"].as<NxFr::Quaternion>();
 		Scale = Node["Scale"].as<NxFr::Vector3f>();
-	}
-
-	void Transform::OnUnload()
-	{
 	}
 }

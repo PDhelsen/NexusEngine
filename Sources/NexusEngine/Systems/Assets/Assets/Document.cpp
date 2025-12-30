@@ -25,4 +25,8 @@ namespace NxEn
 	{
 		Data = NxFr::String();
 	}
+
+	void Document::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
+	{
+	}
 }

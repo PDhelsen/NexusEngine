@@ -23,6 +23,10 @@ namespace NxEn
 		NEXUS_ENGINE_API Asset();
 		NEXUS_ENGINE_API virtual ~Asset();
 
+		NEXUS_ENGINE_API YAML::Node Save(NxFr::StringView Content);
+		NEXUS_ENGINE_API void Load(const YAML::Node& Node, NxFr::StringView Content);
+		NEXUS_ENGINE_API void Unload() override;
+
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return Id; }
 		NEXUS_ENGINE_API bool IsDirty() const { return Dirty; }
 		NEXUS_ENGINE_API void SetDirty() { Dirty = true; }
@@ -32,12 +36,11 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node, NxFr::StringView Content) = 0;
 		NEXUS_ENGINE_API virtual void OnUnload() = 0;
 
-		NEXUS_ENGINE_API virtual NxFr::Array<NxFr::GUID> GetDependencies() = 0;
-
 	private:
-		NEXUS_ENGINE_API YAML::Node Save(NxFr::StringView Content);
-		NEXUS_ENGINE_API void Load(const YAML::Node& Node, NxFr::StringView Content);
-		NEXUS_ENGINE_API void Unload();
+		NEXUS_ENGINE_API YAML::Node Save() override { NEXUS_ASSERT(false, System, "Use the version with the Content arg !"); return YAML::Node(); }
+		NEXUS_ENGINE_API void Load(const YAML::Node& Node) override { NEXUS_ASSERT(false, System, "Use the version with the Content arg !"); }
+		NEXUS_ENGINE_API void OnSave(YAML::Node& Node) override { NEXUS_ASSERT(false, System, "Use the version with the Content arg !"); }
+		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node) override { NEXUS_ASSERT(false, System, "Use the version with the Content arg !"); }
 
 	private:
 		NxFr::GUID Id;

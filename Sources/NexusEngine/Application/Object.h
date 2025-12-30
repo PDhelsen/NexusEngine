@@ -75,31 +75,40 @@ namespace NxEn
 
 		NEXUS_ENGINE_API virtual void Initialize();
 		NEXUS_ENGINE_API virtual void Shutdown();
-		NEXUS_ENGINE_API virtual void Start();
 		NEXUS_ENGINE_API virtual void Tick(float TimeStep = 0.0f);
+		NEXUS_ENGINE_API virtual void DrawGui(float TimeStep = 0.0f);
 
 		NEXUS_ENGINE_API virtual bool IsInitialized() const;
 		NEXUS_ENGINE_API virtual bool IsEnabled() const;
 		NEXUS_ENGINE_API virtual void SetEnabled(bool Enabled);
 		NEXUS_ENGINE_API virtual bool IsTickable() const;
 		NEXUS_ENGINE_API virtual void SetTickable(bool Tickable);
+		NEXUS_ENGINE_API virtual bool IsTicking() const;
 
 		NEXUS_ENGINE_API virtual Object* Clone() const;
 		NEXUS_ENGINE_API virtual void Clone(Object* Other) const;
 		NEXUS_ENGINE_API virtual void Clone(const Object* Other);
+		NEXUS_ENGINE_API virtual YAML::Node Save();
+		NEXUS_ENGINE_API virtual void Load(const YAML::Node& Node);
+		NEXUS_ENGINE_API virtual void Unload();
+		NEXUS_ENGINE_API virtual NxFr::Array<NxFr::GUID> GetDependencies();
 
 		NEXUS_ENGINE_API virtual NxFr::StringView GetName() const;
 		NEXUS_ENGINE_API virtual NxFr::GUID GetId() const;
 
 	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize() { };
-		NEXUS_ENGINE_API virtual void OnShutdown() { };
-		NEXUS_ENGINE_API virtual void OnEnable() { };
-		NEXUS_ENGINE_API virtual void OnDisable() { };
-		NEXUS_ENGINE_API virtual void OnStart() { };
-		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) { };
-		NEXUS_ENGINE_API virtual void OnClone(const Object& Other) {};
+		NEXUS_ENGINE_API virtual void OnInitialize();
+		NEXUS_ENGINE_API virtual void OnShutdown();
+		NEXUS_ENGINE_API virtual void OnEnable();
+		NEXUS_ENGINE_API virtual void OnDisable();
+		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f);
+		NEXUS_ENGINE_API virtual void OnGui(float TimeStep = 0.0f);
 
+		NEXUS_ENGINE_API virtual void OnClone(const Object& Other);
+		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node);
+		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node);
+		NEXUS_ENGINE_API virtual void OnUnload();
+		NEXUS_ENGINE_API virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);
 
 	protected:
 		NEXUS_ENGINE_API NEXUS_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;

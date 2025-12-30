@@ -28,11 +28,11 @@ namespace NxEn
 	{
 		if (IsInitialized())
 		{
-			NEXUS_LOG(Warning, Default, "Object (%s) is already initialized", GetName().C());
 			return;
 		}
 
 		OnInitialize();
+
 		SetFlag(ObjectFlags::Initialized, true);
 	}
 
@@ -40,32 +40,27 @@ namespace NxEn
 	{
 		if (!IsInitialized())
 		{
-			NEXUS_LOG(Warning, Default, "Object (%s) is already shutdown", GetName().C());
 			return;
 		}
 
 		OnShutdown();
+
 		SetFlag(ObjectFlags::Initialized, false);
-	}
-
-	void Object::Start()
-	{
-		if (!IsInitialized() || !IsEnabled())
-		{
-			return;
-		}
-
-		OnStart();
 	}
 
 	void Object::Tick(float TimeStep)
 	{
-		if (!IsTickable() || !IsEnabled())
+		if (!IsTicking())
 		{
 			return;
 		}
 
 		OnTick(TimeStep);
+	}
+
+	void Object::DrawGui(float TimeStep)
+	{
+		OnGui(TimeStep);
 	}
 
 	bool Object::IsInitialized() const
@@ -107,6 +102,11 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Tickable);
 	}
 
+	bool Object::IsTicking() const
+	{
+		return IsEnabled() && IsTickable();
+	}
+
 	Object* Object::Clone() const
 	{
 		NEXUS_ASSERT(false, Default, "Not Implemented");
@@ -123,6 +123,30 @@ namespace NxEn
 		OnClone(*Other);
 	}
 
+	YAML::Node Object::Save()
+	{
+		YAML::Node Node;
+		OnSave(Node);
+		return Node;
+	}
+
+	void Object::Load(const YAML::Node& Node)
+	{
+		OnLoad(Node);
+	}
+
+	void Object::Unload()
+	{
+		OnUnload();
+	}
+
+	NxFr::Array<NxFr::GUID> Object::GetDependencies()
+	{
+		NxFr::Set<NxFr::GUID> Ids;
+		OnGetDependencies(Ids);
+		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Ids);
+	}
+
 	NxFr::StringView Object::GetName() const
 	{
 		return GetObjectType().GetString();
@@ -131,6 +155,66 @@ namespace NxEn
 	NxFr::GUID Object::GetId() const
 	{
 		return reinterpret_cast<NxFr::GUID>(this);
+	}
+
+	void Object::OnInitialize()
+	{
+	}
+
+	void Object::OnShutdown()
+	{
+		
+	}
+
+	void Object::OnEnable()
+	{
+	}
+
+	void Object::OnDisable()
+	{
+	}
+
+	void Object::OnTick(float TimeStep)
+	{
+	}
+
+	void Object::OnGui(float TimeStep)
+	{
+		bool Enabled = IsEnabled();
+		GUI::Drawer<bool>::Field(Enabled);
+		if (Enabled != IsEnabled())
+		{
+			SetEnabled(Enabled);
+		}
+
+		ImGui::SameLine();
+
+		GUI::Drawer<NxFr::String>::Property(GetName(), "Name");
+
+		ImGui::SameLine();
+
+		GUI::Drawer<NxFr::GUID>::Property(GetId());
+	}
+
+	void Object::OnClone(const Object& Other)
+	{
+		Flags = Other.Flags;
+	}
+
+	void Object::OnSave(YAML::Node& Node)
+	{
+	}
+
+	void Object::OnLoad(const YAML::Node& Node)
+	{
+	}
+
+	void Object::OnUnload()
+	{
+	}
+
+	void Object::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
+	{
 	}
 
 	bool Object::GetFlag(ObjectFlags Flag) const
