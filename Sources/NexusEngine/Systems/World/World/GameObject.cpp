@@ -37,6 +37,11 @@ namespace NxEn
 			B->Initialize();
 		}
 
+		for (auto& C : Components)
+		{
+			C->Initialize();
+		}
+
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -52,6 +57,11 @@ namespace NxEn
 		{
 			Iterator->Shutdown();
 			Iterator = Iterator->GetNext();
+		}
+
+		for (auto& C : Components)
+		{
+			C->Shutdown();
 		}
 
 		for (auto& B : Behaviours)
@@ -77,6 +87,8 @@ namespace NxEn
 		{
 			B->Tick();
 		}
+
+		//Components are ticked by systems
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
@@ -564,6 +576,11 @@ namespace NxEn
 		for (auto& B : Behaviours)
 		{
 			B->UpdateEnabledInHierarchy();
+		}
+
+		for (auto& C : Components)
+		{
+			C->UpdateEnabledInHierarchy();
 		}
 
 		NxFr::Handle<GameObject> Iterator = GetChild();

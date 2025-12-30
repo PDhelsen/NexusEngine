@@ -25,7 +25,7 @@ namespace NxEn
 			NxFr::Handle<T> Handle;
 		};
 
-		const uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
+		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Behaviour)

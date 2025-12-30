@@ -25,11 +25,17 @@ namespace NxEn
 			NxFr::Handle<T> Handle;
 		};
 
+		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Component)
 
 		NEXUS_ENGINE_API Component();
 		NEXUS_ENGINE_API virtual ~Component();
+
+		NEXUS_ENGINE_API void SetEnabled(bool Enabled) override;
+		NEXUS_ENGINE_API bool IsEnabledInHierarchy() const;
+		NEXUS_ENGINE_API bool IsTicking() const override;
 
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return ComponentId; };
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject() const { return Target; };
@@ -39,9 +45,9 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnClone(const Object& Other) override;
 		NEXUS_ENGINE_API void OnSave(YAML::Node& Node) override;
 		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node) override;
-		NEXUS_ENGINE_API void OnUnload() override;
 
 	private:
+		NEXUS_ENGINE_API void UpdateEnabledInHierarchy();
 		NEXUS_ENGINE_API virtual void PatchReferences() {};
 
 	private:
