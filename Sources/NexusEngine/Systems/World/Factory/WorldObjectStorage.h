@@ -1,15 +1,10 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectInfo.h"
 
 namespace NxEn
 {
-	struct WorldObjectInfo
-	{
-		NxFr::Handle<Object> Handle;
-		uint64 Index;
-	};
-
 	template<typename T>
 	class WorldObjectStorageTyped;
 

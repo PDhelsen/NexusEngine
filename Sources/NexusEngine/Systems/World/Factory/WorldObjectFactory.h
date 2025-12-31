@@ -4,6 +4,7 @@
 #include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
 #include "NexusEngine/Systems/World/Components/Component.h"
 
+#include "NexusEngine/Systems/World/Factory/WorldObjectInfo.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectStorage.h"
 
 namespace NxEn
