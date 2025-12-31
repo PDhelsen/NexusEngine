@@ -81,7 +81,6 @@ namespace NxEn
 		void ReallocateAndUpdateGameObject();
 		void ReallocateAndUpdateComponent(NxFr::StringId Type);
 		void UpdateComponent(NxFr::StringId Type, uint64 Index);
-		void ProcessPendings();
 
 		template<typename T> ComponentsStorage<T>& GetComponentStorage();
 
