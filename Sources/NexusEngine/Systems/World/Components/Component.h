@@ -1,14 +1,13 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
-#include "NexusEngine/Systems/World/Components/ComponentsFactory.h"
 
 #define NEXUS_COMPONENT_DECLARATION(Dll, Type) \
 NEXUS_OBJECT_DECLARATION(Dll, Type)
 
 #define NEXUS_COMPONENT_IMPLEMENTATION(Type) \
 NEXUS_OBJECT_IMPLEMENTATION(Type)\
-NxEn::ComponentsFactory* Factory##Type = NxEn::ComponentsFactory::Register<Type>();
+NxEn::WorldObjectStorage* Storage##Type = NxEn::WorldObjectStorage::Register<Type>();
 
 namespace NxEn
 {

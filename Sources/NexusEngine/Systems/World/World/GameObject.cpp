@@ -13,8 +13,8 @@ namespace NxEn
 
 	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
 
-	GameObject::GameObject(NxFr::GUID WorldId)
-		: WorldId(WorldId), GameObjectId(0), ReferenceId(0),
+	GameObject::GameObject()
+		: WorldId(0), GameObjectId(0), ReferenceId(0),
 		Name(""),
 		Parent(), Prev(), Next(), Child(),
 		Behaviours(), Components()

@@ -19,7 +19,7 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, GameObject)
 
-		NEXUS_ENGINE_API GameObject(NxFr::GUID WorldId);
+		NEXUS_ENGINE_API GameObject();
 		NEXUS_ENGINE_API ~GameObject();
 
 		NEXUS_ENGINE_API void Initialize() override;

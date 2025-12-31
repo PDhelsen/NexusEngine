@@ -4,16 +4,12 @@
 #include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
 #include "NexusEngine/Systems/World/Components/Component.h"
 
+#include "NexusEngine/Systems/World/Factory/WorldObjectStorage.h"
+
 namespace NxEn
 {
 	class WorldObjectFactory
 	{
-		struct ObjectInfo
-		{
-			NxFr::Handle<Object> Handle;
-			uint64 Index;
-		};
-
 	public:
 		WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
 		~WorldObjectFactory();
@@ -48,13 +44,6 @@ namespace NxEn
 		NxFr::Handle<Component> GetComponent(NxFr::GUID ComponentId) const;
 		NxFr::Array<NxFr::Handle<Component>> GetComponents() const;
 
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginGameObjects() { return GameObjectInfos.Begin(); }
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndGameObjects() { return GameObjectInfos.End(); }
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I BeginBehaviour() { return BehavioursInfos.Begin(); }
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo>::I EndBehaviour() { return BehavioursInfos.End(); }
-		template<typename T> NxFr::List<T>::I BeginComponent() { return GetComponentStorage<T>().Begin(); }
-		template<typename T> NxFr::List<T>::I EndComponent() { return GetComponentStorage<T>().End(); }
-
 		NxFr::GUID GetId() const { return WorldId; }
 
 	private:
@@ -66,40 +55,18 @@ namespace NxEn
 		void FreeComponent(NxFr::Handle<Component> Instance);
 		void Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index);
 		void Detach(NxFr::Handle<GameObject> Instance);
-		void ReallocateAndUpdateGameObject();
-		void ReallocateAndUpdateComponent(NxFr::StringId Type);
-		void UpdateComponent(NxFr::StringId Type, uint64 Index);
-
-		template<typename T> ComponentsStorage<T>& GetComponentStorage();
 
 	private:
 		NxFr::GUID WorldId;
 		bool KeepReferences;
 		HandleManager Handles;
 
-		NxFr::List<GameObject> GameObjects;
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo> GameObjectInfos;
-		NxFr::Stack<uint64> GameObjectAvailables;
+		WorldObjectStorage* GameObjects;
+		NxFr::Dictionary<NxFr::StringId, WorldObjectStorage*> Behaviours;
+		NxFr::Dictionary<NxFr::StringId, WorldObjectStorage*> Components;
 
-		NxFr::Dictionary<NxFr::StringId, NxFr::List<Behaviour*>> Behaviours;
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo> BehavioursInfos;
-		NxFr::Dictionary<NxFr::StringId, NxFr::Stack<uint64>> BehavioursAvailable;
-
-		NxFr::Dictionary<NxFr::StringId, ComponentsFactory*> Components;
-		NxFr::Dictionary<NxFr::GUID, ObjectInfo> ComponentsInfos;
+		NxFr::Dictionary<NxFr::GUID, WorldObjectInfo> InfosGameObjects;
+		NxFr::Dictionary<NxFr::GUID, WorldObjectInfo> InfosBehaviours;
+		NxFr::Dictionary<NxFr::GUID, WorldObjectInfo> InfosComponents;
 	};
-
-	template<typename T>
-	inline ComponentsStorage<T>& WorldObjectFactory::GetComponentStorage()
-	{
-		NxFr::StringId Type = T::GetClassType();
-		ComponentsFactory** Instance = Components.TryGet(Type);
-
-		if (!Instance)
-		{
-			Instance = &Components.Append(Type, ComponentsFactory::Create(Type));
-		}
-
-		return *static_cast<ComponentsStorage<T>*>(*Instance);
-	}
 }

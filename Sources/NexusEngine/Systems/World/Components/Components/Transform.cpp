@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Components/Components/Transform.h"
 
+#include "NexusEngine/Systems/World/Factory/WorldObjectStorage.h"
+
 namespace NxEn
 {
 	NEXUS_COMPONENT_IMPLEMENTATION(Transform)
