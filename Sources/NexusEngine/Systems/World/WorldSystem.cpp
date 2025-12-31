@@ -1,7 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/WorldSystem.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectReferences.h"
 
 namespace NxEn
 {
@@ -124,7 +125,7 @@ namespace NxEn
 	Scene* WorldSystem::CreateScene(NxFr::StringView Path, NxFr::GUID WorldId)
 	{
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Create<Scene>(Path, "scene");
 		WorldInstance->AttachGameObject(SceneInstance->GetRoot(), WorldInstance->GetRootGameObject());
@@ -162,7 +163,7 @@ namespace NxEn
 		}
 
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 		WorldObjectReferences References;
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Load<Scene>(SceneId);
@@ -194,7 +195,7 @@ namespace NxEn
 		}
 
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Scene>(SceneId);
 		WorldInstance->DetachGameObject(SceneInstance->GetRoot());
@@ -229,7 +230,7 @@ namespace NxEn
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 		WorldObjectReferences References;
 
 		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Create<Prefab>(Path, "prefab");
@@ -240,7 +241,7 @@ namespace NxEn
 	void WorldSystem::SavePrefab(NxFr::Handle<GameObject> Target)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 		WorldObjectReferences References;
 
 		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->GetReferenceId());
@@ -250,7 +251,7 @@ namespace NxEn
 	Prefab* WorldSystem::LoadPrefab(NxFr::GUID PrefabId)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 		WorldObjectReferences References;
 
 		return Application::GetSystem<AssetsSystem>()->Load<Prefab>(PrefabId);
@@ -259,7 +260,7 @@ namespace NxEn
 	void WorldSystem::UnloadPrefab(NxFr::GUID PrefabId)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 		WorldObjectReferences References;
 
 		Application::GetSystem<AssetsSystem>()->Unload(PrefabId);
@@ -278,7 +279,7 @@ namespace NxEn
 	NxFr::Handle<GameObject> WorldSystem::InstantiatePrefab(Prefab* Instance, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance->Factory);
+		WorldObjectFactoryContext Context(WorldInstance);
 		WorldObjectReferences References;
 
 		return WorldInstance->DuplicateGameObject(Instance->GetRoot(), Parent, true);

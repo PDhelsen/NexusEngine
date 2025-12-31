@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/World/GameObject.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
 
 namespace NxEn
 {
@@ -180,8 +180,8 @@ namespace NxEn
 
 	void GameObject::Load(const YAML::Node& Node)
 	{
-		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
-		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
+		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
 
 		YAML::Node Instance = Node[YamlRoot];
 		OnLoad(Instance);
@@ -194,11 +194,11 @@ namespace NxEn
 				if (ChildReference)
 				{
 					Prefab* PrefabInstance = Application::GetSystem<WorldSystem>()->LoadPrefab(ChildReference);
-					ChildInstance = Factory.DuplicateGameObject(PrefabInstance->GetRoot(), This, true);
+					ChildInstance = Factory->DuplicateGameObject(PrefabInstance->GetRoot(), This, true);
 				}
 				else
 				{
-					ChildInstance = Factory.CreateGameObject("", This, ChildNode[YamlRoot][YamlId].as<NxFr::GUID>());
+					ChildInstance = Factory->CreateGameObject("", This, ChildNode[YamlRoot][YamlId].as<NxFr::GUID>());
 					ChildInstance->Load(ChildNode);
 				}
 
@@ -492,8 +492,8 @@ namespace NxEn
 
 	void GameObject::OnLoad(const YAML::Node& Node)
 	{
-		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
-		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
+		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
 
 		Name = Node["Name"].as<NxFr::String>();
 		NEXUS_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
@@ -509,7 +509,7 @@ namespace NxEn
 			NxFr::StringId Type = NodeBehaviour["Type"].as<NxFr::StringId>();
 			NxFr::GUID Id = NodeBehaviour["Id"].as<NxFr::GUID>();
 
-			NxFr::Handle<Behaviour> B = Factory.CreateBehaviour(Type, This, Id);
+			NxFr::Handle<Behaviour> B = Factory->CreateBehaviour(Type, This, Id);
 			B->Load(NodeBehaviour);
 		}
 
@@ -520,7 +520,7 @@ namespace NxEn
 			NxFr::StringId Type = NodeComponent["Type"].as<NxFr::StringId>();
 			NxFr::GUID Id = NodeComponent["Id"].as<NxFr::GUID>();
 
-			NxFr::Handle<Behaviour> B = Factory.CreateComponent(Type, This, Id);
+			NxFr::Handle<Behaviour> B = Factory->CreateComponent(Type, This, Id);
 			B->Load(NodeComponent);
 		}
 	}

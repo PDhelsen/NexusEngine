@@ -1,47 +1,10 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
+#include "NexusEngine/Systems/World/Factory/WorldObjectReferences.h"
+
 namespace NxEn
 {
-	static NxFr::Stack<WorldObjectFactory*> Factories;
-	static NxFr::Stack<WorldObjectReferences*> References;
-
-	WorldObjectFactory& WorldObjectFactoryContext::GetFactory()
-	{
-		return *Factories.Get();
-	}
-
-	WorldObjectFactoryContext::WorldObjectFactoryContext(WorldObjectFactory* Instance)
-	{
-		Factories.Append(Instance);
-	}
-
-	WorldObjectFactoryContext::~WorldObjectFactoryContext()
-	{
-		Factories.Remove();
-	}
-
-	WorldObjectReferences* WorldObjectReferences::GetReferences()
-	{
-		return References.GetCount() ? References.Get() : nullptr;
-	}
-
-	NxFr::GUID WorldObjectReferences::Resolve(NxFr::GUID Id)
-	{
-		WorldObjectReferences* Map = GetReferences();
-		return Map && Id != 0 ? Map->Ids[Id] : Id;
-	}
-
-	WorldObjectReferences::WorldObjectReferences()
-	{
-		References.Append(this);
-	}
-
-	WorldObjectReferences::~WorldObjectReferences()
-	{
-		References.Remove();
-	}
-
 	WorldObjectFactory::WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
 		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(1024),
 		GameObjects(), GameObjectInfos(), GameObjectAvailables(),

@@ -6,27 +6,6 @@
 
 namespace NxEn
 {
-	class WorldObjectFactory;
-
-	struct WorldObjectFactoryContext
-	{
-		static WorldObjectFactory& GetFactory();
-
-		WorldObjectFactoryContext(WorldObjectFactory* Instance);
-		~WorldObjectFactoryContext();
-	};
-
-	struct WorldObjectReferences
-	{
-		static WorldObjectReferences* GetReferences();
-		static NxFr::GUID Resolve(NxFr::GUID Id);
-
-		WorldObjectReferences();
-		~WorldObjectReferences();
-
-		NxFr::Dictionary<NxFr::GUID, NxFr::GUID> Ids;
-	};
-
 	class WorldObjectFactory
 	{
 		struct ObjectInfo

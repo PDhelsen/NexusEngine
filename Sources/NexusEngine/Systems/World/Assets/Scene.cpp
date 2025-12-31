@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Assets/Scene.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
 
 namespace NxEn
 {
@@ -20,9 +20,9 @@ namespace NxEn
 		}
 
 		AssetMetadata& Metadata = Application::GetSystem<AssetsSystem>()->GetMetadata(GetId());
-		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 
-		Root = Factory.CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
+		Root = Factory->CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
 
 		Root->ReferenceId = GetId();
 
@@ -37,10 +37,10 @@ namespace NxEn
 
 	void Scene::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
-		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 
-		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
+		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
 		Root->Load(Data);
 		Root->PatchReferences();
 		Root->Initialize();
@@ -49,13 +49,13 @@ namespace NxEn
 
 	void Scene::OnUnload()
 	{
-		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 
 		Root->SetEnabled(false);
 		Root->Shutdown();
 		Root->Unload();
 
-		Factory.DestroyGameObject(Root);
+		Factory->DestroyGameObject(Root);
 		Root = NxFr::Handle<GameObject>();
 	}
 
