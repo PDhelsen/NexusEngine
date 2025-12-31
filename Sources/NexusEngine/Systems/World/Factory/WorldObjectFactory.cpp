@@ -52,18 +52,11 @@ namespace NxEn
 		GameObjectAvailables.Clear();
 	}
 
-	void WorldObjectFactory::Pending()
-	{
-		ProcessPendings();
-	}
-
 	NxFr::Handle<GameObject> WorldObjectFactory::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
 	{
-		PendingInfo& Info = AllocateGameObject(GameObjectId);
+		NxFr::Handle<GameObject> Instance = AllocateGameObject(GameObjectId);
 
-		NxFr::Handle<GameObject> Instance = Info.Handle;
 		Instance->SetName(Name);
-
 		if (Parent)
 		{
 			Attach(Instance, Parent, Parent->GetChildCount());
@@ -157,8 +150,7 @@ namespace NxEn
 		}
 
 		Detach(Instance);
-
-		PendingInfo& Info = FreeGameObject(Instance);
+		FreeGameObject(Instance);
 	}
 
 	void WorldObjectFactory::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
@@ -174,9 +166,8 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> WorldObjectFactory::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId)
 	{
-		PendingInfo& Info = AllocateBehaviour(Type, BehaviourId);
+		NxFr::Handle<Behaviour> Instance = AllocateBehaviour(Type, BehaviourId);
 
-		NxFr::Handle<Behaviour> Instance = Info.Handle;
 		Instance->Target = Target;
 		Target->Behaviours.Append(Instance);
 
@@ -196,14 +187,13 @@ namespace NxEn
 		Target->Behaviours.RemoveSwap(Index);
 		Instance->Target = NxFr::Handle<GameObject>();
 
-		PendingInfo& Info = FreeBehaviour(Instance);
+		FreeBehaviour(Instance);
 	}
 
 	NxFr::Handle<Component> WorldObjectFactory::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID ComponentId)
 	{
-		PendingInfo& Info = AllocateComponent(Type, ComponentId);
+		NxFr::Handle<Component> Instance = AllocateComponent(Type, ComponentId);
 
-		NxFr::Handle<Component> Instance = Info.Handle;
 		Instance->Target = Target;
 		Target->Components.Append(Instance);
 
@@ -223,7 +213,7 @@ namespace NxEn
 		Target->Components.RemoveSwap(Index);
 		Instance->Target = NxFr::Handle<GameObject>();
 
-		PendingInfo& Info = FreeComponent(Instance);
+		FreeComponent(Instance);
 	}
 
 	bool WorldObjectFactory::Belong(NxFr::Handle<GameObject> Instance) const
@@ -388,18 +378,10 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldObjectFactory::GetGameObject(NxFr::GUID GameObjectId) const
 	{
-		const ObjectInfo* OInfo = GameObjectInfos.TryGet(GameObjectId);
-		if (OInfo)
+		const ObjectInfo* Info = GameObjectInfos.TryGet(GameObjectId);
+		if (Info)
 		{
-			return OInfo->Handle;
-		}
-
-		for (auto& PInfo : Pendings)
-		{
-			if (PInfo.Id == GameObjectId)
-			{
-				return PInfo.Handle;
-			}
+			return Info->Handle;
 		}
 
 		return NxFr::Handle<GameObject>();
@@ -414,31 +396,15 @@ namespace NxEn
 			Result.Append(Info.Handle);
 		}
 
-		for (auto& Info : Pendings)
-		{
-			if (Info.Type == PendingInfo::InfoType::GameObject)
-			{
-				Result.Append(Info.Handle);
-			}
-		}
-
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
 	NxFr::Handle<Behaviour> WorldObjectFactory::GetBehaviour(NxFr::GUID BehaviourId) const
 	{
-		const ObjectInfo* OInfo = BehavioursInfos.TryGet(BehaviourId);
-		if (OInfo)
+		const ObjectInfo* Info = BehavioursInfos.TryGet(BehaviourId);
+		if (Info)
 		{
-			return OInfo->Handle;
-		}
-
-		for (auto& PInfo : Pendings)
-		{
-			if (PInfo.Id == BehaviourId)
-			{
-				return PInfo.Handle;
-			}
+			return Info->Handle;
 		}
 
 		return NxFr::Handle<GameObject>();
@@ -453,31 +419,15 @@ namespace NxEn
 			Result.Append(Info.Handle);
 		}
 
-		for (auto& Info : Pendings)
-		{
-			if (Info.Type == PendingInfo::InfoType::Behaviour)
-			{
-				Result.Append(Info.Handle);
-			}
-		}
-
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
 	}
 
 	NxFr::Handle<Component> WorldObjectFactory::GetComponent(NxFr::GUID ComponentId) const
 	{
-		const ObjectInfo* OInfo = ComponentsInfos.TryGet(ComponentId);
-		if (OInfo)
+		const ObjectInfo* Info = ComponentsInfos.TryGet(ComponentId);
+		if (Info)
 		{
-			return OInfo->Handle;
-		}
-
-		for (auto& PInfo : Pendings)
-		{
-			if (PInfo.Id == ComponentId)
-			{
-				return PInfo.Handle;
-			}
+			return Info->Handle;
 		}
 
 		return NxFr::Handle<GameObject>();
@@ -492,18 +442,10 @@ namespace NxEn
 			Result.Append(Info.Handle);
 		}
 
-		for (auto& Info : Pendings)
-		{
-			if (Info.Type == PendingInfo::InfoType::Component)
-			{
-				Result.Append(Info.Handle);
-			}
-		}
-
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Component>>(Result);
 	}
 
-	WorldObjectFactory::PendingInfo& WorldObjectFactory::AllocateGameObject(NxFr::GUID GameObjectId)
+	NxFr::Handle<GameObject> WorldObjectFactory::AllocateGameObject(NxFr::GUID GameObjectId)
 	{
 		if (GameObjectId == 0)
 		{
@@ -529,6 +471,8 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Handle = Handles.AcquireHandle(Instance);
+		GameObjectInfos.Append(GameObjectId, ObjectInfo{ .Handle = Handle, .Index = Index });
+
 		Instance->WorldId = WorldId;
 		Instance->GameObjectId = GameObjectId;
 		Instance->ReferenceId = 0;
@@ -538,33 +482,21 @@ namespace NxEn
 		Instance->Next = NxFr::Handle<GameObject>();
 		Instance->Child = NxFr::Handle<GameObject>();
 
-		return Pendings.Append(PendingInfo{
-			.Id = GameObjectId,
-			.Handle = Handle,
-			.Index = Index,
-			.Type = PendingInfo::InfoType::GameObject,
-			.Start = true
-			});
+		return Handle;
 	}
 
-	WorldObjectFactory::PendingInfo& WorldObjectFactory::FreeGameObject(NxFr::Handle<GameObject> Instance)
+	void WorldObjectFactory::FreeGameObject(NxFr::Handle<GameObject> Instance)
 	{
 		NxFr::GUID GameObjectId = Instance->GetId();
 		ObjectInfo Info = GameObjectInfos[GameObjectId];
 
 		Handles.ReleaseHandle(Instance);
-		GameObjectAvailables.Append(Info.Index);
+		GameObjectInfos.Remove(GameObjectId);
 
-		return Pendings.Append(PendingInfo{
-			.Id = GameObjectId,
-			.Handle = NxFr::Handle<GameObject>(),
-			.Index = Info.Index,
-			.Type = PendingInfo::InfoType::GameObject,
-			.Start = false
-			});
+		GameObjectAvailables.Append(Info.Index);
 	}
 
-	WorldObjectFactory::PendingInfo& WorldObjectFactory::AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId)
+	NxFr::Handle<Behaviour> WorldObjectFactory::AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId)
 	{
 		if (BehaviourId == 0)
 		{
@@ -594,41 +526,30 @@ namespace NxEn
 		}
 
 		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
+		BehavioursInfos.Append(BehaviourId, ObjectInfo{ .Handle = Handle,.Index = Index });
+
 		Instance->BehaviourId = BehaviourId;
 
-		return Pendings.Append(PendingInfo{
-			.Id = BehaviourId,
-			.Handle = Handle,
-			.Index = Index,
-			.Type = PendingInfo::InfoType::Behaviour,
-			.Start = true
-		});
+		return Handle;
 	}
 
-	WorldObjectFactory::PendingInfo& WorldObjectFactory::FreeBehaviour(NxFr::Handle<Behaviour> Instance)
+	void WorldObjectFactory::FreeBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
 		NxFr::StringId Type = Instance->GetObjectType();
 		NxFr::GUID BehaviourId = Instance->GetId();
 		ObjectInfo Info = BehavioursInfos[BehaviourId];
 
 		Handles.ReleaseHandle(Instance);
+		BehavioursInfos.Remove(BehaviourId);
 
 		if (!BehavioursAvailable.ContainsKey(Type))
 		{
 			BehavioursAvailable.Append(Type, NxFr::Stack<uint64>());
 		}
 		BehavioursAvailable[Type].Append(Info.Index);
-
-		return Pendings.Append(PendingInfo{
-			.Id = BehaviourId,
-			.Handle = NxFr::Handle<Behaviour>(),
-			.Index = Info.Index,
-			.Type = PendingInfo::InfoType::Behaviour,
-			.Start = false
-		});
 	}
 
-	WorldObjectFactory::PendingInfo& WorldObjectFactory::AllocateComponent(NxFr::StringId Type, NxFr::GUID ComponentId)
+	NxFr::Handle<Component> WorldObjectFactory::AllocateComponent(NxFr::StringId Type, NxFr::GUID ComponentId)
 	{
 		if (ComponentId == 0)
 		{
@@ -651,38 +572,27 @@ namespace NxEn
 		Index = Components[Type]->GetCount() - 1;
 
 		NxFr::Handle<Behaviour> Handle = Handles.AcquireHandle(Instance);
+		ComponentsInfos.Append(ComponentId, ObjectInfo{ .Handle = Handle,.Index = Index });
+
 		Instance->ComponentId = ComponentId;
 
-		return Pendings.Append(PendingInfo{
-			.Id = ComponentId,
-			.Handle = Handle,
-			.Index = Index,
-			.Type = PendingInfo::InfoType::Component,
-			.Start = true
-			});
+		return Handle;
 	}
 
-	WorldObjectFactory::PendingInfo& WorldObjectFactory::FreeComponent(NxFr::Handle<Component> Instance)
+	void WorldObjectFactory::FreeComponent(NxFr::Handle<Component> Instance)
 	{
 		NxFr::StringId Type = Instance->GetObjectType();
 		NxFr::GUID ComponentId = Instance->GetId();
 		ObjectInfo Info = ComponentsInfos[ComponentId];
 
 		Handles.ReleaseHandle(Instance);
+		ComponentsInfos.Remove(ComponentId);
 
 		// Component Remove use a RemoveSwap
 		// So after the remove, the last element is now at Info.Index
 		// Since that element was moved, its handle has to be updated 
 		Components[Type]->Remove(Info.Index);
 		UpdateComponent(Type, Info.Index);
-
-		return Pendings.Append(PendingInfo{
-			.Id = ComponentId,
-			.Handle = NxFr::Handle<Component>(),
-			.Index = Info.Index,
-			.Type = PendingInfo::InfoType::Component,
-			.Start = false
-			});
 	}
 
 	void WorldObjectFactory::Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index)
@@ -758,14 +668,6 @@ namespace NxEn
 		{
 			Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(&GameObjects[Info.Index]));
 		}
-
-		for (auto& Info : Pendings)
-		{
-			if (Info.Type == PendingInfo::InfoType::GameObject)
-			{
-				Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(&GameObjects[Info.Index]));
-			}
-		}
 	}
 
 	void WorldObjectFactory::ReallocateAndUpdateComponent(NxFr::StringId Type)
@@ -785,14 +687,6 @@ namespace NxEn
 		{
 			Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(Components[Type]->Get(Info.Index)));
 		}
-
-		for (auto& Info : Pendings)
-		{
-			if (Info.Type == PendingInfo::InfoType::Component)
-			{
-				Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(Components[Type]->Get(Info.Index)));
-			}
-		}
 	}
 
 	void WorldObjectFactory::UpdateComponent(NxFr::StringId Type, uint64 Index)
@@ -808,32 +702,5 @@ namespace NxEn
 
 		Info.Index = Index;
 		Handles.UpdateHandle(static_cast<NxFr::Handle<Object>>(Info.Handle), static_cast<Object*>(Components[Type]->Get(Info.Index)));
-	}
-
-	void WorldObjectFactory::ProcessPendings()
-	{
-		for (uint64 Index = Pendings.GetCount(); Index > 0; --Index)
-		{
-			PendingInfo& Info = Pendings[Index - 1];
-			NxFr::Dictionary<NxFr::GUID, ObjectInfo>* Infos = nullptr;
-
-			switch (Info.Type)
-			{
-			case PendingInfo::InfoType::GameObject: Infos = &GameObjectInfos; break;
-			case PendingInfo::InfoType::Behaviour: Infos = &BehavioursInfos;  break;
-			case PendingInfo::InfoType::Component: Infos = &ComponentsInfos;  break;
-			}
-
-			if (Info.Start)
-			{
-				Infos->Append(Info.Id, ObjectInfo{ .Handle = Info.Handle, .Index = Info.Index });
-			}
-			else
-			{
-				Infos->Remove(Info.Id);
-			}
-
-			Pendings.Remove(Index - 1);
-		}
 	}
 }

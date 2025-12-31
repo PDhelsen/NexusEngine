@@ -305,8 +305,6 @@ namespace NxEn
 
 	void WorldSystem::OnTick(float TimeStep)
 	{
-		GetWorld(DummyId)->Factory->Pending();
-
 		for (auto& [Id, Instance] : Worlds)
 		{
 			Instance->Tick(TimeStep);

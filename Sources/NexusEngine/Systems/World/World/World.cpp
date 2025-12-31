@@ -239,10 +239,6 @@ namespace NxEn
 
 	void World::OnTick(float TimeStep)
 	{
-		Factory->Pending();
-
 		Root->Tick();
-
-		Factory->Pending();
 	}
 }

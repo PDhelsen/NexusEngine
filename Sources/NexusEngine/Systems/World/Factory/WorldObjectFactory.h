@@ -33,7 +33,6 @@ namespace NxEn
 		~WorldObjectFactory();
 
 		void Clear();
-		void Pending();
 
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), bool HandleReferences = false);
@@ -71,12 +70,12 @@ namespace NxEn
 		NxFr::GUID GetId() const { return WorldId; }
 
 	private:
-		PendingInfo& AllocateGameObject(NxFr::GUID GameObjectId);
-		PendingInfo& FreeGameObject(NxFr::Handle<GameObject> Instance);
-		PendingInfo& AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId);
-		PendingInfo& FreeBehaviour(NxFr::Handle<Behaviour> Instance);
-		PendingInfo& AllocateComponent(NxFr::StringId Type, NxFr::GUID ComponentId);
-		PendingInfo& FreeComponent(NxFr::Handle<Component> Instance);
+		NxFr::Handle<GameObject> AllocateGameObject(NxFr::GUID GameObjectId);
+		void FreeGameObject(NxFr::Handle<GameObject> Instance);
+		NxFr::Handle<Behaviour> AllocateBehaviour(NxFr::StringId Type, NxFr::GUID BehaviourId);
+		void FreeBehaviour(NxFr::Handle<Behaviour> Instance);
+		NxFr::Handle<Component> AllocateComponent(NxFr::StringId Type, NxFr::GUID ComponentId);
+		void FreeComponent(NxFr::Handle<Component> Instance);
 		void Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index);
 		void Detach(NxFr::Handle<GameObject> Instance);
 		void ReallocateAndUpdateGameObject();
@@ -90,7 +89,6 @@ namespace NxEn
 		NxFr::GUID WorldId;
 		bool KeepReferences;
 		HandleManager Handles;
-		NxFr::List<PendingInfo> Pendings;
 
 		NxFr::List<GameObject> GameObjects;
 		NxFr::Dictionary<NxFr::GUID, ObjectInfo> GameObjectInfos;

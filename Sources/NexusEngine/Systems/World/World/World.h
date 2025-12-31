@@ -9,7 +9,6 @@ namespace NxEn
 {
 	class World : public Object
 	{
-		friend class WorldSystem;
 		friend struct WorldObjectFactoryContext;
 
 	public:
