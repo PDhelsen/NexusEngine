@@ -14,20 +14,6 @@ namespace NxEn
 			uint64 Index;
 		};
 
-		struct PendingInfo
-		{
-			enum class InfoType
-			{
-				GameObject, Behaviour, Component
-			};
-
-			NxFr::GUID Id;
-			NxFr::Handle<Object> Handle;
-			uint64 Index;
-			InfoType Type;
-			bool Start;
-		};
-
 	public:
 		WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
 		~WorldObjectFactory();
