@@ -5,7 +5,10 @@
 #include "NexusEngine/Systems/World/Components/Component.h"
 
 #include "NexusEngine/Systems/World/Factory/WorldObjectInfo.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectIterator.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectStorage.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectReferences.h"
 
 namespace NxEn
 {
@@ -45,6 +48,13 @@ namespace NxEn
 		NxFr::Handle<Component> GetComponent(NxFr::GUID ComponentId) const;
 		NxFr::Array<NxFr::Handle<Component>> GetComponents() const;
 
+		WorldObjectIterator<GameObject> BeginGameObjects() { return GetTypedStorageGameObjects<GameObject>()->Begin(); }
+		WorldObjectIterator<GameObject> EndGameObjects() { return GetTypedStorageGameObjects<GameObject>()->End(); }
+		template<typename T> WorldObjectIterator<T> BeginBehaviours() { return GetTypedStorageBehaviours<T>()->Begin(); }
+		template<typename T> WorldObjectIterator<T> EndBehaviours() { return GetTypedStorageBehaviours<T>()->End(); }
+		template<typename T> WorldObjectIterator<T> BeginComponents() { return GetTypedStorageComponents<T>()->Begin(); }
+		template<typename T> WorldObjectIterator<T> EndComponents() { return GetTypedStorageComponents<T>()->End(); }
+
 		NxFr::GUID GetId() const { return WorldId; }
 
 	private:
@@ -56,6 +66,14 @@ namespace NxEn
 		void FreeComponent(NxFr::Handle<Component> Instance);
 		void Attach(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, uint64 Index);
 		void Detach(NxFr::Handle<GameObject> Instance);
+		WorldObjectStorage* GetStorage(NxFr::StringId Type, NxFr::Dictionary<NxFr::StringId, WorldObjectStorage*>& Storages, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>& Infos);
+
+		template<typename T>
+		WorldObjectStorageTyped<T>* GetTypedStorageGameObjects();
+		template<typename T>
+		WorldObjectStorageTyped<T>* GetTypedStorageBehaviours();
+		template<typename T>
+		WorldObjectStorageTyped<T>* GetTypedStorageComponents();
 
 	private:
 		NxFr::GUID WorldId;
@@ -70,4 +88,26 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, WorldObjectInfo> InfosBehaviours;
 		NxFr::Dictionary<NxFr::GUID, WorldObjectInfo> InfosComponents;
 	};
+
+	template<typename T>
+	inline WorldObjectStorageTyped<T>* WorldObjectFactory::GetTypedStorageGameObjects()
+	{
+		return static_cast<WorldObjectStorageTyped<T>*>(GameObjects);
+	}
+
+	template<typename T>
+	inline WorldObjectStorageTyped<T>* WorldObjectFactory::GetTypedStorageBehaviours()
+	{
+		NxFr::StringId Type = T::GetClassType();
+		WorldObjectStorage* Storage = GetStorage(Type, Behaviours, InfosBehaviours);
+		return static_cast<WorldObjectStorageTyped<T>*>(Storage);
+	}
+
+	template<typename T>
+	inline WorldObjectStorageTyped<T>* WorldObjectFactory::GetTypedStorageComponents()
+	{
+		NxFr::StringId Type = T::GetClassType();
+		WorldObjectStorage* Storage = GetStorage(Type, Components, InfosComponents);
+		return static_cast<WorldObjectStorageTyped<T>*>(Storage);
+	}
 }

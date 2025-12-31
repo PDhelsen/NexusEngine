@@ -5,6 +5,8 @@
 #include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
 #include "NexusEngine/Systems/World/Components/Component.h"
 
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
+
 namespace NxEn
 {
 	class World : public Object
@@ -46,6 +48,13 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> GetComponents() const;
 		NEXUS_ENGINE_API NxFr::Handle<Component> GetComponent(NxFr::GUID ComponentId) const;
 
+		WorldObjectIterator<GameObject> BeginGameObjects() { return Factory->BeginGameObjects(); }
+		WorldObjectIterator<GameObject> EndGameObjects() { return Factory->EndGameObjects(); }
+		template<typename T> WorldObjectIterator<T> BeginBehaviours() { return Factory->BeginBehaviours<T>(); }
+		template<typename T> WorldObjectIterator<T> EndBehaviours() { return Factory->EndBehaviours<T>(); }
+		template<typename T> WorldObjectIterator<T> BeginComponents() { return Factory->BeginComponents<T>(); }
+		template<typename T> WorldObjectIterator<T> EndComponents() { return Factory->EndComponents<T>(); }
+
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetWorldId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
 		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Name; };
@@ -60,7 +69,7 @@ namespace NxEn
 		NxFr::GUID WorldId;
 		NxFr::String Name;
 
-		class WorldObjectFactory* Factory;
+		WorldObjectFactory* Factory;
 		NxFr::Handle<GameObject> Root;
 	};
 

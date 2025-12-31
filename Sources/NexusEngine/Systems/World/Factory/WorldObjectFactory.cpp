@@ -477,12 +477,8 @@ namespace NxEn
 			BehaviourId = NxFr::Integer::GenerateGuid();
 		}
 
-		if (!Behaviours.ContainsKey(Type))
-		{
-			Behaviours.Append(Type, WorldObjectStorage::Create(Type, &Handles, &InfosComponents));
-		}
-
-		NxFr::Handle<Behaviour> Instance = Behaviours[Type]->Allocate(BehaviourId);
+		WorldObjectStorage* Storage = GetStorage(Type, Behaviours, InfosBehaviours);
+		NxFr::Handle<Behaviour> Instance = Storage->Allocate(BehaviourId);
 
 		Instance->BehaviourId = BehaviourId;
 
@@ -501,12 +497,8 @@ namespace NxEn
 			ComponentId = NxFr::Integer::GenerateGuid();
 		}
 
-		if (!Components.ContainsKey(Type))
-		{
-			Components.Append(Type, WorldObjectStorage::Create(Type, &Handles, &InfosComponents));
-		}
-		
-		NxFr::Handle<Component> Instance = Components[Type]->Allocate(ComponentId);
+		WorldObjectStorage* Storage = GetStorage(Type, Components, InfosComponents);
+		NxFr::Handle<Component> Instance = Storage->Allocate(ComponentId);
 
 		Instance->ComponentId = ComponentId;
 
@@ -571,5 +563,17 @@ namespace NxEn
 		Instance->Parent = NxFr::Handle<GameObject>();
 		Instance->Prev = NxFr::Handle<GameObject>();
 		Instance->Next = NxFr::Handle<GameObject>();
+	}
+
+	WorldObjectStorage* WorldObjectFactory::GetStorage(NxFr::StringId Type, NxFr::Dictionary<NxFr::StringId, WorldObjectStorage*>& Storages, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>& Infos)
+	{
+		WorldObjectStorage** Storage = Storages.TryGet(Type);
+
+		if (!Storage)
+		{
+			Storage = &Storages.Append(Type, WorldObjectStorage::Create(Type, &Handles, &Infos));
+		}
+
+		return *Storage;
 	}
 }

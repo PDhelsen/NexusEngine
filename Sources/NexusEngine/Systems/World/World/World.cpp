@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/World/World.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
-
 namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(World)

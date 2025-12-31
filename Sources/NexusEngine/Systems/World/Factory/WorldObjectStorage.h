@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Application/Object.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectInfo.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectIterator.h"
 
 namespace NxEn
 {
@@ -12,7 +13,7 @@ namespace NxEn
 	{
 	public:
 		template<typename T>
-		NEXUS_ENGINE_API static WorldObjectStorage* Register()
+		static WorldObjectStorage* Register()
 		{
 			WorldObjectStorage* Instance = new WorldObjectStorageTyped<T>();
 			SetTemplate(T::GetClassType(), Instance);
@@ -37,8 +38,9 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void Reserve(uint64 Size) = 0;
 		NEXUS_ENGINE_API virtual void Clear() = 0;
 
-		NEXUS_ENGINE_API virtual uint64 GetCount() = 0;
-		NEXUS_ENGINE_API virtual uint64 GetCapacity() = 0;
+		NEXUS_ENGINE_API virtual bool IsEmpty() const = 0;
+		NEXUS_ENGINE_API virtual uint64 GetCount() const = 0;
+		NEXUS_ENGINE_API virtual uint64 GetCapacity() const = 0;
 
 		NEXUS_ENGINE_API virtual WorldObjectStorage* Clone(HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos) const = 0;
 
@@ -65,13 +67,17 @@ namespace NxEn
 		void Remove(uint64 Index) override { Instances.RemoveSwap(Index); }
 		Object& Get(uint64 Index) override { return Instances.Get(Index); };
 
-		virtual void Reserve(uint64 Size) override { Instances.Reserve(Size); }
-		virtual void Clear() override { Instances.Clear(); }
+		void Reserve(uint64 Size) override { Instances.Reserve(Size); }
+		void Clear() override { Instances.Clear(); }
 
-		virtual uint64 GetCount() override { return Instances.GetCount(); }
-		virtual uint64 GetCapacity() override { return Instances.GetCapacity(); }
+		WorldObjectIterator<T> Begin() { return !IsEmpty() ? WorldObjectIterator<T>(&Instances[0]) : WorldObjectIterator<T>(nullptr); }
+		WorldObjectIterator<T> End() { return !IsEmpty() ? WorldObjectIterator(&Instances[0], GetCount()) : WorldObjectIterator<T>(nullptr); }
 
-		virtual WorldObjectStorage* Clone(HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos) const override
+		bool IsEmpty() const override { return Instances.IsEmpty(); };
+		uint64 GetCount() const override { return Instances.GetCount(); }
+		uint64 GetCapacity() const override { return Instances.GetCapacity(); }
+
+		WorldObjectStorage* Clone(HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos) const override
 			{ return new WorldObjectStorageTyped<T>(Handles, Infos); };
 
 	private:
