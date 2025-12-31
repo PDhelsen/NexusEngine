@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Assets/Scene.h"
 
-#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
 namespace NxEn
 {
@@ -20,7 +20,7 @@ namespace NxEn
 		}
 
 		AssetMetadata& Metadata = Application::GetSystem<AssetsSystem>()->GetMetadata(GetId());
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 
 		Root = Factory.CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
 
@@ -37,7 +37,7 @@ namespace NxEn
 
 	void Scene::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 
 		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
@@ -49,7 +49,7 @@ namespace NxEn
 
 	void Scene::OnUnload()
 	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 
 		Root->SetEnabled(false);
 		Root->Shutdown();

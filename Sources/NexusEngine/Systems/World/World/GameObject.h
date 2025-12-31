@@ -8,7 +8,7 @@ namespace NxEn
 {
 	class GameObject : public Object
 	{
-		friend class ObjectFactory;
+		friend class WorldObjectFactory;
 		friend class WorldSystem;
 		friend class World;
 		friend class Scene;

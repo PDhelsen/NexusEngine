@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Assets/Prefab.h"
 
-#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
 namespace NxEn
 {
@@ -14,7 +14,7 @@ namespace NxEn
 
 	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
 	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 
 		Root = Factory.DuplicateGameObject(Instance, NxFr::Handle<GameObject>(), true);
 
@@ -32,7 +32,7 @@ namespace NxEn
 
 	void Prefab::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 
 		Root = Factory.CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
@@ -44,7 +44,7 @@ namespace NxEn
 
 	void Prefab::OnUnload()
 	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 
 		Root->SetEnabled(false);
 		Root->Shutdown();

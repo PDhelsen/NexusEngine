@@ -6,28 +6,28 @@
 
 namespace NxEn
 {
-	class ObjectFactory;
+	class WorldObjectFactory;
 
-	struct FactoryContext
+	struct WorldObjectFactoryContext
 	{
-		static ObjectFactory& GetFactory();
+		static WorldObjectFactory& GetFactory();
 
-		FactoryContext(ObjectFactory* Instance);
-		~FactoryContext();
+		WorldObjectFactoryContext(WorldObjectFactory* Instance);
+		~WorldObjectFactoryContext();
 	};
 
-	struct FactoryReferences
+	struct WorldObjectReferences
 	{
-		static FactoryReferences* GetReferences();
+		static WorldObjectReferences* GetReferences();
 		static NxFr::GUID Resolve(NxFr::GUID Id);
 
-		FactoryReferences();
-		~FactoryReferences();
+		WorldObjectReferences();
+		~WorldObjectReferences();
 
 		NxFr::Dictionary<NxFr::GUID, NxFr::GUID> Ids;
 	};
 
-	class ObjectFactory
+	class WorldObjectFactory
 	{
 		struct ObjectInfo
 		{
@@ -50,8 +50,8 @@ namespace NxEn
 		};
 
 	public:
-		ObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
-		~ObjectFactory();
+		WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
+		~WorldObjectFactory();
 
 		void Clear();
 		void Pending();
@@ -126,7 +126,7 @@ namespace NxEn
 	};
 
 	template<typename T>
-	inline ComponentsStorage<T>& ObjectFactory::GetComponentStorage()
+	inline ComponentsStorage<T>& WorldObjectFactory::GetComponentStorage()
 	{
 		NxFr::StringId Type = T::GetClassType();
 		ComponentsFactory** Instance = Components.TryGet(Type);

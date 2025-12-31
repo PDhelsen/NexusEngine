@@ -14,7 +14,7 @@ namespace NxEn
 {
 	class Component : public Object
 	{
-		friend class ObjectFactory;
+		friend class WorldObjectFactory;
 		friend class GameObject;
 
 	protected:

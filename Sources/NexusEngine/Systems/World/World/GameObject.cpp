@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/World/GameObject.h"
 
-#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
 namespace NxEn
 {
@@ -180,7 +180,7 @@ namespace NxEn
 
 	void GameObject::Load(const YAML::Node& Node)
 	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
 
 		YAML::Node Instance = Node[YamlRoot];
@@ -492,7 +492,7 @@ namespace NxEn
 
 	void GameObject::OnLoad(const YAML::Node& Node)
 	{
-		ObjectFactory& Factory = FactoryContext::GetFactory();
+		WorldObjectFactory& Factory = WorldObjectFactoryContext::GetFactory();
 		NxFr::Handle<GameObject> This = Factory.GetGameObject(GameObjectId);
 
 		Name = Node["Name"].as<NxFr::String>();

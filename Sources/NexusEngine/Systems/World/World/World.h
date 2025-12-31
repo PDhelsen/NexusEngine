@@ -60,7 +60,7 @@ namespace NxEn
 		NxFr::GUID WorldId;
 		NxFr::String Name;
 
-		class ObjectFactory* Factory;
+		class WorldObjectFactory* Factory;
 		NxFr::Handle<GameObject> Root;
 	};
 

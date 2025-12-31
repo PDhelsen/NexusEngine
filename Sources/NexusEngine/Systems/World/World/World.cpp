@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/World/World.h"
 
-#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
 namespace NxEn
 {
@@ -11,7 +11,7 @@ namespace NxEn
 		: WorldId(WorldId), Name(Name), Factory(nullptr), Root()
 	{
 		SetTickable(true);
-		Factory = new ObjectFactory(WorldId, Reference);
+		Factory = new WorldObjectFactory(WorldId, Reference);
 	}
 
 	World::~World()
