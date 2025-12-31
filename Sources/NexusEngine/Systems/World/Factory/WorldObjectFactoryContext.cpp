@@ -12,7 +12,7 @@ namespace NxEn
 
 	WorldObjectFactoryContext::WorldObjectFactoryContext(World* Instance)
 	{
-		Factories.Append(Instance->Factory);
+		Factories.Append(&Instance->Factory);
 	}
 
 	WorldObjectFactoryContext::~WorldObjectFactoryContext()

@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectReferences.h"
-
 namespace NxEn
 {
 	WorldObjectFactory::WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences)

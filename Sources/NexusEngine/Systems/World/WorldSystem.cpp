@@ -1,9 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/WorldSystem.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
-#include "NexusEngine/Systems/World/Factory/WorldObjectReferences.h"
-
 namespace NxEn
 {
 	const static Command CmdWorldSceneCreate = Command::Create("World.Scene.Create"_Sid, "Create scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)

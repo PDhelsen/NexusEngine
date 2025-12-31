@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Components/Components/Tags.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectStorage.h"
-
 namespace NxEn
 {
 	NEXUS_COMPONENT_IMPLEMENTATION(Tags)

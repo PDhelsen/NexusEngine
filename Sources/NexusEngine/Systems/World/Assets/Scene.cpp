@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Assets/Scene.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
-
 namespace NxEn
 {
 	NEXUS_ASSET_IMPLEMENTATION(Scene)

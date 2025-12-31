@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/World/GameObject.h"
 
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
-
 namespace NxEn
 {
 	static const NxFr::String YamlRoot = "GameObject";

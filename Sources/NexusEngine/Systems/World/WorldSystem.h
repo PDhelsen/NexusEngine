@@ -7,6 +7,7 @@
 #include "NexusEngine/Systems/World/Components/Component.h"
 #include "NexusEngine/Systems/World/Assets/Scene.h"
 #include "NexusEngine/Systems/World/Assets/Prefab.h"
+#include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
 namespace NxEn
 {
