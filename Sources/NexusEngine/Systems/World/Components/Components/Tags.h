@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Systems/World/Component/Component.h"
+#include "NexusEngine/Systems/World/Components/Component.h"
 
 namespace NxEn
 {

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "NexusEngine/Application/Systems/System.h"
-#include "NexusEngine/Systems/World/ObjectFactory.h"
-#include "NexusEngine/Systems/World/World/GameObject.h"
 #include "NexusEngine/Systems/World/World/World.h"
-#include "NexusEngine/Systems/World/Scene/Scene.h"
-#include "NexusEngine/Systems/World/Scene/Prefab.h"
-#include "NexusEngine/Systems/World/Behaviour/Behaviour.h"
-#include "NexusEngine/Systems/World/Component/Component.h"
+#include "NexusEngine/Systems/World/World/GameObject.h"
+#include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
+#include "NexusEngine/Systems/World/Components/Component.h"
+#include "NexusEngine/Systems/World/Assets/Scene.h"
+#include "NexusEngine/Systems/World/Assets/Prefab.h"
 
 namespace NxEn
 {

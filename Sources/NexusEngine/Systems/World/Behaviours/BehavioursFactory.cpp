@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/World/Behaviour/BehavioursFactory.h"
+#include "NexusEngine/Systems/World/Behaviours/BehavioursFactory.h"
 
 namespace NxEn
 {

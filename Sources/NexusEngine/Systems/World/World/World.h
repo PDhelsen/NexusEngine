@@ -1,8 +1,9 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
-#include "NexusEngine/Systems/World/ObjectFactory.h"
 #include "NexusEngine/Systems/World/World/GameObject.h"
+#include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
+#include "NexusEngine/Systems/World/Components/Component.h"
 
 namespace NxEn
 {
@@ -59,7 +60,7 @@ namespace NxEn
 		NxFr::GUID WorldId;
 		NxFr::String Name;
 
-		ObjectFactory Factory;
+		class ObjectFactory* Factory;
 		NxFr::Handle<GameObject> Root;
 	};
 

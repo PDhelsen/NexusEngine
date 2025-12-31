@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/World/Component/Components/Tags.h"
+#include "NexusEngine/Systems/World/Components/Components/Tags.h"
 
 namespace NxEn
 {

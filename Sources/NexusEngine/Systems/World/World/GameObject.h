@@ -1,17 +1,15 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
+#include "NexusEngine/Systems/World/Components/Component.h"
 
 namespace NxEn
 {
-	class World;
-	class Behaviour;
-	class Component;
-
 	class GameObject : public Object
 	{
-		friend class WorldSystem;
 		friend class ObjectFactory;
+		friend class WorldSystem;
 		friend class World;
 		friend class Scene;
 		friend class Prefab;

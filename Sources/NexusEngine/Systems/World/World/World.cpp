@@ -1,18 +1,22 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/World/World.h"
 
+#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
+
 namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
 	World::World(NxFr::GUID WorldId, NxFr::StringView Name, bool Reference)
-		: WorldId(WorldId), Name(Name), Factory(WorldId, Reference), Root()
+		: WorldId(WorldId), Name(Name), Factory(nullptr), Root()
 	{
 		SetTickable(true);
+		Factory = new ObjectFactory(WorldId, Reference);
 	}
 
 	World::~World()
 	{
+		delete Factory;
 	}
 
 	NxFr::Handle<GameObject> World::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent)
@@ -24,7 +28,7 @@ namespace NxEn
 			Parent = Root;
 		}
 
-		NxFr::Handle<GameObject> Instance = Factory.CreateGameObject(Name, Parent);
+		NxFr::Handle<GameObject> Instance = Factory->CreateGameObject(Name, Parent);
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
@@ -45,7 +49,7 @@ namespace NxEn
 			Parent = Root;
 		}
 
-		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent, Instantiate);
+		NxFr::Handle<GameObject> Instance = Factory->DuplicateGameObject(Target, Parent, Instantiate);
 		Instance->PatchReferences();
 		Instance->Initialize();
 		Instance->SetEnabled(Target->IsEnabled());
@@ -67,7 +71,7 @@ namespace NxEn
 
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
-		Factory.DestroyGameObject(Instance);
+		Factory->DestroyGameObject(Instance);
 	}
 
 	void World::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
@@ -84,7 +88,7 @@ namespace NxEn
 			Index = Target->GetChildCount();
 		}
 
-		Factory.AttachGameObject(Instance, Target, Index);
+		Factory->AttachGameObject(Instance, Target, Index);
 		Instance->UpdateEnabledInHierarchy();
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
@@ -94,7 +98,7 @@ namespace NxEn
 	{
 		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
 
-		Factory.DetachGameObject(Instance);
+		Factory->DetachGameObject(Instance);
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::RemovedId, WorldId, Instance->GetId());
 	}
@@ -103,7 +107,7 @@ namespace NxEn
 	{
 		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
 
-		NxFr::Handle<Behaviour> Instance = Factory.CreateBehaviour(Type, Target);
+		NxFr::Handle<Behaviour> Instance = Factory->CreateBehaviour(Type, Target);
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
@@ -121,14 +125,14 @@ namespace NxEn
 
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
-		Factory.DestroyBehaviour(Instance);
+		Factory->DestroyBehaviour(Instance);
 	}
 
 	NxFr::Handle<Component> World::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
 		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
 
-		return Factory.CreateComponent(Type, Target);
+		return Factory->CreateComponent(Type, Target);
 	}
 
 	void World::DestroyComponent(NxFr::Handle<Component> Instance)
@@ -140,42 +144,42 @@ namespace NxEn
 			return;
 		}
 
-		Factory.DestroyComponent(Instance);
+		Factory->DestroyComponent(Instance);
 	}
 
 	bool World::Belong(NxFr::Handle<GameObject> Instance) const
 	{
-		return Factory.Belong(Instance);
+		return Factory->Belong(Instance);
 	}
 
 	bool World::Belong(NxFr::Handle<Behaviour> Instance) const
 	{
-		return Factory.Belong(Instance);
+		return Factory->Belong(Instance);
 	}
 
 	bool World::Belong(NxFr::Handle<Component> Instance) const
 	{
-		return Factory.Belong(Instance);
+		return Factory->Belong(Instance);
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> World::FindGameObjects(NxFr::StringView Filter) const
 	{
-		return Factory.FindGameObjects(Filter);
+		return Factory->FindGameObjects(Filter);
 	}
 
 	NxFr::Array<NxFr::Handle<Behaviour>> World::FindBehaviours(NxFr::StringView Filter) const
 	{
-		return Factory.FindBehaviours(Filter);
+		return Factory->FindBehaviours(Filter);
 	}
 
 	NxFr::Array<NxFr::Handle<Component>> World::FindComponents(NxFr::StringView Filter) const
 	{
-		return Factory.FindComponents(Filter);
+		return Factory->FindComponents(Filter);
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const
 	{
-		return Factory.GetGameObjects();
+		return Factory->GetGameObjects();
 	}
 
 	NxFr::Handle<GameObject> World::GetGameObject(NxFr::GUID GameObjectId) const
@@ -185,7 +189,7 @@ namespace NxEn
 			return NxFr::Handle<GameObject>();
 		}
 
-		return Factory.GetGameObject(GameObjectId);
+		return Factory->GetGameObject(GameObjectId);
 	}
 
 	NxFr::Handle<GameObject> World::GetRootGameObject() const
@@ -195,7 +199,7 @@ namespace NxEn
 
 	NxFr::Array<NxFr::Handle<Behaviour>> World::GetBehaviours() const
 	{
-		return Factory.GetBehaviours();
+		return Factory->GetBehaviours();
 	}
 
 	NxFr::Handle<Behaviour> World::GetBehaviour(NxFr::GUID BehaviourId) const
@@ -205,12 +209,12 @@ namespace NxEn
 			return NxFr::Handle<Behaviour>();
 		}
 
-		return Factory.GetBehaviour(BehaviourId);
+		return Factory->GetBehaviour(BehaviourId);
 	}
 
 	NxFr::Array<NxFr::Handle<Component>> World::GetComponents() const
 	{
-		return Factory.GetComponents();
+		return Factory->GetComponents();
 	}
 
 	NxFr::Handle<Component> World::GetComponent(NxFr::GUID ComponentId) const
@@ -220,7 +224,7 @@ namespace NxEn
 			return NxFr::Handle<Component>();
 		}
 
-		return Factory.GetComponent(ComponentId);
+		return Factory->GetComponent(ComponentId);
 	}
 
 	void World::OnInitialize()
@@ -235,10 +239,10 @@ namespace NxEn
 
 	void World::OnTick(float TimeStep)
 	{
-		Factory.Pending();
+		Factory->Pending();
 
 		Root->Tick();
 
-		Factory.Pending();
+		Factory->Pending();
 	}
 }

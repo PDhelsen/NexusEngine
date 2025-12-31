@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/WorldSystem.h"
 
+#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
+
 namespace NxEn
 {
 	const static Command CmdWorldSceneCreate = Command::Create("World.Scene.Create"_Sid, "Create scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
@@ -302,7 +304,7 @@ namespace NxEn
 
 	void WorldSystem::OnTick(float TimeStep)
 	{
-		GetWorld(DummyId)->Factory.Pending();
+		GetWorld(DummyId)->Factory->Pending();
 
 		for (auto& [Id, Instance] : Worlds)
 		{

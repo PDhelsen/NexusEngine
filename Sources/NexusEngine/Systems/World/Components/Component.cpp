@@ -1,5 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/World/Component/Component.h"
+#include "NexusEngine/Systems/World/Components/Component.h"
+#include "NexusEngine/Systems/World/Components/ComponentsFactory.h"
 
 namespace NxEn
 {

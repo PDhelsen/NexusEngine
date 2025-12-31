@@ -5,6 +5,7 @@
 namespace NxEn
 {
 	class Component;
+
 	template<typename T>
 	class ComponentsStorage;
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "NexusEngine/Systems/World/World/GameObject.h"
-#include "NexusEngine/Systems/World/Behaviour/Behaviour.h"
-#include "NexusEngine/Systems/World/Component/Component.h"
+#include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
+#include "NexusEngine/Systems/World/Components/Component.h"
 
 namespace NxEn
 {
@@ -12,7 +12,7 @@ namespace NxEn
 	{
 		static ObjectFactory& GetFactory();
 
-		FactoryContext(ObjectFactory& Instance);
+		FactoryContext(ObjectFactory* Instance);
 		~FactoryContext();
 	};
 

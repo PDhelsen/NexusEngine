@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/World/ObjectFactory.h"
+#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
 
 namespace NxEn
 {
@@ -11,9 +11,9 @@ namespace NxEn
 		return *Factories.Get();
 	}
 
-	FactoryContext::FactoryContext(ObjectFactory& Instance)
+	FactoryContext::FactoryContext(ObjectFactory* Instance)
 	{
-		Factories.Append(&Instance);
+		Factories.Append(Instance);
 	}
 
 	FactoryContext::~FactoryContext()

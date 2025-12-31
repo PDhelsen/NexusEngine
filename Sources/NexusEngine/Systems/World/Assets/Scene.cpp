@@ -1,35 +1,41 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/World/Scene/Prefab.h"
-#include "NexusEngine/Systems/World/ObjectFactory.h"
+#include "NexusEngine/Systems/World/Assets/Scene.h"
+
+#include "NexusEngine/Systems/World/Factory/ObjectFactory.h"
 
 namespace NxEn
 {
-	NEXUS_ASSET_IMPLEMENTATION(Prefab)
+	NEXUS_ASSET_IMPLEMENTATION(Scene)
 
-	NxFr::Handle<GameObject> Prefab::GetRoot() const
+	NxFr::Handle<GameObject> Scene::GetRoot() const
 	{
 		return Root;
 	}
 
-	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
+	void Scene::OnInitialize()
 	{
+		if (Root)
+		{
+			return;
+		}
+
+		AssetMetadata& Metadata = Application::GetSystem<AssetsSystem>()->GetMetadata(GetId());
 		ObjectFactory& Factory = FactoryContext::GetFactory();
 
-		Root = Factory.DuplicateGameObject(Instance, NxFr::Handle<GameObject>(), true);
+		Root = Factory.CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
 
 		Root->ReferenceId = GetId();
-		Instance->ReferenceId = GetId();
 
-		Root->PatchReferences();
-		SetDirty();
+		Root->Initialize();
+		Root->SetEnabled(true);
 	}
 
-	void Prefab::OnSave(YAML::Node& Node, NxFr::StringView Content)
+	void Scene::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
 		NxFr::Yaml::SerializeFile(Root->Save(), Content);
 	}
 
-	void Prefab::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
+	void Scene::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
 	{
 		ObjectFactory& Factory = FactoryContext::GetFactory();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
@@ -41,7 +47,7 @@ namespace NxEn
 		Root->SetEnabled(true);
 	}
 
-	void Prefab::OnUnload()
+	void Scene::OnUnload()
 	{
 		ObjectFactory& Factory = FactoryContext::GetFactory();
 
@@ -52,4 +58,5 @@ namespace NxEn
 		Factory.DestroyGameObject(Root);
 		Root = NxFr::Handle<GameObject>();
 	}
+
 }
