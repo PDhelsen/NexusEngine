@@ -34,6 +34,10 @@ namespace NxEn
 		NEXUS_ENGINE_API YAML::Node Save() override;
 		NEXUS_ENGINE_API void Load(const YAML::Node& Node) override;
 		NEXUS_ENGINE_API void Unload() override;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies() override;
+
+		NEXUS_ENGINE_API void PatchReferences();
+		NEXUS_ENGINE_API void UpdateHierarchy();
 
 		NEXUS_ENGINE_API World* GetWorld() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetParent() const;
@@ -73,9 +77,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnUnload() override;
 		NEXUS_ENGINE_API void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) override;
 
-	private:
-		NEXUS_ENGINE_API void UpdateEnabledInHierarchy();
-		NEXUS_ENGINE_API void PatchReferences();
+		NEXUS_ENGINE_API virtual void OnPatchReferences();
+		NEXUS_ENGINE_API virtual void OnUpdateHierarchy();
 
 		static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
 

@@ -36,6 +36,9 @@ namespace NxEn
 		NEXUS_ENGINE_API bool IsEnabledInHierarchy() const;
 		NEXUS_ENGINE_API bool IsTicking() const override;
 
+		NEXUS_ENGINE_API void PatchReferences();
+		NEXUS_ENGINE_API void UpdateHierarchy();
+
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return BehaviourId; };
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject() const { return Target; };
 
@@ -45,9 +48,8 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnSave(YAML::Node& Node) override;
 		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node) override;
 
-	private:
-		NEXUS_ENGINE_API void UpdateEnabledInHierarchy();
-		NEXUS_ENGINE_API virtual void PatchReferences() {};
+		NEXUS_ENGINE_API virtual void OnPatchReferences();
+		NEXUS_ENGINE_API virtual void OnUpdateHierarchy();
 
 	private:
 		NxFr::GUID BehaviourId;

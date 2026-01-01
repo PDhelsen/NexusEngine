@@ -125,9 +125,12 @@ namespace NxEn
 
 	void GameObject::SetEnabled(bool Enabled)
 	{
-		SetFlag(ObjectFlags::Enabled, Enabled);
+		if (IsEnabled() != Enabled)
+		{
+			SetFlag(ObjectFlags::Enabled, Enabled);
+		}
 
-		UpdateEnabledInHierarchy();
+		UpdateHierarchy();
 	}
 
 	bool GameObject::IsEnabledInHierarchy() const
@@ -146,6 +149,21 @@ namespace NxEn
 
 		YAML::Node Instance;
 		OnSave(Instance);
+
+		YAML::Node NodeBehaviours;
+		for (auto& B : Behaviours)
+		{
+			NodeBehaviours.push_back(B->Save());
+		}
+		Instance["Behaviours"] = NodeBehaviours;
+
+		YAML::Node NodeComponents;
+		for (auto& C : Components)
+		{
+			NodeComponents.push_back(C->Save());
+		}
+		Instance["Components"] = NodeComponents;
+
 		Node[YamlRoot] = Instance;
 
 		YAML::Node Children;
@@ -180,28 +198,50 @@ namespace NxEn
 	{
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
-
 		YAML::Node Instance = Node[YamlRoot];
-		OnLoad(Instance);
 
 		NxFr::Delegate<NxFr::Handle<GameObject>(const YAML::Node&)> ChildLoad = [&](const YAML::Node& ChildNode)
+		{
+			NxFr::Handle<GameObject> ChildInstance;
+			NxFr::GUID ChildReference = ChildNode[YamlRoot][YamlReference].as<NxFr::GUID>();
+
+			if (ChildReference)
 			{
-				NxFr::Handle<GameObject> ChildInstance;
-				NxFr::GUID ChildReference = ChildNode[YamlRoot][YamlReference].as<NxFr::GUID>();
+				Prefab* PrefabInstance = Application::GetSystem<WorldSystem>()->LoadPrefab(ChildReference);
+				ChildInstance = Factory->DuplicateGameObject(PrefabInstance->GetRoot(), This, true);
+			}
+			else
+			{
+				ChildInstance = Factory->CreateGameObject("", This, ChildNode[YamlRoot][YamlId].as<NxFr::GUID>());
+				ChildInstance->Load(ChildNode);
+			}
 
-				if (ChildReference)
-				{
-					Prefab* PrefabInstance = Application::GetSystem<WorldSystem>()->LoadPrefab(ChildReference);
-					ChildInstance = Factory->DuplicateGameObject(PrefabInstance->GetRoot(), This, true);
-				}
-				else
-				{
-					ChildInstance = Factory->CreateGameObject("", This, ChildNode[YamlRoot][YamlId].as<NxFr::GUID>());
-					ChildInstance->Load(ChildNode);
-				}
+			return ChildInstance;
+		};
 
-				return ChildInstance;
-			};
+		OnLoad(Instance);
+
+		YAML::Node NodeBehaviours = Instance["Behaviours"];
+		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
+		{
+			YAML::Node NodeBehaviour = NodeBehaviours[Index];
+			NxFr::StringId Type = NodeBehaviour["Type"].as<NxFr::StringId>();
+			NxFr::GUID Id = NodeBehaviour["Id"].as<NxFr::GUID>();
+
+			NxFr::Handle<Behaviour> B = Factory->CreateBehaviour(Type, This, Id);
+			B->Load(NodeBehaviour);
+		}
+
+		YAML::Node NodeComponents = Instance["Components"];
+		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
+		{
+			YAML::Node NodeComponent = NodeComponents[Index];
+			NxFr::StringId Type = NodeComponent["Type"].as<NxFr::StringId>();
+			NxFr::GUID Id = NodeComponent["Id"].as<NxFr::GUID>();
+
+			NxFr::Handle<Behaviour> B = Factory->CreateComponent(Type, This, Id);
+			B->Load(NodeComponent);
+		}
 
 		YAML::Node Children = Node[YamlChildren];
 		if (Children.size() > 0)
@@ -219,6 +259,18 @@ namespace NxEn
 
 	void GameObject::Unload()
 	{
+		OnUnload();
+
+		for (auto& B : Behaviours)
+		{
+			B->Unload();
+		}
+
+		for (auto& C : Components)
+		{
+			C->Unload();
+		}
+
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -231,6 +283,84 @@ namespace NxEn
 				Iterator->Unload();
 			}
 
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	NxFr::Array<NxFr::GUID> GameObject::GetDependencies()
+	{
+		NxFr::Set<NxFr::GUID> Ids;
+
+		OnGetDependencies(Ids);
+
+		for (auto& B : Behaviours)
+		{
+			B->OnGetDependencies(Ids);
+		}
+
+		for (auto& C : Components)
+		{
+			C->OnGetDependencies(Ids);
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			if (Iterator->GetReferenceId())
+			{
+				Ids.Append(Iterator->GetReferenceId());
+			}
+			else
+			{
+				Iterator->OnGetDependencies(Ids);
+			}
+
+			Iterator = Iterator->GetNext();
+		}
+
+		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Ids);
+	}
+
+	void GameObject::PatchReferences()
+	{
+		OnPatchReferences();
+
+		for (auto& B : Behaviours)
+		{
+			B->PatchReferences();
+		}
+
+		for (auto& C : Components)
+		{
+			C->PatchReferences();
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->PatchReferences();
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	void GameObject::UpdateHierarchy()
+	{
+		OnUpdateHierarchy();
+
+		for (auto& B : Behaviours)
+		{
+			B->UpdateHierarchy();
+		}
+
+		for (auto& C : Components)
+		{
+			C->UpdateHierarchy();
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->UpdateHierarchy();
 			Iterator = Iterator->GetNext();
 		}
 	}
@@ -472,20 +602,6 @@ namespace NxEn
 		Node["Reference"] = ReferenceId;
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
-
-		YAML::Node NodeBehaviours;
-		for (auto& B : Behaviours)
-		{
-			NodeBehaviours.push_back(B->Save());
-		}
-		Node["Behaviours"] = NodeBehaviours;
-
-		YAML::Node NodeComponents;
-		for (auto& C : Components)
-		{
-			NodeComponents.push_back(C->Save());
-		}
-		Node["Components"] = NodeComponents;
 	}
 
 	void GameObject::OnLoad(const YAML::Node& Node)
@@ -499,62 +615,23 @@ namespace NxEn
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
 		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
-
-		YAML::Node NodeBehaviours = Node["Behaviours"];
-		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
-		{
-			YAML::Node NodeBehaviour = NodeBehaviours[Index];
-			NxFr::StringId Type = NodeBehaviour["Type"].as<NxFr::StringId>();
-			NxFr::GUID Id = NodeBehaviour["Id"].as<NxFr::GUID>();
-
-			NxFr::Handle<Behaviour> B = Factory->CreateBehaviour(Type, This, Id);
-			B->Load(NodeBehaviour);
-		}
-
-		YAML::Node NodeComponents = Node["Components"];
-		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
-		{
-			YAML::Node NodeComponent = NodeComponents[Index];
-			NxFr::StringId Type = NodeComponent["Type"].as<NxFr::StringId>();
-			NxFr::GUID Id = NodeComponent["Id"].as<NxFr::GUID>();
-
-			NxFr::Handle<Behaviour> B = Factory->CreateComponent(Type, This, Id);
-			B->Load(NodeComponent);
-		}
 	}
 
 	void GameObject::OnUnload()
 	{
-		for(auto& B : Behaviours)
-		{
-			B->Unload();
-		}
-
-		for (auto& C : Components)
-		{
-			C->Unload();
-		}
+		
 	}
 
 	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
 	{
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			if (Iterator->GetReferenceId())
-			{
-				Ids.Append(Iterator->GetReferenceId());
-			}
-			else
-			{
-				Iterator->OnGetDependencies(Ids);
-			}
-
-			Iterator = Iterator->GetNext();
-		}
+		
 	}
 
-	void GameObject::UpdateEnabledInHierarchy()
+	void GameObject::OnPatchReferences()
+	{
+	}
+
+	void GameObject::OnUpdateHierarchy()
 	{
 		bool Enabled = IsEnabled() && (Parent ? Parent->IsEnabledInHierarchy() : true);
 		if (Enabled == IsEnabledInHierarchy())
@@ -571,43 +648,6 @@ namespace NxEn
 		else
 		{
 			OnDisable();
-		}
-
-		for (auto& B : Behaviours)
-		{
-			B->UpdateEnabledInHierarchy();
-		}
-
-		for (auto& C : Components)
-		{
-			C->UpdateEnabledInHierarchy();
-		}
-
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->UpdateEnabledInHierarchy();
-			Iterator = Iterator->Next;
-		}
-	}
-
-	void GameObject::PatchReferences()
-	{
-		for (auto& B : Behaviours)
-		{
-			B->PatchReferences();
-		}
-
-		for (auto& C : Components)
-		{
-			C->PatchReferences();
-		}
-
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->PatchReferences();
-			Iterator = Iterator->GetNext();
 		}
 	}
 

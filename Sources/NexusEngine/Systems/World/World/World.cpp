@@ -48,7 +48,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> Instance = Factory.DuplicateGameObject(Target, Parent, Instantiate);
 		Instance->PatchReferences();
 		Instance->Initialize();
-		Instance->SetEnabled(Target->IsEnabled());
+		Instance->UpdateHierarchy();
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 		return Instance;
@@ -85,7 +85,7 @@ namespace NxEn
 		}
 
 		Factory.AttachGameObject(Instance, Target, Index);
-		Instance->UpdateEnabledInHierarchy();
+		Instance->UpdateHierarchy();
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 	}
@@ -95,6 +95,7 @@ namespace NxEn
 		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
 
 		Factory.DetachGameObject(Instance);
+		Instance->UpdateHierarchy();
 
 		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::RemovedId, WorldId, Instance->GetId());
 	}

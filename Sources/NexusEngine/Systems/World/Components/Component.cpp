@@ -18,7 +18,7 @@ namespace NxEn
 	{
 		SetFlag(ObjectFlags::Enabled, Enabled);
 
-		UpdateEnabledInHierarchy();
+		UpdateHierarchy();
 	}
 
 	bool Component::IsEnabledInHierarchy() const
@@ -29,6 +29,16 @@ namespace NxEn
 	bool Component::IsTicking() const
 	{
 		return false;
+	}
+
+	void Component::PatchReferences()
+	{
+		OnPatchReferences();
+	}
+
+	void Component::UpdateHierarchy()
+	{
+		OnUpdateHierarchy();
 	}
 
 	void Component::OnGui(float TimeStep)
@@ -70,7 +80,11 @@ namespace NxEn
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 	}
 
-	void Component::UpdateEnabledInHierarchy()
+	void Component::OnPatchReferences()
+	{
+	}
+
+	void Component::OnUpdateHierarchy()
 	{
 		bool Enabled = IsEnabled() && GetGameObject()->IsEnabledInHierarchy();
 		if (Enabled == IsEnabledInHierarchy())
