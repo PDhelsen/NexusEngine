@@ -174,6 +174,25 @@ namespace NxEn
 		return Factory.FindComponents(Filter);
 	}
 
+	NxFr::Array<NxFr::Handle<Tags>> World::FindTags(NxFr::StringView Filter, bool MatchAll)
+	{
+		NxFr::List<NxFr::Handle<Tags>> Result;
+
+		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
+		NxFr::Collection<NxFr::StringView> Collection = Filters;
+
+		for (auto Iterator = BeginComponents<Tags>(); Iterator != EndComponents<Tags>(); ++Iterator)
+		{
+			if (Iterator->Contains(Collection, MatchAll))
+			{
+				NxFr::Handle<GameObject> Instance = Iterator->GetGameObject();
+				Result.Append(Instance->GetComponentById(Iterator->GetId()));
+			}
+		}
+
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Tags>>(Result);
+	}
+
 	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const
 	{
 		return Factory.GetGameObjects();

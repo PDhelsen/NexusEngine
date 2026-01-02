@@ -14,6 +14,55 @@ namespace NxEn
 	{
 	}
 
+	void Tags::Append(NxFr::StringView Tag)
+	{
+		Items.Append(Tag);
+	}
+
+	void Tags::Append(NxFr::Collection<NxFr::StringView> Tags)
+	{
+		for (auto& It = Tags.Reset(); It != Tags.End(); ++It)
+		{
+			Append(*It);
+		}
+	}
+
+	void Tags::Remove(NxFr::StringView Tag)
+	{
+		Items.Remove(Tag);
+	}
+
+	void Tags::Remove(NxFr::Collection<NxFr::StringView> Tags)
+	{
+		for (auto& It = Tags.Reset(); It != Tags.End(); ++It)
+		{
+			Remove(*It);
+		}
+	}
+
+	bool Tags::Contains(NxFr::StringView Tag)
+	{
+		return Items.Contains(Tag);
+	}
+
+	bool Tags::Contains(const NxFr::Collection<NxFr::StringView>& Tags, bool MatchAll)
+	{
+		bool Result = MatchAll ? true : false;
+
+		for (auto& It = Tags.Reset(); It != Tags.End(); ++It)
+		{
+			bool Match = Contains(*It);
+			Result = MatchAll ? Result & Match : Result | Match;
+
+			if ((!MatchAll && Match) || (MatchAll && !Match))
+			{
+				break;
+			}
+		}
+
+		return Result;
+	}
+
 	void Tags::OnGui(float TimeStep)
 	{
 		Component::OnGui(TimeStep);
