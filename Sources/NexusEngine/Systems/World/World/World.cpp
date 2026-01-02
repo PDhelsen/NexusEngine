@@ -5,8 +5,8 @@ namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(World)
 
-	World::World(NxFr::GUID WorldId, NxFr::StringView Name, bool Reference)
-		: WorldId(WorldId), Name(Name), Factory(WorldId, Reference), Root()
+	World::World(NxFr::StringId Name, bool Reference)
+		: WorldId(Name), Factory(WorldId, Reference), Root()
 	{
 		SetTickable(true);
 	}
@@ -245,7 +245,7 @@ namespace NxEn
 
 	void World::OnInitialize()
 	{
-		Root = CreateGameObject("Root");
+		Root = CreateGameObject(WorldId);
 	}
 
 	void World::OnShutdown()

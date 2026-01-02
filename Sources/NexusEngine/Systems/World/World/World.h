@@ -18,7 +18,7 @@ namespace NxEn
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, World)
 
-		NEXUS_ENGINE_API World(NxFr::GUID WorldId, NxFr::StringView Name = "", bool References = false);
+		NEXUS_ENGINE_API World(NxFr::StringId Name, bool References = false);
 		NEXUS_ENGINE_API ~World();
 
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
@@ -60,8 +60,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return GetWorldId(); };
 		NEXUS_ENGINE_API NxFr::GUID GetWorldId() const { return WorldId; };
-		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Name; };
-		NEXUS_ENGINE_API void SetName(NxFr::StringView Name) { this->Name = Name; GetRootGameObject()->SetName(Name); };
+		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return WorldId.GetString(); };
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -69,8 +68,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
-		NxFr::GUID WorldId;
-		NxFr::String Name;
+		NxFr::StringId WorldId;
 
 		WorldObjectFactory Factory;
 		NxFr::Handle<GameObject> Root;

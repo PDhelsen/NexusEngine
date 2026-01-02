@@ -25,7 +25,7 @@ namespace NxEn
 		NEXUS_ENGINE_API WorldSystem();
 		NEXUS_ENGINE_API ~WorldSystem();
 
-		NEXUS_ENGINE_API World* CreateWorld(NxFr::GUID WorldId, NxFr::StringView Name = "", bool References = false);
+		NEXUS_ENGINE_API World* CreateWorld(NxFr::StringId Name, bool References = false);
 		NEXUS_ENGINE_API World* GetWorld(NxFr::GUID WorldId = WorldId);
 		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetWorlds();
 		NEXUS_ENGINE_API void DestroyWorld(NxFr::GUID WorldId);

@@ -50,15 +50,16 @@ namespace NxEn
 	{
 	}
 
-	World* WorldSystem::CreateWorld(NxFr::GUID WorldId, NxFr::StringView Name, bool References)
+	World* WorldSystem::CreateWorld(NxFr::StringId Name, bool References)
 	{
+		NxFr::GUID WorldId = Name;
 		if (Worlds.ContainsKey(WorldId))
 		{
 			NEXUS_LOG(Warning, System, "World %d already exist", WorldId);
 			return GetWorld(WorldId);
 		}
 
-		World* Instance = new World(WorldId, Name, References);
+		World* Instance = new World(Name, References);
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
@@ -286,8 +287,8 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		CreateWorld(DummyId, DummyId, true);
-		CreateWorld(WorldId, WorldId);
+		CreateWorld(DummyId, true);
+		CreateWorld(WorldId);
 
 		GetWorld(DummyId)->SetTickable(false);
 	}
