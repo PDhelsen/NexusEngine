@@ -26,7 +26,7 @@ namespace NxEn
 	}
 
 	Transform::Transform()
-		: Position(NxFr::Vector3f::Zero), Rotation(NxFr::Quaternion::Identity), Scaling(NxFr::Vector3f::One)
+		: Parent(), Position(NxFr::Vector3f::Zero), Rotation(NxFr::Quaternion::Identity), Scaling(NxFr::Vector3f::One)
 	{
 	}
 
@@ -59,7 +59,6 @@ namespace NxEn
 
 	void Transform::LookAtPosition(NxFr::Vector3f Target, NxFr::Vector3f Up, TransformSpace Space)
 	{
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::Local && Parent)
 		{
 			Target = Parent->LocalToWorld() * NxFr::Vector4f(Target.x, Target.y, Target.z, 1.0f);
@@ -71,7 +70,6 @@ namespace NxEn
 
 	void Transform::LookAtDirection(NxFr::Vector3f Direction, NxFr::Vector3f Up, TransformSpace Space)
 	{
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::Local && Parent)
 		{
 			Direction = Parent->LocalToWorld() * NxFr::Vector4f(Direction.x, Direction.y, Direction.z, 0.0f);
@@ -85,7 +83,6 @@ namespace NxEn
 	{
 		NxFr::Vector3f Result = Position;
 
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::World && Parent)
 		{
 			Result = Parent->GetPosition(TransformSpace::World) + Transform::TransformPosition(Parent->LocalToWorld(), Position);
@@ -96,7 +93,6 @@ namespace NxEn
 
 	void Transform::SetPosition(NxFr::Vector3f Position, TransformSpace Space)
 	{
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::World && Parent)
 		{
 			Position = Transform::TransformPosition(Parent->WorldToLocal(), Position - Parent->GetPosition(Space));
@@ -109,7 +105,6 @@ namespace NxEn
 	{
 		NxFr::Quaternion Result = Rotation;
 
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::World && Parent)
 		{
 			Result = Parent->GetRotation(Space) * Result;
@@ -120,7 +115,6 @@ namespace NxEn
 
 	void Transform::SetRotation(NxFr::Quaternion Rotation, TransformSpace Space)
 	{
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::World && Parent)
 		{
 			Rotation = Parent->GetRotation(Space).Inverse() * Rotation;
@@ -133,7 +127,6 @@ namespace NxEn
 	{
 		NxFr::Vector3f Result = Scaling;
 
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::World && Parent)
 		{
 			Result *= Parent->GetScale(Space);
@@ -144,7 +137,6 @@ namespace NxEn
 
 	void Transform::SetScale(NxFr::Vector3f Scale, TransformSpace Space)
 	{
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Space == TransformSpace::World && Parent)
 		{
 			Scale /= Parent->GetScale(Space);
@@ -184,7 +176,6 @@ namespace NxEn
 	{
 		NxFr::Matrix4x4f Result = GetMatrix();
 
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Parent)
 		{
 			return Parent->LocalToWorld() * Result;
@@ -197,7 +188,6 @@ namespace NxEn
 	{
 		NxFr::Matrix4x4f Result = GetMatrix().Inverse();
 
-		NxFr::Handle<Transform> Parent = GetParent();
 		if (Parent)
 		{
 			return Result * Parent->WorldToLocal();
@@ -243,8 +233,18 @@ namespace NxEn
 		Scaling = Node["Scaling"].as<NxFr::Vector3f>();
 	}
 
-	NxFr::Handle<Transform> Transform::GetParent() const
+	void Transform::OnUpdateHierarchy()
 	{
-		return GetGameObject()->GetParent()->GetComponent<Transform>();
+		NxFr::Handle<GameObject> Target = GetGameObject()->GetParent();
+		while (Target)
+		{
+			Parent = Target->GetComponent<Transform>();
+			if (Parent)
+			{
+				break;
+			}
+
+			Target = Target->GetParent();
+		}
 	}
 }

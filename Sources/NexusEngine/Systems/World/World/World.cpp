@@ -108,6 +108,7 @@ namespace NxEn
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
+		Target->UpdateHierarchy();
 		return Instance;
 	}
 
@@ -120,16 +121,25 @@ namespace NxEn
 			return;
 		}
 
+		NxFr::Handle<GameObject> Target = Instance->GetGameObject();
+
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
 		Factory.DestroyBehaviour(Instance);
+
+		Target->UpdateHierarchy();
 	}
 
 	NxFr::Handle<Component> World::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
 		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
 
-		return Factory.CreateComponent(Type, Target);
+		NxFr::Handle<Component> Instance = Factory.CreateComponent(Type, Target);
+		Instance->Initialize();
+		Instance->SetEnabled(true);
+
+		Target->UpdateHierarchy();
+		return Instance;
 	}
 
 	void World::DestroyComponent(NxFr::Handle<Component> Instance)
@@ -141,7 +151,13 @@ namespace NxEn
 			return;
 		}
 
+		NxFr::Handle<GameObject> Target = Instance->GetGameObject();
+
+		Instance->SetEnabled(false);
+		Instance->Shutdown();
 		Factory.DestroyComponent(Instance);
+
+		Target->UpdateHierarchy();
 	}
 
 	bool World::Belong(NxFr::Handle<GameObject> Instance) const

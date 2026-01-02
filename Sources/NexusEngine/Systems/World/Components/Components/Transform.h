@@ -49,11 +49,10 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnClone(const Object& Other) override;
 		NEXUS_ENGINE_API void OnSave(YAML::Node& Node) override;
 		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node) override;
+		NEXUS_ENGINE_API void OnUpdateHierarchy() override;
 
 	private:
-		NEXUS_ENGINE_API NxFr::Handle<Transform> GetParent() const;
-
-	private:
+		NxFr::Handle<Transform> Parent;
 		NxFr::Vector3f Position;
 		NxFr::Quaternion Rotation;
 		NxFr::Vector3f Scaling;
