@@ -26,8 +26,11 @@ namespace NxEn
 	}
 
 	Transform::Transform()
-		: Parent(), Position(NxFr::Vector3f::Zero), Rotation(NxFr::Quaternion::Identity), Scaling(NxFr::Vector3f::One)
+		: Parent(), Dirty(0),
+		Position(NxFr::Vector3f::Zero), Rotation(NxFr::Quaternion::Identity), Scaling(NxFr::Vector3f::One),
+		WorldPosition(), WorldRotation(), WorldScaling()
 	{
+		SetDirty(DirtyFlag::All, false);
 	}
 
 	Transform::~Transform()
@@ -38,45 +41,56 @@ namespace NxEn
 	{
 		switch (Space)
 		{
-		case NxEn::TransformSpace::World: Position += Delta; return;
-		case NxEn::TransformSpace::Local: Position += Rotation * Delta; return;
+		case NxEn::TransformSpace::World: Position += Delta; break;
+		case NxEn::TransformSpace::Local: Position += Rotation * Delta; break;
 		}
+
+		SetDirty(DirtyFlag::Position);
 	}
 
 	void Transform::Rotate(NxFr::Quaternion Delta, TransformSpace Space)
 	{
 		switch (Space)
 		{
-		case NxEn::TransformSpace::World: Rotation = Rotation * Delta; return;
-		case NxEn::TransformSpace::Local: Rotation = Delta * Rotation; return;
+		case NxEn::TransformSpace::World: Rotation = Rotation * Delta; break;
+		case NxEn::TransformSpace::Local: Rotation = Delta * Rotation; break;
 		}
+
+		SetDirty(DirtyFlag::Rotation);
+
 	}
 
 	void Transform::Scale(NxFr::Vector3f Factor, TransformSpace Space)
 	{
 		Scaling *= Factor;
+
+		SetDirty(DirtyFlag::Scaling);
 	}
 
 	void Transform::LookAtPosition(NxFr::Vector3f Target, NxFr::Vector3f Up, TransformSpace Space)
 	{
 		if (Space == TransformSpace::Local && Parent)
 		{
-			Target = Parent->LocalToWorld() * NxFr::Vector4f(Target.x, Target.y, Target.z, 1.0f);
+			Target = Transform::TransformPosition(Parent->LocalToWorld(), Target);
 		}
 
 		NxFr::Vector3f Direction = NxFr::VectorUtility::Normalize(Target - GetPosition(TransformSpace::World));
 		Rotation = NxFr::RotationUtility::LookAt(Direction, Up);
+
+		SetDirty(DirtyFlag::Rotation);
 	}
 
 	void Transform::LookAtDirection(NxFr::Vector3f Direction, NxFr::Vector3f Up, TransformSpace Space)
 	{
 		if (Space == TransformSpace::Local && Parent)
 		{
-			Direction = Parent->LocalToWorld() * NxFr::Vector4f(Direction.x, Direction.y, Direction.z, 0.0f);
+			Direction = Transform::TransformDirection(Parent->LocalToWorld(), Direction);
 		}
 
 		Direction = NxFr::VectorUtility::Normalize(Direction);
 		Rotation = NxFr::RotationUtility::LookAt(Direction, Up);
+
+		SetDirty(DirtyFlag::Rotation);
 	}
 
 	NxFr::Vector3f Transform::GetPosition(TransformSpace Space) const
@@ -85,7 +99,13 @@ namespace NxEn
 
 		if (Space == TransformSpace::World && Parent)
 		{
-			Result = Parent->GetPosition(TransformSpace::World) + Transform::TransformPosition(Parent->LocalToWorld(), Position);
+			if (IsDirty(DirtyFlag::Position))
+			{
+				WorldPosition = Transform::TransformPosition(Parent->LocalToWorld(), Position);
+				CleanDirty(DirtyFlag::Position);
+			}
+
+			Result = WorldPosition;
 		}
 
 		return Result;
@@ -95,10 +115,12 @@ namespace NxEn
 	{
 		if (Space == TransformSpace::World && Parent)
 		{
-			Position = Transform::TransformPosition(Parent->WorldToLocal(), Position - Parent->GetPosition(Space));
+			Position = Transform::TransformPosition(Parent->WorldToLocal(), Position);
 		}
 
 		this->Position = Position;
+
+		SetDirty(DirtyFlag::Position);
 	}
 
 	NxFr::Quaternion Transform::GetRotation(TransformSpace Space) const
@@ -107,7 +129,13 @@ namespace NxEn
 
 		if (Space == TransformSpace::World && Parent)
 		{
-			Result = Parent->GetRotation(Space) * Result;
+			if (IsDirty(DirtyFlag::Rotation))
+			{
+				WorldRotation = Parent->GetRotation(Space) * Result;
+				CleanDirty(DirtyFlag::Rotation);
+			}
+
+			Result = WorldRotation;
 		}
 
 		return Result;
@@ -121,6 +149,8 @@ namespace NxEn
 		}
 
 		this->Rotation = Rotation;
+
+		SetDirty(DirtyFlag::Rotation);
 	}
 
 	NxFr::Vector3f Transform::GetScale(TransformSpace Space) const
@@ -129,7 +159,13 @@ namespace NxEn
 
 		if (Space == TransformSpace::World && Parent)
 		{
-			Result *= Parent->GetScale(Space);
+			if (IsDirty(DirtyFlag::Scaling))
+			{
+				WorldScaling = Parent->GetScale(Space) * Result;
+				CleanDirty(DirtyFlag::Scaling);
+			}
+
+			Result = WorldScaling;
 		}
 
 		return Result;
@@ -143,18 +179,20 @@ namespace NxEn
 		}
 
 		this->Scaling = Scale;
+
+		SetDirty(DirtyFlag::Scaling);
 	}
 
-	NxFr::Matrix4x4f Transform::GetMatrix() const
+	NxFr::Matrix4x4f Transform::GetMatrix(TransformSpace Space) const
 	{
-		return NxFr::Matrix4x4f::TRS(Position, Rotation, Scaling);
+		return NxFr::Matrix4x4f::TRS(GetPosition(Space), GetRotation(Space), GetScale(Space));
 	}
 
-	void Transform::SetMatrix(NxFr::Matrix4x4f Matrix)
+	void Transform::SetMatrix(NxFr::Matrix4x4f Matrix, TransformSpace Space)
 	{
-		Position = Matrix.GetPosition();
-		Rotation = Matrix.GetRotation();
-		Scaling = Matrix.GetScale();
+		SetPosition(Matrix.GetPosition(), Space);
+		SetRotation(Matrix.GetRotation(), Space);
+		SetScale(Matrix.GetScale(), Space);
 	}
 
 	NxFr::Vector3f Transform::Right(TransformSpace Space) const
@@ -174,35 +212,32 @@ namespace NxEn
 
 	NxFr::Matrix4x4f Transform::LocalToWorld() const
 	{
-		NxFr::Matrix4x4f Result = GetMatrix();
-
-		if (Parent)
-		{
-			return Parent->LocalToWorld() * Result;
-		}
-
-		return Result;
+		return GetMatrix(TransformSpace::World);
 	}
 
 	NxFr::Matrix4x4f Transform::WorldToLocal() const
 	{
-		NxFr::Matrix4x4f Result = GetMatrix().Inverse();
-
-		if (Parent)
-		{
-			return Result * Parent->WorldToLocal();
-		}
-
-		return Result;
+		return GetMatrix(TransformSpace::World).Inverse();
 	}
 
 	void Transform::OnGui(float TimeStep)
 	{
 		Component::OnGui(TimeStep);
 
-		GUI::Drawer<NxFr::Vector3f>::Field(Position, "Position");
-		GUI::Drawer<NxFr::Quaternion>::Field(Rotation, "Rotation");
-		GUI::Drawer<NxFr::Vector3f>::Field(Scaling, "Scale");
+		if (GUI::Drawer<NxFr::Vector3f>::Field(Position, "Position"))
+		{
+			SetDirty(DirtyFlag::Position);
+		}
+
+		if (GUI::Drawer<NxFr::Quaternion>::Field(Rotation, "Rotation"))
+		{
+			SetDirty(DirtyFlag::Rotation);
+		}
+
+		if (GUI::Drawer<NxFr::Vector3f>::Field(Scaling, "Scale"))
+		{
+			SetDirty(DirtyFlag::Scaling);
+		}
 	}
 
 	void Transform::OnClone(const Object& Other)
@@ -235,6 +270,8 @@ namespace NxEn
 
 	void Transform::OnUpdateHierarchy()
 	{
+		Parent = NxFr::Handle<Transform>();
+
 		NxFr::Handle<GameObject> Target = GetGameObject()->GetParent();
 		while (Target)
 		{
@@ -246,5 +283,38 @@ namespace NxEn
 
 			Target = Target->GetParent();
 		}
+
+		SetDirty(DirtyFlag::All, false);
+	}
+
+	void Transform::SetDirty(DirtyFlag Flag, bool Recursive) const
+	{
+		Dirty = NxFr::Integer::SetFlag(Dirty, (uint8)Flag, true);
+
+		if (!Recursive)
+		{
+			return;
+		}
+
+		NxFr::Handle<GameObject> Child = GetGameObject()->GetChild();
+		while (Child)
+		{
+			NxFr::Handle<Transform> ChildTransform = Child->GetComponent<Transform>();
+			if (ChildTransform)
+			{
+				ChildTransform->SetDirty(Flag, Recursive);
+			}
+			Child = Child->GetNext();
+		}
+	}
+
+	void Transform::CleanDirty(DirtyFlag Flag) const
+	{
+		Dirty = NxFr::Integer::SetFlag(Dirty, (uint8)Flag, false);
+	}
+
+	bool Transform::IsDirty(DirtyFlag Flag) const
+	{
+		return NxFr::Integer::CheckFlag(Dirty, (uint8)Flag);
 	}
 }
