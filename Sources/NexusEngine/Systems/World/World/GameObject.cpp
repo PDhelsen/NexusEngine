@@ -532,6 +532,24 @@ namespace NxEn
 		return NxFr::Handle<Behaviour>();
 	}
 
+	NxFr::Array<NxFr::Handle<Behaviour>> GameObject::GetBehavioursByType(NxFr::StringId Id)
+	{
+		NxFr::List<NxFr::Handle<Behaviour>> Result;
+		GetBehavioursByType(Id, Result);
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+	}
+
+	void GameObject::GetBehavioursByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result)
+	{
+		for (auto& B : Behaviours)
+		{
+			if (B->GetObjectType() == Id)
+			{
+				Result.Append(B);
+			}
+		}
+	}
+
 	NxFr::Array<NxFr::Handle<Behaviour>> GameObject::GetBehavioursInChildrenByType(NxFr::StringId Id)
 	{
 		NxFr::List<NxFr::Handle<Behaviour>> Result;
@@ -541,13 +559,7 @@ namespace NxEn
 
 	void GameObject::GetBehavioursInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result)
 	{
-		for (auto& B : Behaviours)
-		{
-			if (B->GetId() == Id)
-			{
-				Result.Append(B);
-			}
-		}
+		GetBehavioursByType(Id, Result);
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
@@ -583,6 +595,24 @@ namespace NxEn
 		return NxFr::Handle<Component>();
 	}
 
+	NxFr::Array<NxFr::Handle<Component>> GameObject::GetComponentsByType(NxFr::StringId Id)
+	{
+		NxFr::List<NxFr::Handle<Component>> Result;
+		GetComponentsByType(Id, Result);
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Component>>(Result);
+	}
+
+	void GameObject::GetComponentsByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result)
+	{
+		for (auto& C : Components)
+		{
+			if (C->GetObjectType() == Id)
+			{
+				Result.Append(C);
+			}
+		}
+	}
+
 	NxFr::Array<NxFr::Handle<Component>> GameObject::GetComponentsInChildrenByType(NxFr::StringId Id)
 	{
 		NxFr::List<NxFr::Handle<Component>> Result;
@@ -592,13 +622,7 @@ namespace NxEn
 
 	void GameObject::GetComponentsInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result)
 	{
-		for (auto& C : Components)
-		{
-			if (C->GetId() == Id)
-			{
-				Result.Append(C);
-			}
-		}
+		GetComponentsByType(Id, Result);
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)

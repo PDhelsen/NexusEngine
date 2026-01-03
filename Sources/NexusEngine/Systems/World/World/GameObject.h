@@ -56,6 +56,9 @@ namespace NxEn
 		template<typename T> NxFr::Handle<T> GetBehaviour();
 		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviourById(NxFr::GUID Id);
 		NEXUS_ENGINE_API NxFr::Handle<Behaviour> GetBehaviourByType(NxFr::StringId Id);
+		template<typename T> NxFr::Array<NxFr::Handle<T>> GetBehaviours();
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> GetBehavioursByType(NxFr::StringId Id);
+		NEXUS_ENGINE_API void GetBehavioursByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result);
 		template<typename T> NxFr::Array<NxFr::Handle<T>> GetBehavioursInChildren();
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> GetBehavioursInChildrenByType(NxFr::StringId Id);
 		NEXUS_ENGINE_API void GetBehavioursInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result);
@@ -63,6 +66,9 @@ namespace NxEn
 		template<typename T> NxFr::Handle<T> GetComponent();
 		NEXUS_ENGINE_API NxFr::Handle<Component> GetComponentById(NxFr::GUID Id);
 		NEXUS_ENGINE_API NxFr::Handle<Component> GetComponentByType(NxFr::StringId Id);
+		template<typename T> NxFr::Array<NxFr::Handle<T>> GetComponents();
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> GetComponentsByType(NxFr::StringId Id);
+		NEXUS_ENGINE_API void GetComponentsByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result);
 		template<typename T> NxFr::Array<NxFr::Handle<T>> GetComponentsInChildren();
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> GetComponentsInChildrenByType(NxFr::StringId Id);
 		NEXUS_ENGINE_API void GetComponentsInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result);
@@ -111,6 +117,12 @@ namespace NxEn
 	}
 
 	template<typename T>
+	inline NxFr::Array<NxFr::Handle<T>> GameObject::GetBehaviours()
+	{
+		return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetBehavioursByType(T::GetClassType()));
+	}
+
+	template<typename T>
 	inline NxFr::Array<NxFr::Handle<T>> GameObject::GetBehavioursInChildren()
 	{
 		return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetBehavioursInChildrenByType(T::GetClassType()));
@@ -120,6 +132,12 @@ namespace NxEn
 	inline NxFr::Handle<T> GameObject::GetComponent()
 	{
 		return static_cast<NxFr::Handle<T>>(GetComponentByType(T::GetClassType()));
+	}
+
+	template<typename T>
+	inline NxFr::Array<NxFr::Handle<T>> GameObject::GetComponents()
+	{
+		return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetComponentsByType(T::GetClassType()));
 	}
 
 	template<typename T>
