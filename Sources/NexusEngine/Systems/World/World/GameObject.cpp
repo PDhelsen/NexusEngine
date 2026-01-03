@@ -532,6 +532,31 @@ namespace NxEn
 		return NxFr::Handle<Behaviour>();
 	}
 
+	NxFr::Array<NxFr::Handle<Behaviour>> GameObject::GetBehavioursInChildrenByType(NxFr::StringId Id)
+	{
+		NxFr::List<NxFr::Handle<Behaviour>> Result;
+		GetBehavioursInChildrenByType(Id, Result);
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+	}
+
+	void GameObject::GetBehavioursInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result)
+	{
+		for (auto& B : Behaviours)
+		{
+			if (B->GetId() == Id)
+			{
+				Result.Append(B);
+			}
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->GetBehavioursInChildrenByType(Id, Result);
+			Iterator = Iterator->GetNext();
+		}
+	}
+
 	NxFr::Handle<Component> GameObject::GetComponentById(NxFr::GUID Id)
 	{
 		for (auto& C : Components)
@@ -556,6 +581,31 @@ namespace NxEn
 		}
 
 		return NxFr::Handle<Component>();
+	}
+
+	NxFr::Array<NxFr::Handle<Component>> GameObject::GetComponentsInChildrenByType(NxFr::StringId Id)
+	{
+		NxFr::List<NxFr::Handle<Component>> Result;
+		GetComponentsInChildrenByType(Id, Result);
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Component>>(Result);
+	}
+
+	void GameObject::GetComponentsInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result)
+	{
+		for (auto& C : Components)
+		{
+			if (C->GetId() == Id)
+			{
+				Result.Append(C);
+			}
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->GetComponentsInChildrenByType(Id, Result);
+			Iterator = Iterator->GetNext();
+		}
 	}
 
 	void GameObject::OnGui(float TimeStep)
