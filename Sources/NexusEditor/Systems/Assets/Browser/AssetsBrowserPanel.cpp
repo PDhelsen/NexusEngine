@@ -1,6 +1,7 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 #include "NexusFramework/Core/NexusFrameworkPaths.h"
+#include "NexusEngine/Misc/Utils/Filter.h"
 #include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
 #include "NexusEditor/Systems/Assets/Importers/AssetImporterPopup.h"
 
@@ -692,34 +693,25 @@ namespace NxEd
 			return;
 		}
 
-		// Assets
-		NxFr::Array<NxFr::GUID> Ids = Assets->Find(Filter);
-		for (auto& Id : Ids)
-		{
-			AssetsBrowserItem* Item = Map[Id];
-			Show(Item);
-			Filtered.Append(Item);
-		}
-
-		// File and Directory
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, "");
+		NxEn::Utils::Filter F(Filter);
 		AssetsBrowserItem* Item = Items;
 		while (Item)
 		{
+			bool Match = false;
 			if (Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
 			{
-				Item = GetIterator(Item);
-				continue;
+				const NxEn::AssetMetadata& Metadata = Assets->GetMetadata(Item->GetId());
+				Match = F.FilterObject(Metadata.GetPath(), Metadata.GetId(), Metadata.GetType());
+			}
+			else
+			{
+				Match = F.FilterObject(Item->GetPath(), Item->GetId(), Item->GetObjectType());
 			}
 
-			for (auto& F : Filters)
+			if (Match)
 			{
-				if (NxFr::StringUtility::Contains(Item->GetPath(), F))
-				{
-					Show(Item);
-					Filtered.Append(Item);
-					break;
-				}
+				Show(Item);
+				Filtered.Append(Item);
 			}
 
 			Item = GetIterator(Item);

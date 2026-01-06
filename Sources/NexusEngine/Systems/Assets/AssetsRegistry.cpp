@@ -2,6 +2,8 @@
 #include "NexusEngine/Systems/Assets/AssetsRegistry.h"
 #include "NexusEngine/Systems/Assets/AssetSerializer.h"
 
+#include "NexusEngine/Misc/Utils/Filter.h"
+
 namespace NxEn
 {
 	AssetsRegistry::AssetsRegistry(NxFr::Path Root)
@@ -135,60 +137,14 @@ namespace NxEn
 		return AssetSerializer::DeserializeData(PathToFile(Metadata.GetAssetPath()));
 	}
 
-	NxFr::Array<NxFr::GUID> AssetsRegistry::Find(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::GUID> AssetsRegistry::Find(NxFr::StringView Query) const
 	{
 		NxFr::List<NxFr::GUID> Result;
 
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
-		NxFr::Array<NxFr::StringId> Types = Filters.GetCount();
-		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
-		NxFr::Array<bool> Path = Filters.GetCount();
-		bool All = Filter == "*";
-		bool TypeAndString = false;
-
-		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
+		Utils::Filter Filter(Query);
+		for (auto& [Id, Metadata] : Assets)
 		{
-			Types[Index] = 0;
-			Ids[Index] = 0;
-			Path[Index] = false;
-
-			if (NxFr::StringUtility::Start(Filters[Index], "t:"))
-			{
-				NxFr::StringView Substring = Filters[Index].Substring(2, Filters[Index].GetCount() - 2);
-				Types[Index] = Substring;
-				TypeAndString = true;
-			}
-			else if (NxFr::StringUtility::Start(Filters[Index], "id:"))
-			{
-				NxFr::StringView Substring = Filters[Index].Substring(3, Filters[Index].GetCount() - 3);
-				Ids[Index] = NxFr::StringUtility::FromString<NxFr::GUID>(Substring);
-			}
-			else
-			{
-				Path[Index] = NxFr::StringUtility::Contains(Filters[Index], NxFr::Path::SeparatorDirectory);
-			}
-		}
-
-		// Check if should filter by type and string;
-		TypeAndString &= Filters.GetCount() > 1;
-
-		for (auto [Id, Metadata] : Assets)
-		{
-			bool MatchId = false;
-			bool MatchType = false;
-			bool MatchString = false;
-
-			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
-			{
-				NxFr::StringView Substring = Metadata.GetPath();
-				Substring = Path[Index] ? Substring : NxFr::Path::Split(Substring).Last();
-
-				MatchId |= Ids[Index] != 0 && Metadata.GetId() == Ids[Index];
-				MatchType |= Types[Index].GetId() != 0 && Metadata.GetType() == Types[Index];
-				MatchString |= NxFr::StringUtility::Contains(Substring, Filters[Index]);
-			}
-
-			if (All || MatchId || (MatchType && !TypeAndString) || (MatchString && !TypeAndString) || (MatchType && MatchString && TypeAndString))
+			if (Filter.FilterObject(Metadata.GetPath(), Metadata.GetId(), Metadata.GetType()))
 			{
 				Result.Append(Id);
 			}

@@ -38,10 +38,10 @@ namespace NxEn
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<GameObject> Instance) const;
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<Behaviour> Instance) const;
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<Component> Instance) const;
-		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Filter) const;
-		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Filter) const;
-		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> FindComponents(NxFr::StringView Filter) const;
-		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Tags>> FindTags(NxFr::StringView Filter, bool MatchAll = false);
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Query) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Query) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> FindComponents(NxFr::StringView Query) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Tags>> FindTags(NxFr::StringView Query, bool MatchAll = false);
 
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;

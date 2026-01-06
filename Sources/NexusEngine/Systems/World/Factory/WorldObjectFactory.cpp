@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
+#include "NexusEngine/Misc/Utils/Filter.h"
+
 namespace NxEn
 {
 	WorldObjectFactory::WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
@@ -228,90 +230,30 @@ namespace NxEn
 		return Belong(Instance->GetGameObject());
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> WorldObjectFactory::FindGameObjects(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::Handle<GameObject>> WorldObjectFactory::FindGameObjects(NxFr::StringView Query) const
 	{
 		NxFr::List<NxFr::Handle<GameObject>> Result;
 
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
-		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
-		bool All = Filter == "*";
-
-		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
-		{
-			Ids[Index] = 0;
-
-			if (NxFr::StringUtility::Start(Filters[Index], "id:"))
-			{
-				NxFr::StringView Substring = Filters[Index].Substring(3, Filters[Index].GetCount() - 3);
-				Ids[Index] = NxFr::StringUtility::FromString<NxFr::GUID>(Substring);
-			}
-		}
-
+		Utils::Filter Filter(Query);
 		for (auto& [Id, Info] : InfosGameObjects)
 		{
-			bool MatchId = false;
-			bool MatchString = false;
-
-			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
+			if (Filter.FilterObject(*Info.Handle.GetRedirectedPointer()))
 			{
-				MatchId |= Ids[Index] != 0 && Id == Ids[Index];
-				MatchString |= NxFr::StringUtility::Contains(Info.Handle->GetName(), Filters[Index]);
-			}
-
-			if (All || MatchId || MatchString)
-			{
-				Result.Append(InfosGameObjects[Id].Handle);
+				Result.Append(Info.Handle);
 			}
 		}
 
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
-	NxFr::Array<NxFr::Handle<Behaviour>> WorldObjectFactory::FindBehaviours(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::Handle<Behaviour>> WorldObjectFactory::FindBehaviours(NxFr::StringView Query) const
 	{
 		NxFr::List<NxFr::Handle<Behaviour>> Result;
 
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
-		NxFr::Array<NxFr::StringId> Types = Filters.GetCount();
-		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
-		bool All = Filter == "*";
-		bool TypeAndString = false;
-
-		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
+		Utils::Filter Filter(Query);
+		for (auto& [Id, Info] : InfosBehaviours)
 		{
-			Types[Index] = 0;
-			Ids[Index] = 0;
-
-			if (NxFr::StringUtility::Start(Filters[Index], "t:"))
-			{
-				NxFr::StringView Substring = Filters[Index].Substring(2, Filters[Index].GetCount() - 2);
-				Types[Index] = Substring;
-				TypeAndString = true;
-			}
-			else if (NxFr::StringUtility::Start(Filters[Index], "id:"))
-			{
-				NxFr::StringView Substring = Filters[Index].Substring(3, Filters[Index].GetCount() - 3);
-				Ids[Index] = NxFr::StringUtility::FromString<NxFr::GUID>(Substring);
-			}
-		}
-
-		// Check if should filter by type and string;
-		TypeAndString &= Filters.GetCount() > 1;
-
-		for (auto [Id, Info] : InfosBehaviours)
-		{
-			bool MatchId = false;
-			bool MatchType = false;
-			bool MatchString = false;
-
-			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
-			{
-				MatchId |= Ids[Index] != 0 && Id == Ids[Index];
-				MatchType |= Types[Index].GetId() != 0 && Info.Handle->GetObjectType() == Types[Index];
-				MatchString |= NxFr::StringUtility::Contains(Info.Handle->GetName(), Filters[Index]);
-			}
-
-			if (All || MatchId || (MatchType && !TypeAndString) || (MatchString && !TypeAndString) || (MatchType && MatchString && TypeAndString))
+			if (Filter.FilterObject(*Info.Handle.GetRedirectedPointer()))
 			{
 				Result.Append(Info.Handle);
 			}
@@ -320,51 +262,14 @@ namespace NxEn
 		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
 	}
 
-	NxFr::Array<NxFr::Handle<Component>> WorldObjectFactory::FindComponents(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::Handle<Component>> WorldObjectFactory::FindComponents(NxFr::StringView Query) const
 	{
 		NxFr::List<NxFr::Handle<Component>> Result;
 
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
-		NxFr::Array<NxFr::StringId> Types = Filters.GetCount();
-		NxFr::Array<NxFr::GUID> Ids = Filters.GetCount();
-		bool All = Filter == "*";
-		bool TypeAndString = false;
-
-		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
+		Utils::Filter Filter(Query);
+		for (auto& [Id, Info] : InfosComponents)
 		{
-			Types[Index] = 0;
-			Ids[Index] = 0;
-
-			if (NxFr::StringUtility::Start(Filters[Index], "t:"))
-			{
-				NxFr::StringView Substring = Filters[Index].Substring(2, Filters[Index].GetCount() - 2);
-				Types[Index] = Substring;
-				TypeAndString = true;
-			}
-			else if (NxFr::StringUtility::Start(Filters[Index], "id:"))
-			{
-				NxFr::StringView Substring = Filters[Index].Substring(3, Filters[Index].GetCount() - 3);
-				Ids[Index] = NxFr::StringUtility::FromString<NxFr::GUID>(Substring);
-			}
-		}
-
-		// Check if should filter by type and string;
-		TypeAndString &= Filters.GetCount() > 1;
-
-		for (auto [Id, Info] : InfosComponents)
-		{
-			bool MatchId = false;
-			bool MatchType = false;
-			bool MatchString = false;
-
-			for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
-			{
-				MatchId |= Ids[Index] != 0 && Id == Ids[Index];
-				MatchType |= Types[Index].GetId() != 0 && Info.Handle->GetObjectType() == Types[Index];
-				MatchString |= NxFr::StringUtility::Contains(Info.Handle->GetName(), Filters[Index]);
-			}
-
-			if (All || MatchId || (MatchType && !TypeAndString) || (MatchString && !TypeAndString) || (MatchType && MatchString && TypeAndString))
+			if (Filter.FilterObject(*Info.Handle.GetRedirectedPointer()))
 			{
 				Result.Append(Info.Handle);
 			}

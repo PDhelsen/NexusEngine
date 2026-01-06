@@ -38,11 +38,11 @@ namespace NxEn
 		NEXUS_ENGINE_API AssetMetadata(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		NEXUS_ENGINE_API ~AssetMetadata();
 
-		NEXUS_ENGINE_API NxFr::GUID GetId() { return Id; }
-		NEXUS_ENGINE_API NxFr::StringId GetType() { return Type; }
+		NEXUS_ENGINE_API NxFr::GUID GetId() const { return Id; }
+		NEXUS_ENGINE_API NxFr::StringId GetType() const { return Type; }
 		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
 		NEXUS_ENGINE_API NxFr::StringView GetExtension() const { return Extension; }
-		NEXUS_ENGINE_API const NxFr::Array<NxFr::GUID>& GetDependencies() { return Dependencies; }
+		NEXUS_ENGINE_API const NxFr::Array<NxFr::GUID>& GetDependencies() const { return Dependencies; }
 		NEXUS_ENGINE_API NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
 
 		NEXUS_ENGINE_API NxFr::StringView GetName() const { return NxFr::Path::Split(Path.Data).Last(); }

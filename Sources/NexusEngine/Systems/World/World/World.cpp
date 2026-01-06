@@ -175,26 +175,26 @@ namespace NxEn
 		return Factory.Belong(Instance);
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> World::FindGameObjects(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::Handle<GameObject>> World::FindGameObjects(NxFr::StringView Query) const
 	{
-		return Factory.FindGameObjects(Filter);
+		return Factory.FindGameObjects(Query);
 	}
 
-	NxFr::Array<NxFr::Handle<Behaviour>> World::FindBehaviours(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::Handle<Behaviour>> World::FindBehaviours(NxFr::StringView Query) const
 	{
-		return Factory.FindBehaviours(Filter);
+		return Factory.FindBehaviours(Query);
 	}
 
-	NxFr::Array<NxFr::Handle<Component>> World::FindComponents(NxFr::StringView Filter) const
+	NxFr::Array<NxFr::Handle<Component>> World::FindComponents(NxFr::StringView Query) const
 	{
-		return Factory.FindComponents(Filter);
+		return Factory.FindComponents(Query);
 	}
 
-	NxFr::Array<NxFr::Handle<Tags>> World::FindTags(NxFr::StringView Filter, bool MatchAll)
+	NxFr::Array<NxFr::Handle<Tags>> World::FindTags(NxFr::StringView Query, bool MatchAll)
 	{
 		NxFr::List<NxFr::Handle<Tags>> Result;
 
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Filter, " ");
+		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Query, " ");
 		NxFr::Collection<NxFr::StringView> Collection = Filters;
 
 		for (auto Iterator = BeginComponents<Tags>(); Iterator != EndComponents<Tags>(); ++Iterator)

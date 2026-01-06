@@ -37,9 +37,9 @@ namespace NxEn
 		bool Belong(NxFr::Handle<GameObject> Instance) const;
 		bool Belong(NxFr::Handle<Behaviour> Instance) const;
 		bool Belong(NxFr::Handle<Component> Instance) const;
-		NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Filter) const;
-		NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Filter) const;
-		NxFr::Array<NxFr::Handle<Component>> FindComponents(NxFr::StringView Filter) const;
+		NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Query) const;
+		NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Query) const;
+		NxFr::Array<NxFr::Handle<Component>> FindComponents(NxFr::StringView Query) const;
 
 		NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
 		NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
