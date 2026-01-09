@@ -1,5 +1,6 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDelete.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -7,7 +8,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionDelete)
 
 	AssetsBrowserActionDelete::AssetsBrowserActionDelete()
-		: AssetsBrowserAction("Delete", 5, false)
+		: TreeAction("Delete", 5, false, false)
 	{
 	}
 
@@ -15,29 +16,22 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionDelete::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxFr::Array<NxFr::String> Paths(Items.GetCount());
 		for (uint64 Index = 0; Index < Paths.GetCount(); ++Index)
 		{
-			Paths[Index] = Items[Index]->GetPath();
+			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[Index]);
+			Paths[Index] = Instance->GetPath();
 		}
 
-		Delete(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Paths);
-	}
-
-	void AssetsBrowserActionDelete::Delete(AssetsBrowserPanel* Browser, const NxFr::Array<NxFr::String>& Items) const
-	{
-		for (auto& Item : Items)
+		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+		for (auto& Item : Paths)
 		{
-			Delete(Browser, Item);
-		}
-	}
-	void AssetsBrowserActionDelete::Delete(AssetsBrowserPanel* Browser, NxFr::String Item) const
-	{
-		if (Browser->Exist(Item))
-		{
-			Browser->Delete(Item);
+			if (Browser->Exist(Item))
+			{
+				Browser->Delete(Item);
+			}
 		}
 	}
 }

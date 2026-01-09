@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionPrefabCreate)
 
 	HierarchyActionPrefabCreate::HierarchyActionPrefabCreate()
-		: HierarchyAction("Prefab - Create", 6)
+		: TreeAction("Prefab - Create", 6, false, false)
 	{
 	}
 
@@ -15,26 +15,18 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionPrefabCreate::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionPrefabCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-				Create(NxEn::Application::GetSystem<NxEn::WorldSystem>(), Items, Input);
+			NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+			for (auto& Item : Items)
+			{
+				NxFr::String Path = NxFr::Path::IsDirectory(Input) ? NxFr::Path::Combine(Input, Item->GetName()) : NxFr::String(Input);
+				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetGameObject();
+				System->CreatePrefab(Instance, Path);
+			}
 		});
-	}
-
-	void HierarchyActionPrefabCreate::Create(NxEn::WorldSystem* System, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::StringView Input) const
-	{
-		for (auto& Item : Items)
-		{
-			Create(System, Item, Input);
-		}
-	}
-
-	void HierarchyActionPrefabCreate::Create(NxEn::WorldSystem* System, NxFr::Handle<NxEn::GameObject> Item, NxFr::StringView Input) const
-	{
-		NxFr::String Path = NxFr::Path::IsDirectory(Input) ? NxFr::Path::Combine(Input, Item->GetName()) : NxFr::String(Input);
-		System->CreatePrefab(Item, Path);
 	}
 }

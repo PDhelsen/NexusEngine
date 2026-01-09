@@ -1,12 +1,12 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEngine/Systems/GUI/Components/Tree/TreePanel.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserAction.h"
 
 namespace NxEd
 {
-	class AssetsBrowserPanel : public NxEn::GUI::Panel
+	class AssetsBrowserPanel : public NxEn::TreePanel
 	{
 		friend class AssetsBrowserItem;
 
@@ -16,10 +16,6 @@ namespace NxEd
 		NEXUS_EDITOR_API AssetsBrowserPanel();
 		NEXUS_EDITOR_API ~AssetsBrowserPanel();
 
-		NEXUS_EDITOR_API void Refresh();
-
-		NEXUS_EDITOR_API void Find(NxFr::StringView Query);
-		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Additive = false, bool List = false);
 		NEXUS_EDITOR_API void Select(NxFr::StringView Path, bool Additive = false, bool List = false);
 
 		NEXUS_EDITOR_API void Create(NxFr::StringView Path, NxFr::StringId Type);
@@ -31,49 +27,19 @@ namespace NxEd
 		NEXUS_EDITOR_API NxFr::StringView ValidatePath(NxFr::StringView Path);
 		NEXUS_EDITOR_API NxFr::String EnsureUniquePath(NxFr::String Path);
 
-		template<typename T>
-		void AppendAction();
-		template<typename T>
-		void RemoveAction();
-
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnShutdown() override;
 		NEXUS_EDITOR_API void OnEnable() override;
-		NEXUS_EDITOR_API void OnDisable() override;
-		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
 	private:
-		void DrawHeader();
-		void DrawItem(AssetsBrowserItem* Item);
-		void DrawContext(AssetsBrowserItem* Item);
-		void SelectItem(AssetsBrowserItem* Item);
-		void OpenContext(AssetsBrowserItem* Item);
-
-		void Clear();
-		void Fetch();
+		AssetsBrowserItem* GetParent(NxFr::StringView Path);
+		AssetsBrowserItem* GetItem(NxFr::GUID Id) override;
+		AssetsBrowserItem* FetchItems() override;
 		AssetsBrowserItem* FetchItems(NxFr::StringView Path, AssetsBrowserItem* Parent);
 		AssetsBrowserItem* PurgeDuplicates(AssetsBrowserItem* Item);
-
+		AssetsBrowserItem* DuplicateItem(NxEn::TreeItem* Item, NxEn::TreeItem* Parent = nullptr) override;
 		AssetsBrowserItem* AppendItem(NxFr::StringView Path);
 		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool AddId, bool RemoveId);
-		AssetsBrowserItem* DuplicateItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent);
-		void RemoveItem(AssetsBrowserItem* Item);
-		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent, bool Sort);
-		void DetachItem(AssetsBrowserItem* Item, bool Sort);
-		void SortItem(AssetsBrowserItem* Item);
-		AssetsBrowserItem* GetParent(NxFr::StringView Path);
-		AssetsBrowserItem* GetIterator(AssetsBrowserItem* Item);
-
-		void Find();
-		void Select(AssetsBrowserItem* Item, bool Additive = false, bool List = false);
-		void Show(AssetsBrowserItem* Item);
-		bool IsVisible(AssetsBrowserItem* Item);
-
-		void ProcessAction();
-		NxFr::Array<AssetsBrowserItem*> GatherActionItems(AssetsBrowserAction* Action);
-		void GatherChildren(AssetsBrowserItem* Item, NxFr::Set<AssetsBrowserItem*>& Result);
-		void SortActions();
 
 		NxFr::GUID PathToId(NxFr::StringView Path);
 		static NxFr::String DiskToPath(NxFr::StringView Path);
@@ -81,51 +47,10 @@ namespace NxEd
 		static NxFr::String PathToAsset(NxFr::StringView Path);
 
 	private:
-		const inline static NxFr::String Root = "";
+		const inline static NxFr::String RootPath = "";
 		const inline static NxFr::String RootImGui = "Assets";
 
-		NxEn::GUI::Style Style;
-
 		NxEn::AssetsSystem* Assets;
-		NxEn::InputSystem* Inputs;
 
-		NxFr::Dictionary<NxFr::GUID, AssetsBrowserItem*> Map;
-		AssetsBrowserItem* Items;
-
-		NxFr::Set<AssetsBrowserItem*> Selection;
-		AssetsBrowserItem* Selected;
-
-		NxFr::Set<AssetsBrowserItem*> Filtered;
-		NxFr::String Filter;
-
-		NxFr::List<AssetsBrowserAction*> Actions;
-		AssetsBrowserAction* ActionRequested;
 	};
-
-	template<typename T>
-	inline void AssetsBrowserPanel::AppendAction()
-	{
-		Actions.Append(new T());
-		SortActions();
-	}
-
-	template<typename T>
-	inline void AssetsBrowserPanel::RemoveAction()
-	{
-		uint64 Index = 0;
-		for (; Index < Actions.GetCount(); ++Index)
-		{
-			if (Actions[Index]->GetObjectType() == T::GetClassType())
-			{
-				break;
-			}
-		}
-
-		if (Index < Actions.GetCount())
-		{
-			delete Actions[Index];
-			Actions.Remove(Index);
-			SortActions();
-		}
-	}
 }

@@ -4,13 +4,30 @@ namespace NxEd
 {
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyItem)
 
-	HierarchyItem::HierarchyItem(NxFr::Handle<NxEn::GameObject> GameObject)
-		: GameObject(GameObject), ImGuiText(), Selected(false), Expanded(false)
+	HierarchyItem::HierarchyItem(NxFr::Handle<NxEn::GameObject> GameObject, const NxFr::Delegate<TreeItem*(NxFr::Handle<NxEn::GameObject>)>& Convert)
+		: TreeItem(), GameObject(GameObject), Convert(Convert), Name(), Reference()
 	{
 	}
 
 	HierarchyItem::~HierarchyItem()
 	{
+	}
+
+	void HierarchyItem::OnTick(float TimeStep)
+	{
+		EnsureImGuiText();
+	}
+
+	bool HierarchyItem::IsComingAfter(const TreeItem* Other) const
+	{
+		return GameObject->GetOrderIndex() < static_cast<const HierarchyItem*>(Other)->GameObject->GetOrderIndex();
+	}
+
+	void HierarchyItem::GetFilterInfo(NxFr::StringView& Substring, NxFr::GUID& Id, NxFr::StringId& Type) const
+	{
+		Substring = GameObject->GetName();
+		Id = GameObject->GetId();
+		Type = GameObject->GetObjectType();
 	}
 
 	void HierarchyItem::EnsureImGuiText()

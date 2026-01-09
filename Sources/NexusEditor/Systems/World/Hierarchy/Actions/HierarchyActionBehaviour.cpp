@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionBehaviour)
 
 	HierarchyActionBehaviour::HierarchyActionBehaviour()
-		: HierarchyAction("Behaviour", 10)
+		: TreeAction("Behaviour", 10, false, false)
 	{
 	}
 
@@ -15,12 +15,15 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionBehaviour::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionBehaviour::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			Items[0]->GetWorld()->CreateBehaviour(Input, Items[0]);
+			NxFr::Handle<NxEn::GameObject> Item = static_cast<HierarchyItem*>(Items[0])->GetGameObject();
+			NxEn::World* World = Item->GetWorld();
+
+			World->CreateBehaviour(Input, Item);
 		});
 	}
 }

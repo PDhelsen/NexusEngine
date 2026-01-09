@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionCreate)
 
 	HierarchyActionCreate::HierarchyActionCreate()
-		: HierarchyAction("Create", 1)
+		: TreeAction("Create", 1, false, false)
 	{
 	}
 
@@ -15,25 +15,18 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionCreate::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			Create(Items[0]->GetWorld(), Items, Input);
+			NxEn::World* World = static_cast<HierarchyItem*>(Items[0])->GetGameObject()->GetWorld();
+			for (auto& Item : Items)
+			{
+				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetGameObject();
+
+				World->CreateGameObject(Input, Instance);
+			}
 		});
-	}
-
-	void HierarchyActionCreate::Create(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::StringView Name) const
-	{
-		for (auto& Item : Items)
-		{
-			Create(World, Item, Name);
-		}
-	}
-
-	void HierarchyActionCreate::Create(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::StringView Name) const
-	{
-		World->CreateGameObject(Name, Item);
 	}
 }

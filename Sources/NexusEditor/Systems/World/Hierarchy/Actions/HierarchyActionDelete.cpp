@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionDelete)
 
 	HierarchyActionDelete::HierarchyActionDelete()
-		: HierarchyAction("Delete", 5)
+		: TreeAction("Delete", 5, false, false)
 	{
 	}
 
@@ -15,21 +15,14 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionDelete::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		Delete(Items[0]->GetWorld(), Items);
-	}
-
-	void HierarchyActionDelete::Delete(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) const
-	{
+		NxEn::World* World = static_cast<HierarchyItem*>(Items[0])->GetGameObject()->GetWorld();
 		for (auto& Item : Items)
 		{
-			Delete(World, Item);
-		}
-	}
+			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetGameObject();
 
-	void HierarchyActionDelete::Delete(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item) const
-	{
-		World->DestroyGameObject(Item);
+			World->DestroyGameObject(Instance);
+		}
 	}
 }

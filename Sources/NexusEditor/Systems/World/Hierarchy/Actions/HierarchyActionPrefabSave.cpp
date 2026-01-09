@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionPrefabSave)
 
 		HierarchyActionPrefabSave::HierarchyActionPrefabSave()
-		: HierarchyAction("Prefab - Save", 7)
+		: TreeAction("Prefab - Save", 7, false, false)
 	{
 	}
 
@@ -15,21 +15,13 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionPrefabSave::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionPrefabSave::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		Save(NxEn::Application::GetSystem<NxEn::WorldSystem>(), Items);
-	}
-
-	void HierarchyActionPrefabSave::Save(NxEn::WorldSystem* System, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) const
-	{
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		for (auto& Item : Items)
 		{
-			Save(System, Item);
+			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetGameObject();
+			System->SavePrefab(Instance);
 		}
-	}
-
-	void HierarchyActionPrefabSave::Save(NxEn::WorldSystem* System, NxFr::Handle<NxEn::GameObject> Item) const
-	{
-		System->SavePrefab(Item);
 	}
 }

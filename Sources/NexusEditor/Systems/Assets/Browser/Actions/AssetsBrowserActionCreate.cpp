@@ -1,5 +1,6 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionCreate.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -7,7 +8,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionCreate)
 
 	AssetsBrowserActionCreate::AssetsBrowserActionCreate()
-		: AssetsBrowserAction("Create", 1, false)
+		: TreeAction("Create", 1, false, false)
 	{
 	}
 
@@ -15,29 +16,23 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionCreate::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
 			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
-			Create(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items, Name, NxFr::StringId(Type));
+
+			AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+			for (auto& Item : Items)
+			{
+				AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+
+				NxFr::StringView Directory = Instance->IsDirectory() ? Instance->GetPath() : Instance->GetDirectory();
+				NxFr::String Path = NxFr::Path::Combine(Directory, Name);
+				Browser->Create(Path, Type);
+			}
 		});
-	}
-
-	void AssetsBrowserActionCreate::Create(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items, NxFr::StringView Name, NxFr::StringId Type) const
-	{
-		for (auto& Item : Items)
-		{
-			Create(Browser, Item, Name, Type);
-		}
-	}
-
-	void AssetsBrowserActionCreate::Create(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item, NxFr::StringView Name, NxFr::StringId Type) const
-	{
-		NxFr::StringView Directory = Item->IsDirectory() ? Item->GetPath() : Item->GetDirectory();
-		NxFr::String Path = NxFr::Path::Combine(Directory, Name);
-		Browser->Create(Path, Type);
 	}
 }

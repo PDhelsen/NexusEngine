@@ -1,11 +1,12 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReload.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 
 namespace NxEd
 {
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReload)
 
 	AssetsBrowserActionReload::AssetsBrowserActionReload()
-		: AssetsBrowserAction("Reload", 7, true)
+		: TreeAction("Reload", 7, true, false)
 	{
 	}
 
@@ -13,7 +14,7 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionReload::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionReload::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 

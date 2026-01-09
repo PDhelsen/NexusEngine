@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionInspect)
 
 	HierarchyActionInspect::HierarchyActionInspect()
-		: HierarchyAction("Inspect", 9)
+		: TreeAction("Inspect", 9, false, false)
 	{
 	}
 
@@ -15,8 +15,9 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionInspect::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		NxEn::GUISystem::GetPanel<InspectorPanel>()->Show(Items[0]);
+		NxFr::Handle<NxEn::GameObject> Item = static_cast<HierarchyItem*>(Items[0])->GetGameObject();
+		NxEn::GUISystem::GetPanel<InspectorPanel>()->Show(Item);
 	}
 }

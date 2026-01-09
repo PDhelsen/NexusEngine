@@ -1,10 +1,11 @@
 #pragma once
 
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserAction.h"
+#include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEngine/Systems/GUI/Components/Tree/TreeAction.h"
 
 namespace NxEd
 {
-	class AssetsBrowserActionCreate : public AssetsBrowserAction
+	class AssetsBrowserActionCreate : public NxEn::TreeAction
 	{
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionCreate)
@@ -12,10 +13,6 @@ namespace NxEd
 		NEXUS_EDITOR_API AssetsBrowserActionCreate();
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionCreate();
 
-		NEXUS_EDITOR_API void Execute(const NxFr::Array<AssetsBrowserItem*>& Items) override;
-
-	private:
-		void Create(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items, NxFr::StringView Name, NxFr::StringId Type) const;
-		void Create(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item, NxFr::StringView Name, NxFr::StringId Type) const;
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 }

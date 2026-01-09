@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionDuplicate)
 
 	HierarchyActionDuplicate::HierarchyActionDuplicate()
-		: HierarchyAction("Duplicate", 2)
+		: TreeAction("Duplicate", 2, false, false)
 	{
 	}
 
@@ -15,21 +15,14 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionDuplicate::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		Duplicate(Items[0]->GetWorld(), Items);
-	}
-
-	void HierarchyActionDuplicate::Duplicate(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) const
-	{
+		NxEn::World* World = static_cast<HierarchyItem*>(Items[0])->GetGameObject()->GetWorld();
 		for (auto& Item : Items)
 		{
-			Duplicate(World, Item);
-		}
-	}
+			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetGameObject();
 
-	void HierarchyActionDuplicate::Duplicate(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item) const
-	{
-		World->DuplicateGameObject(Item);
+			World->DuplicateGameObject(Instance);
+		}
 	}
 }

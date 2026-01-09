@@ -1,10 +1,11 @@
 #pragma once
 
-#include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
+#include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEngine/Systems/GUI/Components/Tree/TreeAction.h"
 
 namespace NxEd
 {
-	class HierarchyActionComponent : public HierarchyAction
+	class HierarchyActionComponent : public NxEn::TreeAction
 	{
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyActionComponent)
@@ -12,6 +13,6 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyActionComponent();
 		NEXUS_EDITOR_API virtual ~HierarchyActionComponent();
 
-		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) override;
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 }

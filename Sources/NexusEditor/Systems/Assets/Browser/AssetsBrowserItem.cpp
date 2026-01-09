@@ -12,15 +12,77 @@ namespace NxEd
 #pragma region AssetsBrowserItem
 
 	AssetsBrowserItem::AssetsBrowserItem()
-		: Parent(nullptr), Previous(nullptr), Next(nullptr), Child(nullptr),
-		Id(0), Path(), ImGuiText(),
-		Expanded(false), Selected(false)
+		: TreeItem(),
+		Id(0), Path(""), Type(0),
+		Parent(nullptr), Previous(nullptr), Next(nullptr), Child(nullptr)
 	{
 		SetTickable(false);
 	}
 
 	AssetsBrowserItem::~AssetsBrowserItem()
 	{
+	}
+
+	AssetsBrowserItem* AssetsBrowserItem::GetParent() const
+	{
+		return Parent;
+	}
+
+	void AssetsBrowserItem::SetParent(TreeItem* Instance)
+	{
+		Parent = static_cast<AssetsBrowserItem*>(Instance);
+	}
+
+	AssetsBrowserItem* AssetsBrowserItem::GetPrevious() const
+	{
+		return Previous;
+	}
+
+	void AssetsBrowserItem::SetPrevious(TreeItem* Instance)
+	{
+		Previous = static_cast<AssetsBrowserItem*>(Instance);
+	}
+
+	AssetsBrowserItem* AssetsBrowserItem::GetNext() const
+	{
+		return Next;
+	}
+
+	void AssetsBrowserItem::SetNext(TreeItem* Instance)
+	{
+		Next = static_cast<AssetsBrowserItem*>(Instance);
+	}
+
+	AssetsBrowserItem* AssetsBrowserItem::GetChild() const
+	{
+		return Child;
+	}
+
+	void AssetsBrowserItem::SetChild(TreeItem* Instance)
+	{
+		Child = static_cast<AssetsBrowserItem*>(Instance);
+	}
+
+	NxFr::StringView AssetsBrowserItem::GetLabel() const
+	{
+		return ImGuiText;
+	}
+
+	NxFr::StringView AssetsBrowserItem::GetDescription() const
+	{
+		return Path;
+	}
+
+	bool AssetsBrowserItem::IsComingAfter(const TreeItem* Other) const
+	{
+		return Path < static_cast<const AssetsBrowserItem*>(Other)->Path;
+	}
+
+	void AssetsBrowserItem::GetFilterInfo(NxFr::StringView& Substring, NxFr::GUID& Id, NxFr::StringId& Type) const
+	{
+		Substring = this->Path;
+		Id = this->Id;
+		Type = this->Type;
 	}
 
 	void AssetsBrowserItem::Update(NxFr::StringView Target, bool AddId, bool RemoveId)

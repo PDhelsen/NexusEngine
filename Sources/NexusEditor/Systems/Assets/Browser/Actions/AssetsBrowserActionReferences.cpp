@@ -1,12 +1,13 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionReferences.h"
 #include "NexusEditor/Systems/Assets/ReferencesViewer/AssetsReferencesPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 
 namespace NxEd
 {
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReferences)
 
 	AssetsBrowserActionReferences::AssetsBrowserActionReferences()
-		: AssetsBrowserAction("References", 10, true)
+		: TreeAction("References", 10, false, false)
 	{
 	}
 
@@ -14,9 +15,9 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionReferences::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionReferences::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowserItem* Item = Items[0];
+		NxEn::TreeItem* Item = Items[0];
 
 		if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
 		{

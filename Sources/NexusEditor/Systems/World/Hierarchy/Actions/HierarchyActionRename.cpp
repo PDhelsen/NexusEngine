@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionRename)
 
 	HierarchyActionRename::HierarchyActionRename()
-		: HierarchyAction("Rename", 3)
+		: TreeAction("Rename", 3, false, false)
 	{
 	}
 
@@ -15,25 +15,17 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionRename::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionRename::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			Rename(Items[0]->GetWorld(), Items, Input);
+			NxEn::World* World = static_cast<HierarchyItem*>(Items[0])->GetGameObject()->GetWorld();
+			for (auto& Item : Items)
+			{
+				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetGameObject();
+				Instance->SetName(Input);
+			}
 		});
-	}
-
-	void HierarchyActionRename::Rename(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::StringView Input) const
-	{
-		for (auto& Item : Items)
-		{
-			Rename(World, Item, Input);
-		}
-	}
-
-	void HierarchyActionRename::Rename(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::StringView Input) const
-	{
-		Item->SetName(Input);
 	}
 }

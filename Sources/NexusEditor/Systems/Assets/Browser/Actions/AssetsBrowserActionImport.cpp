@@ -1,5 +1,6 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionImport.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEditor/Systems/Assets/Importers/AssetImporter.h"
 
 namespace NxEd
@@ -7,7 +8,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionImport)
 
 	AssetsBrowserActionImport::AssetsBrowserActionImport()
-		: AssetsBrowserAction("Import", 8, true)
+		: TreeAction("Import", 8, true, false)
 	{
 	}
 
@@ -15,18 +16,19 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionImport::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionImport::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		bool Dirty = false;
 
 		for (auto& Item : Items)
 		{
-			if (Item->GetObjectType() != AssetsBrowserItemFile::GetClassType())
+			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+			if (Instance->GetObjectType() != AssetsBrowserItemFile::GetClassType())
 			{
 				continue;
 			}
 
-			AssetImporter::Run(Item->GetPath(), NxFr::StringId());
+			AssetImporter::Run(Instance->GetPath(), NxFr::StringId());
 			Dirty = true;
 		}
 

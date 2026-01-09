@@ -1,5 +1,6 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDuplicate.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -7,7 +8,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionDuplicate)
 
 	AssetsBrowserActionDuplicate::AssetsBrowserActionDuplicate()
-		: AssetsBrowserAction("Duplicate", 2, false)
+		: TreeAction("Duplicate", 2, false, false)
 	{
 	}
 
@@ -15,21 +16,13 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionDuplicate::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		Duplicate(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items);
-	}
-
-	void AssetsBrowserActionDuplicate::Duplicate(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items) const
-	{
+		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
 		for (auto& Item : Items)
 		{
-			Duplicate(Browser, Item);
+			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+			Browser->Duplicate(Instance->GetPath(), Instance->GetPath());
 		}
-	}
-
-	void AssetsBrowserActionDuplicate::Duplicate(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item) const
-	{
-		Browser->Duplicate(Item->GetPath(), Item->GetPath());
 	}
 }

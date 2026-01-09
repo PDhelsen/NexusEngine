@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionPrefabUnpack)
 
 	HierarchyActionPrefabUnpack::HierarchyActionPrefabUnpack()
-		: HierarchyAction("Prefab - Unpack", 8)
+		: TreeAction("Prefab - Unpack", 8, false, false)
 	{
 	}
 
@@ -15,21 +15,13 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionPrefabUnpack::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionPrefabUnpack::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		Unpack(NxEn::Application::GetSystem<NxEn::WorldSystem>(), Items);
-	}
-
-	void HierarchyActionPrefabUnpack::Unpack(NxEn::WorldSystem* System, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) const
-	{
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		for (auto& Item : Items)
 		{
-			Unpack(System, Item);
+			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetGameObject();
+			System->UnpackPrefab(Instance);
 		}
-	}
-
-	void HierarchyActionPrefabUnpack::Unpack(NxEn::WorldSystem* System, NxFr::Handle<NxEn::GameObject> Item) const
-	{
-		System->UnpackPrefab(Item);
 	}
 }

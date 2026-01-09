@@ -1,11 +1,12 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionLoad.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 
 namespace NxEd
 {
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionLoad)
 
 	AssetsBrowserActionLoad::AssetsBrowserActionLoad()
-		: AssetsBrowserAction("Load", 6, true)
+		: TreeAction("Load", 6, true, false)
 	{
 	}
 
@@ -13,7 +14,7 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionLoad::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionLoad::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::AssetsSystem* System = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 

@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionRename)
 
 	AssetsBrowserActionRename::AssetsBrowserActionRename()
-		: AssetsBrowserAction("Rename", 3, false)
+		: TreeAction("Rename", 3, false, false)
 	{
 	}
 
@@ -15,38 +15,31 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionRename::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionRename::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			Rename(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items, Input);
+			AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+
+			for (auto& Item : Items)
+			{
+				AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+
+				NxFr::String Path = Instance->GetPath();
+				NxFr::String Parent = Instance->GetDirectory();
+
+				if (Instance->IsDirectory())
+				{
+					Path = NxFr::Path::Combine((NxFr::StringView)Parent, Input);
+				}
+				else
+				{
+					Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + "." + Instance->GetExtension()));
+				}
+
+				Browser->Move(Instance->GetPath(), Path);
+			}
 		});
 	}
-
-	void AssetsBrowserActionRename::Rename(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items, NxFr::StringView Input) const
-	{
-		for (auto& Item : Items)
-		{
-			Rename(Browser, Item, Input);
-		}
-	}
-
-	void AssetsBrowserActionRename::Rename(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item, NxFr::StringView Input) const
-	{
-		NxFr::String Path = Item->GetPath();
-		NxFr::String Parent = Item->GetDirectory();
-
-		if (Item->IsDirectory())
-		{
-			Path = NxFr::Path::Combine((NxFr::StringView)Parent, Input);
-		}
-		else
-		{
-			Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + "." + Item->GetExtension()));
-		}
-
-		Browser->Move(Item->GetPath(), Path);
-	}
-
 }

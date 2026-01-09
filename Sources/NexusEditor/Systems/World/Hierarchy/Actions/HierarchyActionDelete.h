@@ -1,10 +1,11 @@
 #pragma once
 
-#include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
+#include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEngine/Systems/GUI/Components/Tree/TreeAction.h"
 
 namespace NxEd
 {
-	class HierarchyActionDelete : public HierarchyAction
+	class HierarchyActionDelete : public NxEn::TreeAction
 	{
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyActionDelete)
@@ -12,10 +13,6 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyActionDelete();
 		NEXUS_EDITOR_API virtual ~HierarchyActionDelete();
 
-		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) override;
-
-	private:
-		void Delete(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items) const;
-		void Delete(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item) const;
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 }

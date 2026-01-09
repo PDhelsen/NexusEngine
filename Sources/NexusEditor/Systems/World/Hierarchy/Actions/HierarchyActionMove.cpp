@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionMove)
 
 	HierarchyActionMove::HierarchyActionMove()
-		: HierarchyAction("Move", 4, false, true)
+		: TreeAction("Move", 4, false, true)
 	{
 	}
 
@@ -15,21 +15,15 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyActionMove::Execute(const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items)
+	void HierarchyActionMove::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		Move(Items[0]->GetWorld(), Items, Items[0]);
-	}
+		NxFr::Handle<NxEn::GameObject> Parent = static_cast<HierarchyItem*>(Items[0])->GetGameObject();
+		NxEn::World* World = Parent->GetWorld();
 
-	void HierarchyActionMove::Move(NxEn::World* World, const NxFr::Array<NxFr::Handle<NxEn::GameObject>>& Items, NxFr::Handle<NxEn::GameObject> Parent) const
-	{
 		for (uint64 Index = 1; Index < Items.GetCount(); Index++)
 		{
-			Move(World, Items[Index], Parent);
+			NxFr::Handle<NxEn::GameObject> Item = static_cast<HierarchyItem*>(Items[Index])->GetGameObject();
+			World->AttachGameObject(Item, Parent);
 		}
-	}
-
-	void HierarchyActionMove::Move(NxEn::World* World, NxFr::Handle<NxEn::GameObject> Item, NxFr::Handle<NxEn::GameObject> Parent) const
-	{
-		World->AttachGameObject(Item, Parent);
 	}
 }

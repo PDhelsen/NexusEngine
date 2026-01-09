@@ -1,0 +1,33 @@
+#pragma once
+
+#include "NexusEngine/Application/Object.h"
+
+namespace NxEn
+{
+	class TreeItem;
+
+	class TreeAction : public Object
+	{
+	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, TreeAction)
+
+		NEXUS_ENGINE_API TreeAction(NxFr::StringView Label, int64 Priority, bool Recursive, bool LastSelectedFirst);
+		NEXUS_ENGINE_API virtual ~TreeAction();
+
+		NEXUS_ENGINE_API bool operator<=(const TreeAction& Other);
+
+		NEXUS_ENGINE_API virtual void Execute(const NxFr::Array<TreeItem*>& Items) = 0;
+
+		NEXUS_ENGINE_API NxFr::StringView GetLabel() const { return Label; }
+		NEXUS_ENGINE_API int64 GetPriority() const { return Priority; }
+		NEXUS_ENGINE_API bool IsRecursive() const { return Recursive; }
+		NEXUS_ENGINE_API bool IsLastSelectedFirst() const { return Recursive; }
+
+	private:
+		NxFr::String Label;
+		int64 Priority;
+		bool Recursive;
+		bool LastSelectedFirst;
+	};
+}
+

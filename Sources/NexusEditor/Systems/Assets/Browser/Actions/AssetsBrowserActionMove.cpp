@@ -7,7 +7,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionMove)
 
 	AssetsBrowserActionMove::AssetsBrowserActionMove()
-		: AssetsBrowserAction("Move", 4, false)
+		: TreeAction("Move", 4, false, false)
 	{
 	}
 
@@ -15,33 +15,25 @@ namespace NxEd
 	{
 	}
 
-	void AssetsBrowserActionMove::Execute(const NxFr::Array<AssetsBrowserItem*>& Items)
+	void AssetsBrowserActionMove::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
+			AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
 			if (Items.GetCount() == 1)
 			{
-				Move(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items[0], Input);
+				AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[0]);
+				Browser->Move(Instance->GetPath(), Input);
 			}
 			else
 			{
-				Move(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>(), Items, Input);
+				for (auto& Item : Items)
+				{
+					AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+					Browser->Move(Instance->GetPath(), NxFr::Path::Combine(Input, Instance->GetName()));
+				}
 			}
 		});
 	}
-
-	void AssetsBrowserActionMove::Move(AssetsBrowserPanel* Browser, const NxFr::Array<AssetsBrowserItem*>& Items, NxFr::StringView Input) const
-	{
-		for (auto& Item : Items)
-		{
-			Browser->Move(Item->GetPath(), NxFr::Path::Combine(Input, Item->GetName()));
-		}
-	}
-
-	void AssetsBrowserActionMove::Move(AssetsBrowserPanel* Browser, AssetsBrowserItem* Item, NxFr::StringView Input) const
-	{
-		Browser->Move(Item->GetPath(), Input);
-	}
-
 }
