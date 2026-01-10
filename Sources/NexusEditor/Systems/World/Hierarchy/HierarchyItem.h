@@ -24,24 +24,22 @@ namespace NxEd
 
 		NEXUS_EDITOR_API NxFr::StringView GetDescription() const override { return GetName(); }
 
-		NEXUS_EDITOR_API NxFr::Handle<NxEn::GameObject> GetGameObject() const { return GameObject; }
-		NEXUS_EDITOR_API NxFr::StringView GetName() const override { return GameObject->GetName(); }
 		NEXUS_EDITOR_API NxFr::GUID GetId() const override { return GameObject->GetId(); }
+		NEXUS_EDITOR_API NxFr::StringView GetName() const override { return GameObject->GetName(); }
+		NEXUS_EDITOR_API NxFr::Handle<NxEn::GameObject> GetGameObject() const { return GameObject; }
 
 	protected:
 		NEXUS_EDITOR_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
-		NEXUS_EDITOR_API virtual bool IsComingAfter(const TreeItem* Other) const override;
-		NEXUS_EDITOR_API virtual void GetFilterInfo(NxFr::StringView& Substring, NxFr::GUID& Id, NxFr::StringId& Type) const override;
-
-		NEXUS_EDITOR_API void EnsureImGuiText();
+		NEXUS_EDITOR_API void GenerateImGuiText() override;
+		NEXUS_EDITOR_API int8 Compare(const TreeItem& Other) const override;
 
 	private:
-		NxFr::Handle<NxEn::GameObject> GameObject;
-		NxFr::Delegate<TreeItem*(NxFr::Handle<NxEn::GameObject>)> Convert;
-
 		NxFr::StringView Name;
 		NxFr::GUID Reference;
+
+		NxFr::Handle<NxEn::GameObject> GameObject;
+		NxFr::Delegate<TreeItem*(NxFr::Handle<NxEn::GameObject>)> Convert;
 	};
 }

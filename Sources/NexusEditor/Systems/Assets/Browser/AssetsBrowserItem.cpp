@@ -16,7 +16,6 @@ namespace NxEd
 		Id(0), Path(""), Type(0),
 		Parent(nullptr), Previous(nullptr), Next(nullptr), Child(nullptr)
 	{
-		SetTickable(false);
 	}
 
 	AssetsBrowserItem::~AssetsBrowserItem()
@@ -63,26 +62,14 @@ namespace NxEd
 		Child = static_cast<AssetsBrowserItem*>(Instance);
 	}
 
-	NxFr::StringView AssetsBrowserItem::GetLabel() const
+	void AssetsBrowserItem::GenerateImGuiText()
 	{
-		return ImGuiText;
+		ImGuiText = GetPrefix() + " " + GetPrettyName() + "##" + NxFr::StringUtility::ToString(Id);
 	}
 
-	NxFr::StringView AssetsBrowserItem::GetDescription() const
+	int8 AssetsBrowserItem::Compare(const TreeItem& Other) const
 	{
-		return Path;
-	}
-
-	bool AssetsBrowserItem::IsComingAfter(const TreeItem* Other) const
-	{
-		return Path < static_cast<const AssetsBrowserItem*>(Other)->Path;
-	}
-
-	void AssetsBrowserItem::GetFilterInfo(NxFr::StringView& Substring, NxFr::GUID& Id, NxFr::StringId& Type) const
-	{
-		Substring = this->Path;
-		Id = this->Id;
-		Type = this->Type;
+		return Path < static_cast<const AssetsBrowserItem&>(Other).Path;
 	}
 
 	void AssetsBrowserItem::Update(NxFr::StringView Target, bool AddId, bool RemoveId)

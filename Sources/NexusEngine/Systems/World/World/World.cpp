@@ -175,6 +175,22 @@ namespace NxEn
 		return Factory.Belong(Instance);
 	}
 
+	NxFr::Array<NxFr::Handle<GameObject>> World::Find(NxFr::StringView Query) const
+	{
+		NxFr::Set<NxFr::Handle<GameObject>> Result;
+
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = FindGameObjects(Query);
+		Result.AppendRange(GameObjects);
+
+		NxFr::Array<NxFr::Handle<NxEn::Behaviour>> Behaviours = FindBehaviours(Query);
+		Result.AppendRange(Behaviours);
+
+		NxFr::Array<NxFr::Handle<NxEn::Component>> Components = FindComponents(Query);
+		Result.AppendRange(Components);
+
+		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
+	}
+
 	NxFr::Array<NxFr::Handle<GameObject>> World::FindGameObjects(NxFr::StringView Query) const
 	{
 		return Factory.FindGameObjects(Query);

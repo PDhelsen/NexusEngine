@@ -11,12 +11,15 @@ namespace NxEd
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyPanel)
 
+		NEXUS_EDITOR_API void Refresh() override;
 		NEXUS_EDITOR_API void RefreshWorld();
+		NEXUS_EDITOR_API void RefreshGameObjects();
 
 		NEXUS_EDITOR_API void SelectWorld(NxFr::StringId Id);
 		NEXUS_EDITOR_API void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
 
-		NxFr::GUID GetWorldId() { return WorldsIds[WorldIndex]; }
+		NxFr::GUID GetWorldId() const { return WorldsIds[WorldIndex]; }
+		NxEn::World* GetWorld() const { return Worlds->GetWorld(GetWorldId()); }
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
@@ -31,8 +34,6 @@ namespace NxEd
 		NEXUS_EDITOR_API void OnGameObjectChanged(NxFr::StringId EventId, NxFr::StringId WorldId, NxFr::GUID GameObjectId);
 
 		NEXUS_EDITOR_API void Find() override;
-
-		NxEn::World* GetWorld() { return Worlds->GetWorld(WorldsIds[WorldIndex]); }
 
 	private:
 		NxEn::WorldSystem* Worlds;

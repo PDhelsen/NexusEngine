@@ -336,7 +336,7 @@ namespace NxEd
 		Item->Path = Path;
 		Item->Type = Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType() ?
 			Item->GetObjectType() : Assets->GetMetadata(Item->GetId()).GetType();
-		Item->ImGuiText = Item->GetPrefix() + " " + Item->GetPrettyName() + "##" + NxFr::StringUtility::ToString(Item->Id);
+		Item->GenerateImGuiText();
 
 		if (AddId)
 		{

@@ -12,7 +12,7 @@ namespace NxEn
 		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, TreePanel)
 
 		NEXUS_ENGINE_API TreePanel();
-		NEXUS_ENGINE_API ~TreePanel();
+		NEXUS_ENGINE_API virtual ~TreePanel();
 
 		NEXUS_ENGINE_API virtual void Clear();
 		NEXUS_ENGINE_API virtual void Refresh();
@@ -45,8 +45,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void DrawHeader(float TimeStep);
 		NEXUS_ENGINE_API virtual void DrawItem(float TimeStep, TreeItem* Item);
 		NEXUS_ENGINE_API virtual void DrawContext(TreeItem* Item);
-		NEXUS_ENGINE_API virtual void SelectItem(TreeItem* Item);
 		NEXUS_ENGINE_API virtual void OpenContext(TreeItem* Item);
+		NEXUS_ENGINE_API virtual void SelectItem(TreeItem* Item);
 
 		NEXUS_ENGINE_API virtual void Find();
 		NEXUS_ENGINE_API virtual void Select(TreeItem* Item, bool Additive = false, bool List = false);

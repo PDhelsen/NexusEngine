@@ -23,6 +23,12 @@ namespace NxEd
 
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyPanel)
 
+	void HierarchyPanel::Refresh()
+	{
+		RefreshWorld();
+		RefreshGameObjects();
+	}
+
 	void HierarchyPanel::RefreshWorld()
 	{
 		WorldsIds = Worlds->GetWorlds();
@@ -38,6 +44,14 @@ namespace NxEd
 		Menu.AddMenuEnum("Worlds/Worlds", &WorldIndex, WorldsLabels, [&]() { SelectWorld(WorldsIds[WorldIndex]); }, 1);
 
 		SelectWorld(NxEn::WorldSystem::WorldId);
+	}
+
+	void HierarchyPanel::RefreshGameObjects()
+	{
+		Clear();
+		Root = FetchItems();
+
+		SelectGameObject(NxFr::Handle<NxEn::GameObject>());
 	}
 
 	void HierarchyPanel::SelectWorld(NxFr::StringId Id)
@@ -59,7 +73,6 @@ namespace NxEd
 	void HierarchyPanel::OnInitialize()
 	{
 		TreePanel::OnInitialize();
-
 		SetTitle("Hierarchy");
 
 		AppendAction<HierarchyActionCreate>();
@@ -80,7 +93,6 @@ namespace NxEd
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Worlds->GetOnGameObjectEvent() += { this, &HierarchyPanel::OnGameObjectChanged };
 
-		RefreshWorld();
 		TreePanel::OnEnable();
 	}
 
@@ -182,24 +194,8 @@ namespace NxEd
 			return;
 		}
 		
-		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = GetWorld()->FindGameObjects(Filter);
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = GetWorld()->Find(Filter);
 		for (auto Instance : GameObjects)
-		{
-			NxEn::TreeItem* Item = GetItem(Instance);
-			Show(Item);
-			Filtered.Append(Item);
-		}
-
-		NxFr::Array<NxFr::Handle<NxEn::Behaviour>> Behaviours = GetWorld()->FindBehaviours(Filter);
-		for (auto Instance : Behaviours)
-		{
-			NxEn::TreeItem* Item = GetItem(Instance);
-			Show(Item);
-			Filtered.Append(Item);
-		}
-
-		NxFr::Array<NxFr::Handle<NxEn::Component>> Components = GetWorld()->FindComponents(Filter);
-		for (auto Instance : Components)
 		{
 			NxEn::TreeItem* Item = GetItem(Instance);
 			Show(Item);

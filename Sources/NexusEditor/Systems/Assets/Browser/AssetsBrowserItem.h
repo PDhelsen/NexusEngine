@@ -29,8 +29,9 @@ namespace NxEd
 		NEXUS_EDITOR_API AssetsBrowserItem* GetChild() const override;
 		NEXUS_EDITOR_API void SetChild(TreeItem* Instance) override;
 
-		NEXUS_EDITOR_API NxFr::StringView GetLabel() const override;
-		NEXUS_EDITOR_API NxFr::StringView GetDescription() const;
+		NEXUS_EDITOR_API NxFr::StringView GetLabel() const override { return ImGuiText; }
+		NEXUS_EDITOR_API NxFr::StringView GetDescription() const override { return Path; }
+		NEXUS_EDITOR_API NxFr::StringId GetType() const override { return Type; };
 
 		NEXUS_EDITOR_API NxFr::GUID GetId() const override { return Id; };
 		NEXUS_EDITOR_API NxFr::StringView GetName() const override { return IsDirectory() ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path, true); };
@@ -43,11 +44,10 @@ namespace NxEd
 		NEXUS_EDITOR_API bool IsDirectory() const { return NxFr::Path::IsDirectory(Path); }
 
 	protected:
-		NEXUS_EDITOR_API bool IsComingAfter(const TreeItem* Other) const override;
-		NEXUS_EDITOR_API void GetFilterInfo(NxFr::StringView& Substring, NxFr::GUID& Id, NxFr::StringId& Type) const override;
+		NEXUS_EDITOR_API void GenerateImGuiText() override;
+		NEXUS_EDITOR_API int8 Compare(const TreeItem& Other) const override;
 
 		NEXUS_EDITOR_API virtual NxFr::StringView GetPrefix() const = 0;
-
 		NEXUS_EDITOR_API void Update(NxFr::StringView Target, bool AddId, bool RemoveId);
 		NEXUS_EDITOR_API NxFr::String PathToDisk(NxFr::StringView Path) const;
 		NEXUS_EDITOR_API NxFr::String PathToAsset(NxFr::StringView Path) const;

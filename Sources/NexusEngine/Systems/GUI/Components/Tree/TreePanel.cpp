@@ -88,10 +88,10 @@ namespace NxEn
 
 	void TreePanel::OnDisable()
 	{
+		Clear();
+
 		Menu.SetEnabled(false);
 		Panel::OnDisable();
-
-		Clear();
 	}
 
 	void TreePanel::OnGui(float TimeStep)
@@ -260,7 +260,7 @@ namespace NxEn
 			if (!A) return B;
 			if (!B) return A;
 
-			if (A->IsComingAfter(B))
+			if (*A < *B)
 			{
 				A->SetNext(Merge(A->GetNext(), B));
 				if (A->GetNext())
@@ -421,6 +421,11 @@ namespace NxEn
 		}
 	}
 
+	void TreePanel::OpenContext(TreeItem* Item)
+	{
+		ImGui::OpenPopup(Item->GetLabel().C());
+	}
+
 	void TreePanel::SelectItem(TreeItem* Item)
 	{
 		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
@@ -437,11 +442,6 @@ namespace NxEn
 		}
 	}
 
-	void TreePanel::OpenContext(TreeItem* Item)
-	{
-		ImGui::OpenPopup(Item->GetLabel().C());
-	}
-
 	void TreePanel::Find()
 	{
 		Filtered.Clear();
@@ -454,12 +454,7 @@ namespace NxEn
 		TreeItem* Item = Root;
 		while (Item)
 		{
-			NxFr::StringView Substring;
-			NxFr::GUID Id;
-			NxFr::StringId Type;
-			Item->GetFilterInfo(Substring, Id, Type);
-
-			if (F.FilterObject(Substring, Id, Type))
+			if (F.FilterObject(Item->GetDescription(), Item->GetId(), Item->GetType()))
 			{
 				Show(Item);
 				Filtered.Append(Item);
@@ -492,9 +487,9 @@ namespace NxEn
 
 		if (List)
 		{
-			bool IsComingAfter = Item->IsComingAfter(Selected);
-			TreeItem* I1 = IsComingAfter ? Item : Selected;
-			TreeItem* I2 = IsComingAfter ? Selected : Item;
+			bool Compare = *Item < *Selected;
+			TreeItem* I1 = Compare ? Item : Selected;
+			TreeItem* I2 = Compare ? Selected : Item;
 
 			while (I1 && I1 != I2)
 			{
@@ -572,7 +567,7 @@ namespace NxEn
 
 		NxFr::List<TreeItem*> Items;
 		Items.AppendRange(Result);
-		Items.Sort([](TreeItem* A, TreeItem* B) { return A->IsComingAfter(B); });
+		Items.Sort([](TreeItem* A, TreeItem* B) { return *A < *B; });
 
 		if (Action->IsLastSelectedFirst())
 		{

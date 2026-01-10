@@ -38,6 +38,7 @@ namespace NxEn
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<GameObject> Instance) const;
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<Behaviour> Instance) const;
 		NEXUS_ENGINE_API bool Belong(NxFr::Handle<Component> Instance) const;
+		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> Find(NxFr::StringView Query) const;
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Query) const;
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Query) const;
 		NEXUS_ENGINE_API NxFr::Array<NxFr::Handle<Component>> FindComponents(NxFr::StringView Query) const;

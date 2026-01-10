@@ -8,11 +8,31 @@ namespace NxEn
 	TreeItem::TreeItem()
 		: ImGuiText(), Expanded(false), Selected(false)
 	{
-		SetTickable(true);
+		SetTickable(false);
 	}
 
 	TreeItem::~TreeItem()
 	{
+	}
+
+	bool TreeItem::operator<(const TreeItem& Other) const
+	{
+		return Compare(Other) < 0;
+	}
+
+	bool TreeItem::operator<=(const TreeItem& Other) const
+	{
+		return Compare(Other) <= 0;
+	}
+
+	bool TreeItem::operator>(const TreeItem& Other) const
+	{
+		return Compare(Other) > 0;
+	}
+
+	bool TreeItem::operator>=(const TreeItem& Other) const
+	{
+		return Compare(Other) >= 0;
 	}
 
 	TreeItem* TreeItem::GetIterator()
