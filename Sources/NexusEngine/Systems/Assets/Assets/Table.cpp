@@ -5,14 +5,14 @@ namespace NxEn
 {
 	NEXUS_ASSET_IMPLEMENTATION(Table)
 
-	void Table::OnSave(YAML::Node& Node, NxFr::StringView ContentFilePath)
+	void Table::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
-		NxFr::Yaml::SerializeFile(Data, ContentFilePath);
+		NxFr::Yaml::SerializeFile(Data, ContentFsPath);
 	}
 
-	void Table::OnLoad(const YAML::Node& Node, NxFr::StringView ContentFilePath)
+	void Table::OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
-		Data = NxFr::Yaml::DeserializeFile(ContentFilePath);
+		Data = NxFr::Yaml::DeserializeFile(ContentFsPath);
 	}
 
 	void Table::OnUnload()

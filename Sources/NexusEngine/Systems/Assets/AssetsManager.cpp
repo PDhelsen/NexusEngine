@@ -29,18 +29,18 @@ namespace NxEn
 		return Assets[Id];
 	}
 
-	YAML::Node AssetsManager::Save(NxFr::GUID Id, NxFr::StringView ContentFilePath)
+	YAML::Node AssetsManager::Save(NxFr::GUID Id, NxFr::StringView ContentFsPath)
 	{
-		return Assets[Id].GetInstance()->Save(ContentFilePath);
+		return Assets[Id].GetInstance()->Save(ContentFsPath);
 	}
 
-	void AssetsManager::Load(NxFr::GUID Id, const YAML::Node& Node, NxFr::StringView ContentFilePath)
+	void AssetsManager::Load(NxFr::GUID Id, const YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
 		NEXUS_ASSERT(!Loading.Contains(Id), System, "Circular loading dependecy detected (%d)", Id);
 
 		Loading.Append(Id);
 
-		Assets[Id].GetInstance()->Load(Node, ContentFilePath);
+		Assets[Id].GetInstance()->Load(Node, ContentFsPath);
 
 		Loading.Remove(Id);
 	}
