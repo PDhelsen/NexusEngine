@@ -50,14 +50,14 @@ namespace NxEn
 		AssetMetadata& Metadata = Assets[Id];
 
 		NxFr::String Before = PathToFile(Metadata.GetAssetPath());
-		NxFr::String After = PathToFile(Path + "." + AssetMetadata::AssetExtension);
+		NxFr::String After = PathToFile(AssetMetadata::ComputeAssetPath(Path));
 		NxFr::File(After).EnsureParent();
 		NxFr::File(Before).Move(After);
 
 		if (!Metadata.GetExtension().IsEmpty())
 		{
 			Before = PathToFile(Metadata.GetContentPath());
-			After = PathToFile(Path + "." + Metadata.GetExtension());
+			After = PathToFile(AssetMetadata::ComputeContentPath(Path, Metadata.GetExtension()));
 			NxFr::File(Before).Move(After);
 		}
 

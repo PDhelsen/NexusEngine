@@ -38,16 +38,21 @@ namespace NxEn
 		NEXUS_ENGINE_API AssetMetadata(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		NEXUS_ENGINE_API ~AssetMetadata();
 
+		NEXUS_ENGINE_API NxFr::StringView GetName() const { return NxFr::Path::Split(Path.Data).Last(); }
 		NEXUS_ENGINE_API NxFr::GUID GetId() const { return Id; }
 		NEXUS_ENGINE_API NxFr::StringId GetType() const { return Type; }
+		NEXUS_ENGINE_API bool HasFile() const { return !Path.IsEmpty(); }
 		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
 		NEXUS_ENGINE_API NxFr::StringView GetExtension() const { return Extension; }
 		NEXUS_ENGINE_API const NxFr::Array<NxFr::GUID>& GetDependencies() const { return Dependencies; }
 		NEXUS_ENGINE_API NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
 
-		NEXUS_ENGINE_API NxFr::StringView GetName() const { return NxFr::Path::Split(Path.Data).Last(); }
-		NEXUS_ENGINE_API NxFr::String GetAssetPath() const { return Path.Data + "." + AssetExtension; }
-		NEXUS_ENGINE_API NxFr::String GetContentPath() const { return Path.Data + "." + Extension; }
+	private:
+		NxFr::String GetAssetPath() const { return ComputeAssetPath(Path); }
+		NxFr::String GetContentPath() const { return ComputeContentPath(Path, Extension); }
+
+		static NxFr::String ComputeAssetPath(NxFr::StringView Path) { return Path + "." + AssetExtension; }
+		static NxFr::String ComputeContentPath(NxFr::StringView Path, NxFr::StringView Extension) { return Path + "." + Extension; }
 
 	private:
 		YAML::Node Serialize();
