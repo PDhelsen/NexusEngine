@@ -5,17 +5,17 @@ namespace NxEn
 {
 	NEXUS_ASSET_IMPLEMENTATION(Document)
 
-	void Document::OnSave(YAML::Node& Node, NxFr::StringView Content)
+	void Document::OnSave(YAML::Node& Node, NxFr::StringView ContentFilePath)
 	{
-		NxFr::File File = NxFr::File(Content);
+		NxFr::File File = NxFr::File(ContentFilePath);
 		File.Create(true);
 		File.WriteText(Data);
 		File.Close();
 	}
 
-	void Document::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
+	void Document::OnLoad(const YAML::Node& Node, NxFr::StringView ContentFilePath)
 	{
-		NxFr::File File = NxFr::File(Content);
+		NxFr::File File = NxFr::File(ContentFilePath);
 		File.Open(NxFr::File::Mode::Read);
 		Data = File.ReadText();
 		File.Close();

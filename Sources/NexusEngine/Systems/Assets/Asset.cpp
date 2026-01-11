@@ -15,18 +15,18 @@ namespace NxEn
 	{
 	}
 
-	YAML::Node Asset::Save(NxFr::StringView Content)
+	YAML::Node Asset::Save(NxFr::StringView ContentFilePath)
 	{
 		YAML::Node Node;
-		OnSave(Node, Content);
+		OnSave(Node, ContentFilePath);
 
 		Dirty = false;
 		return Node;
 	}
 
-	void Asset::Load(const YAML::Node& Node, NxFr::StringView Content)
+	void Asset::Load(const YAML::Node& Node, NxFr::StringView ContentFilePath)
 	{
-		OnLoad(Node, Content);
+		OnLoad(Node, ContentFilePath);
 	}
 
 	void Asset::Unload()
