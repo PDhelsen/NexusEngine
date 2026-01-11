@@ -160,7 +160,7 @@ namespace NxEn
 			Rounding = StylePreset == Preset::Panel ? Style.WindowRounding : Style.FrameRounding;
 			Border = StylePreset == Preset::Panel ? Style.WindowBorderSize : Style.FrameBorderSize;
 			Font = Style.FontScaleMain;
-			Flag = 0;
+			Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 		}
 
 		void Style::Push() const

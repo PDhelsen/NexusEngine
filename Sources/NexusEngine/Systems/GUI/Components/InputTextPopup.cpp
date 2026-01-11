@@ -39,10 +39,7 @@ namespace NxEn
 	void InputTextPopup::OnEnable()
 	{
 		Popup::OnEnable();
-
 		Style.Reset();
-		Style.Width = -1.0f;
-		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 	}
 
 	void InputTextPopup::OnGui(float TimeStep)

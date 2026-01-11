@@ -74,14 +74,11 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
+		Style.Reset();
 
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 
 		Inputs = Application::GetSystem<InputSystem>();
-
-		Style.Reset();
-		Style.Width = -1.0f;
-		Style.WidthLabel = -1.0f;
 
 		Refresh();
 	}

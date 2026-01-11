@@ -44,11 +44,7 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
-
 		Style.Reset();
-		Style.Width = -1.0f;
-		Style.WidthLabel = -1.0f;
-		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		Settings = Application::GetSystem<SettingsSystem>()->GetAllSettingsSorted();
 	}

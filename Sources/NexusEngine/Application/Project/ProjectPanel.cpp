@@ -31,10 +31,7 @@ namespace NxEn
 	void ProjectPanel::OnEnable()
 	{
 		Panel::OnEnable();
-
 		Style.Reset();
-		Style.Width = -1.0f;
-		Style.WidthLabel = -1.0f;
 
 		Infos = &Application::GetInstance()->GetProject();
 	}

@@ -28,9 +28,7 @@ namespace NxEn
 	void StatsPanel::OnEnable()
 	{
 		Panel::OnEnable();
-
 		Style.Reset();
-		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		DebugSystem* Debug = Application::GetSystem<DebugSystem>();
 		Instruments = Debug->GetInstrumentor();

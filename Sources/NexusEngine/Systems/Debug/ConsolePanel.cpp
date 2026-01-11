@@ -59,9 +59,7 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
-
 		Style.Reset();
-		Style.Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
