@@ -58,8 +58,8 @@ namespace NxEn
 		GUI::Style Style;
 
 		NxEn::InputSystem* Inputs;
-		TreeItem* Root;
 
+		TreeItem* Root;
 		NxFr::Set<TreeItem*> Selection;
 		TreeItem* Selected;
 		NxFr::Set<TreeItem*> Filtered;
