@@ -39,8 +39,9 @@ namespace NxEn
 		NEXUS_ENGINE_API void PatchReferences();
 		NEXUS_ENGINE_API void UpdateHierarchy();
 
-		NEXUS_ENGINE_API NxFr::GUID GetId() const override { return ComponentId; };
-		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject() const { return Target; };
+		NEXUS_ENGINE_API NxFr::StringView GetName() const override;
+		NEXUS_ENGINE_API NxFr::GUID GetId() const override;
+		NEXUS_ENGINE_API NxFr::Handle<GameObject> GetGameObject() const;
 
 	protected:
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;

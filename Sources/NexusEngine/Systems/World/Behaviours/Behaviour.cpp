@@ -42,6 +42,21 @@ namespace NxEn
 		OnUpdateHierarchy();
 	}
 
+	NxFr::StringView Behaviour::GetName() const
+	{
+		return Target->GetName();
+	}
+
+	NxFr::GUID Behaviour::GetId() const
+	{
+		return BehaviourId;
+	}
+
+	NxFr::Handle<GameObject> Behaviour::GetGameObject() const
+	{
+		return Target;
+	}
+
 	void Behaviour::OnGui(float TimeStep)
 	{
 		bool Enabled = IsEnabled();
