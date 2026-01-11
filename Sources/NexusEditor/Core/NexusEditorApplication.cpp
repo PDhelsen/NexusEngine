@@ -2,8 +2,6 @@
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
 
-#include "NexusEditor/Systems/World/Scene/ScenesManager.h"
-
 namespace NxEd
 {
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
@@ -51,10 +49,6 @@ namespace NxEd
 		Bootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::AfterSystem, "Load Layout", []()
 		{
 			Application::GetSystem<NxEn::GUISystem>()->LoadLayout();
-		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::AfterSystem, "Refresh scenes list", []()
-		{
-			ScenesManager::Refresh();
 		});
 	}
 
