@@ -1,13 +1,15 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserInternal.h"
 #include "NexusEngine/Systems/GUI/Components/Tree/TreeItem.h"
 
 namespace NxEd
 {
 	class AssetsBrowserItem : public NxEn::TreeItem
 	{
-		friend class AssetsBrowserPanel;
+		friend AssetsBrowserItem* AssetsBrowser::FetchItems();
+		friend void AssetsBrowser::UpdateItem(AssetsBrowserItem* Item, NxFr::StringView Path, bool AddId, bool RemoveId);
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserItem)
@@ -44,15 +46,17 @@ namespace NxEd
 		NEXUS_EDITOR_API bool IsDirectory() const { return NxFr::Path::IsDirectory(Path); }
 
 	protected:
+		NEXUS_EDITOR_API virtual NxFr::StringView GetPrefix() const = 0;
+
+	private:
 		NEXUS_EDITOR_API void GenerateImGuiText() override;
 		NEXUS_EDITOR_API int8 Compare(const TreeItem& Other) const override;
 
-		NEXUS_EDITOR_API virtual NxFr::StringView GetPrefix() const = 0;
-		NEXUS_EDITOR_API void Update(NxFr::StringView Target, bool AddId, bool RemoveId);
-		NEXUS_EDITOR_API NxFr::String PathToDisk(NxFr::StringView Path) const;
-		NEXUS_EDITOR_API NxFr::String PathToAsset(NxFr::StringView Path) const;
+		NEXUS_EDITOR_API void ForceImGuiText(NxFr::StringView Text);
+		NEXUS_EDITOR_API void Update(NxFr::GUID Id, NxFr::StringView Path, NxFr::StringId Type);
 
-	protected:
+
+	private:
 		NxFr::GUID Id;
 		NxFr::String Path;
 		NxFr::StringId Type;

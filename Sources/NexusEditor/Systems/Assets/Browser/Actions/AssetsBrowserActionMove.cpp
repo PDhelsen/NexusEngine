@@ -1,5 +1,6 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionMove.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -20,18 +21,17 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
 			if (Items.GetCount() == 1)
 			{
 				AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[0]);
-				Browser->Move(Instance->GetPath(), Input);
+				AssetsBrowser::Move(Instance->GetPath(), Input);
 			}
 			else
 			{
 				for (auto& Item : Items)
 				{
 					AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
-					Browser->Move(Instance->GetPath(), NxFr::Path::Combine(Input, Instance->GetName()));
+					AssetsBrowser::Move(Instance->GetPath(), NxFr::Path::Combine(Input, Instance->GetName()));
 				}
 			}
 		});

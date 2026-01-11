@@ -11,6 +11,8 @@ namespace NxEd
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyPanel)
 
+		NEXUS_EDITOR_API void Clear() override;
+
 		NEXUS_EDITOR_API void Refresh() override;
 		NEXUS_EDITOR_API void RefreshWorld();
 		NEXUS_EDITOR_API void RefreshGameObjects();
@@ -31,6 +33,7 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyItem* FetchItems() override;
 		NEXUS_EDITOR_API void AppendItem(NxFr::Handle<NxEn::GameObject> Instance);
 		NEXUS_EDITOR_API void RemoveItem(NxFr::Handle<NxEn::GameObject> Instance);
+		NEXUS_EDITOR_API void RemoveItem(HierarchyItem* Item);
 		NEXUS_EDITOR_API void OnGameObjectChanged(NxFr::StringId EventId, NxFr::StringId WorldId, NxFr::GUID GameObjectId);
 
 		NEXUS_EDITOR_API void Find() override;
@@ -41,5 +44,7 @@ namespace NxEd
 		NxFr::Array<NxFr::StringView> WorldsLabels;
 		NxFr::Array<NxFr::GUID> WorldsIds;
 		uint64 WorldIndex;
+
+		NxFr::Dictionary<NxFr::GUID, HierarchyItem*> Items;
 	};
 }

@@ -23,6 +23,12 @@ namespace NxEd
 
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyPanel)
 
+	void HierarchyPanel::Clear()
+	{
+		RemoveItem(static_cast<HierarchyItem*>(Root));
+		TreePanel::Clear();
+	}
+
 	void HierarchyPanel::Refresh()
 	{
 		RefreshWorld();
@@ -57,17 +63,17 @@ namespace NxEd
 	void HierarchyPanel::SelectWorld(NxFr::StringId Id)
 	{
 		WorldIndex = WorldsIds.Find(Id).Id();
-		Refresh();
+		RefreshGameObjects();
 	}
 
 	void HierarchyPanel::SelectGameObject(NxFr::Handle<NxEn::GameObject> Target)
 	{
-		if (!GetWorld()->Belong(Target))
+		if (!Target || !GetWorld()->Belong(Target))
 		{
 			return;
 		}
 
-		TreePanel::Select(Target->GetId(), false, false);
+		TreePanel::Select(GetItem(Target));
 	}
 
 	void HierarchyPanel::OnInitialize()
@@ -105,7 +111,8 @@ namespace NxEd
 
 	HierarchyItem* HierarchyPanel::GetItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
-		return Instance ? static_cast<HierarchyItem*>(TreePanel::GetItem(Instance->GetId())) : nullptr;
+		HierarchyItem** Item = Instance ? Items.TryGet(Instance->GetId()) : nullptr;
+		return Item ? *Item : nullptr;
 	}
 
 	HierarchyItem* HierarchyPanel::FetchItems()
@@ -123,12 +130,21 @@ namespace NxEd
 
 	void HierarchyPanel::AppendItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
-		TreePanel::AppendItem(new HierarchyItem(Instance, { this, &HierarchyPanel::GetItem }));
+		HierarchyItem* Item = new HierarchyItem(Instance, { this, &HierarchyPanel::GetItem });
+		Item->Initialize();
+		Item->SetEnabled(true);
+
+		Items.Append(Instance->GetId(), Item);
 	}
 
 	void HierarchyPanel::RemoveItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		HierarchyItem* Item = GetItem(Instance);
+		RemoveItem(Item);
+	}
+
+	void HierarchyPanel::RemoveItem(HierarchyItem* Item)
+	{
 		if (!Item || !Items.ContainsKey(Item->GetId()))
 		{
 			return;
@@ -143,19 +159,7 @@ namespace NxEd
 			RemoveItem(Child->GetGameObject());
 		}
 
-		if (Item == Selected)
-		{
-			Selected = nullptr;
-		}
-		if (Selection.Contains(Item))
-		{
-			Selection.Remove(Item);
-		}
-		if (Filtered.Contains(Item))
-		{
-			Filtered.Remove(Item);
-		}
-
+		ClearItem(Item);
 		Items.Remove(Item->GetId());
 		delete Item;
 	}

@@ -1,5 +1,5 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionCreate.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
@@ -24,14 +24,13 @@ namespace NxEd
 			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
 			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
 
-			AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
 			for (auto& Item : Items)
 			{
 				AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
 
 				NxFr::StringView Directory = Instance->IsDirectory() ? Instance->GetPath() : Instance->GetDirectory();
 				NxFr::String Path = NxFr::Path::Combine(Directory, Name);
-				Browser->Create(Path, Type);
+				AssetsBrowser::Create(Path, Type);
 			}
 		});
 	}

@@ -10,7 +10,7 @@ namespace NxEn
 	TreePanel::TreePanel()
 		: Menu(), Style(),
 		Inputs(nullptr),
-		Items(), Root(nullptr),
+		Root(nullptr),
 		Selection(), Selected(nullptr),
 		Filtered(), Filter(256),
 		Actions(), ActionRequested(nullptr)
@@ -29,8 +29,6 @@ namespace NxEn
 		Filter.Clear();
 		ActionRequested = nullptr;
 
-		RemoveItem(Root);
-		Items.Clear();
 		Root = nullptr;
 	}
 
@@ -48,9 +46,9 @@ namespace NxEn
 		Find();
 	}
 
-	void TreePanel::Select(NxFr::GUID Id, bool Additive, bool List)
+	void TreePanel::Select(TreeItem* Item)
 	{
-		Select(Items[Id], Additive, List);
+		Select(Item, false, false);
 	}
 
 	void TreePanel::OnInitialize()
@@ -102,72 +100,9 @@ namespace NxEn
 		ProcessAction();
 	}
 
-	TreeItem* TreePanel::GetItem(NxFr::GUID Id)
+	void TreePanel::ClearItem(TreeItem* Item)
 	{
-		TreeItem** Item = Items.TryGet(Id);
-		return Item ? *Item : nullptr;
-	}
-
-	TreeItem* TreePanel::DuplicateItem(TreeItem* Item, TreeItem* Parent)
-	{
-		return DuplicateItem(nullptr, Item, Parent);
-	}
-
-	TreeItem* TreePanel::DuplicateItem(TreeItem* Copy, TreeItem* Item, TreeItem* Parent)
-	{
-		if (!Copy || !Item)
-		{
-			return nullptr;
-		}
-
-		Copy->SetParent(Parent);
-		if (Item->GetChild())
-		{
-			Copy->SetChild(DuplicateItem(Item->GetChild(), Copy));
-		}
-		if (Item->GetNext() && Parent)
-		{
-			Copy->SetNext(DuplicateItem(Item->GetNext(), Parent));
-			Copy->GetNext()->SetPrevious(Copy);
-		}
-
-		return Copy;
-	}
-
-	void TreePanel::AppendItem(TreeItem* Item, TreeItem* Parent)
-	{
-		if (!Item || Items.ContainsKey(Item->GetId()))
-		{
-			return;
-		}
-
-		Item->Initialize();
-		Item->SetEnabled(true);
-		Items.Append(Item->GetId(), Item);
-
-		if (Parent)
-		{
-			AttachItem(Item, Parent);
-		}
-	}
-
-	void TreePanel::RemoveItem(TreeItem* Item)
-	{
-		if (!Item || !Items.ContainsKey(Item->GetId()))
-		{
-			return;
-		}
-
-		Item->SetEnabled(false);
-		Item->Shutdown();
-
-		DetachItem(Item);
-		while (Item->GetChild())
-		{
-			RemoveItem(Item->GetChild());
-		}
-
-		if (Item == Selected)
+		if (Selected == Item)
 		{
 			Selected = nullptr;
 		}
@@ -178,128 +113,6 @@ namespace NxEn
 		if (Filtered.Contains(Item))
 		{
 			Filtered.Remove(Item);
-		}
-
-		Items.Remove(Item->GetId());
-		delete Item;
-	}
-
-	void TreePanel::AttachItem(TreeItem* Item, TreeItem* Parent)
-	{
-		if (!Item || !Parent)
-		{
-			return;
-		}
-
-		Item->SetParent(Parent);
-
-		if (Parent->GetChild())
-		{
-			TreeItem* Iterator = Parent->GetChild();
-			while (Iterator->GetNext())
-			{
-				Iterator = Iterator->GetNext();
-			}
-
-			Iterator->SetNext(Item);
-			Item->SetPrevious(Iterator);
-			Item->SetNext(nullptr);
-		}
-		else
-		{
-			Parent->SetChild(Item);
-
-			Item->SetPrevious(nullptr);
-			Item->SetNext(nullptr);
-		}
-	}
-
-	void TreePanel::DetachItem(TreeItem* Item)
-	{
-		if (!Item)
-		{
-			return;
-		}
-
-		if (Item->GetPrevious())
-		{
-			Item->GetPrevious()->SetNext(Item->GetNext());
-		}
-		if (Item->GetNext())
-		{
-			Item->GetNext()->SetPrevious(Item->GetPrevious());
-		}
-		if (Item->GetParent())
-		{
-			if (Item->GetParent()->GetChild() == Item)
-			{
-				Item->GetParent()->SetChild(Item->GetNext());
-			}
-		}
-	}
-
-	void TreePanel::SortItem(TreeItem* Item, bool Recursive)
-	{
-		NxFr::Delegate<TreeItem* (TreeItem*)> Split = [](TreeItem* Head)
-		{
-			TreeItem* Slow = Head;
-			TreeItem* Fast = Head->GetNext();
-
-			while (Fast && Fast->GetNext())
-			{
-				Slow = Slow->GetNext();
-				Fast = Fast->GetNext()->GetNext();
-			}
-
-			TreeItem* Second = Slow->GetNext();
-			Slow->SetNext(nullptr);
-			return Second;
-		};
-		NxFr::Delegate<TreeItem* (TreeItem*, TreeItem*)> Merge = [&](TreeItem* A, TreeItem* B)
-		{
-			if (!A) return B;
-			if (!B) return A;
-
-			if (*A < *B)
-			{
-				A->SetNext(Merge(A->GetNext(), B));
-				if (A->GetNext())
-					A->GetNext()->SetPrevious(A);
-				A->SetPrevious(nullptr);
-				return A;
-			}
-			else
-			{
-				B->SetNext(Merge(A, B->GetNext()));
-				if (B->GetNext())
-					B->GetNext()->SetPrevious(B);
-				B->SetPrevious(nullptr);
-				return B;
-			}
-		};
-		NxFr::Delegate<TreeItem* (TreeItem*)> MergeSort = [&](TreeItem* Item)
-		{
-			if (!Item || !Item->GetNext())
-				return Item;
-
-			TreeItem* Second = Split(Item);
-
-			Item = MergeSort(Item);
-			Second = MergeSort(Second);
-
-			return Merge(Item, Second);
-		};
-
-		Item->SetChild(MergeSort.Invoke(Item->GetChild()));
-
-		if (Recursive)
-		{
-			TreeItem* Iterator = Item->GetChild();
-			while (Iterator)
-			{
-				SortItem(Iterator, Recursive);
-				Iterator = Iterator->GetNext();
-			}
 		}
 	}
 
@@ -430,7 +243,7 @@ namespace NxEn
 	{
 		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
 		{
-			Select(Item, true);
+			Select(Item, true, false);
 		}
 		else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
 		{
@@ -438,7 +251,7 @@ namespace NxEn
 		}
 		else
 		{
-			Select(Item);
+			Select(Item, false, false);
 		}
 	}
 
@@ -485,7 +298,7 @@ namespace NxEn
 		Item->Select(!Item->IsSelected());
 		Show(Item);
 
-		if (List)
+		if (List && Selected)
 		{
 			bool Compare = *Item < *Selected;
 			TreeItem* I1 = Compare ? Item : Selected;

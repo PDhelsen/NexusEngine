@@ -1,5 +1,5 @@
 #include "NexusEditor/Systems/Assets/Browser/Actions/AssetsBrowserActionDelete.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
@@ -25,12 +25,11 @@ namespace NxEd
 			Paths[Index] = Instance->GetPath();
 		}
 
-		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
 		for (auto& Item : Paths)
 		{
-			if (Browser->Exist(Item))
+			if (AssetsBrowser::Exist(Item))
 			{
-				Browser->Delete(Item);
+				AssetsBrowser::Delete(Item);
 			}
 		}
 	}

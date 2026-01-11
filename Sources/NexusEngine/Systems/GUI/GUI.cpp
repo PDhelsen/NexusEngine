@@ -289,7 +289,10 @@ namespace NxEn
 		void Menu::RemoveItem(const Item& It)
 		{
 			auto Iterator = Items.Find(It);
-			Items.Remove(Iterator.Id());
+			if (Iterator != Items.End())
+			{
+				Items.Remove(Iterator.Id());
+			}
 		}
 
 		void Menu::DrawMenu(float TimeStep)
