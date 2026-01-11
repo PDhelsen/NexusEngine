@@ -154,6 +154,7 @@ namespace NxEn
 		// Command
 		{
 			Style.Position.x = -1.0f;
+			Style.WidthLabel = 0.0f;
 			Style.Width = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Style::GetVar(GUI::Style::IdWidthButton)), 1, false).x;
 			if (GUI::Drawer<NxFr::String>::Field(Command, "Command", "", &Style))
 			{
