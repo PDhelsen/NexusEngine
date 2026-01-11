@@ -32,10 +32,11 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnDisable() override;
 		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 
-		NEXUS_ENGINE_API virtual TreeItem* FetchItems() = 0;
-		NEXUS_ENGINE_API virtual void ClearItem(TreeItem* Item);
-
 	protected:
+		NEXUS_ENGINE_API virtual TreeItem* FetchRootItem() = 0;
+		NEXUS_ENGINE_API virtual void OnCreateItem(TreeItem* Item);
+		NEXUS_ENGINE_API virtual void OnDestroyItem(TreeItem* Item);
+
 		NEXUS_ENGINE_API virtual void DrawHeader(float TimeStep);
 		NEXUS_ENGINE_API virtual void DrawItem(float TimeStep, TreeItem* Item);
 		NEXUS_ENGINE_API virtual void DrawContext(TreeItem* Item);
@@ -57,14 +58,12 @@ namespace NxEn
 		GUI::Style Style;
 
 		NxEn::InputSystem* Inputs;
-
 		TreeItem* Root;
 
 		NxFr::Set<TreeItem*> Selection;
 		TreeItem* Selected;
 		NxFr::Set<TreeItem*> Filtered;
 		NxFr::String Filter;
-
 		NxFr::List<TreeAction*> Actions;
 		TreeAction* ActionRequested;
 	};

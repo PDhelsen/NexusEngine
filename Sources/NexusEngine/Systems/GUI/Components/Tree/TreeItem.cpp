@@ -8,7 +8,6 @@ namespace NxEn
 	TreeItem::TreeItem()
 		: ImGuiText(), Expanded(false), Selected(false)
 	{
-		SetTickable(false);
 	}
 
 	TreeItem::~TreeItem()

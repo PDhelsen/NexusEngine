@@ -1,11 +1,10 @@
 #pragma once
 
 #include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Systems/GUI/Components/Tree/TreeItem.h"
 
 namespace NxEn
 {
-	class TreeItem;
-
 	class TreeAction : public Object
 	{
 	public:
@@ -13,8 +12,6 @@ namespace NxEn
 
 		NEXUS_ENGINE_API TreeAction(NxFr::StringView Label, int64 Priority, bool Recursive, bool LastSelectedFirst);
 		NEXUS_ENGINE_API virtual ~TreeAction();
-
-		NEXUS_ENGINE_API bool operator<=(const TreeAction& Other);
 
 		NEXUS_ENGINE_API virtual void Execute(const NxFr::Array<TreeItem*>& Items) = 0;
 

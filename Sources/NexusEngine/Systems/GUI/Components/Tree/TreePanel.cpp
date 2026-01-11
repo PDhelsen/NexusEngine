@@ -35,7 +35,7 @@ namespace NxEn
 	void TreePanel::Refresh()
 	{
 		Clear();
-		Root = FetchItems();
+		Root = FetchRootItem();
 	}
 
 	void TreePanel::Find(NxFr::StringView Query)
@@ -55,6 +55,8 @@ namespace NxEn
 	{
 		Panel::OnInitialize();
 		Menu.Initialize();
+
+		Menu.AddMenuItem("Refresh", { this, &TreePanel::Refresh });
 	}
 
 	void TreePanel::OnShutdown()
@@ -100,7 +102,13 @@ namespace NxEn
 		ProcessAction();
 	}
 
-	void TreePanel::ClearItem(TreeItem* Item)
+	void TreePanel::OnCreateItem(TreeItem* Item)
+	{
+		Item->Initialize();
+		Item->SetEnabled(true);
+	}
+
+	void TreePanel::OnDestroyItem(TreeItem* Item)
 	{
 		if (Selected == Item)
 		{
@@ -114,27 +122,18 @@ namespace NxEn
 		{
 			Filtered.Remove(Item);
 		}
+
+		Item->SetEnabled(false);
+		Item->Shutdown();
 	}
 
 	void TreePanel::DrawHeader(float TimeStep)
 	{
-		if (ImGui::BeginMenuBar())
-		{
-			Style.Width = GUI::Style::GetVar(GUI::Style::IdWidthButton);
-			if (NxEn::GUI::Draw::Button("Refresh", &Style))
-			{
-				Refresh();
-			}
-		}
-		ImGui::EndMenuBar();
-
 		Menu.Tick(TimeStep);
 
 		if (ImGui::BeginMenuBar())
 		{
-			Style.Width = -1.0f;
-			Style.WidthLabel = 0.0f;
-			if (NxEn::GUI::Drawer<NxFr::String>::Field(Filter, "Filter", "", &Style))
+			if (NxEn::GUI::Drawer<NxFr::String>::Field(Filter, "Filter:", "", &Style))
 			{
 				Find();
 			}
@@ -168,13 +167,13 @@ namespace NxEn
 			if (Browse)
 			{
 				ImGui::SetNextItemOpen(Item->IsOpened(), ImGuiCond_Always);
-				bool State = ImGui::TreeNodeEx(Item->GetLabel().C(), Flag);
+				bool State = ImGui::TreeNodeEx(Item->GetName().C(), Flag);
 				ExpandChanged = Item->IsOpened() != State;
 				Item->Open(State);
 			}
 			else
 			{
-				ImGui::Selectable(Item->GetLabel().C(), Item->IsSelected());
+				ImGui::Selectable(Item->GetName().C(), Item->IsSelected());
 			}
 
 			// Inputs
@@ -198,7 +197,7 @@ namespace NxEn
 		{
 			if (Browse)
 			{
-				ImGui::TreePush(Item->GetLabel().C());
+				ImGui::TreePush(Item->GetName().C());
 			}
 
 			DrawItem(TimeStep, Item->GetChild());
@@ -219,11 +218,11 @@ namespace NxEn
 			return;
 		}
 
-		if (ImGui::BeginPopup(Item->GetLabel().C()))
+		if (ImGui::BeginPopup(Item->GetName().C()))
 		{
 			for (auto Action : Actions)
 			{
-				if (ImGui::MenuItem(Action->GetLabel().C()))
+				if (ImGui::MenuItem(Action->GetName().C()))
 				{
 					ActionRequested = Action;
 					break;
@@ -236,7 +235,7 @@ namespace NxEn
 
 	void TreePanel::OpenContext(TreeItem* Item)
 	{
-		ImGui::OpenPopup(Item->GetLabel().C());
+		ImGui::OpenPopup(Item->GetName().C());
 	}
 
 	void TreePanel::SelectItem(TreeItem* Item)
@@ -267,7 +266,7 @@ namespace NxEn
 		TreeItem* Item = Root;
 		while (Item)
 		{
-			if (F.FilterObject(Item->GetDescription(), Item->GetId(), Item->GetType()))
+			if (F.FilterObject(Item->GetItemName(), Item->GetItemId(), Item->GetItemType()))
 			{
 				Show(Item);
 				Filtered.Append(Item);
@@ -407,6 +406,6 @@ namespace NxEn
 
 	void TreePanel::SortActions()
 	{
-		Actions.Sort([](TreeAction* A, TreeAction* B) { return *A <= *B; });
+		Actions.Sort([](TreeAction* A, TreeAction* B) { return A->GetPriority() <= B->GetPriority(); });
 	}
 }

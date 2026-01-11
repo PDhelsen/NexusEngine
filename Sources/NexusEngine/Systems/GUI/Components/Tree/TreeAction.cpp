@@ -13,9 +13,4 @@ namespace NxEn
 	TreeAction::~TreeAction()
 	{
 	}
-
-	bool TreeAction::operator<=(const TreeAction& Other)
-	{
-		return Priority <= Other.Priority;
-	}
 }
