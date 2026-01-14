@@ -78,8 +78,8 @@ namespace NxEd
 		Menu.SetEnabled(true);
 		Style.Reset();
 
-		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
+		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 
 		Full = false;
 		Select(0);
@@ -236,18 +236,18 @@ namespace NxEd
 		NxFr::Array<NxFr::GUID> Instances = Full ? Assets->Find("*") : NxFr::Array<NxFr::GUID>({ Id });
 		for (auto Instance : Instances)
 		{
-			AddNode(Instance);
+			AddNode(Instance, Assets->IdToPath(Instance));
 
 			NxFr::Array<NxFr::GUID> Dependencies = Assets->GetDependencies(Instance, false);
 			for (auto& Dependency : Dependencies)
 			{
-				AddNode(Dependency);
+				AddNode(Dependency, Assets->IdToPath(Instance));
 				ConnectNode(Instance, Dependency);
 			}
 		}
 	}
 
-	void ReferencesPanel::AddNode(NxFr::GUID Id)
+	void ReferencesPanel::AddNode(NxFr::GUID Id, NxFr::StringView Label)
 	{
 		if (Ids.ContainsKey(Id))
 		{
@@ -256,7 +256,7 @@ namespace NxEd
 
 		Node& Instance = Nodes.AppendConstruct(
 			Id,
-			Assets->IdToPath(Id) + NxFr::StringUtility::NewLine + NxFr::StringUtility::ToString(Id),
+			Label + NxFr::StringUtility::NewLine + NxFr::StringUtility::ToString(Id),
 			NxFr::Vector2f::Zero
 		);
 		Ids.Append(Id, &Instance);

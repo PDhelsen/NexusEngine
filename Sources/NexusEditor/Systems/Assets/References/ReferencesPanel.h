@@ -39,7 +39,7 @@ namespace NxEd
 		void HandleInspect();
 
 		void FetchNodes(NxFr::GUID Id);
-		void AddNode(NxFr::GUID Id);
+		void AddNode(NxFr::GUID Id, NxFr::StringView Label);
 		void ConnectNode(NxFr::GUID Id, NxFr::GUID Dependency);
 		void SortNodes(NxFr::GUID Id, int32 Depth = 0, bool From = true, bool To = true);
 		void AlignNodes();
@@ -61,8 +61,8 @@ namespace NxEd
 		bool Recenter;
 		bool Inspect;
 
-		NxEn::AssetsSystem* Assets;
 		NxEn::InputSystem* Inputs;
+		NxEn::AssetsSystem* Assets;
 
 		NxFr::Graph<Node> Nodes;
 		NxFr::Dictionary<NxFr::GUID, Node*> Ids;
