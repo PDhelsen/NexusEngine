@@ -241,7 +241,7 @@ namespace NxEd
 			NxFr::Array<NxFr::GUID> Dependencies = Assets->GetDependencies(Instance, false);
 			for (auto& Dependency : Dependencies)
 			{
-				AddNode(Dependency, Assets->IdToPath(Instance));
+				AddNode(Dependency, Assets->IdToPath(Dependency));
 				ConnectNode(Instance, Dependency);
 			}
 		}
