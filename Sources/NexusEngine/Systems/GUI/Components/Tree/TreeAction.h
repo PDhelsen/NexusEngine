@@ -15,10 +15,10 @@ namespace NxEn
 
 		NEXUS_ENGINE_API virtual void Execute(const NxFr::Array<TreeItem*>& Items) = 0;
 
-		NEXUS_ENGINE_API NxFr::StringView GetLabel() const { return Label; }
+		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Label; }
 		NEXUS_ENGINE_API int64 GetPriority() const { return Priority; }
 		NEXUS_ENGINE_API bool IsRecursive() const { return Recursive; }
-		NEXUS_ENGINE_API bool IsLastSelectedFirst() const { return Recursive; }
+		NEXUS_ENGINE_API bool IsLastSelectedFirst() const { return LastSelectedFirst; }
 
 	private:
 		NxFr::String Label;

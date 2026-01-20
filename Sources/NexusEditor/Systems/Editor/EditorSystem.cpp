@@ -21,7 +21,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)
 
 	EditorSystem::EditorSystem()
-		: OnSave(), InputSchema(), Window(NxEn::GUISystem::GetWindow())
+		: OnSave(), InputSchema(), Window(NxEn::GUISystem::GetWindow()), Browser(nullptr)
 	{
 	}
 
@@ -47,10 +47,13 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, &InputSchema);
 		NxEn::Application::GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, &EditorSystem::ApplySettings };
 
+		Browser = new AssetsBrowser();
 	}
 
 	void EditorSystem::OnShutdown()
 	{
+		delete Browser;
+
 		Window->Hide();
 		NxEn::Application::GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
 		NxEn::Application::GetSystem<NxEn::WindowSystem>()->SetWindowIcon(nullptr);

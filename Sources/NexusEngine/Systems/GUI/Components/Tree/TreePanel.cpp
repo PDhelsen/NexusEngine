@@ -75,6 +75,7 @@ namespace NxEn
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
 		Style.Reset();
+		Style.WidthLabel = 0.0f;
 
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 
@@ -101,8 +102,7 @@ namespace NxEn
 
 	void TreePanel::OnCreateItem(TreeItem* Item)
 	{
-		Item->Initialize();
-		Item->SetEnabled(true);
+		
 	}
 
 	void TreePanel::OnDestroyItem(TreeItem* Item)
@@ -119,9 +119,6 @@ namespace NxEn
 		{
 			Filtered.Remove(Item);
 		}
-
-		Item->SetEnabled(false);
-		Item->Shutdown();
 	}
 
 	void TreePanel::DrawHeader(float TimeStep)
@@ -397,7 +394,12 @@ namespace NxEn
 
 		if (Recursive)
 		{
-			GatherActionItems(Item->GetChild(), Result, Recursive);
+			TreeItem* Iterator = Item->GetChild();
+			while (Iterator)
+			{
+				GatherActionItems(Iterator, Result, Recursive);
+				Iterator = Iterator->GetNext();
+			}
 		}
 	}
 
