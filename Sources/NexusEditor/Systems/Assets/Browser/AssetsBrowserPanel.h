@@ -14,11 +14,17 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Refresh() override;
 
+		NEXUS_EDITOR_API void Select(NxFr::GUID Id);
+		NEXUS_EDITOR_API void Select(NxFr::StringView Path);
+
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
 		NEXUS_EDITOR_API void OnEnable() override;
 
 		NEXUS_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
+
+	private:
+		class AssetsBrowser* Browser;
 	};
 }
 
