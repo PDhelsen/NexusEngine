@@ -86,8 +86,6 @@ namespace NxEn
 
 		Factory.AttachGameObject(Instance, Target, Index);
 		Instance->UpdateHierarchy();
-
-		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::AppendedId, WorldId, Instance->GetId());
 	}
 
 	void World::DetachGameObject(NxFr::Handle<GameObject> Instance)
@@ -96,8 +94,6 @@ namespace NxEn
 
 		Factory.DetachGameObject(Instance);
 		Instance->UpdateHierarchy();
-
-		Application::GetSystem<WorldSystem>()->GetOnGameObjectEvent().Invoke(WorldSystem::RemovedId, WorldId, Instance->GetId());
 	}
 
 	NxFr::Handle<Behaviour> World::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target)

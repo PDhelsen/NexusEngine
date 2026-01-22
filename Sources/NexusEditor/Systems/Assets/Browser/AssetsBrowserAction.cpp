@@ -81,6 +81,11 @@ namespace NxEd
 
 	void AssetsBrowserActionMove::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
+		if (Items.GetCount() <= 1)
+		{
+			return;
+		}
+
 		AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
 		AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Items[0]);
 
@@ -186,6 +191,31 @@ namespace NxEd
 			}
 
 			Assets->Reload(Item->GetItemId());
+		}
+	}
+
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionInstantiate)
+
+	void AssetsBrowserActionInstantiate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	{
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+
+		for (auto& Item : Items)
+		{
+			if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+			{
+				continue;
+			}
+
+			NxFr::GUID Id = Item->GetItemId();
+			if (Assets->GetMetadata(Id).GetType() != NxEn::Prefab::GetClassType())
+			{
+				continue;
+			}
+
+			NxEn::Prefab* Instance = Worlds->LoadPrefab(Id);
+			Worlds->InstantiatePrefab(Instance);
 		}
 	}
 
