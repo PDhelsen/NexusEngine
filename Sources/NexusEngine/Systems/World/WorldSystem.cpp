@@ -126,10 +126,14 @@ namespace NxEn
 		WorldObjectFactoryContext Context(WorldInstance);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Create<Scene>(Path, "scene");
+
 		WorldInstance->AttachGameObject(SceneInstance->GetRoot(), WorldInstance->GetRootGameObject());
 		SceneInstance->SetDirty();
 
 		Scenes.Append(SceneInstance->GetId(), WorldId);
+		GetOnSceneEvent().Invoke(AppendedId, WorldId, SceneInstance->GetId());
+		GetOnGameObjectEvent().Invoke(AppendedId, WorldId, SceneInstance->GetRoot()->GetId());
+
 		return SceneInstance;
 	}
 
@@ -165,10 +169,14 @@ namespace NxEn
 		WorldObjectReferences References;
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Load<Scene>(SceneId);
+
 		WorldInstance->AttachGameObject(SceneInstance->GetRoot(), WorldInstance->GetRootGameObject());
 		SceneInstance->SetDirty();
 
 		Scenes.Append(SceneId, WorldId);
+		GetOnSceneEvent().Invoke(AppendedId, WorldId, SceneId);
+		GetOnGameObjectEvent().Invoke(AppendedId, WorldId, SceneInstance->GetRoot()->GetId());
+
 		return SceneInstance;
 	}
 
@@ -196,10 +204,13 @@ namespace NxEn
 		WorldObjectFactoryContext Context(WorldInstance);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Scene>(SceneId);
-		WorldInstance->DetachGameObject(SceneInstance->GetRoot());
-		Application::GetSystem<AssetsSystem>()->Unload(SceneId);
 
 		Scenes.Remove(SceneId);
+		GetOnSceneEvent().Invoke(RemovedId, WorldId, SceneId);
+		GetOnGameObjectEvent().Invoke(RemovedId, WorldId, SceneInstance->GetRoot()->GetId());
+
+		WorldInstance->DetachGameObject(SceneInstance->GetRoot());
+		Application::GetSystem<AssetsSystem>()->Unload(SceneId);
 	}
 
 	NxFr::GUID WorldSystem::IsSceneLoaded(NxFr::GUID SceneId)

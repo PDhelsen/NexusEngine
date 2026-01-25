@@ -1,2 +1,2 @@
 Shortcuts: {Editor.Save: Ctrl+S}
-Scene - Unload before loading: true
+Scene - Load scene in single mode: false

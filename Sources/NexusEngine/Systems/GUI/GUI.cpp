@@ -162,7 +162,7 @@ namespace NxEn
 
 		Menu::Item Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+			//NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 			Item It(Callback, Validate, Path, Priority, Menu::ItemMode::Callback, 0, nullptr);
 			GUISystem::RegisterMenuItem(&It);
@@ -227,18 +227,19 @@ namespace NxEn
 
 		Menu& Menu::Remove(NxFr::StringView Path)
 		{
-			NxFr::Set<Item*> ToRemove;
-			for (auto& Item : Items)
+			NxFr::List<uint64> ToRemove;
+			for (uint64 Index = 0; Index < Items.GetCount(); ++Index)
 			{
+				Item& Item = Items[Index];
 				if (NxFr::StringUtility::Contains(Item.Path, Path))
 				{
-					ToRemove.Append(&Item);
+					ToRemove.Append(Index);
 				}
 			}
 
-			for (auto Instance : ToRemove)
+			for (uint64 Index = ToRemove.GetCount(); Index > 0; --Index)
 			{
-				RemoveItem(*Instance);
+				RemoveItem(Items[ToRemove[Index - 1]]);
 			}
 
 			return *this;

@@ -10,6 +10,12 @@
 
 namespace NxEd
 {
+	static bool IsInstantiable(NxEn::AssetsSystem* Assets, NxFr::GUID Id)
+	{
+		NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
+		return Type == NxEn::Scene::GetClassType() || Type == NxEn::Prefab::GetClassType();
+	}
+
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionCreate)
 
 	void AssetsBrowserActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>&Items)
@@ -173,7 +179,14 @@ namespace NxEd
 				continue;
 			}
 
-			Assets->Load(Item->GetItemId());
+			NxFr::GUID Id = Item->GetItemId();
+			if (IsInstantiable(Assets, Id))
+			{
+				NEXUS_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
+				continue;
+			}
+
+			Assets->Load(Id);
 		}
 	}
 
@@ -187,6 +200,13 @@ namespace NxEd
 		{
 			if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
 			{
+				continue;
+			}
+
+			NxFr::GUID Id = Item->GetItemId();
+			if (IsInstantiable(Assets, Id))
+			{
+				NEXUS_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
 				continue;
 			}
 
@@ -209,13 +229,21 @@ namespace NxEd
 			}
 
 			NxFr::GUID Id = Item->GetItemId();
-			if (Assets->GetMetadata(Id).GetType() != NxEn::Prefab::GetClassType())
-			{
-				continue;
-			}
+			NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
 
-			NxEn::Prefab* Instance = Worlds->LoadPrefab(Id);
-			Worlds->InstantiatePrefab(Instance);
+			if (Type == NxEn::Scene::GetClassType())
+			{
+				Worlds->LoadScene(Id);
+			}
+			else if (Type == NxEn::Prefab::GetClassType())
+			{
+				NxEn::Prefab* Instance = Worlds->LoadPrefab(Id);
+				Worlds->InstantiatePrefab(Instance);
+			}
+			else
+			{
+				NEXUS_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
+			}
 		}
 	}
 

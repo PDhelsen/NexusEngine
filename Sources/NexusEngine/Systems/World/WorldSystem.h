@@ -47,6 +47,7 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Handle<GameObject> InstantiatePrefab(Prefab* Instance, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = WorldId);
 
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldEvent() { return OnWorldEvent; }
+		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnSceneEvent() { return OnSceneEvent; }
 		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnGameObjectEvent() { return OnGameObjectEvent; }
 
 	protected:
@@ -56,6 +57,7 @@ namespace NxEn
 
 	private:
 		NxFr::Event<NxFr::StringId, NxFr::GUID> OnWorldEvent;
+		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID> OnSceneEvent;
 		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID> OnGameObjectEvent;
 
 		NxFr::Dictionary<NxFr::GUID, World*> Worlds;

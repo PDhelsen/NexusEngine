@@ -55,6 +55,7 @@ namespace NxEd
 	void HierarchyPanel::OnInitialize()
 	{
 		TreePanel::OnInitialize();
+		SetTitle("Hierarchy");
 
 		AppendAction<HierarchyActionCreate>();
 		AppendAction<HierarchyActionRename>();
@@ -73,7 +74,6 @@ namespace NxEd
 		Worlds->GetOnGameObjectEvent() += { this, & HierarchyPanel::OnHierarchyChanged };
 
 		TreePanel::OnEnable();
-		SetTitle("Hierarchy");
 	}
 
 	void HierarchyPanel::OnDisable()
