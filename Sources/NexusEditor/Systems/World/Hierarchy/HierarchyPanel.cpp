@@ -15,36 +15,20 @@ namespace NxEd
 
 	void HierarchyPanel::Clear()
 	{
-		if (Root)
-		{
-			RemoveItem(static_cast<HierarchyItem*>(Root)->Target);
-		}
-
+		HierarchyItem::Clear();
 		TreePanel::Clear();
 	}
 
 	void HierarchyPanel::Refresh()
 	{
+		NxFr::GUID WorldId = Root ? static_cast<HierarchyItem*>(Root)->Target->GetWorldId() : NxEn::WorldSystem::WorldId.GetId();
 		TreePanel::Refresh();
-		SelectGameObject(NxFr::Handle<NxEn::GameObject>());
-
-		WorldsIds = Worlds->GetWorlds();
-		WorldIndex = WorldsIds.Find(WorldId).Id();
-
-		NxFr::Array<NxFr::StringView> WorldsLabels = NxFr::Array<NxFr::StringView>(WorldsIds.GetCount());
-		for (uint64 Index = 0; Index < WorldsIds.GetCount(); ++Index)
-		{
-			WorldsLabels[Index] = Worlds->GetWorld(WorldsIds[Index])->GetName();
-		}
-
-		Menu.Remove("Worlds/");
-		Menu.AddMenuEnum("Worlds/Worlds", &WorldIndex, WorldsLabels, [&]() { SelectWorld(WorldsIds[WorldIndex]); }, 1);
+		SetRoot(Worlds->GetWorld(WorldId)->GetRootGameObject());
 	}
 
-	void HierarchyPanel::SelectWorld(NxFr::StringId Id)
+	void HierarchyPanel::SetRoot(NxFr::Handle<NxEn::GameObject> Target)
 	{
-		WorldId = Id;
-		Refresh();
+		Root = HierarchyItem::Convert(Target);
 	}
 
 	void HierarchyPanel::SelectGameObject(NxFr::Handle<NxEn::GameObject> Target)
@@ -69,7 +53,6 @@ namespace NxEd
 
 	void HierarchyPanel::OnEnable()
 	{
-		WorldId = NxEn::WorldSystem::WorldId;
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Worlds->GetOnGameObjectEvent() += { this, & HierarchyPanel::OnHierarchyChanged };
 
@@ -86,19 +69,20 @@ namespace NxEd
 
 	NxEn::TreeItem* HierarchyPanel::FetchRootItem()
 	{
-		NxFr::Handle<NxEn::GameObject> Root = GetWorld()->GetRootGameObject();
-		AppendItem(Root);
-		return HierarchyItem::Convert(Root);
+		NxFr::Array<NxFr::GUID> WorldsIds = Worlds->GetWorlds();
+		for (auto WorldId : WorldsIds)
+		{
+			NxEn::World* World = Worlds->GetWorld(WorldId);
+			NxFr::Handle<NxEn::GameObject> Instances = World->GetRootGameObject();
+			AppendItem(Instances);
+		}
+
+		return nullptr;
 	}
 
 	void HierarchyPanel::OnHierarchyChanged(NxFr::StringId EventId, NxFr::StringId WorldId, NxFr::GUID GameObjectId)
 	{
-		if (WorldId != this->WorldId)
-		{
-			return;
-		}
-
-		NxFr::Handle<NxEn::GameObject> GameObject = GetWorld()->GetGameObject(GameObjectId);
+		NxFr::Handle<NxEn::GameObject> GameObject = Worlds->GetWorld(WorldId)->GetGameObject(GameObjectId);
 		if (EventId == NxEn::WorldSystem::AppendedId)
 		{
 			AppendItem(GameObject);
@@ -152,7 +136,8 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = GetWorld()->Find(Filter);
+		NxEn::World* World = static_cast<HierarchyItem*>(Root)->Target->GetWorld();
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = World->Find(Filter);
 		for (auto& Instance : GameObjects)
 		{
 			NxEn::TreeItem* Item = HierarchyItem::Convert(Instance);

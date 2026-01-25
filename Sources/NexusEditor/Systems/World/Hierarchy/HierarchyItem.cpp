@@ -52,6 +52,15 @@ namespace NxEd
 		ReferenceId = Target->GetReferenceId();
 	}
 
+	void HierarchyItem::Clear()
+	{
+		auto Temp = NxFr::ContainersUtils::ToArray(Instances);
+		for (auto Instance : Temp)
+		{
+			delete Instance.Value;
+		}
+	}
+
 	HierarchyItem* HierarchyItem::Convert(NxFr::Handle<NxEn::GameObject> Target)
 	{
 		if (!Target)

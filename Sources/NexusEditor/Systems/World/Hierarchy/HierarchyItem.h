@@ -35,6 +35,7 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyItem* GetNext() const override { return Convert(Target->GetNext()); }
 		NEXUS_EDITOR_API HierarchyItem* GetChild() const override { return Convert(Target->GetChild()); }
 
+		NEXUS_EDITOR_API static void Clear();
 		NEXUS_EDITOR_API static HierarchyItem* Convert(NxFr::Handle<NxEn::GameObject> Target);
 
 	private:

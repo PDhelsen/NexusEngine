@@ -13,7 +13,7 @@ namespace NxEd
 		NEXUS_EDITOR_API void Clear() override;
 		NEXUS_EDITOR_API void Refresh() override;
 
-		NEXUS_EDITOR_API void SelectWorld(NxFr::StringId Id);
+		NEXUS_EDITOR_API void SetRoot(NxFr::Handle<NxEn::GameObject> Target);
 		NEXUS_EDITOR_API void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
 
 	protected:
@@ -28,13 +28,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Find() override;
 
-		NEXUS_EDITOR_API NxEn::World* GetWorld() const { return Worlds->GetWorld(WorldId); }
-
 	private:
 		NxEn::WorldSystem* Worlds;
-		NxFr::GUID WorldId;
-
-		NxFr::Array<NxFr::GUID> WorldsIds;
-		uint64 WorldIndex;
 	};
 }
