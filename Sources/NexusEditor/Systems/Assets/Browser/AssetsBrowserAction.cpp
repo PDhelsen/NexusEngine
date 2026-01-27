@@ -4,6 +4,7 @@
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 #include "NexusEditor/Systems/Assets/References/ReferencesPanel.h"
+#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
@@ -245,6 +246,28 @@ namespace NxEd
 				NEXUS_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
 			}
 		}
+	}
+
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionInspect)
+
+	void AssetsBrowserActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	{
+		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
+
+		NxEn::Asset* Target = nullptr;
+		if (Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
+		{
+			NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+			NxFr::GUID Id = Item->GetItemId();
+
+			if (!IsInstantiable(Assets, Id))
+			{
+				Target = Assets->Load(Id);
+			}
+		}
+		
+		InspectorPanel* Inspector = NxEn::GUISystem::GetPanel<InspectorPanel>();
+		Inspector->Show(Target);
 	}
 
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReferences)

@@ -100,26 +100,88 @@ namespace NxEn
 
 	void GameObject::DrawGui(float TimeStep)
 	{
-		OnGui(TimeStep);
+		float HalfWindowSize = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * (1.0f / 2.0f);
+		float ThirdWindowSize = (ImGui::GetContentRegionAvail().x - 2.0f * ImGui::GetStyle().ItemSpacing.x) * (1.0f / 3.0f);
 
+		OnGui(TimeStep);
 		ImGui::Separator();
 
-		for (auto& B : Behaviours)
+		for (uint64 Index = 0; Index < Behaviours.GetCount(); ++Index)
 		{
+			NxFr::Handle<Behaviour> B = Behaviours[Index];
 			ImGui::PushID(B->GetId());
+
+			if (GUI::Draw::Button("Move Up", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index > 0)
+			{
+				Behaviours.Swap(Index, Index - 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Behaviours.GetCount() - 1)
+			{
+				Behaviours.Swap(Index, Index + 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
+			{
+				Behaviours.Remove(Index);
+				ImGui::PopID();
+				Index--;
+				continue;
+			}
+
 			B->DrawGui(TimeStep);
 			ImGui::Separator();
+
 			ImGui::PopID();
 		}
 
-		ImGui::Separator();
-
-		for (auto& C : Components)
+		for (uint64 Index = 0; Index < Components.GetCount(); ++Index)
 		{
+			NxFr::Handle<Component> C = Components[Index];
 			ImGui::PushID(C->GetId());
+
+			if (GUI::Draw::Button("Move Up", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index > 0)
+			{
+				Components.Swap(Index, Index - 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Components.GetCount() - 1)
+			{
+				Components.Swap(Index, Index + 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
+			{
+				Components.Remove(Index);
+				ImGui::PopID();
+				Index--;
+				continue;
+			}
+
 			C->DrawGui(TimeStep);
 			ImGui::Separator();
+
 			ImGui::PopID();
+		}
+
+		if (GUI::Draw::Button("Add Behaviour", NxFr::Vector2f(HalfWindowSize , 0.0f)))
+		{
+			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+			Popup->RegisterCallback([=](NxFr::StringView Input)
+			{
+				GetWorld()->CreateBehaviour(Input, GetThis(this));
+			});
+		}
+
+		ImGui::SameLine();
+
+		if (GUI::Draw::Button("Add Component", NxFr::Vector2f(HalfWindowSize, 0.0f)))
+		{
+			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+			Popup->RegisterCallback([=](NxFr::StringView Input)
+			{
+				GetWorld()->CreateComponent(Input, GetThis(this));
+			});
 		}
 	}
 
@@ -634,20 +696,17 @@ namespace NxEn
 
 	void GameObject::OnGui(float TimeStep)
 	{
+		GUI::Drawer<NxFr::String>::Field(Name, "Name");
+
+		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
+		GUI::Drawer<NxFr::GUID>::Property(ReferenceId, "Reference");
+
 		bool Enabled = IsEnabled();
-		GUI::Drawer<bool>::Field(Enabled);
+		GUI::Drawer<bool>::Field(Enabled, "Enabled");
 		if (Enabled != IsEnabled())
 		{
 			SetEnabled(Enabled);
 		}
-
-		ImGui::SameLine();
-
-		GUI::Drawer<NxFr::String>::Field(Name, "Name");
-
-
-		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
-		GUI::Drawer<NxFr::GUID>::Property(ReferenceId, "Reference");
 
 		bool Tickable = IsTickable();
 		GUI::Drawer<bool>::Field(Tickable, "Tickable");
@@ -728,5 +787,10 @@ namespace NxEn
 	NxFr::GUID GameObject::ReadIdFromYaml(const YAML::Node& Node)
 	{
 		return Node[YamlRoot][YamlId].as<NxFr::GUID>();
+	}
+
+	NxFr::Handle<GameObject> GameObject::GetThis(GameObject* Instance)
+	{
+		return Instance->GetWorld()->GetGameObject(Instance->GetId());
 	}
 }

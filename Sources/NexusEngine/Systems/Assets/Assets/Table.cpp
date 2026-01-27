@@ -5,6 +5,11 @@ namespace NxEn
 {
 	NEXUS_ASSET_IMPLEMENTATION(Table)
 
+	void Table::OnGui(float TimeStep)
+	{
+		Asset::OnGui(TimeStep);
+	}
+
 	void Table::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
 		NxFr::Yaml::SerializeFile(Data, ContentFsPath);

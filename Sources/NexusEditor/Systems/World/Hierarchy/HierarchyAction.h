@@ -92,4 +92,15 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
+
+	class HierarchyActionInspect : public NxEn::TreeAction
+	{
+	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyActionInspect)
+
+		NEXUS_EDITOR_API HierarchyActionInspect() : TreeAction("Inspect", 9, false, false) {}
+		NEXUS_EDITOR_API virtual ~HierarchyActionInspect() = default;
+
+		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+	};
 }

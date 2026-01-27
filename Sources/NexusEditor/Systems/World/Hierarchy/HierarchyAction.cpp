@@ -1,6 +1,8 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 
+#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -124,5 +126,15 @@ namespace NxEd
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
 			System->UnpackPrefab(Instance);
 		}
+	}
+
+	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionInspect)
+
+	void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	{
+		HierarchyItem* Item = static_cast<HierarchyItem*>(Items[0]);
+
+		InspectorPanel* Inspector = NxEn::GUISystem::GetPanel<InspectorPanel>();
+		Inspector->Show(Item->GetTarget());
 	}
 }

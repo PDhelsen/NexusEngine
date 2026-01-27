@@ -49,6 +49,7 @@ namespace NxEd
 		AppendAction<HierarchyActionPrefabCreate>();
 		AppendAction<HierarchyActionPrefabSave>();
 		AppendAction<HierarchyActionPrefabUnpack>();
+		AppendAction<HierarchyActionInspect>();
 	}
 
 	void HierarchyPanel::OnEnable()

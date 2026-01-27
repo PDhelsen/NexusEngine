@@ -59,18 +59,15 @@ namespace NxEn
 
 	void Behaviour::OnGui(float TimeStep)
 	{
+		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
+		GUI::Drawer<NxFr::GUID>::Property(BehaviourId, "Id");
+
 		bool Enabled = IsEnabled();
-		GUI::Drawer<bool>::Field(Enabled);
+		GUI::Drawer<bool>::Field(Enabled, "Enabled");
 		if (Enabled != IsEnabled())
 		{
 			SetEnabled(Enabled);
 		}
-
-		ImGui::SameLine();
-
-		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
-
-		GUI::Drawer<NxFr::GUID>::Property(BehaviourId, "Id");
 	}
 
 	void Behaviour::OnClone(const Object& Other)

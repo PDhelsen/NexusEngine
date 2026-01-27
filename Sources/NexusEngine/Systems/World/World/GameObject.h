@@ -92,7 +92,8 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void OnPatchReferences();
 		NEXUS_ENGINE_API virtual void OnUpdateHierarchy();
 
-		static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
+		NEXUS_ENGINE_API static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
+		NEXUS_ENGINE_API static NxFr::Handle<GameObject> GetThis(GameObject* Instance);
 
 	private:
 		NxFr::GUID WorldId;

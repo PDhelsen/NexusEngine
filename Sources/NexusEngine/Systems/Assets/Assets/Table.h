@@ -12,6 +12,7 @@ namespace NxEn
 		NEXUS_ENGINE_API YAML::Node& GetRoot() { return Data; }
 
 	protected:
+		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 		NEXUS_ENGINE_API void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		NEXUS_ENGINE_API void OnUnload() override;

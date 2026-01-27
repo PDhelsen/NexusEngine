@@ -5,6 +5,13 @@ namespace NxEn
 {
 	NEXUS_ASSET_IMPLEMENTATION(Document)
 
+	void Document::OnGui(float TimeStep)
+	{
+		Asset::OnGui(TimeStep);
+
+		GUI::Drawer<uint64>::Property(Data.GetCount(), "Length");
+	}
+
 	void Document::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
 		NxFr::File File = NxFr::File(ContentFsPath);

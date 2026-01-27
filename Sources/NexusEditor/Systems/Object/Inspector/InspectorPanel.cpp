@@ -1,0 +1,103 @@
+#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+
+namespace NxEd
+{
+	static InspectorPanel* Panel = NxEn::GUI::Panel::Create<InspectorPanel>();
+
+	const static NxEn::GUI::Menu::Item MenuItemInspector = NxEn::GUI::Menu::Item::Create("Object/Object/Inspector", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel InspectorPanel");
+	}));
+
+	NEXUS_OBJECT_IMPLEMENTATION(InspectorPanel)
+
+	InspectorPanel::InspectorPanel()
+		: Target(nullptr), Mode(InspectorMode::None), Lock(false)
+	{
+	}
+
+	InspectorPanel::~InspectorPanel()
+	{
+	}
+
+	void InspectorPanel::Show(NxEn::Asset* Instance)
+	{
+		if (Lock)
+		{
+			return;
+		}
+
+		Target.Object = Instance;
+		Mode = InspectorMode::Object;
+
+		Panel::Show();
+	}
+
+	void InspectorPanel::Show(NxFr::Handle<NxEn::GameObject> Instance)
+	{
+		if (Lock)
+		{
+			return;
+		}
+
+		Target.Handle = Instance;
+		Mode = InspectorMode::Handle;
+
+		Panel::Show();
+	}
+
+	void InspectorPanel::OnInitialize()
+	{
+		Panel::OnInitialize();
+		Menu.Initialize();
+
+		SetTitle("Inspector");
+		SetGuiFlag(ImGuiWindowFlags_MenuBar);
+
+		Menu.AddMenuToggle("Lock", &Lock);
+	}
+
+	void InspectorPanel::OnShutdown()
+	{
+		Menu.Shutdown();
+		Panel::OnShutdown();
+	}
+
+	void InspectorPanel::OnEnable()
+	{
+		Target.Object = nullptr;
+		Mode = InspectorMode::None;
+
+		Panel::OnEnable();
+		Menu.SetEnabled(true);
+	}
+
+	void InspectorPanel::OnDisable()
+	{
+		Menu.SetEnabled(false);
+		Panel::OnDisable();
+
+		Target.Object = nullptr;
+		Mode = InspectorMode::None;
+	}
+
+	void InspectorPanel::OnGui(float TimeStep)
+	{
+		Menu.Tick(TimeStep);
+
+		NxEn::Object* Instance = nullptr;
+		switch (Mode)
+		{
+		case NxEd::InspectorPanel::InspectorMode::None: Instance = nullptr; break;
+		case NxEd::InspectorPanel::InspectorMode::Object: Instance = Target.Object; break;
+		case NxEd::InspectorPanel::InspectorMode::Handle: Instance = Target.Handle.GetRedirectedPointer(); break;
+		}
+
+		if (!Instance)
+		{
+			return;
+		}
+
+		Instance->DrawGui(TimeStep);
+	}
+}

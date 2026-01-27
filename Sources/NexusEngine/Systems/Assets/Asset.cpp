@@ -3,6 +3,11 @@
 
 namespace NxEn
 {
+	const AssetMetadata& GetMetadata(NxFr::GUID Id)
+	{
+		return Application::GetSystem<AssetsSystem>()->GetMetadata(Id);
+	}
+
 	NEXUS_OBJECT_IMPLEMENTATION(Asset)
 
 	Asset::Asset()
@@ -13,6 +18,17 @@ namespace NxEn
 
 	Asset::~Asset()
 	{
+	}
+
+	void Asset::OnGui(float TimeStep)
+	{
+		const AssetMetadata& Medata = GetMetadata(Id);
+
+		GUI::Drawer<NxFr::GUID>::Property(Id, "Id");
+		GUI::Drawer<NxFr::String>::Property(Medata.GetName(), "Name");
+		GUI::Drawer<NxFr::String>::Property(Medata.GetAssetPath(), "Path");
+
+		ImGui::Separator();
 	}
 
 	YAML::Node Asset::Save(NxFr::StringView ContentFsPath)

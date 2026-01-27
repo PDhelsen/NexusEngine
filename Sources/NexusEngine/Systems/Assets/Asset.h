@@ -32,6 +32,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void SetDirty() { Dirty = true; }
 
 	protected:
+		NEXUS_ENGINE_API virtual void OnGui(float TimeStep) override;
 		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		NEXUS_ENGINE_API virtual void OnUnload() = 0;
