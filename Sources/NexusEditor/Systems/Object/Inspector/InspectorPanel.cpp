@@ -20,7 +20,7 @@ namespace NxEd
 	{
 	}
 
-	void InspectorPanel::Show(NxEn::Asset* Instance)
+	void InspectorPanel::Show(NxEn::Object* Instance)
 	{
 		if (Lock)
 		{
@@ -33,7 +33,7 @@ namespace NxEd
 		Panel::Show();
 	}
 
-	void InspectorPanel::Show(NxFr::Handle<NxEn::GameObject> Instance)
+	void InspectorPanel::Show(NxFr::Handle<NxEn::Object> Instance)
 	{
 		if (Lock)
 		{

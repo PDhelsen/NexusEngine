@@ -23,8 +23,8 @@ namespace NxEd
 		NEXUS_EDITOR_API InspectorPanel();
 		NEXUS_EDITOR_API virtual ~InspectorPanel();
 
-		NEXUS_EDITOR_API void Show(NxEn::Asset* Instance);
-		NEXUS_EDITOR_API void Show(NxFr::Handle<NxEn::GameObject> Instance);
+		NEXUS_EDITOR_API void Show(NxEn::Object* Instance);
+		NEXUS_EDITOR_API void Show(NxFr::Handle<NxEn::Object> Instance);
 
 		NEXUS_EDITOR_API bool IsLocked() const { return Lock; }
 		NEXUS_EDITOR_API void SetLocked(bool State) { Lock = State; }
