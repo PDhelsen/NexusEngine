@@ -5,6 +5,7 @@
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 #include "NexusEditor/Systems/Assets/References/ReferencesPanel.h"
 #include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+#include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
@@ -265,8 +266,42 @@ namespace NxEd
 				Target = Assets->Load(Id);
 			}
 		}
-		
+
 		InspectorPanel* Inspector = NxEn::GUISystem::GetPanel<InspectorPanel>();
+		Inspector->Show(Target);
+	}
+
+	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionView)
+
+	void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	{
+		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
+		if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+		{
+			return;
+		}
+
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+
+		NxEn::Object* Target = nullptr;
+		NxFr::GUID Id = Item->GetItemId();
+		NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
+
+		if (Type == NxEn::Scene::GetClassType())
+		{
+			Target = nullptr;
+		}
+		else if (Type == NxEn::Prefab::GetClassType())
+		{
+			Target = Worlds->LoadPrefab(Id);
+		}
+		else
+		{
+			Target = Assets->Load(Id);
+		}
+
+		ViewerPanel* Inspector = NxEn::GUISystem::GetPanel<ViewerPanel>();
 		Inspector->Show(Target);
 	}
 

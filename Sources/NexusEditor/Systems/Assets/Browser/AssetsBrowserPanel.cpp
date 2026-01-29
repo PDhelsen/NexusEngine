@@ -51,6 +51,7 @@ namespace NxEd
 		AppendAction<AssetsBrowserActionReload>();
 		AppendAction<AssetsBrowserActionInstantiate>();
 		AppendAction<AssetsBrowserActionInspect>();
+		AppendAction<AssetsBrowserActionView>();
 		AppendAction<AssetsBrowserActionReferences>();
 	}
 

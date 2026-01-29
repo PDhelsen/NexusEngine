@@ -60,10 +60,10 @@ namespace NxEn
 		}
 
 		World* Instance = new World(Name, References);
+		Worlds.Append(WorldId, Instance);
+
 		Instance->Initialize();
 		Instance->SetEnabled(true);
-
-		Worlds.Append(WorldId, Instance);
 
 		GetOnWorldEvent().Invoke(AppendedId, WorldId);
 
