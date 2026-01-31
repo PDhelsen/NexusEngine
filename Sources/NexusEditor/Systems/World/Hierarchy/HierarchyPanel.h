@@ -26,7 +26,7 @@ namespace NxEd
 		NEXUS_EDITOR_API void AppendItem(NxFr::Handle<NxEn::GameObject> Target);
 		NEXUS_EDITOR_API void RemoveItem(NxFr::Handle<NxEn::GameObject> Target);
 
-		NEXUS_EDITOR_API void Find() override;
+		NEXUS_EDITOR_API void FindItem() override;
 
 	private:
 		NxEn::WorldSystem* Worlds;
