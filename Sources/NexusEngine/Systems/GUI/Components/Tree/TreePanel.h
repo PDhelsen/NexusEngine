@@ -41,12 +41,12 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void DrawItem(float TimeStep, TreeItem* Item);
 		NEXUS_ENGINE_API virtual void DrawContext(TreeItem* Item);
 		NEXUS_ENGINE_API virtual void OpenContext(TreeItem* Item);
-		NEXUS_ENGINE_API virtual void SelectItem(TreeItem* Item);
+		NEXUS_ENGINE_API virtual void HandleSelection(TreeItem* Item);
 
-		NEXUS_ENGINE_API virtual void Find();
-		NEXUS_ENGINE_API virtual void Select(TreeItem* Item, bool Additive, bool List);
-		NEXUS_ENGINE_API virtual void Show(TreeItem* Item);
-		NEXUS_ENGINE_API virtual bool IsVisible(TreeItem* Item);
+		NEXUS_ENGINE_API virtual void FindItem();
+		NEXUS_ENGINE_API virtual void SelectItem(TreeItem* Item, bool Additive, bool List);
+		NEXUS_ENGINE_API virtual void ShowItem(TreeItem* Item);
+		NEXUS_ENGINE_API virtual bool IsItemVisible(TreeItem* Item);
 
 		NEXUS_ENGINE_API virtual void ProcessAction();
 		NEXUS_ENGINE_API virtual NxFr::Array<TreeItem*> GatherActionItems(TreeAction* Action);

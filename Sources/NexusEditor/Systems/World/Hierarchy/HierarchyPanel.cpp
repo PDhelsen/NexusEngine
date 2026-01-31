@@ -129,7 +129,7 @@ namespace NxEd
 		delete Instance;
 	}
 
-	void HierarchyPanel::Find()
+	void HierarchyPanel::FindItem()
 	{
 		Filtered.Clear();
 		if (Filter.IsEmpty())
@@ -142,7 +142,7 @@ namespace NxEd
 		for (auto& Instance : GameObjects)
 		{
 			NxEn::TreeItem* Item = HierarchyItem::Convert(Instance);
-			Show(Item);
+			ShowItem(Item);
 			Filtered.Append(Item);
 		}
 	}

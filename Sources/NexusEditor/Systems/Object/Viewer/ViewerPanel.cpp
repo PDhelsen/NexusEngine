@@ -26,6 +26,8 @@ namespace NxEd
 
 	void ViewerPanel::Show(NxEn::Object* Instance)
 	{
+		NxEn::GUI::Panel::Show();
+
 		Clear();
 
 		if (!Instance)

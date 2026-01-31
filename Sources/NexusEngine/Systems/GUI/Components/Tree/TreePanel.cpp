@@ -43,12 +43,12 @@ namespace NxEn
 		Filter.Clear();
 		Filter += Query;
 
-		Find();
+		FindItem();
 	}
 
 	void TreePanel::Select(TreeItem* Item)
 	{
-		Select(Item, false, false);
+		SelectItem(Item, false, false);
 	}
 
 	void TreePanel::OnInitialize()
@@ -129,7 +129,7 @@ namespace NxEn
 		{
 			if (NxEn::GUI::Drawer<NxFr::String>::Field(Filter, "Filter:", "", &Style))
 			{
-				Find();
+				FindItem();
 			}
 		}
 		ImGui::EndMenuBar();
@@ -175,7 +175,7 @@ namespace NxEn
 			{
 				if (Inputs->CheckButton(NxEn::Input::Button::MouseLeft, NxEn::Input::State::Pressed) && !ExpandChanged)
 				{
-					SelectItem(Item);
+					HandleSelection(Item);
 				}
 				if (Inputs->CheckButton(NxEn::Input::Button::MouseRight, NxEn::Input::State::Pressed))
 				{
@@ -232,23 +232,23 @@ namespace NxEn
 		ImGui::OpenPopup(Item->GetName().C());
 	}
 
-	void TreePanel::SelectItem(TreeItem* Item)
+	void TreePanel::HandleSelection(TreeItem* Item)
 	{
 		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
 		{
-			Select(Item, true, false);
+			SelectItem(Item, true, false);
 		}
 		else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
 		{
-			Select(Item, true, true);
+			SelectItem(Item, true, true);
 		}
 		else
 		{
-			Select(Item, false, false);
+			SelectItem(Item, false, false);
 		}
 	}
 
-	void TreePanel::Find()
+	void TreePanel::FindItem()
 	{
 		Filtered.Clear();
 		if (Filter.IsEmpty())
@@ -262,7 +262,7 @@ namespace NxEn
 		{
 			if (F.FilterObject(Item->GetItemName(), Item->GetItemId(), Item->GetItemType()))
 			{
-				Show(Item);
+				ShowItem(Item);
 				Filtered.Append(Item);
 			}
 
@@ -270,7 +270,7 @@ namespace NxEn
 		}
 	}
 
-	void TreePanel::Select(TreeItem* Item, bool Additive, bool List)
+	void TreePanel::SelectItem(TreeItem* Item, bool Additive, bool List)
 	{
 		if (!Item || !Additive)
 		{
@@ -289,7 +289,7 @@ namespace NxEn
 		}
 
 		Item->Select(!Item->IsSelected());
-		Show(Item);
+		ShowItem(Item);
 
 		if (List && Selected)
 		{
@@ -299,7 +299,7 @@ namespace NxEn
 
 			while (I1 && I1 != I2)
 			{
-				if (IsVisible(I1))
+				if (IsItemVisible(I1))
 				{
 					I1->Select(Item->IsSelected());
 					Selection.Append(I1);
@@ -309,7 +309,7 @@ namespace NxEn
 			}
 			if (I1)
 			{
-				if (IsVisible(I1))
+				if (IsItemVisible(I1))
 				{
 					I1->Select(Item->IsSelected());
 					Selection.Append(I1);
@@ -321,7 +321,7 @@ namespace NxEn
 		Selection.Append(Selected);
 	}
 
-	void TreePanel::Show(TreeItem* Item)
+	void TreePanel::ShowItem(TreeItem* Item)
 	{
 		TreeItem* Parent = Item->GetParent();
 		while (Parent)
@@ -331,7 +331,7 @@ namespace NxEn
 		}
 	}
 
-	bool TreePanel::IsVisible(TreeItem* Item)
+	bool TreePanel::IsItemVisible(TreeItem* Item)
 	{
 		bool Visible = true;
 		TreeItem* Parent = Item->GetParent();
