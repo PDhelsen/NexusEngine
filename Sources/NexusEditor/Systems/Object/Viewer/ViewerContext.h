@@ -15,6 +15,8 @@ namespace NxEd
 		NEXUS_EDITOR_API ViewerContext() = default;
 		NEXUS_EDITOR_API virtual ~ViewerContext() = default;
 
+		NEXUS_EDITOR_API virtual NxEn::World* GetWorld() const { return nullptr; }
+
 	protected:
 		NEXUS_EDITOR_API virtual void Clear() = 0;
 		NEXUS_EDITOR_API virtual void SetupMenu(NxEn::GUI::Menu& Menu) {};
