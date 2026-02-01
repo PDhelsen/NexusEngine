@@ -67,6 +67,8 @@ namespace NxEd
 		}
 	}
 
+	NEXUS_OBJECT_IMPLEMENTATION(ViewerContextText)
+
 	ViewerContextText::ViewerContextText()
 		: Mode(), Target()
 	{

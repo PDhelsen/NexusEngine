@@ -24,14 +24,16 @@ namespace NxEd
 		};
 
 	public:
+		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, ViewerContextText)
+
 		NEXUS_EDITOR_API ViewerContextText();
 		NEXUS_EDITOR_API virtual ~ViewerContextText();
 
+	protected:
 		NEXUS_EDITOR_API void Clear() override;
 		NEXUS_EDITOR_API void SetupMenu(NxEn::GUI::Menu& Menu) override;
 		NEXUS_EDITOR_API void SetupTarget(NxEn::Object* Instance) override;
 
-	protected:
 		NEXUS_EDITOR_API virtual void OnGui(float TimeStep);
 
 	private:

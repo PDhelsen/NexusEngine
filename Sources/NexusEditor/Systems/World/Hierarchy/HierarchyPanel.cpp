@@ -9,13 +9,14 @@ namespace NxEd
 
 	void HierarchyPanel::Refresh()
 	{
-		NxFr::Handle<NxEn::GameObject> Target = Root ? static_cast<HierarchyItem*>(Root)->GetTarget() : NxFr::Handle<NxEn::GameObject>();
+		NxEn::TreeItem* Target = Root;
 		TreePanel::Refresh();
-		SetRoot(Target);
+		Root = Target;
 	}
 
 	void HierarchyPanel::SetRoot(NxFr::Handle<NxEn::GameObject> Target)
 	{
+		Clear();
 		Root = Manager->Convert(Target);
 	}
 

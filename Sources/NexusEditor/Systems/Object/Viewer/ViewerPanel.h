@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	class ViewerContext;
+
 	class ViewerPanel : public NxEn::GUI::Panel
 	{
 	public:
@@ -11,6 +13,8 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Clear();
 		NEXUS_EDITOR_API void Show(NxEn::Object* Instance);
+
+		NEXUS_EDITOR_API ViewerContext* GetContext() const { return Context; }
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
@@ -22,6 +26,6 @@ namespace NxEd
 	private:
 		NxEn::GUI::Menu Menu;
 
-		class ViewerContext* Context;
+		ViewerContext* Context;
 	};
 }
