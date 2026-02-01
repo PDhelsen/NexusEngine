@@ -21,7 +21,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)
 
 	EditorSystem::EditorSystem()
-		: OnSave(), InputSchema(), Window(NxEn::GUISystem::GetWindow()), Browser(nullptr)
+		: OnSave(), InputSchema(), Window(NxEn::GUISystem::GetWindow()), Browser(nullptr), Hierarchy(nullptr)
 	{
 	}
 
@@ -48,10 +48,12 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, &EditorSystem::ApplySettings };
 
 		Browser = new AssetsBrowser();
+		Hierarchy = new HierarchyManager();
 	}
 
 	void EditorSystem::OnShutdown()
 	{
+		delete Hierarchy;
 		delete Browser;
 
 		Window->Hide();

@@ -39,7 +39,7 @@ namespace NxEd
 		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendSystem<EditorSystem>().AppendDependency<EditorSystem, NxEn::AssetsSystem>();
+		Bootstrap.AppendSystem<EditorSystem>().AppendDependency<EditorSystem, NxEn::AssetsSystem>().AppendDependency<EditorSystem, NxEn::WorldSystem>();
 
 		if (!IsHeadless())
 		{
@@ -58,6 +58,8 @@ namespace NxEd
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
 		Unbootstrap.AppendSystem<EditorSystem>();
+		Unbootstrap.AppendDependency<NxEn::AssetsSystem, EditorSystem>();
+		Unbootstrap.AppendDependency<NxEn::WorldSystem, EditorSystem>();
 
 		if (!IsHeadless())
 		{

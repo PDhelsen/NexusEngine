@@ -7,7 +7,7 @@ namespace NxEd
 {
 	class HierarchyItem : public NxEn::TreeItem
 	{
-		friend class HierarchyPanel;
+		friend class HierarchyManager;
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyItem)
@@ -22,7 +22,7 @@ namespace NxEd
 		NEXUS_EDITOR_API NxFr::Handle<NxEn::GameObject> GetTarget() const { return Target; }
 
 	private:
-		NEXUS_EDITOR_API HierarchyItem(NxFr::Handle<NxEn::GameObject> Target);
+		NEXUS_EDITOR_API HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target);
 		NEXUS_EDITOR_API virtual ~HierarchyItem();
 
 		NEXUS_EDITOR_API void OnTick(float TimeStep) override;
@@ -30,15 +30,13 @@ namespace NxEd
 		NEXUS_EDITOR_API int8 Compare(const TreeItem& Other) const override;
 		NEXUS_EDITOR_API void CacheImGuiText() override;
 
-		NEXUS_EDITOR_API HierarchyItem* GetParent() const override { return Convert(Target->GetParent()); }
-		NEXUS_EDITOR_API HierarchyItem* GetPrevious() const override { return Convert(Target->GetPrevious()); }
-		NEXUS_EDITOR_API HierarchyItem* GetNext() const override { return Convert(Target->GetNext()); }
-		NEXUS_EDITOR_API HierarchyItem* GetChild() const override { return Convert(Target->GetChild()); }
-
-		NEXUS_EDITOR_API static void Clear();
-		NEXUS_EDITOR_API static HierarchyItem* Convert(NxFr::Handle<NxEn::GameObject> Target);
+		NEXUS_EDITOR_API HierarchyItem* GetParent() const override;
+		NEXUS_EDITOR_API HierarchyItem* GetPrevious() const override;
+		NEXUS_EDITOR_API HierarchyItem* GetNext() const override;
+		NEXUS_EDITOR_API HierarchyItem* GetChild() const override;
 
 	private:
+		HierarchyManager* Manager;
 		NxFr::Handle<NxEn::GameObject> Target;
 
 		NxFr::String Name;

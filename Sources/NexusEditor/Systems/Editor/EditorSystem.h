@@ -2,6 +2,7 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 
 namespace NxEd
 {
@@ -20,6 +21,7 @@ namespace NxEd
 		NEXUS_EDITOR_API NxEn::Input::Schema& GetInputsSchema() { return InputSchema; }
 		NEXUS_EDITOR_API NxEn::GUI::Window& GetWindow() { return *Window; }
 		NEXUS_EDITOR_API AssetsBrowser& GetAssetsBrowser() { return *Browser; }
+		NEXUS_EDITOR_API HierarchyManager& GetHierarchyManager() { return *Hierarchy; }
 
 
 	protected:
@@ -35,5 +37,6 @@ namespace NxEd
 		NxEn::Input::Schema InputSchema;
 		NxEn::GUI::Window* Window;
 		AssetsBrowser* Browser;
+		HierarchyManager* Hierarchy;
 	};
 }

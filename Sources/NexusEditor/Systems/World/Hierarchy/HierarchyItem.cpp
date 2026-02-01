@@ -1,23 +1,18 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 
 namespace NxEd
 {
-	static NxFr::Dictionary<NxFr::GUID, HierarchyItem*> Instances;
-
 	NEXUS_OBJECT_IMPLEMENTATION(HierarchyItem)
 
-	HierarchyItem::HierarchyItem(NxFr::Handle<NxEn::GameObject> Target)
-		: Target(Target), Name(""), ReferenceId(0)
+	HierarchyItem::HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target)
+		: Manager(Manager), Target(Target), Name(""), ReferenceId(0)
 	{
 		SetTickable(true);
-
-		NEXUS_ASSERT(!Instances.ContainsKey(Target->GetId()), System, "GameObject %d is already tracked", Target->GetId());
-		Instances.Append(Target->GetId(), this);
 	}
 
 	HierarchyItem::~HierarchyItem()
 	{
-		Instances.Remove(Target->GetId());
 	}
 
 	void HierarchyItem::OnTick(float TimeStep)
@@ -52,23 +47,23 @@ namespace NxEd
 		ReferenceId = Target->GetReferenceId();
 	}
 
-	void HierarchyItem::Clear()
+	HierarchyItem* HierarchyItem::GetParent() const
 	{
-		auto Temp = NxFr::ContainersUtils::ToArray(Instances);
-		for (auto Instance : Temp)
-		{
-			delete Instance.Value;
-		}
+		return Manager->Convert(Target->GetParent());
 	}
 
-	HierarchyItem* HierarchyItem::Convert(NxFr::Handle<NxEn::GameObject> Target)
+	HierarchyItem* HierarchyItem::GetPrevious() const
 	{
-		if (!Target)
-		{
-			return nullptr;
-		}
+		return Manager->Convert(Target->GetPrevious());
+	}
 
-		HierarchyItem** Instance = Instances.TryGet(Target->GetId());
-		return Instance ? *Instance : nullptr;
+	HierarchyItem* HierarchyItem::GetNext() const
+	{
+		return Manager->Convert(Target->GetNext());
+	}
+
+	HierarchyItem* HierarchyItem::GetChild() const
+	{
+		return Manager->Convert(Target->GetChild());
 	}
 }
