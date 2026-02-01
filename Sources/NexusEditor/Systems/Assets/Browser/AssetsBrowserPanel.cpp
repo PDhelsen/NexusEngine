@@ -39,6 +39,7 @@ namespace NxEd
 	void AssetsBrowserPanel::OnInitialize()
 	{
 		TreePanel::OnInitialize();
+		SetTitle("Assets");
 
 		AppendAction<AssetsBrowserActionCreate>();
 		AppendAction<AssetsBrowserActionRename>();
@@ -59,7 +60,6 @@ namespace NxEd
 	{
 		Browser = &NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
 		TreePanel::OnEnable();
-		SetTitle("Assets");
 	}
 
 	NxEn::TreeItem* AssetsBrowserPanel::FetchRootItem()
