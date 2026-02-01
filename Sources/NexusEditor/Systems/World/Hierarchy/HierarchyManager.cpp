@@ -8,28 +8,20 @@ namespace NxEd
 		Worlds->GetOnGameObjectEvent() += { this, &HierarchyManager::OnHierarchyChanged };
 
 		FetchItems();
-
-		CreatePanel(Worlds->GetWorld()->GetRootGameObject());
 	}
 
 	HierarchyManager::~HierarchyManager()
 	{
-		while (Panels.GetCount())
-		{
-			DestroyPanel(Panels.Begin().Get().Value);
-		}
-
 		ClearItems();
 
 		Worlds->GetOnGameObjectEvent() -= { this, &HierarchyManager::OnHierarchyChanged };
 	}
 
-	HierarchyPanel* HierarchyManager::CreatePanel(NxFr::Handle<NxEn::GameObject> Root)
+	HierarchyPanel* HierarchyManager::CreatePanel()
 	{
 		HierarchyPanel* Panel = new HierarchyPanel(this);
 		Panel->Initialize();
-		Panel->SetEnabled(true);
-		Panel->SetRoot(Root);
+		Panel->Show();
 
 		Panels.Append(Panel->GetId(), Panel);
 		return Panel;
@@ -39,7 +31,7 @@ namespace NxEd
 	{
 		Panels.Remove(Instance->GetId());
 
-		Instance->SetEnabled(false);
+		Instance->Hide();
 		Instance->Shutdown();
 		delete Instance;
 	}
