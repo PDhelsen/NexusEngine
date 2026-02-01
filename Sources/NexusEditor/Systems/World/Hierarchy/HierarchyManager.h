@@ -12,6 +12,9 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyManager();
 		NEXUS_EDITOR_API ~HierarchyManager();
 
+		NEXUS_EDITOR_API HierarchyPanel* CreatePanel(NxFr::Handle<NxEn::GameObject> Root);
+		NEXUS_EDITOR_API void DestroyPanel(HierarchyPanel* Instance);
+
 		NEXUS_EDITOR_API HierarchyItem* Convert(NxFr::Handle<NxEn::GameObject> Instance);
 
 	private:
