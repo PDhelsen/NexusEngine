@@ -21,7 +21,6 @@ namespace NxEd
 	{
 		HierarchyPanel* Panel = new HierarchyPanel(this);
 		Panel->Initialize();
-		Panel->Show();
 
 		Panels.Append(Panel->GetId(), Panel);
 		return Panel;
@@ -31,7 +30,6 @@ namespace NxEd
 	{
 		Panels.Remove(Instance->GetId());
 
-		Instance->Hide();
 		Instance->Shutdown();
 		delete Instance;
 	}

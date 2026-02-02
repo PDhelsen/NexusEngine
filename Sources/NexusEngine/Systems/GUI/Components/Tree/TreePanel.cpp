@@ -107,6 +107,10 @@ namespace NxEn
 
 	void TreePanel::OnDestroyItem(TreeItem* Item)
 	{
+		if (Root == Item)
+		{
+			Root = nullptr;
+		}
 		if (Selected == Item)
 		{
 			Selected = nullptr;

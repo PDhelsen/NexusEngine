@@ -47,8 +47,9 @@ namespace NxEd
 			NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 			NxEn::Prefab* Prefab = static_cast<NxEn::Prefab*>(Instance);
 
-			World = Worlds->CreateWorld(Prefab->GetName());
+			World = Worlds->CreateWorld(Prefab->GetId());
 			Target = Worlds->InstantiatePrefab(Prefab, World->GetRootGameObject(), World->GetId());
+			Target->SetName(Prefab->GetName());
 		}
 		else
 		{
