@@ -225,7 +225,7 @@ namespace NxEd
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
 
-		NxEn::World* World = Editor->GetStageManager().GetMainStage()->GetWorld();
+		NxEn::World* World = Editor->GetStageManager().GetFocusedStage()->GetWorld();
 		NxFr::GUID WorldId = World ? World->GetId() : NxEn::WorldSystem::WorldId.GetId();
 
 		for (auto& Item : Items)

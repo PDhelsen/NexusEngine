@@ -11,6 +11,41 @@ namespace NxEd
 		Editor->GetStageManager().ShowStage(Worlds->GetWorld());
 	}));
 
+	const static NxEn::Command CmdStageShowAsset = NxEn::Command::Create("Stage.Show.Asset"_Sid, "Show asset on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		NxFr::GUID Id = Assets->PathToId(Path);
+		NxEn::Asset* Target = Assets->Load(Id);
+
+		StageManager& Stages = NxEn::Application::GetSystem<EditorSystem>()->GetStageManager();
+		Stage* Instance = Stages.GetStage(Target);
+		if (!Instance)
+		{
+			Instance = Stages.CreateStage(Target);
+		}
+		Stages.ShowStage(Target);
+	}));
+
+	const static NxEn::Command CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Query)
+	{
+		StageManager& Stages = NxEn::Application::GetSystem<EditorSystem>()->GetStageManager();
+		Stage* Instance = Stages.GetFocusedStage();
+
+		NxEn::World* World = Instance->GetWorld();
+		if (!World)
+		{
+			return;
+		}
+
+		Instance->GetHierarchy()->Find(Query);
+
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> Selection = World->Find(Query);
+		if (Selection.GetCount())
+		{
+			Instance->GetInspector()->Show(Selection[0]);
+		}
+	}));
+
 	StageManager::StageManager()
 		: Stages()
 	{
@@ -102,6 +137,6 @@ namespace NxEd
 			}
 		}
 
-		return nullptr;
+		return GetMainStage();
 	}
 }
