@@ -4,13 +4,6 @@
 
 namespace NxEd
 {
-	static ViewerPanel* Panel = NxEn::GUI::Panel::Create<ViewerPanel>();
-
-	const static NxEn::GUI::Menu::Item MenuItemViewer = NxEn::GUI::Menu::Item::Create("Object/Object/Viewer", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel ViewerPanel");
-	}));
-
 	NEXUS_OBJECT_IMPLEMENTATION(ViewerPanel)
 
 	void ViewerPanel::Clear()
@@ -26,14 +19,14 @@ namespace NxEd
 
 	void ViewerPanel::Show(NxEn::Object* Instance)
 	{
-		Panel::Show();
-
 		Clear();
 
 		if (!Instance)
 		{
 			return;
 		}
+
+		Panel::Show();
 
 		Context = ViewerFactory::Create(Instance->GetObjectType());
 		if (!Context)

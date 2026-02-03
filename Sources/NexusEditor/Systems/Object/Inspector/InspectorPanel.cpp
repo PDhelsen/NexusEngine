@@ -2,13 +2,6 @@
 
 namespace NxEd
 {
-	static InspectorPanel* Panel = NxEn::GUI::Panel::Create<InspectorPanel>();
-
-	const static NxEn::GUI::Menu::Item MenuItemInspector = NxEn::GUI::Menu::Item::Create("Object/Object/Inspector", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel InspectorPanel");
-	}));
-
 	NEXUS_OBJECT_IMPLEMENTATION(InspectorPanel)
 
 	InspectorPanel::InspectorPanel()
@@ -30,6 +23,11 @@ namespace NxEd
 		Target.Object = Instance;
 		Mode = InspectorMode::Object;
 
+		if (!Instance)
+		{
+			return;
+		}
+
 		Panel::Show();
 	}
 
@@ -42,6 +40,11 @@ namespace NxEd
 
 		Target.Handle = Instance;
 		Mode = InspectorMode::Handle;
+
+		if (!Instance)
+		{
+			return;
+		}
 
 		Panel::Show();
 	}

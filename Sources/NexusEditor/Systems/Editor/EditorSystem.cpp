@@ -49,10 +49,12 @@ namespace NxEd
 
 		Browser = new AssetsBrowser();
 		Hierarchy = new HierarchyManager();
+		Stages = new StageManager();
 	}
 
 	void EditorSystem::OnShutdown()
 	{
+		delete Stages;
 		delete Hierarchy;
 		delete Browser;
 
@@ -67,6 +69,8 @@ namespace NxEd
 	void EditorSystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);
+
+		Stages->DestroyDisableStage();
 	}
 
 	void EditorSystem::ApplySettings()

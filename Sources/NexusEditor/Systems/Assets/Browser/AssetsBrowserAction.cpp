@@ -6,6 +6,7 @@
 #include "NexusEditor/Systems/Assets/References/ReferencesPanel.h"
 #include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
 #include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
+#include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
@@ -222,6 +223,10 @@ namespace NxEd
 	{
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
+
+		NxEn::World* World = Editor->GetStageManager().GetMainStage()->GetWorld();
+		NxFr::GUID WorldId = World ? World->GetId() : NxEn::WorldSystem::WorldId.GetId();
 
 		for (auto& Item : Items)
 		{
@@ -235,12 +240,12 @@ namespace NxEd
 
 			if (Type == NxEn::Scene::GetClassType())
 			{
-				Worlds->LoadScene(Id);
+				Worlds->LoadScene(Id, WorldId);
 			}
 			else if (Type == NxEn::Prefab::GetClassType())
 			{
 				NxEn::Prefab* Instance = Worlds->LoadPrefab(Id);
-				Worlds->InstantiatePrefab(Instance);
+				Worlds->InstantiatePrefab(Instance, NxFr::Handle<NxEn::GameObject>(), WorldId);
 			}
 			else
 			{
@@ -253,9 +258,11 @@ namespace NxEd
 
 	void AssetsBrowserActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
+		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
 
 		NxEn::Asset* Target = nullptr;
+
+		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
 		if (Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
 		{
 			NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
@@ -267,22 +274,23 @@ namespace NxEd
 			}
 		}
 
-		InspectorPanel* Inspector = NxEn::GUISystem::GetPanel<InspectorPanel>();
+		InspectorPanel* Inspector = Editor->GetStageManager().GetMainStage()->GetInspector();
 		Inspector->Show(Target);
 	}
 
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionView)
 
-	void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+		void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
+
 		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
 		if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
 		{
 			return;
 		}
-
-		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 
 		NxEn::Object* Target = nullptr;
 		NxFr::GUID Id = Item->GetItemId();
@@ -301,8 +309,13 @@ namespace NxEd
 			Target = Assets->Load(Id);
 		}
 
-		ViewerPanel* Inspector = NxEn::GUISystem::GetPanel<ViewerPanel>();
-		Inspector->Show(Target);
+
+		Stage* StageView = Editor->GetStageManager().GetStage(Target);
+		if (!StageView)
+		{
+			StageView = Editor->GetStageManager().CreateStage(Target);
+		}
+		Editor->GetStageManager().ShowStage(Target);
 	}
 
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReferences)
