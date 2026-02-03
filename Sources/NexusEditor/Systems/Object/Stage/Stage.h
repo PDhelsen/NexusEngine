@@ -11,6 +11,8 @@ namespace NxEd
 {
 	class Stage : public NxEn::GUI::Element
 	{
+		friend class StageManager;
+
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, Stage)
 
@@ -19,6 +21,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API bool IsVisible() const;
 		NEXUS_EDITOR_API bool IsFocused() const;
+		NEXUS_EDITOR_API bool IsMain() const;
 
 		NEXUS_EDITOR_API NxEn::Object* GetTarget() const { return Target; }
 		NEXUS_EDITOR_API NxEn::World* GetWorld() const { return Viewer && Viewer->GetContext() ? Viewer->GetContext()->GetWorld() : nullptr;  }
@@ -39,8 +42,10 @@ namespace NxEd
 
 	private:
 		NxEn::Object* Target;
+
 		uint32 DockId;
 		bool Layout;
+		bool Main;
 
 		ViewerPanel* Viewer;
 		InspectorPanel* Inspector;

@@ -51,7 +51,8 @@ namespace NxEd
 	{
 		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
 
-		CreateStage(World);
+		Stage* Instance = CreateStage(World);
+		Instance->Main = true;
 		ShowStage(World);
 	}
 

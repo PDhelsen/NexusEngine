@@ -11,7 +11,7 @@ namespace NxEd
 	NEXUS_OBJECT_IMPLEMENTATION(Stage)
 
 	Stage::Stage(NxEn::Object* Target)
-		: Target(Target), Layout(false), Viewer(nullptr), Inspector(nullptr), Hierarchy(nullptr)
+		: Target(Target), DockId(0), Layout(false), Main(false), Viewer(nullptr), Inspector(nullptr), Hierarchy(nullptr)
 	{
 	}
 
@@ -33,6 +33,11 @@ namespace NxEd
 
 		NxFr::StringView Focused = Ctx->NavWindow->Name;
 		return Focused == Viewer->GetImGuiId() || Focused == Inspector->GetImGuiId() || Focused == Hierarchy->GetImGuiId();
+	}
+
+	bool Stage::IsMain() const
+	{
+		return Main;
 	}
 
 	void Stage::OnInitialize()
@@ -108,8 +113,8 @@ namespace NxEd
 
 	void Stage::DrawDocking()
 	{
-		ImGui::SetNextWindowPos(DockDefaultPos, ImGuiCond_FirstUseEver);
-		ImGui::SetNextWindowSize(DockDefaultSize, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(DockDefaultPos, Main ? ImGuiCond_FirstUseEver : ImGuiCond_Once);
+		ImGui::SetNextWindowSize(DockDefaultSize, Main ? ImGuiCond_FirstUseEver : ImGuiCond_Once);
 
 		bool IsOpen = IsVisible();
 		DockId = ImGui::GetID(GetImGuiId().C());
