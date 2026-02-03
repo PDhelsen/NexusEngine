@@ -14,7 +14,7 @@ namespace NxEd
 
 		NEXUS_EDITOR_API void Refresh() override;
 
-		NEXUS_EDITOR_API void SetRoot(NxFr::Handle<NxEn::GameObject> Target);
+		NEXUS_EDITOR_API void Show(NxFr::Handle<NxEn::GameObject> Target);
 		NEXUS_EDITOR_API void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
 
 	protected:
