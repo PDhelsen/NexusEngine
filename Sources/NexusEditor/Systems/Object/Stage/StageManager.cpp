@@ -3,12 +3,17 @@
 
 namespace NxEd
 {
-	const static NxEn::GUI::Menu::Item MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/Stages/Main", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/World/Stage", NxFr::Delegate<void()>([]()
 	{
-		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
+		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
+		StageManager& Stages = NxEn::Application::GetSystem<EditorSystem>()->GetStageManager();
 
-		Editor->GetStageManager().ShowStage(Worlds->GetWorld());
+		Stage* StageView = Stages.GetStage(World);
+		if (!StageView)
+		{
+			StageView = Stages.CreateStage(World);
+		}
+		Stages.ShowStage(World);
 	}));
 
 	const static NxEn::Command CmdStageShowAsset = NxEn::Command::Create("Stage.Show.Asset"_Sid, "Show asset on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
@@ -51,8 +56,7 @@ namespace NxEd
 	{
 		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
 
-		Stage* Instance = CreateStage(World);
-		Instance->Main = true;
+		CreateStage(World);
 		ShowStage(World);
 	}
 
@@ -66,7 +70,14 @@ namespace NxEd
 
 	Stage* StageManager::CreateStage(NxEn::Object* Target)
 	{
-		Stage* Instance = new Stage(Target);
+		Stage* Instance = GetStage(Target);
+		if (Instance)
+		{
+			return Instance;
+		}
+
+		Instance = new Stage(Target);
+		Instance->Main = Target == NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
 		Instance->Initialize();
 
 		Stages.Append(Target, Instance);
