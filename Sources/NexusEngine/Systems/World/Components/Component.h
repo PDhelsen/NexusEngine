@@ -16,14 +16,6 @@ namespace NxEn
 		friend class WorldObjectFactory;
 		friend class GameObject;
 
-	protected:
-		template<typename T>
-		union SerializedReference
-		{
-			NxFr::GUID Id;
-			NxFr::Handle<T> Handle;
-		};
-
 		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
 
 	public:
