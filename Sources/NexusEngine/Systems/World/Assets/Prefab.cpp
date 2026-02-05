@@ -23,6 +23,13 @@ namespace NxEn
 		SetDirty();
 	}
 
+	void Prefab::OnGui(float TimeStep)
+	{
+		Asset::OnGui(TimeStep);
+
+		GUI::Drawer<NxFr::StringView>::Property(Root->GetName(), "Root");
+	}
+
 	void Prefab::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
 		NxFr::Yaml::SerializeFile(Root->Save(), Content);

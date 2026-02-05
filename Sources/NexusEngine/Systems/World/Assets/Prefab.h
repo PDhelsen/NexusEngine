@@ -14,6 +14,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void SetRoot(NxFr::Handle<GameObject> Instance);
 
 	protected:
+		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
 		NEXUS_ENGINE_API void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
 		NEXUS_ENGINE_API void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
 		NEXUS_ENGINE_API void OnUnload() override;

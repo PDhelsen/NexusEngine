@@ -270,7 +270,12 @@ namespace NxEd
 
 			if (!IsInstantiable(Assets, Id))
 			{
-				Target = Assets->Load(Id);
+				Assets->Load(Id);
+			}
+
+			if (Assets->IsLoaded(Id))
+			{
+				Target = Assets->GetAsset(Id);
 			}
 		}
 

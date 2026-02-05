@@ -28,6 +28,13 @@ namespace NxEn
 		Root->SetEnabled(true);
 	}
 
+	void Scene::OnGui(float TimeStep)
+	{
+		Asset::OnGui(TimeStep);
+
+		GUI::Drawer<NxFr::StringView>::Property(Root->GetName(), "Root");
+	}
+
 	void Scene::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
 		NxFr::Yaml::SerializeFile(Root->Save(), Content);
