@@ -325,6 +325,21 @@ namespace NxEn
 		Selection.Append(Selected);
 	}
 
+	void TreePanel::UnselectItem(TreeItem* Item)
+	{
+		if (!Item)
+		{
+			return;
+		}
+
+		Item->Select(false);
+		Selection.Remove(Item);
+		if (Selected == Item)
+		{
+			Selected = nullptr;
+		}
+	}
+
 	void TreePanel::ShowItem(TreeItem* Item)
 	{
 		TreeItem* Parent = Item->GetParent();
