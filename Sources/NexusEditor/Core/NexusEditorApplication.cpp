@@ -1,5 +1,6 @@
 #include "NexusEditor/Core/NexusEditorApplication.h"
 
+#include "NexusEditor/Systems/Edit/EditSystem.h"
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
 
 namespace NxEd
@@ -12,6 +13,7 @@ namespace NxEd
 		NxEn::SystemManager& Systems = GetSystems();
 
 		Systems.CreateSystem<EditorSystem>();
+		Systems.CreateSystem<EditSystem>();
 
 		NxFr::Event<>& OnSave = Systems.GetSystem<EditorSystem>()->GetOnSave();
 		OnSave += [](){ Application::GetSystem<NxEn::GUISystem>()->SaveLayout(); };
@@ -32,6 +34,7 @@ namespace NxEd
 		NxEn::SystemManager& Systems = GetSystems();
 
 		Systems.DestroySystem<EditorSystem>();
+		Systems.DestroySystem<EditSystem>();
 	}
 
 	void NexusEditorApplication::OnInitialize()
@@ -40,6 +43,7 @@ namespace NxEd
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
 		Bootstrap.AppendSystem<EditorSystem>().AppendDependency<EditorSystem, NxEn::AssetsSystem>().AppendDependency<EditorSystem, NxEn::WorldSystem>();
+		Bootstrap.AppendSystem<EditSystem>().AppendDependency<EditSystem, EditorSystem>();
 
 		if (!IsHeadless())
 		{
@@ -57,7 +61,8 @@ namespace NxEd
 		NexusEngineApplication::OnShutdown();
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendSystem<EditorSystem>();
+		Unbootstrap.AppendSystem<EditSystem>();
+		Unbootstrap.AppendSystem<EditorSystem>().AppendDependency<EditorSystem, EditSystem>();
 		Unbootstrap.AppendDependency<NxEn::AssetsSystem, EditorSystem>();
 		Unbootstrap.AppendDependency<NxEn::WorldSystem, EditorSystem>();
 
@@ -78,5 +83,6 @@ namespace NxEd
 		NxEn::Ticker& Ticks = GetTicker();
 
 		Ticks.AppendSystem<EditorSystem>(NxEn::Ticker::TickBucket::Engine);
+		Ticks.AppendSystem<EditSystem>(NxEn::Ticker::TickBucket::Engine);
 	}
 }
