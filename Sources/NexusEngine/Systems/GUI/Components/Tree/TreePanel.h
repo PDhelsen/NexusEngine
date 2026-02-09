@@ -36,6 +36,7 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual TreeItem* FetchRootItem() = 0;
 		NEXUS_ENGINE_API virtual void OnCreateItem(TreeItem* Item);
 		NEXUS_ENGINE_API virtual void OnDestroyItem(TreeItem* Item);
+		NEXUS_ENGINE_API virtual void OnSelectItem(TreeItem* Item, bool State);
 
 		NEXUS_ENGINE_API virtual void DrawHeader(float TimeStep);
 		NEXUS_ENGINE_API virtual void DrawItem(float TimeStep, TreeItem* Item);

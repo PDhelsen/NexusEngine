@@ -2,6 +2,9 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyEditContext.h"
+
+#include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
 {
@@ -51,9 +54,57 @@ namespace NxEd
 		AppendAction<HierarchyActionInspect>();
 	}
 
+	void HierarchyPanel::OnShutdown()
+	{
+		TreePanel::OnShutdown();
+	}
+
+	void HierarchyPanel::OnEnable()
+	{
+		Context = new HierarchyEditContext(GetImGuiId(), Manager);
+		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
+			{
+				NxEn::TreeItem* Item = Manager->Items[Id];
+				SelectItem(Item, State, true, false);
+			};
+		Edit = NxEn::Application::GetSystem<EditSystem>();
+		Edit->RegisterContext(GetImGuiId(), Context);
+
+		TreePanel::OnEnable();
+	}
+
+	void HierarchyPanel::OnDisable()
+	{
+		TreePanel::OnDisable();
+
+		delete Edit->UnregisterContext(GetImGuiId());
+	}
+
+	void HierarchyPanel::OnGui(float TimeStep)
+	{
+		if (NxEn::GUI::Utils::IsPanelActive())
+		{
+			Edit::Context::SetCurrent(Context);
+		}
+
+		TreePanel::OnGui(TimeStep);
+	}
+
 	NxEn::TreeItem* HierarchyPanel::FetchRootItem()
 	{
 		return nullptr;
+	}
+
+	void HierarchyPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
+	{
+		if (State)
+		{
+			Edit->Select(Item->GetItemId(), Context->GetId());
+		}
+		else
+		{
+			Edit->Unselect(Item->GetItemId(), Context->GetId());
+		}
 	}
 
 	void HierarchyPanel::FindItem()

@@ -19,12 +19,19 @@ namespace NxEd
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;
+		NEXUS_EDITOR_API void OnShutdown() override;
 		NEXUS_EDITOR_API void OnEnable() override;
+		NEXUS_EDITOR_API void OnDisable() override;
+		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
 		NEXUS_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
+		NEXUS_EDITOR_API void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
 
 	private:
+		class EditSystem* Edit;
+
 		class AssetsBrowser* Browser;
+		class AssetsBrowserEditContext* Context;
 	};
 }
 

@@ -125,6 +125,10 @@ namespace NxEn
 		}
 	}
 
+	void TreePanel::OnSelectItem(TreeItem* Item, bool State)
+	{
+	}
+
 	void TreePanel::DrawHeader(float TimeStep)
 	{
 		Menu.Tick(TimeStep);
@@ -284,6 +288,7 @@ namespace NxEn
 			}
 
 			Instance->Select(State);
+			OnSelectItem(Instance, State);
 
 			if (State && !Selection.Contains(Instance))
 			{
@@ -300,6 +305,7 @@ namespace NxEn
 			for (auto& Item : Selection)
 			{
 				Item->Select(false);
+				OnSelectItem(Item, false);
 			}
 
 			Selection.Clear();

@@ -10,6 +10,7 @@ namespace NxEd
 	class AssetsBrowser
 	{
 		friend class AssetsBrowserPanel;
+		friend class AssetsBrowserEditContext;
 
 	public:
 		NEXUS_EDITOR_API AssetsBrowser();

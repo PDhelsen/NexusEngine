@@ -2,8 +2,10 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserAction.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
 {
@@ -56,14 +58,58 @@ namespace NxEd
 		AppendAction<AssetsBrowserActionReferences>();
 	}
 
+	void AssetsBrowserPanel::OnShutdown()
+	{
+		TreePanel::OnShutdown();
+	}
+
 	void AssetsBrowserPanel::OnEnable()
 	{
 		Browser = &NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+
+		Context = new AssetsBrowserEditContext(GetImGuiId(), Browser);
+		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
+		{
+			NxEn::TreeItem* Item = Browser->GetItem(Id);
+			SelectItem(Item, State, true, false);
+		};
+		Edit = NxEn::Application::GetSystem<EditSystem>();
+		Edit->RegisterContext(GetImGuiId(), Context);
+
 		TreePanel::OnEnable();
+	}
+
+	void AssetsBrowserPanel::OnDisable()
+	{
+		TreePanel::OnDisable();
+
+		delete Edit->UnregisterContext(GetImGuiId());
+	}
+
+	void AssetsBrowserPanel::OnGui(float TimeStep)
+	{
+		if (NxEn::GUI::Utils::IsPanelActive())
+		{
+			Edit::Context::SetCurrent(Context);
+		}
+
+		TreePanel::OnGui(TimeStep);
 	}
 
 	NxEn::TreeItem* AssetsBrowserPanel::FetchRootItem()
 	{
 		return Root;
+	}
+
+	void AssetsBrowserPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
+	{
+		if (State)
+		{
+			Edit->Select(Item->GetItemId(), Context->GetId());
+		}
+		else
+		{
+			Edit->Unselect(Item->GetItemId(), Context->GetId());
+		}
 	}
 }

@@ -1,2 +1,2 @@
-Shortcuts: {Editor.Save: Ctrl+S}
+Shortcuts: {Edit.Invert: Ctrl+I, Edit.SelectAll: Ctrl+A, Edit.UnselectAll: Ctrl+Shift+A, Editor.Save: Ctrl+S}
 Scene - Load scene in single mode: false

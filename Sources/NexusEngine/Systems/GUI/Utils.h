@@ -14,6 +14,7 @@ namespace NxEn
 			NEXUS_ENGINE_API NxFr::Vector2f Center(float WidgetSize, float Count = 0.0f, bool IncludePadding = true);
 			NEXUS_ENGINE_API float Center(NxFr::StringView Text);
 			NEXUS_ENGINE_API NxFr::String GenerateId(NxFr::StringView Label = "", NxFr::StringView Id = "");
+			NEXUS_ENGINE_API bool IsPanelActive();
 		}
 
 		namespace Draw

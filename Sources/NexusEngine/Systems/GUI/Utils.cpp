@@ -36,6 +36,13 @@ namespace NxEn
 			{
 				return "##" + (!Id.IsEmpty() ? Id : Label);
 			}
+
+			bool IsPanelActive()
+			{
+				return
+					(ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows) && (ImGui::IsMouseClicked(0) || ImGui::IsMouseClicked(1))) ||
+					(ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows) && ImGui::IsAnyItemActive());
+			}
 		}
 
 		namespace Draw
