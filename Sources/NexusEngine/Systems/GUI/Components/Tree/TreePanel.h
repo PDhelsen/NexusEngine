@@ -44,8 +44,7 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual void HandleSelection(TreeItem* Item);
 
 		NEXUS_ENGINE_API virtual void FindItem();
-		NEXUS_ENGINE_API virtual void SelectItem(TreeItem* Item, bool Additive, bool List);
-		NEXUS_ENGINE_API virtual void UnselectItem(TreeItem* Item);
+		NEXUS_ENGINE_API virtual void SelectItem(TreeItem* Item, bool State, bool Additive, bool List);
 		NEXUS_ENGINE_API virtual void ShowItem(TreeItem* Item);
 		NEXUS_ENGINE_API virtual bool IsItemVisible(TreeItem* Item);
 

@@ -48,7 +48,7 @@ namespace NxEn
 
 	void TreePanel::Select(TreeItem* Item)
 	{
-		SelectItem(Item, false, false);
+		SelectItem(Item, true, false, false);
 	}
 
 	void TreePanel::OnInitialize()
@@ -240,15 +240,15 @@ namespace NxEn
 	{
 		if (Inputs->CheckModifier(NxEn::Input::Modifier::Ctrl))
 		{
-			SelectItem(Item, true, false);
+			SelectItem(Item, !Item->IsSelected(), true, false);
 		}
 		else if (Inputs->CheckModifier(NxEn::Input::Modifier::Shift))
 		{
-			SelectItem(Item, true, true);
+			SelectItem(Item, !Item->IsSelected(), true, true);
 		}
 		else
 		{
-			SelectItem(Item, false, false);
+			SelectItem(Item, true, false, false);
 		}
 	}
 
@@ -274,8 +274,27 @@ namespace NxEn
 		}
 	}
 
-	void TreePanel::SelectItem(TreeItem* Item, bool Additive, bool List)
+	void TreePanel::SelectItem(TreeItem* Item, bool State, bool Additive, bool List)
 	{
+		auto ApplyState = [&](TreeItem* Instance)
+		{
+			if (State)
+			{
+				ShowItem(Instance);
+			}
+
+			Instance->Select(State);
+
+			if (State && !Selection.Contains(Instance))
+			{
+				Selection.Append(Instance);
+			}
+			else if (!State && Selection.Contains(Instance))
+			{
+				Selection.Remove(Instance);
+			}
+		};
+
 		if (!Item || !Additive)
 		{
 			for (auto& Item : Selection)
@@ -292,8 +311,7 @@ namespace NxEn
 			return;
 		}
 
-		Item->Select(!Item->IsSelected());
-		ShowItem(Item);
+		ApplyState(Item);
 
 		if (List && Selected)
 		{
@@ -305,8 +323,7 @@ namespace NxEn
 			{
 				if (IsItemVisible(I1))
 				{
-					I1->Select(Item->IsSelected());
-					Selection.Append(I1);
+					ApplyState(I1);
 				}
 
 				I1 = I1->GetIterator();
@@ -315,26 +332,16 @@ namespace NxEn
 			{
 				if (IsItemVisible(I1))
 				{
-					I1->Select(Item->IsSelected());
-					Selection.Append(I1);
+					ApplyState(I1);
 				}
 			}
 		}
 
-		Selected = Item;
-		Selection.Append(Selected);
-	}
-
-	void TreePanel::UnselectItem(TreeItem* Item)
-	{
-		if (!Item)
+		if (State && Selected != Item)
 		{
-			return;
+			Selected = Item;
 		}
-
-		Item->Select(false);
-		Selection.Remove(Item);
-		if (Selected == Item)
+		else if (!State && Selected == Item)
 		{
 			Selected = nullptr;
 		}
