@@ -300,6 +300,6 @@ namespace NxEd
 
 		ReferencesPanel* References = NxEn::GUISystem::GetPanel<ReferencesPanel>();
 		References->Show();
-		References->Select(Target->GetItemId());
+		References->Select(Target->GetItemId(), false, true);
 	}
 }
