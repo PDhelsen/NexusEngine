@@ -2,6 +2,7 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
+#include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
 {
@@ -44,6 +45,8 @@ namespace NxEd
 		void SortNodes(NxFr::GUID Id, int32 Depth = 0, bool From = true, bool To = true);
 		void AlignNodes();
 
+		void OnSelectionChanged(NxFr::GUID Id, bool State);
+
 		inline NxFr::Colors::Bits GetColorBackground() const { return NxFr::Colors::Bits(60, 60, 70, 255); }
 		inline NxFr::Colors::Bits GetColorBorder() const { return NxFr::Colors::Bits(120, 120, 140, 255); }
 		inline NxFr::Colors::Bits GetColorBright() const { return NxFr::Colors::Bits(255, 255, 255, 255); }
@@ -63,6 +66,7 @@ namespace NxEd
 
 		NxEn::InputSystem* Inputs;
 		NxEn::AssetsSystem* Assets;
+		EditSystem* Edit;
 
 		NxFr::Graph<Node> Nodes;
 		NxFr::Dictionary<NxFr::GUID, Node*> Ids;
@@ -70,5 +74,6 @@ namespace NxEd
 		NxFr::GUID Selected;
 		NxFr::GUID Inspected;
 		bool Full;
+		bool Lock;
 	};
 }

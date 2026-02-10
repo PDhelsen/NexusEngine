@@ -1,4 +1,5 @@
 #include "NexusEditor/Systems/Assets/References/ReferencesPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 namespace NxEd
 {
@@ -22,6 +23,11 @@ namespace NxEd
 
 	void ReferencesPanel::Select(NxFr::GUID Id, bool Keep)
 	{
+		if (Lock)
+		{
+			return;
+		}
+
 		if (Keep)
 		{
 			Selection.Clear();
@@ -60,10 +66,12 @@ namespace NxEd
 
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 		SetTitle("References");
+		Lock = false;
 
 		Menu.AddMenuItem("Refresh", { this, &ReferencesPanel::Refresh }, 0);
 		Menu.AddMenuItem("Center", { this, &ReferencesPanel::Center }, 1);
 		Menu.AddMenuToggle("Full", &Full, nullptr, 2);
+		Menu.AddMenuToggle("Lock", &Lock, nullptr, 3);
 	}
 
 	void ReferencesPanel::OnShutdown()
@@ -80,6 +88,17 @@ namespace NxEd
 
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		Edit = NxEn::Application::GetSystem<EditSystem>();
+
+		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+		if (Browser)
+		{
+			Edit::Context* Ctx = Edit->GetContext(Browser->GetImGuiId());
+			if (Ctx)
+			{
+				Ctx->GetOnSelectionChanged() += { this, &ReferencesPanel::OnSelectionChanged };
+			}
+		}
 
 		Full = false;
 		Select(0);
@@ -88,6 +107,16 @@ namespace NxEd
 	void ReferencesPanel::OnDisable()
 	{
 		Clear();
+
+		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+		if (Browser)
+		{
+			Edit::Context* Ctx = Edit->GetContext(Browser->GetImGuiId());
+			if (Ctx)
+			{
+				Ctx->GetOnSelectionChanged() -= { this, &ReferencesPanel::OnSelectionChanged };
+			}
+		}
 
 		Menu.SetEnabled(false);
 		Panel::OnDisable();
@@ -318,5 +347,15 @@ namespace NxEd
 				List[Index]->Position.y = (float)Index - (List.GetCount() * 0.5f);
 			}
 		}
+	}
+
+	void ReferencesPanel::OnSelectionChanged(NxFr::GUID Id, bool State)
+	{
+		if (!State)
+		{
+			return;
+		}
+
+		Select(Id);
 	}
 }

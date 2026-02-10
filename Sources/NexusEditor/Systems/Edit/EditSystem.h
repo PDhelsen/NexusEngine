@@ -5,7 +5,6 @@
 
 namespace NxEd
 {
-
 	class EditSystem : public NxEn::System
 	{
 	public:
