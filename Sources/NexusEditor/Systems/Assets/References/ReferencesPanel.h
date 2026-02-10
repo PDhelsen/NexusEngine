@@ -19,9 +19,12 @@ namespace NxEd
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, ReferencesPanel)
 
 		NEXUS_EDITOR_API void Clear();
-		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Keep = false);
+		NEXUS_EDITOR_API void Select(NxFr::GUID Id, bool Keep = false, bool Force = false);
 		NEXUS_EDITOR_API void Refresh();
 		NEXUS_EDITOR_API void Center();
+
+		NEXUS_EDITOR_API bool IsLocked() const { return Lock; }
+		NEXUS_EDITOR_API void SetLocked(bool State) { Lock = State; }
 
 	protected:
 		NEXUS_EDITOR_API void OnInitialize() override;

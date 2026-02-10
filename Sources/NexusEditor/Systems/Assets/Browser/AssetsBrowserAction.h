@@ -115,23 +115,12 @@ namespace NxEd
 		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionInspect : public NxEn::TreeAction
-	{
-	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionInspect)
-
-		NEXUS_EDITOR_API AssetsBrowserActionInspect() : TreeAction("Inspect", 11, false, false) {}
-		NEXUS_EDITOR_API virtual ~AssetsBrowserActionInspect() = default;
-
-		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
-	};
-
 	class AssetsBrowserActionView : public NxEn::TreeAction
 	{
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionView)
 
-		NEXUS_EDITOR_API AssetsBrowserActionView() : TreeAction("View", 12, false, false) {}
+		NEXUS_EDITOR_API AssetsBrowserActionView() : TreeAction("View", 11, false, false) {}
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionView() = default;
 
 		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
@@ -142,7 +131,7 @@ namespace NxEd
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserActionReferences)
 
-		NEXUS_EDITOR_API AssetsBrowserActionReferences() : TreeAction("References", 13, false, false) {}
+		NEXUS_EDITOR_API AssetsBrowserActionReferences() : TreeAction("References", 12, false, false) {}
 		NEXUS_EDITOR_API virtual ~AssetsBrowserActionReferences() = default;
 
 		NEXUS_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;

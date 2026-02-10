@@ -138,6 +138,6 @@ namespace NxEd
 		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
 		InspectorPanel* Inspector = Editor->GetStageManager().GetFocusedStage()->GetInspector();
 
-		Inspector->Show(Item->GetTarget());
+		Inspector->Show(Item->GetTarget(), true);
 	}
 }

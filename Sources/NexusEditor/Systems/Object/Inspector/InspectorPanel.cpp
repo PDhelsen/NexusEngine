@@ -13,9 +13,9 @@ namespace NxEd
 	{
 	}
 
-	void InspectorPanel::Show(NxEn::Object* Instance)
+	void InspectorPanel::Show(NxEn::Object* Instance, bool Force)
 	{
-		if (Lock || !Instance)
+		if (!Instance || (Lock && !Force))
 		{
 			return;
 		}
@@ -26,9 +26,9 @@ namespace NxEd
 		Mode = InspectorMode::Object;
 	}
 
-	void InspectorPanel::Show(NxFr::Handle<NxEn::Object> Instance)
+	void InspectorPanel::Show(NxFr::Handle<NxEn::Object> Instance, bool Force)
 	{
-		if (Lock || !Instance)
+		if (!Instance || (Lock && !Force))
 		{
 			return;
 		}

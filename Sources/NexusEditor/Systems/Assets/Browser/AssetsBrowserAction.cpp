@@ -224,9 +224,7 @@ namespace NxEd
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
-
-		NxEn::World* World = Editor->GetStageManager().GetFocusedStage()->GetWorld();
-		NxFr::GUID WorldId = World ? World->GetId() : NxEn::WorldSystem::WorldId.GetId();
+		NxFr::GUID WorldId = NxEn::WorldSystem::WorldId.GetId();
 
 		for (auto& Item : Items)
 		{
@@ -254,38 +252,9 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionInspect)
-
-	void AssetsBrowserActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
-		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
-
-		NxEn::Asset* Target = nullptr;
-
-		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
-		if (Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
-		{
-			NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-			NxFr::GUID Id = Item->GetItemId();
-
-			if (!IsInstantiable(Assets, Id))
-			{
-				Assets->Load(Id);
-			}
-
-			if (Assets->IsLoaded(Id))
-			{
-				Target = Assets->GetAsset(Id);
-			}
-		}
-
-		InspectorPanel* Inspector = Editor->GetStageManager().GetMainStage()->GetInspector();
-		Inspector->Show(Target);
-	}
-
 	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionView)
 
-		void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();

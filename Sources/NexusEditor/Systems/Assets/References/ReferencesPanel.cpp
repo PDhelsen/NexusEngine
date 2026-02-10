@@ -21,9 +21,9 @@ namespace NxEd
 		Inspected = 0;
 	}
 
-	void ReferencesPanel::Select(NxFr::GUID Id, bool Keep)
+	void ReferencesPanel::Select(NxFr::GUID Id, bool Keep, bool Force)
 	{
-		if (Lock)
+		if (Lock && !Force)
 		{
 			return;
 		}
