@@ -15,38 +15,28 @@ namespace NxEd
 
 	void InspectorPanel::Show(NxEn::Object* Instance)
 	{
-		if (Lock)
-		{
-			return;
-		}
-
-		Target.Object = Instance;
-		Mode = InspectorMode::Object;
-
-		if (!Instance)
+		if (Lock || !Instance)
 		{
 			return;
 		}
 
 		Panel::Show();
+
+		Target.Object = Instance;
+		Mode = InspectorMode::Object;
 	}
 
 	void InspectorPanel::Show(NxFr::Handle<NxEn::Object> Instance)
 	{
-		if (Lock)
-		{
-			return;
-		}
-
-		Target.Handle = Instance;
-		Mode = InspectorMode::Handle;
-
-		if (!Instance)
+		if (Lock || !Instance)
 		{
 			return;
 		}
 
 		Panel::Show();
+
+		Target.Handle = Instance;
+		Mode = InspectorMode::Handle;
 	}
 
 	void InspectorPanel::OnInitialize()

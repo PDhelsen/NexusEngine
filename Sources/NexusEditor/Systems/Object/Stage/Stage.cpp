@@ -1,5 +1,6 @@
 #include "NexusEditor/Systems/Object/Stage/Stage.h"
 
+#include "NexusEditor/Systems/Edit/EditSystem.h"
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
 #include "NexusEditor/Systems/Object/Viewer/Contexts/ViewerContext3D.h"
 
@@ -86,11 +87,25 @@ namespace NxEd
 			Hierarchy->Show(GetWorld()->GetRootGameObject());
 		}
 
+		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
+		Edit::Context* Ctx = Edit->GetContext(Hierarchy->GetImGuiId());
+		if (Ctx)
+		{
+			Ctx->GetOnSelectionChanged() += { this, & Stage::OnSelectionChanged };
+		}
+
 		Layout = true;
 	}
 
 	void Stage::OnDisable()
 	{
+		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
+		Edit::Context* Ctx = Edit->GetContext(Hierarchy->GetImGuiId());
+		if (Ctx)
+		{
+			Ctx->GetOnSelectionChanged() -= { this, & Stage::OnSelectionChanged };
+		}
+
 		if (GetWorld())
 		{
 			Hierarchy->Hide();
@@ -109,6 +124,24 @@ namespace NxEd
 		Viewer->Tick(TimeStep);
 		Inspector->Tick(TimeStep);
 		Hierarchy->Tick(TimeStep);
+	}
+
+	void Stage::OnSelectionChanged(NxFr::GUID Id, bool State)
+	{
+		NxEn::World* World = GetWorld();
+		if (!World)
+		{
+			return;
+		}
+
+		if (State)
+		{
+			Inspector->Show(World->GetGameObject(Id));
+		}
+		else
+		{
+			Inspector->Show(Target);
+		}
 	}
 
 	void Stage::DrawDocking()

@@ -37,6 +37,8 @@ namespace NxEd
 		NEXUS_EDITOR_API void OnDisable() override;
 		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
+		NEXUS_EDITOR_API void OnSelectionChanged(NxFr::GUID Id, bool State);
+
 		NEXUS_EDITOR_API void DrawDocking();
 		NEXUS_EDITOR_API void DockPanels();
 
