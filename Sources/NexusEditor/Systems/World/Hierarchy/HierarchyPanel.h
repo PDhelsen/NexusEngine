@@ -8,6 +8,7 @@ namespace NxEd
 	class HierarchyPanel : public NxEn::TreePanel
 	{
 		friend class HierarchyManager;
+		friend class HierarchyEditContext;
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyPanel)

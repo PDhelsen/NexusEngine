@@ -61,7 +61,7 @@ namespace NxEd
 
 	void HierarchyPanel::OnEnable()
 	{
-		Context = new HierarchyEditContext(GetImGuiId(), Manager);
+		Context = new HierarchyEditContext(GetImGuiId(), this);
 		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
 			{
 				NxEn::TreeItem* Item = Manager->Items[Id];

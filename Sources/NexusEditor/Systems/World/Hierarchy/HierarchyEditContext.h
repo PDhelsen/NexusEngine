@@ -10,7 +10,7 @@ namespace NxEd
 	public:
 		NEXUS_EDITCONTEXT_DECLARATION(NEXUS_EDITOR_API, World)
 
-		NEXUS_EDITOR_API HierarchyEditContext(NxFr::StringId Id, HierarchyManager* Hierarchy);
+		NEXUS_EDITOR_API HierarchyEditContext(NxFr::StringId Id, HierarchyPanel* Hierarchy);
 		NEXUS_EDITOR_API ~HierarchyEditContext();
 
 	protected:
@@ -18,7 +18,7 @@ namespace NxEd
 		NEXUS_EDITOR_API uint64 GetCount() override;
 
 	private:
-		HierarchyManager* Hierarchy;
+		HierarchyPanel* Hierarchy;
 	};
 }
 
