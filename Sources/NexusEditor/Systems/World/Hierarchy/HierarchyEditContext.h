@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Systems/Edit/EditContext.h"
-#include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
 
 namespace NxEd
 {

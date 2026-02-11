@@ -1,9 +1,11 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
 namespace NxEd
 {
-	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowser* Browser)
-		: Edit::Context(Id), Browser(Browser)
+	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowserPanel* Assets)
+		: Edit::Context(Id), Assets(Assets)
 	{
 	}
 
@@ -13,11 +15,11 @@ namespace NxEd
 
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetAll()
 	{
-		return NxFr::ContainersUtils::ToArrayKeys(Browser->Items);
+		return NxFr::ContainersUtils::ToArrayKeys(Assets->Browser->Items);
 	}
 
 	uint64 AssetsBrowserEditContext::GetCount()
 	{
-		return Browser->Items.GetCount();
+		return Assets->Browser->Items.GetCount();
 	}
 }

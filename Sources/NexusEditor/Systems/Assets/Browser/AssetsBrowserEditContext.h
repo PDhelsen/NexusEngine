@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Systems/Edit/EditContext.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 namespace NxEd
 {
@@ -10,7 +10,7 @@ namespace NxEd
 	public:
 		NEXUS_EDITCONTEXT_DECLARATION(NEXUS_EDITOR_API, Assets)
 
-		NEXUS_EDITOR_API AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowser* Browser);
+		NEXUS_EDITOR_API AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowserPanel* Assets);
 		NEXUS_EDITOR_API ~AssetsBrowserEditContext();
 
 	protected:
@@ -18,7 +18,7 @@ namespace NxEd
 		NEXUS_EDITOR_API uint64 GetCount() override;
 
 	private:
-		AssetsBrowser* Browser;
+		AssetsBrowserPanel* Assets;
 	};
 }
 

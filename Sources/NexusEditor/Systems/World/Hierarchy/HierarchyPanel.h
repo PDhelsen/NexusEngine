@@ -36,7 +36,7 @@ namespace NxEd
 	private:
 		class EditSystem* Edit;
 
-		HierarchyManager* Manager;
+		class HierarchyManager* Manager;
 		class HierarchyEditContext* Context;
 	};
 }

@@ -66,7 +66,7 @@ namespace NxEd
 	{
 		Browser = &NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
 
-		Context = new AssetsBrowserEditContext(GetImGuiId(), Browser);
+		Context = new AssetsBrowserEditContext(GetImGuiId(), this);
 		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
 		{
 			NxEn::TreeItem* Item = Browser->GetItem(Id);

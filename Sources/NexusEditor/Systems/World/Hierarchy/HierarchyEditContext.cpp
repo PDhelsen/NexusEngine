@@ -1,4 +1,5 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyEditContext.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 
 namespace NxEd
 {
