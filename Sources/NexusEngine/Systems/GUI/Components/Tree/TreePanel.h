@@ -24,6 +24,8 @@ namespace NxEn
 		void AppendAction();
 		template<typename T>
 		void RemoveAction();
+		template<typename T>
+		void RunAction();
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -93,6 +95,20 @@ namespace NxEn
 			delete Actions[Index];
 			Actions.Remove(Index);
 			SortActions();
+		}
+	}
+
+	template<typename T>
+	inline void TreePanel::RunAction()
+	{
+		for (uint64 Index = 0; Index < Actions.GetCount(); ++Index)
+		{
+			TreeAction* Action = Actions[Index];
+			if (Actions[Index]->GetObjectType() == T::GetClassType())
+			{
+				ActionRequested = Action;
+				return;
+			}
 		}
 	}
 }

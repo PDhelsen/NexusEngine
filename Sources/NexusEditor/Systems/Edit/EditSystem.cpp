@@ -3,17 +3,29 @@
 
 namespace NxEd
 {
-	const static NxEn::Command CmdEditSelectAll = NxEn::Command::Create("Edit.SelectAll"_Sid, "Select all object in the current context", NxFr::Delegate<void()>([]()
+	const static NxEn::Command CmdEditSelectAll = NxEn::Command::Create("Edit.SelectAll"_Sid, "Select all objects in the current context", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditSystem>()->Select();
 	}));
-	const static NxEn::Command CmdEditUnselectAll = NxEn::Command::Create("Edit.UnselectAll"_Sid, "Unselect all object in the current context", NxFr::Delegate<void()>([]()
+	const static NxEn::Command CmdEditUnselectAll = NxEn::Command::Create("Edit.UnselectAll"_Sid, "Unselect all objects in the current context", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditSystem>()->Unselect();
 	}));
 	const static NxEn::Command CmdEditInvert = NxEn::Command::Create("Edit.Invert"_Sid, "Invert selection in the current context", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditSystem>()->InvertSelection();
+	}));
+	const static NxEn::Command CmdEditRename = NxEn::Command::Create("Edit.Rename"_Sid, "Rename selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Rename();
+	}));
+	const static NxEn::Command CmdEditDuplicate = NxEn::Command::Create("Edit.Duplicate"_Sid, "Duplicate selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Duplicate();
+	}));
+	const static NxEn::Command CmdEditDelete = NxEn::Command::Create("Edit.Delete"_Sid, "Delete selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Delete();
 	}));
 
 	const static NxEn::GUI::Menu::Item MenuItemEditSelectAll = NxEn::GUI::Menu::Item::Create("Edit/Selection/SelectAll", NxFr::Delegate<void()>([]()
@@ -27,6 +39,18 @@ namespace NxEd
 	const static NxEn::GUI::Menu::Item MenuItemEditInvert = NxEn::GUI::Menu::Item::Create("Edit/Selection/Invert", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Invert");
+	}));
+	const static NxEn::GUI::Menu::Item MenuItemEditRename = NxEn::GUI::Menu::Item::Create("Edit/Selection/Rename", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Rename");
+	}));
+	const static NxEn::GUI::Menu::Item MenuItemEditDuplicate = NxEn::GUI::Menu::Item::Create("Edit/Selection/Duplicate", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Duplicate");
+	}));
+	const static NxEn::GUI::Menu::Item MenuItemEditDelete = NxEn::GUI::Menu::Item::Create("Edit/Selection/Delete", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Delete");
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(EditSystem)
@@ -224,5 +248,38 @@ namespace NxEd
 		}
 
 		return Ctx->GetSelectionCount();
+	}
+
+	void EditSystem::Rename(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Rename();
+	}
+
+	void EditSystem::Duplicate(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Duplicate();
+	}
+
+	void EditSystem::Delete(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Delete();
 	}
 }

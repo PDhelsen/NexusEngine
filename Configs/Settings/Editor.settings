@@ -1,2 +1,2 @@
-Shortcuts: {Edit.Invert: Ctrl+I, Edit.SelectAll: Ctrl+A, Edit.UnselectAll: Ctrl+Shift+A, Editor.Save: Ctrl+S}
+Shortcuts: {Edit.Delete: Delete, Edit.Duplicate: Ctrl+D, Edit.Invert: Ctrl+I, Edit.Rename: F2, Edit.SelectAll: Ctrl+A, Edit.UnselectAll: Ctrl+Shift+A, Editor.Save: Ctrl+S}
 Scene - Load scene in single mode: false

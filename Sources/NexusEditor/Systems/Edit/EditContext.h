@@ -29,6 +29,9 @@ namespace NxEd
 			NEXUS_EDITOR_API virtual NxFr::StringId GetObjectLabel() const = 0;
 
 		protected:
+			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetAll() = 0;
+			NEXUS_EDITOR_API virtual uint64 GetCount() = 0;
+
 			NEXUS_EDITOR_API void Select(NxFr::GUID InstanceId);
 			NEXUS_EDITOR_API void Unselect(NxFr::GUID InstanceId);
 			NEXUS_EDITOR_API void Invert(NxFr::GUID InstanceId);
@@ -37,8 +40,9 @@ namespace NxEd
 			NEXUS_EDITOR_API NxFr::Array<NxFr::GUID> GetSelection() const;
 			NEXUS_EDITOR_API uint64 GetSelectionCount() const;
 
-			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetAll() = 0;
-			NEXUS_EDITOR_API virtual uint64 GetCount() = 0;
+			NEXUS_EDITOR_API virtual void Rename();
+			NEXUS_EDITOR_API virtual void Duplicate();
+			NEXUS_EDITOR_API virtual void Delete();
 
 		private:
 			NxFr::Event<NxFr::GUID, bool> OnSelectionChanged;

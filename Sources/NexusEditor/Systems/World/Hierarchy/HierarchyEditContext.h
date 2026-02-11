@@ -17,6 +17,10 @@ namespace NxEd
 		NEXUS_EDITOR_API NxFr::Array<NxFr::GUID> GetAll() override;
 		NEXUS_EDITOR_API uint64 GetCount() override;
 
+		NEXUS_EDITOR_API void Rename() override;
+		NEXUS_EDITOR_API void Duplicate() override;
+		NEXUS_EDITOR_API void Delete() override;
+
 	private:
 		HierarchyPanel* Hierarchy;
 	};

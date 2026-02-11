@@ -1,5 +1,6 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyEditContext.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
 
 namespace NxEd
 {
@@ -32,5 +33,20 @@ namespace NxEd
 	{
 		HierarchyItem* Item = static_cast<HierarchyItem*>(Hierarchy->Root);
 		return Item->GetTarget()->GetChildCount() + 1;
+	}
+
+	void HierarchyEditContext::Rename()
+	{
+		Hierarchy->RunAction<HierarchyActionRename>();
+	}
+
+	void HierarchyEditContext::Duplicate()
+	{
+		Hierarchy->RunAction<HierarchyActionDuplicate>();
+	}
+
+	void HierarchyEditContext::Delete()
+	{
+		Hierarchy->RunAction<HierarchyActionDelete>();
 	}
 }

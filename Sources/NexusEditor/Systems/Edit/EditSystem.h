@@ -28,6 +28,10 @@ namespace NxEd
 		NEXUS_EDITOR_API NxFr::Array<NxFr::GUID> GetSelection(NxFr::StringId ContextId = 0) const;
 		NEXUS_EDITOR_API uint64 SelectionCount(NxFr::StringId ContextId = 0) const;
 
+		NEXUS_EDITOR_API void Rename(NxFr::StringId ContextId = 0);
+		NEXUS_EDITOR_API void Duplicate(NxFr::StringId ContextId = 0);
+		NEXUS_EDITOR_API void Delete(NxFr::StringId ContextId = 0);
+
 	private:
 		NxFr::Dictionary<NxFr::StringId, Edit::Context*> Contexts;
 	};
