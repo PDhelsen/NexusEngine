@@ -27,6 +27,18 @@ namespace NxEd
 	{
 		NxEn::Application::GetSystem<EditSystem>()->Delete();
 	}));
+	const static NxEn::Command CmdEditCut = NxEn::Command::Create("Edit.Cut"_Sid, "Rename selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Cut();
+	}));
+	const static NxEn::Command CmdEditCopy = NxEn::Command::Create("Edit.Copy"_Sid, "Duplicate selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Copy();
+	}));
+	const static NxEn::Command CmdEditPaste = NxEn::Command::Create("Edit.Paste"_Sid, "Delete selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Paste();
+	}));
 
 	const static NxEn::GUI::Menu::Item MenuItemEditSelectAll = NxEn::GUI::Menu::Item::Create("Edit/Selection/SelectAll", NxFr::Delegate<void()>([]()
 	{
@@ -40,17 +52,29 @@ namespace NxEd
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Invert");
 	}));
-	const static NxEn::GUI::Menu::Item MenuItemEditRename = NxEn::GUI::Menu::Item::Create("Edit/Selection/Rename", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemEditRename = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Rename", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Rename");
 	}));
-	const static NxEn::GUI::Menu::Item MenuItemEditDuplicate = NxEn::GUI::Menu::Item::Create("Edit/Selection/Duplicate", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemEditDuplicate = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Duplicate", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Duplicate");
 	}));
-	const static NxEn::GUI::Menu::Item MenuItemEditDelete = NxEn::GUI::Menu::Item::Create("Edit/Selection/Delete", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemEditDelete = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Delete", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Delete");
+	}));
+	const static NxEn::GUI::Menu::Item MenuItemEditCut = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Cut", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Cut");
+	}));
+	const static NxEn::GUI::Menu::Item MenuItemEditCopy = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Copy", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Copy");
+	}));
+	const static NxEn::GUI::Menu::Item MenuItemEditPaste = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Paste", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Paste");
 	}));
 
 	NEXUS_OBJECT_IMPLEMENTATION(EditSystem)
@@ -281,5 +305,37 @@ namespace NxEd
 		}
 
 		Ctx->Delete();
+	}
+	void EditSystem::Cut(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Cut();
+	}
+
+	void EditSystem::Copy(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Copy();
+	}
+
+	void EditSystem::Paste(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Paste();
 	}
 }

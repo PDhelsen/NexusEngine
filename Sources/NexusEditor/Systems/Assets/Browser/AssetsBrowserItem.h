@@ -8,6 +8,7 @@ namespace NxEd
 	class AssetsBrowserItem : public NxEn::TreeItem
 	{
 		friend class AssetsBrowser;
+		friend class AssetsBrowserEditContext;
 
 	public:
 		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserItem)

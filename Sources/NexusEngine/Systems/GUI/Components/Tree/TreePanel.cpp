@@ -312,7 +312,7 @@ namespace NxEn
 			Selected = nullptr;
 		}
 
-		if (!Item)
+		if (!Item || Item->IsSelected() == State)
 		{
 			return;
 		}

@@ -31,6 +31,9 @@ namespace NxEd
 		NEXUS_EDITOR_API void Rename(NxFr::StringId ContextId = 0);
 		NEXUS_EDITOR_API void Duplicate(NxFr::StringId ContextId = 0);
 		NEXUS_EDITOR_API void Delete(NxFr::StringId ContextId = 0);
+		NEXUS_EDITOR_API void Cut(NxFr::StringId ContextId = 0);
+		NEXUS_EDITOR_API void Copy(NxFr::StringId ContextId = 0);
+		NEXUS_EDITOR_API void Paste(NxFr::StringId ContextId = 0);
 
 	private:
 		NxFr::Dictionary<NxFr::StringId, Edit::Context*> Contexts;

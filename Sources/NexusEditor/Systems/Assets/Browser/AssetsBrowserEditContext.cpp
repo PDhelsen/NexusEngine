@@ -38,4 +38,89 @@ namespace NxEd
 	{
 		Assets->RunAction<AssetsBrowserActionDelete>();
 	}
+
+	void AssetsBrowserEditContext::Cut()
+	{
+		ClearClipboard();
+		CopySelection();
+		IsCutting = true;
+	}
+
+	void AssetsBrowserEditContext::Copy()
+	{
+		ClearClipboard();
+		CopySelection();
+	}
+
+	void AssetsBrowserEditContext::Paste()
+	{
+		PasteClipboard();
+		if (IsCutting)
+		{
+			DestroyClipboard();
+			ClearClipboard();
+		}
+	}
+
+	NxFr::Set<NxFr::GUID> AssetsBrowserEditContext::FilterSelection()
+	{
+		NxFr::Set<NxFr::GUID> Result = Selection.GetCapacity();
+
+		for (auto Id : Selection)
+		{
+			AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Id]);
+			AssetsBrowserItem* Parent = Target->GetParent();
+			bool Selected = false;
+
+			while (Parent)
+			{
+				if (Selection.Contains(Parent->GetId()))
+				{
+					Selected = true;
+					break;
+				}
+				Parent = Parent->GetParent();
+			}
+
+			if (!Selected)
+			{
+				Result.Append(Id);
+			}
+		}
+
+		return Result;
+	}
+
+	void AssetsBrowserEditContext::CopySelection()
+	{
+		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+		Clipboard.AppendRange(Instances);
+	}
+
+	void AssetsBrowserEditContext::DestroyClipboard()
+	{
+		for (auto Id : Clipboard)
+		{
+			AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Id]);
+			Assets->Browser->Delete(Target->GetTargetPath());
+		}
+	}
+
+	void AssetsBrowserEditContext::PasteClipboard()
+	{
+		AssetsBrowserItem* Parent = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Selected]);
+		NxFr::Path Root = Parent->IsDirectory() ? Parent->GetTargetPath() : Parent->GetDirectory();
+
+		for (auto Id : Clipboard)
+		{
+			AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Id]);
+			Assets->Browser->Duplicate(Target->GetTargetPath(), NxFr::Path::Combine(Root, Target->GetTargetName()));
+		}
+	}
+
+	void AssetsBrowserEditContext::ClearClipboard()
+	{
+		Clipboard.Clear();
+		IsCutting = false;
+	}
 }

@@ -32,25 +32,29 @@ namespace NxEd
 			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetAll() = 0;
 			NEXUS_EDITOR_API virtual uint64 GetCount() = 0;
 
-			NEXUS_EDITOR_API void Select(NxFr::GUID InstanceId);
-			NEXUS_EDITOR_API void Unselect(NxFr::GUID InstanceId);
-			NEXUS_EDITOR_API void Invert(NxFr::GUID InstanceId);
-			NEXUS_EDITOR_API bool IsSelected(NxFr::GUID InstanceId) const;
-			NEXUS_EDITOR_API NxFr::GUID GetSelected() const;
-			NEXUS_EDITOR_API NxFr::Array<NxFr::GUID> GetSelection() const;
-			NEXUS_EDITOR_API uint64 GetSelectionCount() const;
+			NEXUS_EDITOR_API virtual void Select(NxFr::GUID InstanceId);
+			NEXUS_EDITOR_API virtual void Unselect(NxFr::GUID InstanceId);
+			NEXUS_EDITOR_API virtual void Invert(NxFr::GUID InstanceId);
+			NEXUS_EDITOR_API virtual bool IsSelected(NxFr::GUID InstanceId) const;
+			NEXUS_EDITOR_API virtual NxFr::GUID GetSelected() const;
+			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetSelection() const;
+			NEXUS_EDITOR_API virtual uint64 GetSelectionCount() const;
 
 			NEXUS_EDITOR_API virtual void Rename();
 			NEXUS_EDITOR_API virtual void Duplicate();
 			NEXUS_EDITOR_API virtual void Delete();
+			NEXUS_EDITOR_API virtual void Cut();
+			NEXUS_EDITOR_API virtual void Copy();
+			NEXUS_EDITOR_API virtual void Paste();
 
-		private:
+		protected:
 			NxFr::Event<NxFr::GUID, bool> OnSelectionChanged;
 
 			NxFr::StringId Id;
 
-			NxFr::Set<NxFr::GUID> Selection;
 			NxFr::GUID Selected;
+			NxFr::Set<NxFr::GUID> Selection;
+			NxFr::Set<NxFr::GUID> Clipboard;
 		};
 	}
 }

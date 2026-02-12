@@ -104,6 +104,18 @@ namespace NxEd
 		void Context::Delete()
 		{
 		}
+
+		void Context::Cut()
+		{
+		}
+
+		void Context::Copy()
+		{
+		}
+
+		void Context::Paste()
+		{
+		}
 	}
 }
 
