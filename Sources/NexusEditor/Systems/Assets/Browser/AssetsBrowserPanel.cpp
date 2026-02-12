@@ -83,6 +83,8 @@ namespace NxEd
 		TreePanel::OnDisable();
 
 		delete Edit->UnregisterContext(GetImGuiId());
+		Context = nullptr;
+		Edit = nullptr;
 	}
 
 	void AssetsBrowserPanel::OnGui(float TimeStep)
@@ -100,8 +102,20 @@ namespace NxEd
 		return Root;
 	}
 
+	void AssetsBrowserPanel::OnDestroyItem(NxEn::TreeItem* Item)
+	{
+		if (Edit && Context)
+		{
+			Edit->Unselect(Item->GetItemId(), Context->GetId());
+		}
+
+		TreePanel::OnDestroyItem(Item);
+	}
+
 	void AssetsBrowserPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
 	{
+		TreePanel::OnSelectItem(Item, State);
+
 		if (State)
 		{
 			Edit->Select(Item->GetItemId(), Context->GetId());

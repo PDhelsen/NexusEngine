@@ -78,6 +78,8 @@ namespace NxEd
 		TreePanel::OnDisable();
 
 		delete Edit->UnregisterContext(GetImGuiId());
+		Context = nullptr;
+		Edit = nullptr;
 	}
 
 	void HierarchyPanel::OnGui(float TimeStep)
@@ -95,8 +97,20 @@ namespace NxEd
 		return nullptr;
 	}
 
+	void HierarchyPanel::OnDestroyItem(NxEn::TreeItem* Item)
+	{
+		if (Edit && Context)
+		{
+			Edit->Unselect(Item->GetItemId(), Context->GetId());
+		}
+
+		TreePanel::OnDestroyItem(Item);
+	}
+
 	void HierarchyPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
 	{
+		TreePanel::OnSelectItem(Item, State);
+
 		if (State)
 		{
 			Edit->Select(Item->GetItemId(), Context->GetId());

@@ -208,6 +208,8 @@ namespace NxEd
 			Items.Remove(Item->Id);
 		}
 
+		Panel->SelectItem(Item, false, false, false);
+
 		Item->Path = ItemPath;
 		Item->Id = ItemPathToId(ItemPath);
 		Item->Type = Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? Assets->GetMetadata(Item->Id).GetType() : Item->GetObjectType();

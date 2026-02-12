@@ -26,6 +26,7 @@ namespace NxEd
 		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
 
 		NEXUS_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
+		NEXUS_EDITOR_API void OnDestroyItem(NxEn::TreeItem* Item) override;
 		NEXUS_EDITOR_API void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
 
 	private:
