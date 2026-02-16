@@ -8,8 +8,6 @@ namespace NxEd
 	class AssetsBrowserEditContext : public Edit::Context
 	{
 	public:
-		NEXUS_EDITCONTEXT_DECLARATION(NEXUS_EDITOR_API, Assets)
-
 		NEXUS_EDITOR_API AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowserPanel* Assets);
 		NEXUS_EDITOR_API ~AssetsBrowserEditContext();
 

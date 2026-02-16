@@ -92,30 +92,6 @@ namespace NxEd
 		{
 			return Selection.GetCount();
 		}
-
-		void Context::Rename()
-		{
-		}
-
-		void Context::Duplicate()
-		{
-		}
-
-		void Context::Delete()
-		{
-		}
-
-		void Context::Cut()
-		{
-		}
-
-		void Context::Copy()
-		{
-		}
-
-		void Context::Paste()
-		{
-		}
 	}
 }
 

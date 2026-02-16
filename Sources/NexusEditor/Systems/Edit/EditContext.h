@@ -2,10 +2,6 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 
-#define NEXUS_EDITCONTEXT_DECLARATION(Dll, Label)\
-Dll NxFr::StringId GetObjectLabel() const override { return #Label##_Sid; }\
-Dll static NxFr::StringId GetClassLabel() { return #Label##_Sid; }
-
 namespace NxEd
 {
 	class EditSystem;
@@ -26,7 +22,6 @@ namespace NxEd
 			NEXUS_EDITOR_API NxFr::Event<NxFr::GUID, bool>& GetOnSelectionChanged() { return OnSelectionChanged; }
 
 			NEXUS_EDITOR_API NxFr::StringId GetId() const { return Id; }
-			NEXUS_EDITOR_API virtual NxFr::StringId GetObjectLabel() const = 0;
 
 		protected:
 			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetAll() = 0;
@@ -40,12 +35,12 @@ namespace NxEd
 			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetSelection() const;
 			NEXUS_EDITOR_API virtual uint64 GetSelectionCount() const;
 
-			NEXUS_EDITOR_API virtual void Rename();
-			NEXUS_EDITOR_API virtual void Duplicate();
-			NEXUS_EDITOR_API virtual void Delete();
-			NEXUS_EDITOR_API virtual void Cut();
-			NEXUS_EDITOR_API virtual void Copy();
-			NEXUS_EDITOR_API virtual void Paste();
+			NEXUS_EDITOR_API virtual void Rename() = 0;
+			NEXUS_EDITOR_API virtual void Duplicate() = 0;
+			NEXUS_EDITOR_API virtual void Delete() = 0;
+			NEXUS_EDITOR_API virtual void Cut() = 0;
+			NEXUS_EDITOR_API virtual void Copy() = 0;
+			NEXUS_EDITOR_API virtual void Paste() = 0;
 
 		protected:
 			NxFr::Event<NxFr::GUID, bool> OnSelectionChanged;

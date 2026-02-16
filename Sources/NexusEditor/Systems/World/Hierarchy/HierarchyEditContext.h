@@ -8,8 +8,6 @@ namespace NxEd
 	class HierarchyEditContext : public Edit::Context
 	{
 	public:
-		NEXUS_EDITCONTEXT_DECLARATION(NEXUS_EDITOR_API, World)
-
 		NEXUS_EDITOR_API HierarchyEditContext(NxFr::StringId Id, HierarchyPanel* Hierarchy);
 		NEXUS_EDITOR_API ~HierarchyEditContext();
 
