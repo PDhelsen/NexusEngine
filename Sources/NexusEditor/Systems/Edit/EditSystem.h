@@ -14,6 +14,9 @@ namespace NxEd
 		NEXUS_EDITOR_API Edit::Context* UnregisterContext(NxFr::StringId Id);
 		NEXUS_EDITOR_API Edit::Context* GetContext(NxFr::StringId Id = 0) const;
 
+		NEXUS_EDITOR_API NxFr::Array<NxFr::GUID> GetAll(NxFr::StringId ContextId = 0);
+		NEXUS_EDITOR_API uint64 GetCount(NxFr::StringId ContextId = 0);
+
 		NEXUS_EDITOR_API void Select(NxFr::GUID InstanceId, NxFr::StringId ContextId = 0);
 		NEXUS_EDITOR_API void Select(NxFr::Collection<NxFr::GUID> InstancesId, NxFr::StringId ContextId = 0);
 		NEXUS_EDITOR_API void Select(NxFr::StringId ContextId = 0);

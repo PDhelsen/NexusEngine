@@ -110,6 +110,28 @@ namespace NxEd
 		return Instance ? *Instance : nullptr;
 	}
 
+	NxFr::Array<NxFr::GUID> EditSystem::GetAll(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return NxFr::Array<NxFr::GUID>();
+		}
+
+		return Ctx->GetAll();
+	}
+
+	uint64 EditSystem::GetCount(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return 0;
+		}
+
+		return Ctx->GetCount();
+	}
+
 	void EditSystem::Select(NxFr::GUID InstanceId, NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);

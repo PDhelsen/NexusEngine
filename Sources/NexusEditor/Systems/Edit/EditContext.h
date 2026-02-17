@@ -27,21 +27,20 @@ namespace NxEd
 			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetAll() = 0;
 			NEXUS_EDITOR_API virtual uint64 GetCount() = 0;
 
+			NEXUS_EDITOR_API virtual void Select(NxFr::GUID InstanceId);
+			NEXUS_EDITOR_API virtual void Unselect(NxFr::GUID InstanceId);
+			NEXUS_EDITOR_API virtual void Invert(NxFr::GUID InstanceId);
+			NEXUS_EDITOR_API virtual bool IsSelected(NxFr::GUID InstanceId) const;
+			NEXUS_EDITOR_API virtual NxFr::GUID GetSelected() const;
+			NEXUS_EDITOR_API virtual NxFr::Array<NxFr::GUID> GetSelection() const;
+			NEXUS_EDITOR_API virtual uint64 GetSelectionCount() const;
+
 			NEXUS_EDITOR_API virtual void Rename() = 0;
 			NEXUS_EDITOR_API virtual void Duplicate() = 0;
 			NEXUS_EDITOR_API virtual void Delete() = 0;
 			NEXUS_EDITOR_API virtual void Cut() = 0;
 			NEXUS_EDITOR_API virtual void Copy() = 0;
 			NEXUS_EDITOR_API virtual void Paste() = 0;
-
-		private:
-			NEXUS_EDITOR_API void Select(NxFr::GUID InstanceId);
-			NEXUS_EDITOR_API void Unselect(NxFr::GUID InstanceId);
-			NEXUS_EDITOR_API void Invert(NxFr::GUID InstanceId);
-			NEXUS_EDITOR_API bool IsSelected(NxFr::GUID InstanceId) const;
-			NEXUS_EDITOR_API NxFr::GUID GetSelected() const;
-			NEXUS_EDITOR_API NxFr::Array<NxFr::GUID> GetSelection() const;
-			NEXUS_EDITOR_API uint64 GetSelectionCount() const;
 
 		protected:
 			NxFr::Event<NxFr::GUID, bool> OnSelectionChanged;
