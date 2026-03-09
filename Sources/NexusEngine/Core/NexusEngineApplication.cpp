@@ -25,6 +25,7 @@ namespace NxEn
 		Systems.CreateSystem<SettingsSystem>();
 		Systems.CreateSystem<DebugSystem>();
 		Systems.CreateSystem<MemorySystem>();
+		Systems.CreateSystem<JobSystem>();
 		Systems.CreateSystem<CommandsSystem>();
 		Systems.CreateSystem<InputSystem>();
 		Systems.CreateSystem<ResourcesSystem>();
@@ -52,6 +53,7 @@ namespace NxEn
 		Systems.DestroySystem<SettingsSystem>();
 		Systems.DestroySystem<DebugSystem>();
 		Systems.DestroySystem<MemorySystem>();
+		Systems.DestroySystem<JobSystem>();
 		Systems.DestroySystem<CommandsSystem>();
 		Systems.DestroySystem<InputSystem>();
 		Systems.DestroySystem<ResourcesSystem>();
@@ -72,6 +74,7 @@ namespace NxEn
 		Bootstrap.AppendSystem<SettingsSystem>();
 		Bootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, SettingsSystem>();
 		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
+		Bootstrap.AppendSystem<JobSystem>();
 		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
 		Bootstrap.AppendSystem<InputSystem>();
 		Bootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, DebugSystem>().AppendDependency<ResourcesSystem, MemorySystem>();
@@ -99,6 +102,7 @@ namespace NxEn
 
 		Unbootstrap.AppendSystem<SettingsSystem>();
 		Unbootstrap.AppendSystem<CommandsSystem>();
+		Unbootstrap.AppendSystem<JobSystem>();
 		Unbootstrap.AppendSystem<ResourcesSystem>();
 		Unbootstrap.AppendSystem<AssetsSystem>();
 		Unbootstrap.AppendSystem<WorldSystem>();

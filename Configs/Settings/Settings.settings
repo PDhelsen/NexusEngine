@@ -10,3 +10,4 @@ WindowMode: 1
 WindowMonitor: 1
 WindowResolution: [1920, 1080]
 WindowVSync: true
+JobReservedThread: 4
