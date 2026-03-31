@@ -56,13 +56,11 @@ namespace NxEd
 
 	void AssetsBrowserItemContent::OnMove(NxFr::StringView Item, NxFr::StringView Target)
 	{
-		NxFr::File(Target).EnsureParent();
 		NxFr::File(Item).Move(Target);
 	}
 
 	void AssetsBrowserItemContent::OnDuplicate(NxFr::StringView Item, NxFr::StringView Target)
 	{
-		NxFr::File(Target).EnsureParent();
 		NxFr::File(Item).Copy(Target);
 	}
 

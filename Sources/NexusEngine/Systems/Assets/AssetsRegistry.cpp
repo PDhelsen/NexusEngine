@@ -51,7 +51,6 @@ namespace NxEn
 
 		NxFr::String Before = PathToFsPath(Metadata.GetAssetPath());
 		NxFr::String After = PathToFsPath(AssetMetadata::ComputeAssetPath(Path));
-		NxFr::File(After).EnsureParent();
 		NxFr::File(Before).Move(After);
 
 		if (!Metadata.GetExtension().IsEmpty())
@@ -72,7 +71,6 @@ namespace NxEn
 
 		NxFr::String Before = PathToFsPath(Reference.GetAssetPath());
 		NxFr::String After = PathToFsPath(Metadata.GetAssetPath());
-		NxFr::File(After).EnsureParent();
 		NxFr::File(Before).Copy(After);
 
 		if (!Reference.GetExtension().IsEmpty())
