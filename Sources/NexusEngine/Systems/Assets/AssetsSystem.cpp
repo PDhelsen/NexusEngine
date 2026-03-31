@@ -36,7 +36,7 @@ namespace NxEn
 	void AssetsSystem::Rename(NxFr::GUID Id, NxFr::StringView Name)
 	{
 		NxFr::StringView AssetPath = IdToPath(Id);
-		Move(Id, NxFr::Path::ChangeFileName(AssetPath, Name));
+		Move(Id, NxFr::Path::ChangeName(AssetPath, Name));
 	}
 
 	void AssetsSystem::Move(NxFr::GUID Id, NxFr::StringView Path)

@@ -34,7 +34,7 @@ namespace NxEn
 				}
 				else
 				{
-					Names[Index] = !NxFr::StringUtility::Contains(Filters[Index], NxFr::Path::SeparatorDirectory);
+					Names[Index] = !NxFr::StringUtility::Contains(Filters[Index], NxFr::Path::SeparatorFolder);
 				}
 			}
 
@@ -55,8 +55,7 @@ namespace NxEn
 			{
 				if (Names[Index])
 				{
-					NxFr::List<NxFr::StringView> Folders = NxFr::Path::Split(Substring);
-					Substring = !Folders.IsEmpty() ? Folders.Last() : Substring;
+					Substring = NxFr::Path::GetName(Substring);
 				}
 
 				MatchId |= Ids[Index] != 0 && Id == Ids[Index];

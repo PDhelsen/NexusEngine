@@ -6,14 +6,14 @@
 
 namespace NxEn
 {
-	AssetsRegistry::AssetsRegistry(NxFr::Path Root)
+	AssetsRegistry::AssetsRegistry(NxFr::String Root)
 		: Root(Root), Assets(), Paths()
 	{
 		NxFr::List<NxFr::String> Files = NxFr::Directory(Root).GetFiles(true);
 		for (uint64 Index = 0; Index < Files.GetCount(); ++Index)
 		{
 			NxFr::StringView File = Files[Index];
-			if (!NxFr::Path::HasExtension(File, AssetMetadata::AssetExtension))
+			if (NxFr::Path::GetExtension(File) != AssetMetadata::AssetExtension)
 			{
 				continue;
 			}

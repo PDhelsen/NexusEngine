@@ -32,7 +32,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnInitialize() override;
 		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
-		NEXUS_ENGINE_API NxFr::Path GetResourceFilePath(NxFr::StringView Path);
+		NEXUS_ENGINE_API NxFr::String GetResourceFilePath(NxFr::StringView Path);
 		NEXUS_ENGINE_API Resource* GetResource(NxFr::StringView Path);
 
 	private:

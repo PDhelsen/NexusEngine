@@ -109,7 +109,7 @@ namespace NxEd
 	void AssetsBrowserEditContext::PasteClipboard()
 	{
 		AssetsBrowserItem* Parent = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Selected]);
-		NxFr::Path Root = Parent->IsDirectory() ? Parent->GetTargetPath() : Parent->GetDirectory();
+		NxFr::String Root = Parent->IsDirectory() ? Parent->GetTargetPath() : Parent->GetDirectory();
 
 		for (auto Id : Clipboard)
 		{

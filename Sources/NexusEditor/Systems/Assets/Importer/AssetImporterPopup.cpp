@@ -87,9 +87,7 @@ namespace NxEd
 			return;
 		}
 
-		Path = NxFr::Path::IsRelative(FilePath) ? (NxFr::String)FilePath :
-			NxFr::Path::ConvertAbsoluteToRelative((NxFr::StringView)FilePath, NxFr::Paths::Assets);
-
+		Path = NxFr::Path::IsRelative(FilePath) ? (NxFr::String)FilePath : NxFr::Path::MakeRelative(FilePath, NxFr::Paths::Assets);
 		if (Type.IsEmpty())
 		{
 			Type = AssetImporter::GetType(NxFr::Path::GetExtension(Path)).GetString();

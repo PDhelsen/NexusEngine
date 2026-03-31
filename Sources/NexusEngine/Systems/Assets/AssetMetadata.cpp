@@ -48,7 +48,7 @@ namespace NxEn
 		YAML::Node Node;
 		Node["Id"] = Id;
 		Node["Type"] = Type;
-		Node["Path"] = Path.Data;
+		Node["Path"] = Path;
 		Node["Extension"] = Extension;
 		Node["Dependencies"] = Dependencies;
 		Node["Data"] = Data;

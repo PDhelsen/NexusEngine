@@ -65,7 +65,7 @@ namespace NxEd
 		Type = Exist ? Metadata->GetType() : Type.GetId() != 0 ? Type : GetType(Extension);
 
 		NEXUS_ASSERT(!(!Exist && Type.GetId() == 0), Default, "AssetImporter needs a Type to import a file");
-		NEXUS_ASSERT(!(!Exist && (ContentPath.IsEmpty() || !NxFr::Path::HasExtension(ContentPath, "") || NxFr::Path::HasExtension(ContentPath, NxEn::AssetMetadata::AssetExtension))), Default, "AssetImporter needs a file path with an extension different to the asset extension to import a file");
+		NEXUS_ASSERT(!(!Exist && (ContentPath.IsEmpty() || !NxFr::Path::HasExtension(ContentPath) || NxFr::Path::GetExtension(ContentPath) == NxEn::AssetMetadata::AssetExtension)), Default, "AssetImporter needs a file path with an extension different to the asset extension to import a file");
 		NEXUS_ASSERT(!(Exist && Id == 0), Default, "AssetImporter needs an Id to reimport an asset");
 
 		AssetImporter* Importer = GetImporter(Type);

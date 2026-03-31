@@ -6,7 +6,7 @@
 namespace NxEn
 {
 	const NxFr::StringView Folder = "Settings";
-	const NxFr::StringView Extension = ".settings";
+	const NxFr::StringView Extension = "settings";
 
 	static NxFr::Dictionary<NxFr::StringView, Setting*>& GetSettings()
 	{
@@ -52,13 +52,13 @@ namespace NxEn
 
 	void SettingsSystem::LoadSettings() const
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath(Folder, "", "", "");
+		NxFr::String Path = Project::GetSavedConfigPath(Folder, "", "", "");
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
 
 		for (auto& [Page, Instances] : Settings)
 		{
-			NxFr::Path PagePath = Path + (Page + Extension);
-			if (!PagePath.Exist())
+			NxFr::String PagePath = NxFr::Path::Combine(Path, (Page + NxFr::Path::SeparatorExtension + Extension));
+			if (!NxFr::Path::Exist(PagePath))
 			{
 				continue;
 			}
@@ -83,13 +83,13 @@ namespace NxEn
 
 	void SettingsSystem::SaveSettings() const
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath(Folder, "", "", "");
+		NxFr::String Path = Project::GetSavedConfigPath(Folder, "", "", "");
 		NxFr::Array<NxFr::Array<Setting*>> Settings = GetAllSettingsSorted();
 
 		for (NxFr::Array<Setting*>& Page : Settings)
 		{
-			NxFr::Path PagePath = Path + (Page[0]->GetPage() + Extension);
-			YAML::Node Root = PagePath.Exist() ? NxFr::Yaml::DeserializeFile(PagePath) : YAML::Node();
+			NxFr::String PagePath = NxFr::Path::Combine(Path, Page[0]->GetPage() + NxFr::Path::SeparatorExtension + Extension);
+			YAML::Node Root = NxFr::Path::Exist(PagePath) ? NxFr::Yaml::DeserializeFile(PagePath) : YAML::Node();
 
 			for (Setting* Instance: Page)
 			{
@@ -161,7 +161,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NxFr::Directory(NxFr::Paths::Configs + Folder).Create();
+		NxFr::Directory(NxFr::Path::Combine(NxFr::Paths::Configs, Folder)).Create();
 		LoadSettings();
 	}
 

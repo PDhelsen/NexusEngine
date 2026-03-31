@@ -65,7 +65,7 @@ namespace NxEd
 				}
 				else
 				{
-					Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + "." + Instance->GetExtension()));
+					Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + NxFr::Path::SeparatorExtension + Instance->GetExtension()));
 				}
 
 				Browser.Move(Instance->GetTargetPath(), Path);

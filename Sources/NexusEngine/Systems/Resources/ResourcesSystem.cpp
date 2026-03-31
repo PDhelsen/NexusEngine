@@ -134,9 +134,9 @@ namespace NxEn
 		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::ResourcesLoadedId, Loaded);
 	}
 
-	NxFr::Path ResourcesSystem::GetResourceFilePath(NxFr::StringView Path)
+	NxFr::String ResourcesSystem::GetResourceFilePath(NxFr::StringView Path)
 	{
-		return NxFr::Paths::Resources + Path;
+		return NxFr::Path::Combine(NxFr::Paths::Resources, Path);
 	}
 
 	Resource* ResourcesSystem::GetResource(NxFr::StringView Path)

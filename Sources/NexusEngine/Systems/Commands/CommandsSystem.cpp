@@ -175,10 +175,10 @@ namespace NxEn
 		Current = nullptr;
 	}
 
-	void CommandsSystem::File(NxFr::Path Path)
+	void CommandsSystem::File(NxFr::String Path)
 	{
 		Path = Application::GetInstance()->GetProject().GetRootPath() + Path;
-		if (!Path.IsValid() || !Path.Exist())
+		if (Path.IsEmpty() || !NxFr::Path::Exist(Path))
 		{
 			return;
 		}

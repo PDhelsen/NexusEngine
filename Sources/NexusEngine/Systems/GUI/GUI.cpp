@@ -219,7 +219,7 @@ namespace NxEn
 		{
 			for (uint64 Index = 0; Index < Labels.GetCount(); ++Index)
 			{
-				AppendItem(Item(Callback, Validate, Path + NxFr::Path::SeparatorDirectory + Labels[Index], Priority, ItemMode::Enum, Index, Enum));
+				AppendItem(Item(Callback, Validate, NxFr::Path::Combine(Path, Labels[Index]), Priority, ItemMode::Enum, Index, Enum));
 			}
 
 			return *this;

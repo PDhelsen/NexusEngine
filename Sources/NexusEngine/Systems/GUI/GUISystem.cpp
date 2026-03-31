@@ -19,9 +19,9 @@ namespace NxEn
 	const NxFr::StringView NameImGui = "imgui";
 	const NxFr::StringView NameStyle = "style";
 	const NxFr::StringView NameLayout = "layout";
-	const NxFr::StringView ExtensionImGui = ".ini";
-	const NxFr::StringView ExtensionStyle = ".style";
-	const NxFr::StringView ExtensionLayout = ".layout";
+	const NxFr::StringView ExtensionImGui = "ini";
+	const NxFr::StringView ExtensionStyle = "style";
+	const NxFr::StringView ExtensionLayout = "layout";
 
 	static GUI::Window& GetMainWindow()
 	{
@@ -126,14 +126,14 @@ namespace NxEn
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath(Name, NameImGui, NameDefault, ExtensionImGui, Folder);
-		if (Path.Exist())
+		NxFr::String Path = Project::GetSavedConfigPath(Name, NameImGui, NameDefault, ExtensionImGui, Folder);
+		if (NxFr::Path::Exist(Path))
 		{
 			LoadLayoutImGui(Path);
 		}
 
 		Path = Project::GetSavedConfigPath(Name, NameLayout, NameDefault, ExtensionLayout, Folder);
-		if (Path.Exist())
+		if (NxFr::Path::Exist(Path))
 		{
 			LoadLayoutNexus(Path);
 		}
@@ -143,11 +143,11 @@ namespace NxEn
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath(Name, NameImGui, "", ExtensionImGui, Folder);
+		NxFr::String Path = Project::GetSavedConfigPath(Name, NameImGui, "", ExtensionImGui, Folder);
 		SaveLayoutImGui(Path);
 
 		Path = Project::GetSavedConfigPath(Name, NameLayout, "", ExtensionLayout, Folder);
-		if (!Name.IsEmpty() && !Path.Exist())
+		if (!Name.IsEmpty() && !NxFr::Path::Exist(Path))
 		{
 			AddMenuWindowLayouts(Name);
 		}
@@ -158,8 +158,8 @@ namespace NxEn
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath(Name, NameStyle, NameDefault, ExtensionStyle, Folder);
-		if (!Path.Exist())
+		NxFr::String Path = Project::GetSavedConfigPath(Name, NameStyle, NameDefault, ExtensionStyle, Folder);
+		if (!NxFr::Path::Exist(Path))
 		{
 			return;
 		}
@@ -174,7 +174,7 @@ namespace NxEn
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
 	{
-		NxFr::Path Path = Project::GetSavedConfigPath(Name, NameStyle, "", ExtensionStyle, Folder);
+		NxFr::String Path = Project::GetSavedConfigPath(Name, NameStyle, "", ExtensionStyle, Folder);
 
 		YAML::Emitter Data;
 		Data << YAML::BeginMap;
@@ -205,8 +205,8 @@ namespace NxEn
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, UnsignedInteger, Set);
 
-		NxFr::Directory(NxFr::Paths::Configs + Folder).Create();
-		NxFr::Directory(NxFr::Paths::Saved + Folder).Create();
+		NxFr::Directory(NxFr::Path::Combine(NxFr::Paths::Configs, Folder)).Create();
+		NxFr::Directory(NxFr::Path::Combine(NxFr::Paths::Saved, Folder)).Create();
 
 		Imgui::Initialize();
 		LoadTheme();
@@ -278,24 +278,24 @@ namespace NxEn
 
 		Menu.AddMenuItem("Window/Layouts/Save", []()
 		{
-			NxFr::Path Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Paths::Configs + Folder);
-			if (!Path.IsValid()) return;
-			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save ") + NxFr::Path::GetFileName(Path);
+			NxFr::String Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Path::Combine(NxFr::Paths::Configs, Folder));
+			if (Path.IsEmpty()) return;
+			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save ") + NxFr::Path::GetName(Path);
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, 1);
 
-		NxFr::Path Path = NxFr::Paths::Configs + Folder;
+		NxFr::String Path = NxFr::Path::Combine(NxFr::Paths::Configs, Folder);
 		NxFr::Directory Folder(Path);
 		NxFr::List<NxFr::String> Layouts = Folder.GetFiles();
 
 		for (auto& Layout : Layouts)
 		{
-			if (!NxFr::Path::HasExtension(Layout, ExtensionLayout))
+			if (NxFr::Path::GetExtension(Layout) != ExtensionLayout)
 			{
 				continue;
 			}
 
-			NxFr::String Name = NxFr::Path::GetFileName(Layout);
+			NxFr::String Name = NxFr::Path::GetName(Layout);
 			AddMenuWindowLayouts(Name);
 		}
 	}
@@ -311,14 +311,14 @@ namespace NxEn
 		});
 	}
 
-	void GUISystem::LoadLayoutImGui(const NxFr::Path& Path) const
+	void GUISystem::LoadLayoutImGui(const NxFr::String& Path) const
 	{
 		NEXUS_PROFILE_FUNCTION();
 
 		ImGui::LoadIniSettingsFromDisk(Path.C());
 	}
 
-	void GUISystem::LoadLayoutNexus(const NxFr::Path& Path) const
+	void GUISystem::LoadLayoutNexus(const NxFr::String& Path) const
 	{
 		NEXUS_PROFILE_FUNCTION();
 
@@ -340,14 +340,14 @@ namespace NxEn
 		Stream.Close();
 	}
 
-	void GUISystem::SaveLayoutImGui(const NxFr::Path& Path) const
+	void GUISystem::SaveLayoutImGui(const NxFr::String& Path) const
 	{
 		NEXUS_PROFILE_FUNCTION();
 
 		ImGui::SaveIniSettingsToDisk(Path.C());
 	}
 
-	void GUISystem::SaveLayoutNexus(const NxFr::Path& Path) const
+	void GUISystem::SaveLayoutNexus(const NxFr::String& Path) const
 	{
 		NEXUS_PROFILE_FUNCTION();
 

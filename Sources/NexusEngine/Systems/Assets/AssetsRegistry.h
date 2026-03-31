@@ -7,7 +7,7 @@ namespace NxEn
 	class AssetsRegistry
 	{
 	public:
-		AssetsRegistry(NxFr::Path Root);
+		AssetsRegistry(NxFr::String Root);
 		~AssetsRegistry();
 
 		void Append(NxFr::GUID Id, const AssetMetadata& Metadata);
@@ -35,7 +35,7 @@ namespace NxEn
 		NxFr::String PathToFsPath(NxFr::StringView Path) const;
 
 	private:
-		NxFr::Path Root;
+		NxFr::String Root;
 		NxFr::Dictionary<NxFr::GUID, AssetMetadata> Assets;
 		NxFr::Dictionary<NxFr::String, NxFr::GUID> Paths;
 	};

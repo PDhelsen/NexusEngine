@@ -22,9 +22,9 @@ namespace NxEd
 
 		NEXUS_EDITOR_API NxFr::StringView GetTargetPath() const { return Path; }
 		NEXUS_EDITOR_API NxFr::StringView GetPrettyPath() const { return NxFr::Path::GetPathWithoutExtension(Path); }
-		NEXUS_EDITOR_API NxFr::StringView GetDirectory() const { return NxFr::Path::GetParent(Path); }
-		NEXUS_EDITOR_API NxFr::StringView GetTargetName() const { return IsDirectory() ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path, true); }
-		NEXUS_EDITOR_API NxFr::StringView GetPrettyName() const { return IsDirectory() ? NxFr::Path::GetDirectoryName(Path) : NxFr::Path::GetFileName(Path, false); }
+		NEXUS_EDITOR_API NxFr::StringView GetDirectory() const { return NxFr::Path::GetFolder(Path); }
+		NEXUS_EDITOR_API NxFr::StringView GetTargetName() const { return NxFr::Path::GetNameAndExtension(Path); }
+		NEXUS_EDITOR_API NxFr::StringView GetPrettyName() const { return NxFr::Path::GetName(Path); }
 		NEXUS_EDITOR_API NxFr::StringView GetExtension() const { return NxFr::Path::GetExtension(Path); }
 		NEXUS_EDITOR_API bool IsDirectory() const { return NxFr::Path::IsDirectory(Path); }
 

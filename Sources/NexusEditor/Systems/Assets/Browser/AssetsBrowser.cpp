@@ -118,17 +118,14 @@ namespace NxEd
 			ItemPath = NxFr::StringUtility::TrimLeading(ItemPath, '/');
 		}
 
-		NEXUS_ASSERT(NxFr::Path::IsDirectory(ItemPath) || (NxFr::Path::IsFile(ItemPath) && NxFr::Path::HasExtension(ItemPath, "")),
-			Default, "Path %s needs to have an extension or be a directory", ItemPath.C());
+		NEXUS_ASSERT(NxFr::Path::IsDirectory(ItemPath) || (NxFr::Path::IsFile(ItemPath) && NxFr::Path::HasExtension(ItemPath)), Default, "Path %s needs to have an extension or be a directory", ItemPath.C());
 
 		return ItemPath;
 	}
 
 	NxFr::String AssetsBrowser::MakeUniquePath(NxFr::StringView ItemPath)
 	{
-		bool Directory = NxFr::Path::IsDirectory(ItemPath);
-		NxFr::StringView Name = Directory ? NxFr::Path::GetDirectoryName(ItemPath) : NxFr::Path::GetFileName(ItemPath);
-		NxFr::StringView Extension = NxFr::Path::GetExtension(ItemPath);
+		NxFr::StringView Name = NxFr::Path::GetName(ItemPath);
 
 		NxFr::String Result = ItemPath;
 		NxFr::String Target;
@@ -137,16 +134,7 @@ namespace NxEd
 		while (Exist(Result))
 		{
 			Target = Name + " " + NxFr::StringUtility::ToString(Count);
-			if (Directory)
-			{
-				NxFr::Path::ChangeDirectoryName(Result, Target);
-			}
-			else
-			{
-				Target += "." + Extension;
-				NxFr::Path::ChangeFileName(Result, Target);
-			}
-
+			Result = NxFr::Path::ChangeName(Result, Target);
 			Count++;
 		}
 
@@ -230,7 +218,7 @@ namespace NxEd
 		}
 		else
 		{
-			if (NxFr::Path::HasExtension(ItemPath, NxEn::AssetMetadata::AssetExtension))
+			if (NxFr::Path::GetExtension(ItemPath) == NxEn::AssetMetadata::AssetExtension)
 			{
 				Item = new AssetsBrowserItemAsset();
 			}
@@ -344,7 +332,7 @@ namespace NxEd
 
 	AssetsBrowserItem* AssetsBrowser::GetParent(NxFr::StringView Path)
 	{
-		NxFr::StringView Directory = NxFr::Path::GetParent(Path);
+		NxFr::StringView Directory = NxFr::Path::GetFolder(Path);
 		return GetItem(ItemPathToId(Directory));
 	}
 
@@ -403,7 +391,7 @@ namespace NxEd
 			return NxFr::Hash<>::HashObject(NxFr::Paths::Assets);
 		}
 
-		return NxFr::Path::HasExtension(ItemPath, NxEn::AssetMetadata::AssetExtension) ?
+		return NxFr::Path::GetExtension(ItemPath) == NxEn::AssetMetadata::AssetExtension ?
 			Assets->PathToId(NxFr::Path::GetPathWithoutExtension(ItemPath)) : NxFr::Hash<>::HashObject(ItemPath);
 	}
 
@@ -427,10 +415,10 @@ namespace NxEd
 	{
 		if (ItemPath == NxFr::StringUtility::Empty)
 		{
-			return NxFr::Paths::Assets.Data;
+			return NxFr::Paths::Assets;
 		}
 
-		return NxFr::Path::ConvertRelativeToAbsolute(ItemPath, NxFr::Paths::Assets);
+		return NxFr::Path::MakeAbsolute(ItemPath, NxFr::Paths::Assets);
 	}
 
 	NxFr::String AssetsBrowser::FsPathToItemPath(NxFr::StringView FsPath)
@@ -440,6 +428,6 @@ namespace NxEd
 			return NxFr::StringUtility::Empty;
 		}
 
-		return NxFr::Path::ConvertAbsoluteToRelative(FsPath, NxFr::Paths::Assets);
+		return NxFr::Path::MakeRelative(FsPath, NxFr::Paths::Assets);
 	}
 }

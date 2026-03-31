@@ -64,8 +64,8 @@ namespace NxEn
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &DebugSystem::ApplySettings };
 
-		NxFr::Path Folder = NxFr::Paths::Saved + NxFr::Arguments::Get("DebugFolder", "debug");
-		NEXUS_ASSERT(!Folder.Data.IsEmpty(), System, "Folder can't be empty");
+		NxFr::String Folder = NxFr::Path::Combine(NxFr::Paths::Saved, NxFr::Arguments::Get("DebugFolder", "debug"));
+		NEXUS_ASSERT(!Folder.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
 		Logger->SetFlushOnLog(FlushOnLog);

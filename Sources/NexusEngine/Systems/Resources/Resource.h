@@ -13,7 +13,7 @@ namespace NxEn
 		NEXUS_ENGINE_API virtual ~Resource();
 
 		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
-		NEXUS_ENGINE_API NxFr::StringView GetName() const { return NxFr::Path::GetFileName(Path); }
+		NEXUS_ENGINE_API NxFr::StringView GetName() const { return NxFr::Path::GetName(Path); }
 		NEXUS_ENGINE_API bool IsLoaded() const { return Loaded; };
 
 	protected:

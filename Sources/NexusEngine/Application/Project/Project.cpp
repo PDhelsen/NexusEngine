@@ -31,7 +31,7 @@ namespace NxEn
 				if (NxFr::Arguments::Has(1))
 				{
 					PathArg = NxFr::Arguments::Get(1);
-					if (NxFr::Path::HasExtension(PathArg, "nexus"))
+					if (NxFr::Path::GetExtension(PathArg) == "nexus")
 					{
 						Path = NxFr::Path::Normalize(PathArg);
 					}
@@ -45,7 +45,7 @@ namespace NxEn
 				NxFr::List<NxFr::String> Files = NxFr::Directory(WorkingDir).GetFiles();
 				for (auto& File : Files)
 				{
-					if (NxFr::Path::HasExtension(File, "nexus"))
+					if (NxFr::Path::GetExtension(File) == "nexus")
 					{
 						Path = Move(File);
 						break;
@@ -54,7 +54,7 @@ namespace NxEn
 			}
 
 			// Check information
-			bool HasPath = !Path.IsEmpty() && NxFr::Path::HasExtension(Path, "nexus") && NxFr::Path::IsFile(Path) && NxFr::Path::Exist(Path);
+			bool HasPath = !Path.IsEmpty() && NxFr::Path::GetExtension(Path) == "nexus" && NxFr::Path::IsFile(Path) && NxFr::Path::Exist(Path);
 			bool HasMode = !ModeArg.IsEmpty();
 
 			// Create Project
@@ -78,22 +78,20 @@ namespace NxEn
 	}
 
 	// TODO: Save user pref in AppData
-	NxFr::Path Project::GetSavedConfigPath(NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, NxFr::StringView Extension, NxFr::StringView SubFolder, bool Suffix)
+	NxFr::String Project::GetSavedConfigPath(NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, NxFr::StringView Extension, NxFr::StringView SubFolder, bool Suffix)
 	{
-		NxFr::Path Path = NxFr::Path("");
-
+		NxFr::String Path;
 		if (!Config.IsEmpty())
 		{
-			Path = NxFr::Paths::Configs + SubFolder + (Config + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+			Path = NxFr::Path::Combine(NxFr::Paths::Configs, SubFolder, Config + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 		}
 		else
 		{
-			Path = NxFr::Paths::Saved + SubFolder + (Saved + (Suffix ? NEXUS_SUFFIX : "") + Extension);
+			Path = NxFr::Path::Combine(NxFr::Paths::Saved, SubFolder, Saved + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 
-			if (!Path.Exist() && !Template.IsEmpty())
+			if (!NxFr::Path::Exist(Path) && !Template.IsEmpty())
 			{
-				NxFr::Path Target = NxFr::Paths::Configs + SubFolder + (Template + (Suffix ? NEXUS_SUFFIX : "") + Extension);
-
+				NxFr::String Target = NxFr::Path::Combine(NxFr::Paths::Configs, SubFolder, Template + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 				if (Extension.IsEmpty())
 				{
 					NxFr::Directory(Target).Copy(Path);
@@ -105,7 +103,8 @@ namespace NxEn
 			}
 		}
 
-		return Path.Normalize();
+		NxFr::Path::Normalize(Path);
+		return Path;
 	}
 
 	Project::Project()
@@ -142,14 +141,14 @@ namespace NxEn
 
 	void Project::Initialize()
 	{
-		Root = !Path.IsEmpty() ? (NxFr::String)NxFr::Path::GetDirectoryPath(Path) : NxFr::Platform::GetInstance()->GetWorkingDirectory();
+		Root = !Path.IsEmpty() ? NxFr::String(NxFr::Path::GetDriveAndFolder(Path)) : NxFr::Platform::GetInstance()->GetWorkingDirectory();
 		Executable = NxFr::Path::Normalize(NxFr::Arguments::Get(0));
 	}
 
 	void Project::GenerateDefault()
 	{
-		Name = NxFr::Path::GetFileName(Executable);
-		Dll = Root + ComputeDllName();
+		Name = NxFr::Path::GetName(Executable);
+		Dll = NxFr::Path::Combine(Root, ComputeDllName());
 	}
 
 	void Project::LoadFromFile(bool UseModeFromFile)
@@ -159,7 +158,7 @@ namespace NxEn
 		Mode = UseModeFromFile ? NxFr::StringUtility::FromString<ProjectMode>(File["Mode"].as<NxFr::String>().C()) : Mode;
 
 		Name = File["Name"].as<NxFr::String>();
-		Dll = Root + File["Dll"].as<NxFr::String>() + ComputeDllName();
+		Dll = NxFr::Path::Combine(Root, File["Dll"].as<NxFr::String>(), ComputeDllName());
 	}
 
 	NxFr::String Project::ComputeDllName()

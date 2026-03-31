@@ -56,10 +56,10 @@ namespace NxEn
 		NEXUS_ENGINE_API void AddMenuWindowLayouts() const;
 		NEXUS_ENGINE_API void AddMenuWindowLayouts(const NxFr::String& Name) const;
 
-		NEXUS_ENGINE_API void LoadLayoutImGui(const NxFr::Path& Path) const;
-		NEXUS_ENGINE_API void LoadLayoutNexus(const NxFr::Path& Path) const;
-		NEXUS_ENGINE_API void SaveLayoutImGui(const NxFr::Path& Path) const;
-		NEXUS_ENGINE_API void SaveLayoutNexus(const NxFr::Path& Path) const;
+		NEXUS_ENGINE_API void LoadLayoutImGui(const NxFr::String& Path) const;
+		NEXUS_ENGINE_API void LoadLayoutNexus(const NxFr::String& Path) const;
+		NEXUS_ENGINE_API void SaveLayoutImGui(const NxFr::String& Path) const;
+		NEXUS_ENGINE_API void SaveLayoutNexus(const NxFr::String& Path) const;
 		NEXUS_ENGINE_API void LoadThemeImGui(const YAML::Node& Node) const;
 		NEXUS_ENGINE_API void LoadThemeNexus(const YAML::Node& Node);
 		NEXUS_ENGINE_API void SaveThemeImGui(YAML::Emitter& Emitter) const;
