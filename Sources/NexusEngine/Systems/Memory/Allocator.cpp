@@ -42,7 +42,7 @@ namespace NxEn
 		uint64 Delta = Alloc->UsedAmount() - Marker;
 		IncreaseAmount(Delta);
 
-		Allocators.Append(Alloc);
+		Allocators.TryAppend(Alloc);
 		return Pointer;
 	}
 

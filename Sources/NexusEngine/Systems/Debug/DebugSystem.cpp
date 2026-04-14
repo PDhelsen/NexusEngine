@@ -18,9 +18,9 @@ namespace NxFr
 namespace NxEn
 {
 #if NEXUS_DEBUG
-	bool FlushOnLog = true;
+	bool AutoFlush = true;
 #else
-	bool FlushOnLog = false;
+	bool AutoFlush = false;
 #endif
 
 	static SettingSeq<bool>* SettingVerbosity = SettingSeq<bool>::Create("Settings", "LoggerVerbosity", { true, true, true, true });
@@ -68,10 +68,10 @@ namespace NxEn
 		NEXUS_ASSERT(!Folder.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
-		Logger->SetFlushOnLog(FlushOnLog);
-		Logger->SetOutput(NxFr::LoggerOutput::File, true, Folder + "logs.txt");
-		Instrumentor = NxFr::Instruments::Create(Folder + "instruments.json", false);
-		Stats = new NxFr::Stats(Folder + "stats.csv");
+		Logger->SetAutoFlush(AutoFlush);
+		Logger->SetOutput(NxFr::LoggerOutput::File, true, NxFr::Path::Combine(Folder, "logs.txt"));
+		Instrumentor = NxFr::Instruments::Create(NxFr::Path::Combine(Folder, "instruments.json"), false);
+		Stats = new NxFr::Stats(NxFr::Path::Combine(Folder, "stats.csv"));
 
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
@@ -95,7 +95,7 @@ namespace NxEn
 			Stats->StopRecording();
 		}
 
-		Logger->SetFlushOnLog(false);
+		Logger->SetAutoFlush(false);
 
 		NxFr::Globals::Statistiques = nullptr;
 		NxFr::Globals::Instrumentor = nullptr;

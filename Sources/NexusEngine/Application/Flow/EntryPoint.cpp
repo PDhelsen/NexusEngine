@@ -44,7 +44,7 @@ namespace NxEn
 		{
 			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-			NxFr::Globals::Logs = new NxFr::Logger(true, NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback);
+			NxFr::Globals::Logs = new NxFr::Logger(NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback, "", true);
 			NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::Default, true);
 			NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::Verbose, true);
 		}

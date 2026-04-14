@@ -70,7 +70,7 @@ namespace NxEn
 				YAML::Node& Value = It->second;
 
 				NxFr::String SettingName = Key.as<NxFr::String>();
-				if (Instances.ContainsKey(SettingName))
+				if (Instances.ContainsKey((NxFr::StringView)SettingName))
 				{
 					Setting* Instance = Instances[SettingName];
 					Instance->OnDeserialize(Value);

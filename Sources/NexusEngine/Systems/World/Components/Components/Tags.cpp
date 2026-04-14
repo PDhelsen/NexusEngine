@@ -42,7 +42,7 @@ namespace NxEn
 
 	bool Tags::Contains(NxFr::StringView Tag)
 	{
-		return Items.Contains(Tag);
+		return Items.Contains([&](const NxFr::String& Element) { return Element == Tag; });
 	}
 
 	bool Tags::Contains(const NxFr::Collection<NxFr::StringView>& Tags, bool MatchAll)

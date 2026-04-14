@@ -151,9 +151,10 @@ namespace NxEd
 		if (Item->GetObjectType() == AssetsBrowserItemDirectory::GetClassType())
 		{
 			NxFr::Directory Directory(FsPath);
-			for (auto& P : Directory)
+			NxFr::List<NxFr::String> Content = Directory.GetContent();
+			for (auto& Path : Content)
 			{
-				FetchItems(P, Item);
+				FetchItems(Path, Item);
 			}
 		}
 
