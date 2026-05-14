@@ -113,12 +113,12 @@ namespace NxEn
 
 			if (GUI::Draw::Button("Move Up", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index > 0)
 			{
-				Behaviours.Swap(Index, Index - 1);
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Behaviour>>(Behaviours, Index, Index - 1);
 			}
 			ImGui::SameLine();
 			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Behaviours.GetCount() - 1)
 			{
-				Behaviours.Swap(Index, Index + 1);
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Behaviour>>(Behaviours, Index, Index + 1);
 			}
 			ImGui::SameLine();
 			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
@@ -142,12 +142,12 @@ namespace NxEn
 
 			if (GUI::Draw::Button("Move Up", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index > 0)
 			{
-				Components.Swap(Index, Index - 1);
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Component>>(Components, Index, Index - 1);
 			}
 			ImGui::SameLine();
 			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Components.GetCount() - 1)
 			{
-				Components.Swap(Index, Index + 1);
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Component>>(Components, Index, Index + 1);
 			}
 			ImGui::SameLine();
 			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
@@ -380,7 +380,7 @@ namespace NxEn
 			Iterator = Iterator->GetNext();
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Ids);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Ids);
 	}
 
 	void GameObject::PatchReferences()
@@ -598,7 +598,7 @@ namespace NxEn
 	{
 		NxFr::List<NxFr::Handle<Behaviour>> Result;
 		GetBehavioursByType(Id, Result);
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Behaviour>>(Result);
 	}
 
 	void GameObject::GetBehavioursByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result)
@@ -616,7 +616,7 @@ namespace NxEn
 	{
 		NxFr::List<NxFr::Handle<Behaviour>> Result;
 		GetBehavioursInChildrenByType(Id, Result);
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Behaviour>>(Result);
 	}
 
 	void GameObject::GetBehavioursInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result)
@@ -661,7 +661,7 @@ namespace NxEn
 	{
 		NxFr::List<NxFr::Handle<Component>> Result;
 		GetComponentsByType(Id, Result);
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Component>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Component>>(Result);
 	}
 
 	void GameObject::GetComponentsByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result)
@@ -679,7 +679,7 @@ namespace NxEn
 	{
 		NxFr::List<NxFr::Handle<Component>> Result;
 		GetComponentsInChildrenByType(Id, Result);
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Component>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Component>>(Result);
 	}
 
 	void GameObject::GetComponentsInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result)

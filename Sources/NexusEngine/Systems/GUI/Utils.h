@@ -186,17 +186,17 @@ namespace NxEn
 				DrawerStyle.Width = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
 				if (Drawer<uint64>::Field(Count, "Count:", ImGuiId + "Count", &DrawerStyle))
 				{
-					NxFr::ContainersUtils::Resize(Data, Count);
+					NxFr::ContainerUtility::Resize(Data, Count);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button(("Add" + ImGuiId).C(), { ButtonSize, 0.0f }))
 				{
-					NxFr::ContainersUtils::Resize(Data, Data.GetCount() + 1);
+					NxFr::ContainerUtility::Resize(Data, Data.GetCount() + 1);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button(("Remove" + ImGuiId).C(), { ButtonSize, 0.0f }))
 				{
-					NxFr::ContainersUtils::Resize(Data, Data.GetCount() - 1);
+					NxFr::ContainerUtility::Resize(Data, Data.GetCount() - 1);
 				}
 				 
 				DrawerStyle.Width = -1.0f;
@@ -244,7 +244,7 @@ namespace NxEn
 				DrawerStyle.Width = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
 				if (Drawer<uint64>::Field(Count, "Count:", ImGuiId + "Count", &DrawerStyle))
 				{
-					NxFr::ContainersUtils::Resize(Data, Count);
+					NxFr::ContainerUtility::Resize(Data, Count);
 				}
 				ImGui::SameLine();
 				if (ImGui::Button(("Add" + ImGuiId).C(), { ButtonSize, 0.0f }))

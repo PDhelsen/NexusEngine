@@ -26,8 +26,8 @@ namespace NxEn
 
 	void InputSystem::Reset()
 	{
-		NxFr::ContainersUtils::Fill(Buttons, Input::State::Up);
-		NxFr::ContainersUtils::Fill(Axises, 0.0f);
+		NxFr::ContainerUtility::Fill(Buttons, Input::State::Up);
+		NxFr::ContainerUtility::Fill(Axises, 0.0f);
 	}
 
 	void InputSystem::AddSchema(NxFr::StringId Id, Input::Schema* Schema)
@@ -201,7 +201,7 @@ namespace NxEn
 
 	void InputSystem::PollInputs()
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		Glfw::PollInput();
 		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, System, "Unsupported Button pressed");
@@ -209,7 +209,7 @@ namespace NxEn
 
 	void InputSystem::TriggerActions()
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		for (auto& [Id, Schema] : Schemas)
 		{

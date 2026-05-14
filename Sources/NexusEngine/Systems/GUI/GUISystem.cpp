@@ -2,7 +2,6 @@
 #include "NexusEngine/Systems/GUI/GUISystem.h"
 
 #include "NexusEngine/External/ImGui.h"
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
 
 namespace NxFr
 {
@@ -25,7 +24,7 @@ namespace NxEn
 
 	static GUI::Window& GetMainWindow()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		static GUI::Window Window;
 		return Window;
@@ -38,7 +37,7 @@ namespace NxEn
 
 	static NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& GetPanels()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		static NxFr::Dictionary<NxFr::StringId, GUI::Panel*> Panels;
 		return Panels;
@@ -203,10 +202,10 @@ namespace NxEn
 		System::OnInitialize();
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, Integer, Set);
 
-		NxFr::Directory(NxFr::Path::Combine(NxFr::Paths::Configs, Folder)).Create();
-		NxFr::Directory(NxFr::Path::Combine(NxFr::Paths::Saved, Folder)).Create();
+		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder)).Create();
+		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Saved, Folder)).Create();
 
 		Imgui::Initialize();
 		LoadTheme();
@@ -231,7 +230,7 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
 
 		Imgui::Frame();
 
@@ -278,13 +277,13 @@ namespace NxEn
 
 		Menu.AddMenuItem("Window/Layouts/Save", []()
 		{
-			NxFr::String Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Path::Combine(NxFr::Paths::Configs, Folder));
+			NxFr::String Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder));
 			if (Path.IsEmpty()) return;
 			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save ") + NxFr::Path::GetName(Path);
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, 1);
 
-		NxFr::String Path = NxFr::Path::Combine(NxFr::Paths::Configs, Folder);
+		NxFr::String Path = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder);
 		NxFr::Directory Folder(Path);
 		NxFr::List<NxFr::String> Layouts = Folder.GetFiles();
 
@@ -313,14 +312,14 @@ namespace NxEn
 
 	void GUISystem::LoadLayoutImGui(const NxFr::String& Path) const
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		ImGui::LoadIniSettingsFromDisk(Path.C());
 	}
 
 	void GUISystem::LoadLayoutNexus(const NxFr::String& Path) const
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Read, false);
@@ -334,7 +333,7 @@ namespace NxEn
 		auto& Panels = GetPanels();
 		for (auto& It : Panels)
 		{
-			It.Value->SetEnabled(Ids.Contains(It.Key));
+			It.Value->SetEnabled(Ids.TryGet(It.Key) != nullptr);
 		}
 
 		Stream.Close();
@@ -342,14 +341,14 @@ namespace NxEn
 
 	void GUISystem::SaveLayoutImGui(const NxFr::String& Path) const
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		ImGui::SaveIniSettingsToDisk(Path.C());
 	}
 
 	void GUISystem::SaveLayoutNexus(const NxFr::String& Path) const
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Write, true);
@@ -368,7 +367,7 @@ namespace NxEn
 
 	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();
 
@@ -501,7 +500,7 @@ namespace NxEn
 
 	void GUISystem::LoadThemeNexus(const YAML::Node& Node)
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		const YAML::Node& Vars = Node["Vars"];
 		for (YAML::const_iterator It = Vars.begin(); It != Vars.end(); ++It)
@@ -542,7 +541,7 @@ namespace NxEn
 
 	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();
 
@@ -681,7 +680,7 @@ namespace NxEn
 
 	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter) const
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		Emitter << YAML::BeginMap;
 

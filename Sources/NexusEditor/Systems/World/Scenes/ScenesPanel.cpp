@@ -31,7 +31,7 @@ namespace NxEd
 		}
 
 		WorldsIds = Worlds->GetWorlds();
-		WorldsIndex = WorldsIds.Find(NxEn::WorldSystem::WorldId.GetId()).Id();
+		WorldsIndex = NxFr::ContainerUtility::Find(WorldsIds, NxEn::WorldSystem::WorldId.GetId()).Id();
 		NxFr::Array<NxFr::StringView> WorldsLabel = WorldsIds.GetCount();
 		for (uint64 Index = 0; Index < WorldsIds.GetCount(); ++Index)
 		{

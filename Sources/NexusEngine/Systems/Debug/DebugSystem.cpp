@@ -3,8 +3,7 @@
 
 #include "NexusEngine/Systems/Settings/SettingTemplate.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
-#include "NexusFramework/Core/NexusFrameworkGlobals.h"
+#include "NexusFramework/Debug/Profiler/Instruments/ChromeTracing.h"
 
 namespace NxFr
 {
@@ -48,7 +47,7 @@ namespace NxEn
 	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
 
 	DebugSystem::DebugSystem()
-		: Logger(NxFr::Globals::Logs), Stats(nullptr), Instrumentor(nullptr), Time(0.0)
+		: Logger(NxFr::Globals::Debug::Logs), Stats(nullptr), Instrumentor(nullptr), Memory(nullptr), Time(0.0)
 	{
 	}
 
@@ -60,36 +59,37 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &DebugSystem::ApplySettings };
 
-		NxFr::String Folder = NxFr::Path::Combine(NxFr::Paths::Saved, NxFr::Arguments::Get("DebugFolder", "debug"));
+		NxFr::String Folder = NxFr::Path::Combine(NxFr::Globals::Paths::Saved, NxFr::Globals::Args->Get("DebugFolder", "debug"));
 		NEXUS_ASSERT(!Folder.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
 		Logger->SetAutoFlush(AutoFlush);
-		Logger->SetOutput(NxFr::LoggerOutput::File, true, NxFr::Path::Combine(Folder, "logs.txt"));
-		Instrumentor = NxFr::Instruments::Create(NxFr::Path::Combine(Folder, "instruments.json"), false);
+		Logger->SetOutput(NxFr::LoggerOutput::All, NxFr::Path::Combine(Folder, "logs.txt"));
+		Instrumentor = new NxFr::ChromeTracing(NxFr::Path::Combine(Folder, "instruments.json"), false);
 		Stats = new NxFr::Stats(NxFr::Path::Combine(Folder, "stats.csv"));
+		Memory = new NxFr::MemoryTracker();
 
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
 		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
 
-		NxFr::Globals::Statistiques = Stats;
-		NxFr::Globals::Instrumentor = Instrumentor;
+		NxFr::Globals::Debug::Statistiques = Stats;
+		NxFr::Globals::Debug::Instrumentor = Instrumentor;
+		NxFr::Globals::Debug::Memory = Memory;
 	}
 
 	void DebugSystem::OnShutdown()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		if (Instrumentor->IsRecording())
 		{
 			Instrumentor->StopRecording();
 		}
 
-		Stats->Unlock();
 		if (Stats->IsRecording())
 		{
 			Stats->StopRecording();
@@ -97,11 +97,13 @@ namespace NxEn
 
 		Logger->SetAutoFlush(false);
 
-		NxFr::Globals::Statistiques = nullptr;
-		NxFr::Globals::Instrumentor = nullptr;
+		NxFr::Globals::Debug::Statistiques = nullptr;
+		NxFr::Globals::Debug::Instrumentor = nullptr;
+		NxFr::Globals::Debug::Memory = nullptr;
 
-		NxFr::Instruments::Destroy(Instrumentor);
+		delete Instrumentor;
 		delete Stats;
+		delete Memory;
 
 		System::OnShutdown();
 	}
@@ -117,9 +119,8 @@ namespace NxEn
 	void DebugSystem::AutoStart()
 	{
 		Stats->Initialize();
-		Stats->Lock();
 
-		if (NxFr::Arguments::Has("Profile"))
+		if (NxFr::Globals::Args->Has("Profile"))
 		{
 			NEXUS_LOG(Info, System, "Debug Tools will start automatically");
 			Instrumentor->StartRecording();
@@ -129,7 +130,7 @@ namespace NxEn
 
 	void DebugSystem::RecordStats()
 	{
-		double Now = NxFr::Platform::GetInstance()->GetProcessorTimer();
+		double Now = NxFr::Globals::PlatformTarget->GetProcessorTimer();
 		float DeltaTime = (float)(Now - Time);
 
 		NEXUS_STAT_DECIMAL(NxFr::StatsHeader::FpsId, 1.0f / DeltaTime);
@@ -140,11 +141,9 @@ namespace NxEn
 
 	void DebugSystem::TickProfiler()
 	{
-		Stats->Unlock();
 		Stats->Flush();
-		Stats->Lock();
-
 		Logger->Flush();
+		Instrumentor->Flush();
 	}
 
 	void DebugSystem::ApplySettings()

@@ -65,7 +65,7 @@ namespace NxEn
 
 	NxFr::HandleManager* HandleManager::CreateHandleManager()
 	{
-		NxFr::AllocatorContext Context(nullptr);
+		NxFr::Allocator::Scope Context(nullptr);
 
 		NxFr::HandleManager* Manager = new NxFr::HandleManager(HandlesPerManager);
 		Managers.Append(Manager);
@@ -74,7 +74,7 @@ namespace NxEn
 
 	void HandleManager::ClearHandleManager(bool Force)
 	{
-		NxFr::AllocatorContext Context(nullptr);
+		NxFr::Allocator::Scope Context(nullptr);
 		NxFr::List<NxFr::HandleManager*> ToDelete(Managers.GetCount());
 
 		for (NxFr::HandleManager* Manager : Managers)

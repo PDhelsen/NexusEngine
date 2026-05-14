@@ -162,7 +162,7 @@ namespace NxEn
 
 		Menu::Item Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			//NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 			Item It(Callback, Validate, Path, Priority, Menu::ItemMode::Callback, 0, nullptr);
 			GUISystem::RegisterMenuItem(&It);
@@ -251,6 +251,12 @@ namespace NxEn
 			return *this;
 		}
 
+		void Menu::OnShutdown()
+		{
+			Items.Clear();
+			Labels.Clear();
+		}
+
 		void Menu::OnTick(float TimeStep)
 		{
 			if (Main)
@@ -274,13 +280,13 @@ namespace NxEn
 		void Menu::AppendItem(const Item& It)
 		{
 			Items.Append(It);
-			Items.Sort();
+			NxFr::ContainerUtility::Sort<NxEn::GUI::Menu::Item>(Items);
 
 			NxFr::List<NxFr::StringView> Sections = NxFr::Path::Split(It.Path);
 			for (auto& Section : Sections)
 			{
 				NxFr::GUID Id = NxFr::Hash<>::HashObject(Section);
-				if (!Labels.ContainsKey(Id))
+				if (!Labels.TryGet(Id))
 				{
 					Labels.Append(Id, Section);
 				}
@@ -289,7 +295,7 @@ namespace NxEn
 
 		void Menu::RemoveItem(const Item& It)
 		{
-			auto Iterator = Items.Find(It);
+			auto Iterator = NxFr::ContainerUtility::Find(Items, It);
 			if (Iterator != Items.End())
 			{
 				Items.Remove(Iterator.Id());

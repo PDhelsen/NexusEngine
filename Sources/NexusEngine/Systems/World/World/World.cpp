@@ -184,7 +184,7 @@ namespace NxEn
 		NxFr::Array<NxFr::Handle<NxEn::Component>> Components = FindComponents(Query);
 		Result.AppendRange(Components);
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> World::FindGameObjects(NxFr::StringView Query) const
@@ -218,7 +218,7 @@ namespace NxEn
 			}
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Tags>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Tags>>(Result);
 	}
 
 	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const

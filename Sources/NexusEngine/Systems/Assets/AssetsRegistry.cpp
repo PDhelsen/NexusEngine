@@ -150,7 +150,7 @@ namespace NxEn
 			}
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
 	NxFr::GUID AssetsRegistry::PathToId(NxFr::StringView Path) const

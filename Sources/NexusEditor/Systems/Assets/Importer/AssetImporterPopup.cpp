@@ -1,6 +1,5 @@
 #include "NexusEditor/Systems/Assets/Importer/AssetImporterPopup.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 
 namespace NxEd
@@ -69,7 +68,7 @@ namespace NxEd
 
 	void AssetImporterPopup::Pick()
 	{
-		NxFr::String Selection = NxFr::Platform::GetInstance()->OpenFileDialog("Pick file", "", "", NxFr::Paths::Assets);
+		NxFr::String Selection = NxFr::Globals::PlatformTarget->OpenFileDialog("Pick file", "", "", NxFr::Globals::Paths::Assets);
 		if (Selection.IsEmpty())
 		{
 			return;
@@ -87,7 +86,7 @@ namespace NxEd
 			return;
 		}
 
-		Path = NxFr::Path::IsRelative(FilePath) ? (NxFr::String)FilePath : NxFr::Path::MakeRelative(FilePath, NxFr::Paths::Assets);
+		Path = NxFr::Path::IsRelative(FilePath) ? (NxFr::String)FilePath : NxFr::Path::MakeRelative(FilePath, NxFr::Globals::Paths::Assets);
 		if (Type.IsEmpty())
 		{
 			Type = AssetImporter::GetType(NxFr::Path::GetExtension(Path)).GetString();

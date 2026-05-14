@@ -144,7 +144,7 @@ namespace NxEn
 	{
 		NxFr::Set<NxFr::GUID> Ids;
 		OnGetDependencies(Ids);
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Ids);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Ids);
 	}
 
 	NxFr::StringView Object::GetName() const

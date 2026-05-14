@@ -1,7 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Flow/EntryPoint.h"
 
-#include "NexusFramework/Core/NexusFrameworkGlobals.h"
 #include "NexusEngine/Application/Project/Project.h"
 
 namespace NxEn
@@ -42,19 +41,19 @@ namespace NxEn
 
 		static void CreateLogger()
 		{
-			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-			NxFr::Globals::Logs = new NxFr::Logger(NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback, "", true);
-			NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::Default, true);
-			NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::Verbose, true);
+			NxFr::Globals::Debug::Logs = new NxFr::Logger(NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback, "", true);
+			NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Default, true);
+			NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Verbose, true);
 		}
 
 		static void DestroyLogger()
 		{
-			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-			NxFr::Globals::Logs->Flush();
-			delete NxFr::Globals::Logs;
+			NxFr::Globals::Debug::Logs->Flush();
+			delete NxFr::Globals::Debug::Logs;
 		}
 
 		// -------------------------------------------------------------------------------------------------------------------------------
@@ -63,14 +62,14 @@ namespace NxEn
 
 		int Main(int argc, char* argv[])
 		{
-			NxFr::AllocatorContext Context(nullptr);
-			NxFr::Platform* Platform = NxFr::Platform::GetInstance();
-			NxFr::Arguments::Parse(argc, argv);
+			NxFr::Allocator::Scope Context(nullptr);
+			NxFr::Globals::CreateArgs(argc, argv);
+			NxFr::Globals::CreatePlatform();
 			CreateLogger();
 
 			Project ProjectInfo = CreateProject();
-			auto CreateApplication = Platform->GetFunctionFromDll<Application*, const Project&>(ProjectInfo.GetDllPath(), "CreateApplication");
-			auto DestroyApplication = Platform->GetFunctionFromDll<void, Application*>(ProjectInfo.GetDllPath(), "DestroyApplication");
+			auto CreateApplication = NxFr::Globals::PlatformTarget->GetFunctionFromDll<Application*, const Project&>(ProjectInfo.GetDllPath(), "CreateApplication");
+			auto DestroyApplication = NxFr::Globals::PlatformTarget->GetFunctionFromDll<void, Application*>(ProjectInfo.GetDllPath(), "DestroyApplication");
 
 			do
 			{
@@ -82,7 +81,7 @@ namespace NxEn
 
 			} while (Restart);
 
-			Platform->ClearDll();
+			NxFr::Globals::PlatformTarget->ClearDll();
 			DestroyLogger();
 
 			return ErrorCode;

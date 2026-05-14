@@ -143,7 +143,7 @@ namespace NxEn
 
 	NxFr::Allocator* Allocator::CreateAllocator(uint64 Size, uint64 Stride) const
 	{
-		NxFr::AllocatorContext Context(nullptr);
+		NxFr::Allocator::Scope Context(nullptr);
 		NxFr::Allocator* Alloc = nullptr;
 
 		switch (Type)
@@ -170,7 +170,7 @@ namespace NxEn
 
 	void Allocator::ClearAllocators(bool Delete)
 	{
-		NxFr::AllocatorContext Context(nullptr);
+		NxFr::Allocator::Scope Context(nullptr);
 		NxFr::List<NxFr::Allocator*> ToDelete(Allocators.GetCount());
 
 		for (NxFr::Allocator* Alloc : Allocators)

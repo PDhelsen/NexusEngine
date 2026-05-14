@@ -27,7 +27,7 @@ namespace NxEn
 		NxFr::String IdToAssetFsPath(NxFr::GUID Id) const;
 		NxFr::String IdToContentFsPath(NxFr::GUID Id) const;
 
-		bool IsValid(NxFr::GUID Id) const { return Assets.ContainsKey(Id); };
+		bool IsValid(NxFr::GUID Id) const { return Assets.TryGet(Id); };
 		bool HasFile(NxFr::GUID Id) const { return Assets[Id].HasFile(); }
 		uint64 GetCount() const { return Assets.GetCount(); }
 

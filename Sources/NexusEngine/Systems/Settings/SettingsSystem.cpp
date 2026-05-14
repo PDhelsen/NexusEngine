@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Settings/SettingsSystem.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
-
 namespace NxEn
 {
 	const NxFr::StringView Folder = "Settings";
@@ -10,7 +8,7 @@ namespace NxEn
 
 	static NxFr::Dictionary<NxFr::StringView, Setting*>& GetSettings()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		static NxFr::Dictionary<NxFr::StringView, Setting*> Settings;
 		return Settings;
@@ -70,7 +68,7 @@ namespace NxEn
 				YAML::Node& Value = It->second;
 
 				NxFr::String SettingName = Key.as<NxFr::String>();
-				if (Instances.ContainsKey((NxFr::StringView)SettingName))
+				if (Instances.TryGet((NxFr::StringView)SettingName))
 				{
 					Setting* Instance = Instances[SettingName];
 					Instance->OnDeserialize(Value);
@@ -148,10 +146,10 @@ namespace NxEn
 			PageIndex++;
 		}
 
-		Result.Sort([](const NxFr::Array<Setting*>& A, const NxFr::Array<Setting*>& B) { return A[0]->GetPage() <= B[0]->GetPage(); });
+		NxFr::ContainerUtility::Sort<NxFr::Array<Setting*>>(Result, [](const NxFr::Array<Setting*>& A, const NxFr::Array<Setting*>& B) { return A[0]->GetPage() <= B[0]->GetPage(); });
 		for (auto& Page : Result)
 		{
-			Page.Sort([](Setting* A, Setting* B) { return A->GetName() <= B->GetName(); });
+			NxFr::ContainerUtility::Sort<Setting*>(Page, [](Setting* A, Setting* B) { return A->GetName() <= B->GetName(); });
 		}
 
 		return Result;
@@ -161,7 +159,7 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NxFr::Directory(NxFr::Path::Combine(NxFr::Paths::Configs, Folder)).Create();
+		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder)).Create();
 		LoadSettings();
 	}
 

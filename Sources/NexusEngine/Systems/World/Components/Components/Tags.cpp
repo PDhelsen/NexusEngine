@@ -19,11 +19,11 @@ namespace NxEn
 		Items.Append(Tag);
 	}
 
-	void Tags::Append(NxFr::Collection<NxFr::StringView> Tags)
+	void Tags::Append(const NxFr::Collection<NxFr::StringView>& Tags)
 	{
-		for (auto& It = Tags.Reset(); It != Tags.End(); ++It)
+		for (const auto& It : Tags)
 		{
-			Append(*It);
+			Append(It);
 		}
 	}
 
@@ -32,26 +32,26 @@ namespace NxEn
 		Items.Remove(Tag);
 	}
 
-	void Tags::Remove(NxFr::Collection<NxFr::StringView> Tags)
+	void Tags::Remove(const NxFr::Collection<NxFr::StringView>& Tags)
 	{
-		for (auto& It = Tags.Reset(); It != Tags.End(); ++It)
+		for (const auto& It : Tags)
 		{
-			Remove(*It);
+			Remove(It);
 		}
 	}
 
 	bool Tags::Contains(NxFr::StringView Tag)
 	{
-		return Items.Contains([&](const NxFr::String& Element) { return Element == Tag; });
+		return Items.TryGet(Tag);
 	}
 
 	bool Tags::Contains(const NxFr::Collection<NxFr::StringView>& Tags, bool MatchAll)
 	{
 		bool Result = MatchAll ? true : false;
 
-		for (auto& It = Tags.Reset(); It != Tags.End(); ++It)
+		for (auto& It : Tags)
 		{
-			bool Match = Contains(*It);
+			bool Match = Contains(It);
 			Result = MatchAll ? Result & Match : Result | Match;
 
 			if ((!MatchAll && Match) || (MatchAll && !Match))

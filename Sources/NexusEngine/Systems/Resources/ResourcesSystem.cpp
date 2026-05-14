@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Resources/ResourcesSystem.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
-
 namespace NxFr
 {
 	namespace StatsHeader
@@ -18,7 +16,7 @@ namespace NxEn
 
 	void ResourcesSystem::Unload(NxFr::StringView Path)
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		Resource* Instance = GetResource(Path);
 
@@ -36,7 +34,7 @@ namespace NxEn
 
 	void ResourcesSystem::UnloadAll()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		for (auto& [Path, Instance] : Resources)
 		{
@@ -49,7 +47,7 @@ namespace NxEn
 
 	void ResourcesSystem::Save(NxFr::StringView Path)
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		Resource* Instance = GetResource(Path);
 
@@ -67,7 +65,7 @@ namespace NxEn
 
 	void ResourcesSystem::SaveAll()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		for (auto& [Path, Instance] : Resources)
 		{
@@ -80,7 +78,7 @@ namespace NxEn
 
 	void ResourcesSystem::Move(NxFr::StringView Path, NxFr::StringView Target)
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		Resource* Instance = GetResource(Path);
 
@@ -96,7 +94,7 @@ namespace NxEn
 
 	void ResourcesSystem::Delete(NxFr::StringView Path)
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		Resource* Instance = GetResource(Path);
 
@@ -113,8 +111,8 @@ namespace NxEn
 		System::OnInitialize();
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesTrackedId, UnsignedInteger, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesLoadedId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesTrackedId, Integer, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesLoadedId, Integer, Set);
 	}
 
 	void ResourcesSystem::OnTick(float TimeStep)
@@ -130,13 +128,13 @@ namespace NxEn
 			}
 		}
 
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::ResourcesTrackedId, Resources.GetCount());
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::ResourcesLoadedId, Loaded);
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::ResourcesTrackedId, Resources.GetCount());
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::ResourcesLoadedId, Loaded);
 	}
 
 	NxFr::String ResourcesSystem::GetResourceFilePath(NxFr::StringView Path)
 	{
-		return NxFr::Path::Combine(NxFr::Paths::Resources, Path);
+		return NxFr::Path::Combine(NxFr::Globals::Paths::Resources, Path);
 	}
 
 	Resource* ResourcesSystem::GetResource(NxFr::StringView Path)

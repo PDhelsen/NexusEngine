@@ -134,7 +134,7 @@ namespace NxEn
 
 				if (UnsortedIndex != SortedIndex)
 				{
-					Systems.Swap(UnsortedIndex, SortedIndex);
+					NxFr::ContainerUtility::Swap<SystemInfo>(Systems, UnsortedIndex, SortedIndex);
 				}
 
 				SortedIndex++;
@@ -160,10 +160,10 @@ namespace NxEn
 			auto& OnTickOnce = OnTicksOnce[BucketIndex];
 			if (OnTickOnce.GetCount() > 0)
 			{
-				NEXUS_PROFILE_SCOPE("Tick Once");
+				NEXUS_INSTUMENT_SCOPE("Tick Once");
 				for (uint64 Index = 0; Index < OnTickOnce.GetCount(); ++Index)
 				{
-					NEXUS_PROFILE_SCOPE(OnTickOnce[Index].GetSecond());
+					NEXUS_INSTUMENT_SCOPE(OnTickOnce[Index].GetSecond());
 
 					OnTickOnce[Index].GetFirst().Invoke();
 				}
@@ -174,11 +174,11 @@ namespace NxEn
 			auto& OnTick = OnTicks[BucketIndex];
 			if (OnTick.GetCount() > 0)
 			{
-				NEXUS_PROFILE_SCOPE("Tick");
+				NEXUS_INSTUMENT_SCOPE("Tick");
 
 				for (uint64 Index = 0; Index < OnTick.GetCount(); ++Index)
 				{
-					NEXUS_PROFILE_SCOPE(OnTick[Index].GetSecond());
+					NEXUS_INSTUMENT_SCOPE(OnTick[Index].GetSecond());
 
 					OnTick[Index].GetFirst().Invoke();
 				}
@@ -187,7 +187,7 @@ namespace NxEn
 			SystemRange Range = SystemsPerBuckets[BucketIndex];
 			if (Range.Start != Range.End)
 			{
-				NEXUS_PROFILE_SCOPE("Systems");
+				NEXUS_INSTUMENT_SCOPE("Systems");
 
 				for (uint64 SystemIndex = Range.Start; SystemIndex < Range.End; SystemIndex++)
 				{
@@ -195,7 +195,7 @@ namespace NxEn
 					float TimeStep = ComputeTimeStep(Info, DeltaTime);
 					if (TimeStep > 0.0f)
 					{
-						NEXUS_PROFILE_SCOPE(Info.Instance->GetObjectType().C());
+						NEXUS_INSTUMENT_SCOPE(Info.Instance->GetObjectType().C());
 
 						Info.Instance->Tick(TimeStep);
 					}

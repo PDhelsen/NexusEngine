@@ -43,7 +43,7 @@ namespace NxEn
 
 		NxFr::Dictionary<NxFr::StringId, float>& Style::GetVars()
 		{
-			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 			static NxFr::Dictionary<NxFr::StringId, float> Vars;
 			return Vars;
@@ -66,7 +66,7 @@ namespace NxEn
 
 		NxFr::Dictionary<NxFr::StringId, NxFr::Color>& Style::GetColors()
 		{
-			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 			static NxFr::Dictionary<NxFr::StringId, NxFr::Color> Colors;
 			return Colors;
@@ -89,7 +89,7 @@ namespace NxEn
 
 		NxFr::Dictionary<NxFr::StringId, Style>& Style::GetStyles()
 		{
-			NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 			static NxFr::Dictionary<NxFr::StringId, Style> Styles;
 			return Styles;

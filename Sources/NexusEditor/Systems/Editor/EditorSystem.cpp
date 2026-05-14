@@ -31,7 +31,7 @@ namespace NxEd
 
 	void EditorSystem::SaveAll()
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		OnSave.Invoke();
 		NEXUS_LOG(Info, System, "Saved");

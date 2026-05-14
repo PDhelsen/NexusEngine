@@ -29,7 +29,7 @@ namespace NxEd
 			Iterator = Iterator->GetIterator();
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
 	uint64 HierarchyEditContext::GetCount()
@@ -83,7 +83,7 @@ namespace NxEd
 
 			while (Parent)
 			{
-				if (Selection.Contains(Parent->GetId()))
+				if (Selection.TryGet(Parent->GetId()))
 				{
 					Selected = true;
 					break;

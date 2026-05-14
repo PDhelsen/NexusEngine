@@ -53,7 +53,7 @@ namespace NxEn
 	World* WorldSystem::CreateWorld(NxFr::StringId Name, bool References)
 	{
 		NxFr::GUID WorldId = Name;
-		if (Worlds.ContainsKey(WorldId))
+		if (Worlds.TryGet(WorldId))
 		{
 			NEXUS_LOG(Warning, System, "World %d already exist", WorldId);
 			return GetWorld(WorldId);
@@ -97,7 +97,7 @@ namespace NxEn
 
 	void WorldSystem::DestroyWorld(NxFr::GUID WorldId)
 	{
-		if (!Worlds.ContainsKey(WorldId))
+		if (!Worlds.TryGet(WorldId))
 		{
 			NEXUS_LOG(Warning, System, "World %d doesn't exist", WorldId);
 			return;
@@ -233,7 +233,7 @@ namespace NxEn
 			}
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)

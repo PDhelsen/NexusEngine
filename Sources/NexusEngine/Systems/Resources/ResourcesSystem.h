@@ -42,7 +42,7 @@ namespace NxEn
 	template<typename T>
 	inline T* ResourcesSystem::Create(NxFr::StringView Path)
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		Resource* Instance = GetResource(Path);
 
@@ -61,7 +61,7 @@ namespace NxEn
 	template<typename T>
 	inline T* ResourcesSystem::Load(NxFr::StringView Path)
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
 		Resource* Instance = GetResource(Path);
 

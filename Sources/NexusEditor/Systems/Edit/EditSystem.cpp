@@ -81,7 +81,7 @@ namespace NxEd
 
 	void EditSystem::RegisterContext(NxFr::StringId Id, Edit::Context* Ctx)
 	{
-		if (Contexts.ContainsKey(Id))
+		if (Contexts.TryGet(Id))
 		{
 			NEXUS_LOG(Error, System, "Context %s already exist", Id.GetString().C());
 		}
@@ -91,7 +91,7 @@ namespace NxEd
 
 	Edit::Context* EditSystem::UnregisterContext(NxFr::StringId Id)
 	{
-		if (!Contexts.ContainsKey(Id))
+		if (!Contexts.TryGet(Id))
 		{
 			NEXUS_LOG(Error, System, "Context %s doesn't exist", Id.GetString().C());
 			return nullptr;
@@ -151,9 +151,9 @@ namespace NxEd
 			return;
 		}
 
-		for (auto& It = InstancesId.Reset(); It != InstancesId.End(); ++It)
+		for (auto& It : InstancesId)
 		{
-			Ctx->Select(*It);
+			Ctx->Select(It);
 		}
 	}
 
@@ -191,9 +191,9 @@ namespace NxEd
 			return;
 		}
 
-		for (auto& It = InstancesId.Reset(); It != InstancesId.End(); ++It)
+		for (auto& It : InstancesId)
 		{
-			Ctx->Unselect(*It);
+			Ctx->Unselect(It);
 		}
 	}
 
@@ -231,9 +231,9 @@ namespace NxEd
 			return;
 		}
 
-		for (auto& It = InstancesId.Reset(); It != InstancesId.End(); ++It)
+		for (auto& It : InstancesId)
 		{
-			Ctx->Invert(*It);
+			Ctx->Invert(It);
 		}
 	}
 

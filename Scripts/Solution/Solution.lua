@@ -57,7 +57,7 @@ workspace (Engine)
 
     filter "toolset:msc"
         defines { "NEXUS_MSVC" }
-    	disablewarnings { "4244", "4267" }
+    	disablewarnings { "4244", "4267", "4251" }
 
     filter "platforms:Win64*"
         defines { "NEXUS_WINDOWS" }

@@ -25,7 +25,7 @@ namespace NxEn
 		NxFr::List<NxFr::GUID> GetUnused() const;
 		NxFr::List<NxFr::GUID> GetDirty() const;
 
-		bool IsValid(NxFr::GUID Id) const { return Assets.ContainsKey(Id); };
+		bool IsValid(NxFr::GUID Id) const { return Assets.TryGet(Id); };
 		uint64 GetCount() const { return Assets.GetCount(); }
 
 	private:

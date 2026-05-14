@@ -16,7 +16,7 @@ namespace NxEd
 
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetAll()
 	{
-		return NxFr::ContainersUtils::ToArrayKeys(Assets->Browser->Items);
+		return NxFr::ContainerUtility::ToArrayKeys(Assets->Browser->Items);
 	}
 
 	uint64 AssetsBrowserEditContext::GetCount()
@@ -74,7 +74,7 @@ namespace NxEd
 
 			while (Parent)
 			{
-				if (Selection.Contains(Parent->GetId()))
+				if (Selection.TryGet(Parent->GetId()))
 				{
 					Selected = true;
 					break;

@@ -27,13 +27,13 @@ namespace EntryPoint\
 {\
 	NxEn::Application* CreateApplication(const NxEn::Project& ProjectInfo)\
 	{\
-		NxFr::AllocatorContext Allocator(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General));\
+		NxFr::Allocator::Scope Allocator(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General));\
 		return new Name(ProjectInfo);\
 	}\
 	\
 	void DestroyApplication(NxEn::Application* Application)\
 	{\
-		NxFr::AllocatorContext Allocator(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General));\
+		NxFr::Allocator::Scope Allocator(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General));\
 		delete Application;\
 	}\
 }

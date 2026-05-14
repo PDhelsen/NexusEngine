@@ -207,7 +207,7 @@ namespace NxEd
 			Node* Dependency = Nodes.TryGetConnection(Instance, NxFr::Node::NodeGraphConnectionType::To, Index);
 			if (Dependency)
 			{
-				if (Selection.Contains(Dependency->Id))
+				if (Selection.TryGet(Dependency->Id))
 				{
 					NxFr::Rectangle Target = NxFr::Rectangle(Anchor + Dependency->Position * GetRectangleExtents() * 2.25f, GetRectangleExtents());
 
@@ -278,7 +278,7 @@ namespace NxEd
 
 	void ReferencesPanel::AddNode(NxFr::GUID Id, NxFr::StringView Label)
 	{
-		if (Ids.ContainsKey(Id))
+		if (Ids.TryGet(Id))
 		{
 			return;
 		}
@@ -298,7 +298,7 @@ namespace NxEd
 
 	void ReferencesPanel::SortNodes(NxFr::GUID Id, int32 Depth, bool From, bool To)
 	{
-		if (!Ids.ContainsKey(Id) || Selection.Contains(Id))
+		if (!Ids.TryGet(Id) || Selection.TryGet(Id))
 		{
 			return;
 		}

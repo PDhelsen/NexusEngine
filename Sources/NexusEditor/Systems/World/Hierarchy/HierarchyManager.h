@@ -21,7 +21,7 @@ namespace NxEd
 		NEXUS_EDITOR_API HierarchyItem* Convert(NxFr::Handle<NxEn::GameObject> Instance);
 
 	private:
-		NEXUS_EDITOR_API void OnHierarchyChanged(NxFr::StringId EventId, NxFr::StringId WorldId, NxFr::GUID GameObjectId);
+		NEXUS_EDITOR_API void OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId);
 
 		NEXUS_EDITOR_API void FetchItems();
 		NEXUS_EDITOR_API void ClearItems();

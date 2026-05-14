@@ -80,7 +80,7 @@ namespace NxEn
 	{
 		if (Type == NxEn::AllocatorType::Raw)
 		{
-			return 0;
+			return NxFr::Integer::MaxUI64;
 		}
 
 		uint64 Size = NEXUS_MEMORY_ALLOCATOR_SIZE;
@@ -122,12 +122,12 @@ namespace NxEn
 		System::OnInitialize();
 
 		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsSmallest->GetValue()) && NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsLargest->GetValue()), System, "SmallAllocatorParams have to be PowerOfTwo");
-		NEXUS_ASSERT(GetAllocatorSize(NxEn::AllocatorType::Raw) == 0, System, "Can't set the size of the Raw allocator");
+		NEXUS_ASSERT(GetAllocatorSize(NxEn::AllocatorType::Raw) == NxFr::Integer::MaxUI64, System, "Can't set the size of the Raw allocator");
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, UnsignedInteger, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, UnsignedInteger, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, Integer, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, Integer, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, Integer, Set);
 	}
 
 	void MemorySystem::OnShutdown()
@@ -154,7 +154,7 @@ namespace NxEn
 	// TODO: Defragmentation might not be full because Handle might be scattered across multiple manager
 	void MemorySystem::Defragment(float Budget, bool All)
 	{
-		NEXUS_PROFILE_FUNCTION();
+		NEXUS_INSTUMENT_FUNCTION();
 
 		NxFr::Stopwatch Watch(true);
 
@@ -174,12 +174,12 @@ namespace NxEn
 
 	void MemorySystem::RecordMemoryStats()
 	{
-		NxFr::MemoryTracker* Tracker = NxFr::MemoryTracker::GetInstance();
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::MemoryAllocationId, Tracker->GetAllocationCount());
+		NxFr::MemoryTracker* Tracker = NxFr::Globals::Debug::Memory;
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::MemoryAllocationId, Tracker->GetAllocationCount());
 
-		NxFr::Platform* Platform = NxFr::Platform::GetInstance();
+		NxFr::Platform* Platform = NxFr::Globals::PlatformTarget;
 		NxFr::Platform::MemoryInfo MemoryInfo = Platform->GetMemoryInfo();
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::PlatformMemoryId, MemoryInfo.CurrentUsage);
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::PlatformMemoryId, MemoryInfo.CurrentUsage);
 	}
 }

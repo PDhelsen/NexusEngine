@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Systems/SystemManager.h"
 
-#include "NexusFramework/Core/NexusFrameworkGlobals.h"
-
 namespace NxFr
 {
 	namespace LoggerChannel
@@ -16,7 +14,7 @@ namespace NxEn
 	SystemManager::SystemManager()
 		: Systems()
 	{
-		NxFr::Globals::Logs->AddChannel(NxFr::LoggerChannel::System, true);
+		NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::System, true);
 	}
 
 	SystemManager::~SystemManager()

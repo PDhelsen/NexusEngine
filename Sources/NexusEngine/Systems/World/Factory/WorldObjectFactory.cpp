@@ -168,7 +168,7 @@ namespace NxEn
 	void WorldObjectFactory::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
 		NxFr::Handle<GameObject> Target = Instance->GetGameObject();
-		uint64 Index = Target->Behaviours.Find(Instance).Id();
+		uint64 Index = NxFr::ContainerUtility::Find(Target->Behaviours, Instance).Id();
 		Target->Behaviours.RemoveSwap(Index);
 		Instance->Target = NxFr::Handle<GameObject>();
 
@@ -208,7 +208,7 @@ namespace NxEn
 	void WorldObjectFactory::DestroyComponent(NxFr::Handle<Component> Instance)
 	{
 		NxFr::Handle<GameObject> Target = Instance->GetGameObject();
-		uint64 Index = Target->Components.Find(Instance).Id();
+		uint64 Index = NxFr::ContainerUtility::Find(Target->Components, Instance).Id();
 		Target->Components.RemoveSwap(Index);
 		Instance->Target = NxFr::Handle<GameObject>();
 
@@ -243,7 +243,7 @@ namespace NxEn
 			}
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
 	NxFr::Array<NxFr::Handle<Behaviour>> WorldObjectFactory::FindBehaviours(NxFr::StringView Query) const
@@ -259,7 +259,7 @@ namespace NxEn
 			}
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Behaviour>>(Result);
 	}
 
 	NxFr::Array<NxFr::Handle<Component>> WorldObjectFactory::FindComponents(NxFr::StringView Query) const
@@ -275,7 +275,7 @@ namespace NxEn
 			}
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Component>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Component>>(Result);
 	}
 
 	NxFr::Handle<GameObject> WorldObjectFactory::GetGameObject(NxFr::GUID GameObjectId) const
@@ -298,7 +298,7 @@ namespace NxEn
 			Result.Append(Info.Handle);
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<GameObject>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<GameObject>>(Result);
 	}
 
 	NxFr::Handle<Behaviour> WorldObjectFactory::GetBehaviour(NxFr::GUID BehaviourId) const
@@ -321,7 +321,7 @@ namespace NxEn
 			Result.Append(Info.Handle);
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Behaviour>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Behaviour>>(Result);
 	}
 
 	NxFr::Handle<Component> WorldObjectFactory::GetComponent(NxFr::GUID ComponentId) const
@@ -344,7 +344,7 @@ namespace NxEn
 			Result.Append(Info.Handle);
 		}
 
-		return NxFr::ContainersUtils::ToArray<NxFr::Handle<Component>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Component>>(Result);
 	}
 
 	NxFr::Handle<GameObject> WorldObjectFactory::AllocateGameObject(NxFr::GUID GameObjectId)

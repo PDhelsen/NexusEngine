@@ -45,7 +45,7 @@ namespace NxEd
 		return Instance ? *Instance : nullptr;
 	}
 
-	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::StringId WorldId, NxFr::GUID GameObjectId)
+	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId)
 	{
 		NxFr::Handle<NxEn::GameObject> GameObject = Worlds->GetWorld(WorldId)->GetGameObject(GameObjectId);
 		if (EventId == NxEn::WorldSystem::AppendedId)

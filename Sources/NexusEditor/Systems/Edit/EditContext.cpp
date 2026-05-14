@@ -75,7 +75,7 @@ namespace NxEd
 
 		bool Context::IsSelected(NxFr::GUID InstanceId) const
 		{
-			return Selection.Contains(InstanceId);
+			return Selection.TryGet(InstanceId);
 		}
 
 		NxFr::GUID Context::GetSelected() const
@@ -85,7 +85,7 @@ namespace NxEd
 
 		NxFr::Array<NxFr::GUID> Context::GetSelection() const
 		{
-			return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Selection);
+			return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Selection);
 		}
 
 		uint64 Context::GetSelectionCount() const

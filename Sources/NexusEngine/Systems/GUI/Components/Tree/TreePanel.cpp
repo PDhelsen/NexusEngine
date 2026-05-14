@@ -115,11 +115,11 @@ namespace NxEn
 		{
 			Selected = nullptr;
 		}
-		if (Selection.Contains(Item))
+		if (Selection.TryGet(Item))
 		{
 			Selection.Remove(Item);
 		}
-		if (Filtered.Contains(Item))
+		if (Filtered.TryGet(Item))
 		{
 			Filtered.Remove(Item);
 		}
@@ -159,7 +159,7 @@ namespace NxEn
 		bool Browse = Filter.IsEmpty();
 		bool ExpandChanged = false;
 
-		if (Browse || Filtered.Contains(Item))
+		if (Browse || Filtered.TryGet(Item))
 		{
 			// Draw
 			uint64 Flag = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_OpenOnArrow
@@ -290,11 +290,11 @@ namespace NxEn
 			Instance->Select(State);
 			OnSelectItem(Instance, State);
 
-			if (State && !Selection.Contains(Instance))
+			if (State && !Selection.TryGet(Instance))
 			{
 				Selection.Append(Instance);
 			}
-			else if (!State && Selection.Contains(Instance))
+			else if (!State && Selection.TryGet(Instance))
 			{
 				Selection.Remove(Instance);
 			}
@@ -405,14 +405,14 @@ namespace NxEn
 
 		NxFr::List<TreeItem*> Items;
 		Items.AppendRange(Result);
-		Items.Sort([](TreeItem* A, TreeItem* B) { return *A < *B; });
+		NxFr::ContainerUtility::Sort<TreeItem*>(Items, [](TreeItem* A, TreeItem* B) { return *A < *B; });
 
 		if (Action->IsLastSelectedFirst())
 		{
 			Items.Insert(0, Selected);
 		}
 
-		return NxFr::ContainersUtils::ToArray<TreeItem*>(Items);
+		return NxFr::ContainerUtility::ToArray<TreeItem*>(Items);
 	}
 
 	void TreePanel::GatherActionItems(TreeItem* Item, NxFr::Set<TreeItem*>& Result, bool Recursive)
@@ -437,6 +437,6 @@ namespace NxEn
 
 	void TreePanel::SortActions()
 	{
-		Actions.Sort([](TreeAction* A, TreeAction* B) { return A->GetPriority() <= B->GetPriority(); });
+		NxFr::ContainerUtility::Sort<TreeAction*>(Actions, [](TreeAction* A, TreeAction* B) { return A->GetPriority() <= B->GetPriority(); });
 	}
 }

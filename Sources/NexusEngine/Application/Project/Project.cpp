@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Project/Project.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
-
 #define NEXUS_PROJECT_DLL "NexusProject-"
 
 #if NEXUS_EDITOR
@@ -18,8 +16,8 @@ namespace NxEn
 		Project NxEn::EntryPoint::CreateProject()
 		{
 			// Check cmd args
-			NxFr::StringView ModeArg = NxFr::Arguments::Get("Mode");
-			NxFr::StringView PathArg = NxFr::Arguments::Get("Project");
+			NxFr::StringView ModeArg = NxFr::Globals::Args->Get("Mode");
+			NxFr::StringView PathArg = NxFr::Globals::Args->Get("Project");
 
 			// Convert arg
 			ProjectMode Mode = NxFr::StringUtility::FromString<ProjectMode>(ModeArg.C());
@@ -28,9 +26,9 @@ namespace NxEn
 			// Lookup NexusProject as argument (without Project key)
 			if (Path.IsEmpty())
 			{
-				if (NxFr::Arguments::Has(1))
+				if (NxFr::Globals::Args->Has(1))
 				{
-					PathArg = NxFr::Arguments::Get(1);
+					PathArg = NxFr::Globals::Args->Get(1);
 					if (NxFr::Path::GetExtension(PathArg) == "nexus")
 					{
 						Path = NxFr::Path::Normalize(PathArg);
@@ -41,7 +39,7 @@ namespace NxEn
 			// Lookup NexusProject in working dir
 			if (Path.IsEmpty())
 			{
-				NxFr::String WorkingDir = NxFr::Platform::GetInstance()->GetWorkingDirectory();
+				NxFr::String WorkingDir = NxFr::Globals::PlatformTarget->GetWorkingDirectory();
 				NxFr::List<NxFr::String> Files = NxFr::Directory(WorkingDir).GetFiles();
 				for (auto& File : Files)
 				{
@@ -83,15 +81,15 @@ namespace NxEn
 		NxFr::String Path;
 		if (!Config.IsEmpty())
 		{
-			Path = NxFr::Path::Combine(NxFr::Paths::Configs, SubFolder, Config + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
+			Path = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, SubFolder, Config + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 		}
 		else
 		{
-			Path = NxFr::Path::Combine(NxFr::Paths::Saved, SubFolder, Saved + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
+			Path = NxFr::Path::Combine(NxFr::Globals::Paths::Saved, SubFolder, Saved + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 
 			if (!NxFr::Path::Exist(Path) && !Template.IsEmpty())
 			{
-				NxFr::String Target = NxFr::Path::Combine(NxFr::Paths::Configs, SubFolder, Template + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
+				NxFr::String Target = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, SubFolder, Template + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 				if (Extension.IsEmpty())
 				{
 					NxFr::Directory(Target).Copy(Path);
@@ -141,8 +139,8 @@ namespace NxEn
 
 	void Project::Initialize()
 	{
-		Root = !Path.IsEmpty() ? NxFr::String(NxFr::Path::GetDriveAndFolder(Path)) : NxFr::Platform::GetInstance()->GetWorkingDirectory();
-		Executable = NxFr::Path::Normalize(NxFr::Arguments::Get(0));
+		Root = !Path.IsEmpty() ? NxFr::String(NxFr::Path::GetDriveAndFolder(Path)) : NxFr::Globals::PlatformTarget->GetWorkingDirectory();
+		Executable = NxFr::Path::Normalize(NxFr::Globals::Args->Get(0));
 	}
 
 	void Project::GenerateDefault()

@@ -3,7 +3,6 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 #include "NexusEditor/Systems/Editor/EditorSystem.h"
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
 
 namespace NxEd
 {
@@ -49,7 +48,7 @@ namespace NxEd
 	{
 		Clear();
 
-		Root = FetchItems(NxFr::Paths::Assets, nullptr);
+		Root = FetchItems(NxFr::Globals::Paths::Assets, nullptr);
 		Root->ImGuiText = "Assets";
 		Root->Open(true);
 
@@ -192,7 +191,7 @@ namespace NxEd
 
 	void AssetsBrowser::UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool Add, bool Remove)
 	{
-		if (Remove && Item->Id && Items.ContainsKey(Item->Id))
+		if (Remove && Item->Id && Items.TryGet(Item->Id))
 		{
 			Items.Remove(Item->Id);
 		}
@@ -204,7 +203,7 @@ namespace NxEd
 		Item->Type = Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? Assets->GetMetadata(Item->Id).GetType() : Item->GetObjectType();
 		Item->CacheImGuiText();
 
-		if (Add && Item->Id && !Items.ContainsKey(Item->Id))
+		if (Add && Item->Id && !Items.TryGet(Item->Id))
 		{
 			Items.Append(Item->Id, Item);
 		}
@@ -246,7 +245,7 @@ namespace NxEd
 			return;
 		}
 
-		if (Items.ContainsKey(Item->Id))
+		if (Items.TryGet(Item->Id))
 		{
 			Items.Remove(Item->Id);
 		}
@@ -389,7 +388,7 @@ namespace NxEd
 	{
 		if (ItemPath == NxFr::StringUtility::Empty)
 		{
-			return NxFr::Hash<>::HashObject(NxFr::Paths::Assets);
+			return NxFr::Hash<>::HashObject(NxFr::Globals::Paths::Assets);
 		}
 
 		return NxFr::Path::GetExtension(ItemPath) == NxEn::AssetMetadata::AssetExtension ?
@@ -416,19 +415,19 @@ namespace NxEd
 	{
 		if (ItemPath == NxFr::StringUtility::Empty)
 		{
-			return NxFr::Paths::Assets;
+			return NxFr::Globals::Paths::Assets;
 		}
 
-		return NxFr::Path::MakeAbsolute(ItemPath, NxFr::Paths::Assets);
+		return NxFr::Path::MakeAbsolute(ItemPath, NxFr::Globals::Paths::Assets);
 	}
 
 	NxFr::String AssetsBrowser::FsPathToItemPath(NxFr::StringView FsPath)
 	{
-		if (FsPath == NxFr::Paths::Assets)
+		if (FsPath == NxFr::Globals::Paths::Assets)
 		{
 			return NxFr::StringUtility::Empty;
 		}
 
-		return NxFr::Path::MakeRelative(FsPath, NxFr::Paths::Assets);
+		return NxFr::Path::MakeRelative(FsPath, NxFr::Globals::Paths::Assets);
 	}
 }

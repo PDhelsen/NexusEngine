@@ -34,13 +34,13 @@ namespace NxEn
 		Instruments = Debug->GetInstrumentor();
 		Stats = Debug->GetStats();
 
-		Values = Stats->GetAllCurrentStats();
+		Values = Stats->GetStats();
 		Ids = NxFr::List<NxFr::String>(Values.GetCount());
 		for (auto& [Id, Value] : Values)
 		{
 			Ids.Append(Id.GetString());
 		}
-		Ids.Sort();
+		NxFr::ContainerUtility::Sort<NxFr::String>(Ids);
 	}
 
 	void StatsPanel::OnGui(float TimeStep)
@@ -119,12 +119,10 @@ namespace NxEn
 
 		switch (Value->GetType())
 		{
-		case NxFr::Stats::StatType::Label: GUI::Drawer<NxFr::String>::Property(Value->GetValue<const NxFr::String&>(), Label, &Style); break;
-		case NxFr::Stats::StatType::Check: GUI::Drawer<bool>::Property(Value->GetValue<bool>(), Label, &Style); break;
-		case NxFr::Stats::StatType::Integer: GUI::Drawer<int64>::Property(Value->GetValue<int64>(), Label, &Style); break;
-		case NxFr::Stats::StatType::UnsignedInteger: GUI::Drawer<uint64>::Property(Value->GetValue<uint64>(), Label, &Style); break;
-		case NxFr::Stats::StatType::Decimal: GUI::Drawer<float>::Property(Value->GetValue<float>(), Label, &Style); break;
-		case NxFr::Stats::StatType::DecimalPrecision: GUI::Drawer<double>::Property(Value->GetValue<double>(), Label, &Style); break;
+		case NxFr::Stats::Type::Label: GUI::Drawer<NxFr::String>::Property(Value->GetValueLabel(), Label, &Style); break;
+		case NxFr::Stats::Type::Check: GUI::Drawer<bool>::Property(Value->GetValueCheck(), Label, &Style); break;
+		case NxFr::Stats::Type::Integer: GUI::Drawer<int64>::Property(Value->GetValueInteger(), Label, &Style); break;
+		case NxFr::Stats::Type::Decimal: GUI::Drawer<float>::Property(Value->GetValueDecimal(), Label, &Style); break;
 		}
 	}
 

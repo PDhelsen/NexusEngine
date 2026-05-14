@@ -18,7 +18,7 @@ namespace NxEn
 	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
-		: Application(ProjectInfo), InputSchema(), Headless(NxFr::Arguments::Has("Headless"))
+		: Application(ProjectInfo), InputSchema(), Headless(NxFr::Globals::Args->Has("Headless"))
 	{
 		SystemManager& Systems = GetSystems();
 
@@ -41,7 +41,7 @@ namespace NxEn
 		if (!IsHeadless())
 		{
 			WindowSystem* Window = Systems.GetSystem<WindowSystem>();
-			Window->GetOnClose() += { this, &Application::Quit };
+			Window->GetOnClose() += { (Application*)this, &Application::Quit };
 			Window->SetWindowTitle(GetProject().GetName());
 		}
 	}
@@ -141,7 +141,7 @@ namespace NxEn
 
 	void NexusEngineApplication::ParseCommands()
 	{
-		NxFr::StringView CommandsList = NxFr::Arguments::Get("Commands");
+		NxFr::StringView CommandsList = NxFr::Globals::Args->Get("Commands");
 		if (CommandsList.IsEmpty())
 		{
 			return;

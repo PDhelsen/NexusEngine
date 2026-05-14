@@ -7,7 +7,7 @@ namespace NxEn
 
 	InputTextPopup* InputTextPopup::GetInstance()
 	{
-		NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
+		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 		static InputTextPopup* Instance = Object::Create<InputTextPopup>();
 
 		Instance->UnregisterCallback();

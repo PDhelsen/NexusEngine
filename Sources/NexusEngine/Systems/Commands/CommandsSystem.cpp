@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Commands/CommandsSystem.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
-
 namespace NxFr
 {
 	namespace LoggerChannel
@@ -147,7 +145,7 @@ namespace NxEn
 
 	void CommandsSystem::Execute(const CommandInfo& Info)
 	{
-		NEXUS_PROFILE_SCOPE(Info.Id.C());
+		NEXUS_INSTUMENT_SCOPE(Info.Id.C());
 
 		Current = &Info;
 
@@ -218,7 +216,7 @@ namespace NxEn
 
 	void CommandsSystem::PollTerminal()
 	{
-		NxFr::String Request = NxFr::Platform::GetInstance()->ReadFromTerminal();
+		NxFr::String Request = NxFr::Globals::PlatformTarget->ReadFromTerminal();
 		if (Request.IsEmpty())
 		{
 			return;

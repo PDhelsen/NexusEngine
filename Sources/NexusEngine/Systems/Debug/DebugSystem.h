@@ -17,6 +17,7 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Logger* GetLogger() const { return Logger; }
 		NEXUS_ENGINE_API NxFr::Stats* GetStats() const { return Stats; };
 		NEXUS_ENGINE_API NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }
+		NEXUS_ENGINE_API NxFr::MemoryTracker* GetMemory() const { return Memory; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -33,6 +34,7 @@ namespace NxEn
 		NxFr::Logger* Logger;
 		NxFr::Stats* Stats;
 		NxFr::Instruments* Instrumentor;
+		NxFr::MemoryTracker* Memory;
 		double Time;
 	};
 }

@@ -5,8 +5,6 @@
 #include "NexusEngine/Systems/Assets/AssetsManager.h"
 #include "NexusEngine/Systems/Assets/AssetMetadata.h"
 
-#include "NexusFramework/Core/NexusFrameworkPaths.h"
-
 namespace NxFr
 {
 	namespace StatsHeader
@@ -342,7 +340,7 @@ namespace NxEn
 
 		NxFr::Set<NxFr::GUID> Dependencies;
 		FetchDependencies(Id, Recusive, Dependencies);
-		return NxFr::ContainersUtils::ToArray<NxFr::GUID>(Dependencies);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Dependencies);
 	}
 
 	bool AssetsSystem::IsTracked(NxFr::GUID Id) const
@@ -361,7 +359,7 @@ namespace NxEn
 
 		RecordStats();
 
-		Registry = new AssetsRegistry(NxFr::Paths::Assets);
+		Registry = new AssetsRegistry(NxFr::Globals::Paths::Assets);
 		Manager = new AssetsManager();
 	}
 
@@ -383,14 +381,14 @@ namespace NxEn
 	void AssetsSystem::RecordStats() const
 	{
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsTrackedId, UnsignedInteger, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsLoadedId, UnsignedInteger, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsTrackedId, Integer, Set);
+		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsLoadedId, Integer, Set);
 	}
 
 	void AssetsSystem::UpdateStats() const
 	{
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::AssetsTrackedId, Registry->GetCount());
-		NEXUS_STAT_UNSIGNEDINTEGER(NxFr::StatsHeader::AssetsLoadedId, Manager->GetCount());
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::AssetsTrackedId, Registry->GetCount());
+		NEXUS_STAT_INTEGER(NxFr::StatsHeader::AssetsLoadedId, Manager->GetCount());
 	}
 
 	Asset* AssetsSystem::Reset(NxFr::GUID Id)
@@ -431,7 +429,7 @@ namespace NxEn
 
 		for (auto& Dependency : Dependencies)
 		{
-			if (Result.Contains(Dependency) || Dependency == 0)
+			if (Result.TryGet(Dependency) || Dependency == 0)
 			{
 				continue;
 			}

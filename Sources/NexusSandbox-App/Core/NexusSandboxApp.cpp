@@ -1,2 +1,2 @@
 #include "NexusSandbox-App/Core/NexusSandboxApp.h"
-#include "NexusFramework/Memory/MemoryOperator.h"
+#include "NexusFramework/Memory/Misc/Operator.h"
