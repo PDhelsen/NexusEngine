@@ -53,7 +53,7 @@ namespace NxEn
 
 	void Application::Crash(CrashCode ErrorCode)
 	{
-		NEXUS_LOG(Info, Application, "Application crashed with code %i", ErrorCode);
+		NEXUS_LOG(Info, Application, "Application crashed with code %d", ErrorCode);
 
 		EntryPoint::SetErrorCode((int8)ErrorCode);
 		Quit();
@@ -79,7 +79,7 @@ namespace NxEn
 	{
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Application duration", []()
 		{
-			NEXUS_LOG(Info, Default, "Application last for %d seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
+			NEXUS_LOG(Info, Default, "Application last for %llu seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		});
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Cleanup Folders", &NxFr::Globals::DestroyTempFolder);
 	}

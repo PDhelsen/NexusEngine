@@ -19,7 +19,7 @@ namespace NxEn
 
 	void AssetsManager::Remove(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(!Loading.TryGet(Id), System, "Not allowed to remove an asset that is still loading (%d)", Id);
+		NEXUS_ASSERT(!Loading.TryGet(Id), System, "Not allowed to remove an asset that is still loading (%llu)", Id);
 
 		Assets.Remove(Id);
 	}
@@ -36,7 +36,7 @@ namespace NxEn
 
 	void AssetsManager::Load(NxFr::GUID Id, const YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
-		NEXUS_ASSERT(!Loading.TryGet(Id), System, "Circular loading dependecy detected (%d)", Id);
+		NEXUS_ASSERT(!Loading.TryGet(Id), System, "Circular loading dependecy detected (%llu)", Id);
 
 		Loading.Append(Id);
 
@@ -47,7 +47,7 @@ namespace NxEn
 
 	void AssetsManager::Unload(NxFr::GUID Id)
 	{
-		NEXUS_ASSERT(!Loading.TryGet(Id), System, "Circular unloading dependecy detected (%d)", Id);
+		NEXUS_ASSERT(!Loading.TryGet(Id), System, "Circular unloading dependecy detected (%llu)", Id);
 
 		Loading.Append(Id);
 

@@ -172,7 +172,7 @@ namespace NxEn
 		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
 			: Callback(Callback), Validate(Validate), Path(Path), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
 		{
-			NEXUS_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%d)", MenuPriorityOffsetBase);
+			NEXUS_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%lld)", MenuPriorityOffsetBase);
 
 			if		(NxFr::StringUtility::Start(Path, MenuPathProject))		this->Priority -= MenuPriorityOffsetProject;
 			else if (NxFr::StringUtility::Start(Path, MenuPathTools))		this->Priority -= MenuPriorityOffsetTools;
