@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-
 #include "NexusEngine/Application/Application.h"
 #include "NexusEngine/Systems/Assets/AssetsSystem.h"
 #include "NexusEngine/Systems/World/WorldSystem.h"
@@ -19,7 +18,7 @@ namespace NxEn
 	};
 
 	template<typename T>
-	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<T, Asset>::Value>>
+	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::DecayPointer<T>::Type, Asset>::Value>>
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{
@@ -28,7 +27,7 @@ namespace NxEn
 	};
 
 	template<typename T>
-	struct ReferenceResolver<T, typename NxFr::EnableIf<NxFr::IsSameType<typename NxFr::RemovePointer<T>::Type, GameObject>::Value>::Type>
+	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::IsSameType<typename NxFr::DecayPointer<T>::Type, GameObject>::Value>>
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{
@@ -38,7 +37,7 @@ namespace NxEn
 	};
 
 	template<typename T>
-	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::RemovePointer<T>::Type, Behaviour>::Value>>
+	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::DecayPointer<T>::Type, Behaviour>::Value>>
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{
@@ -48,7 +47,7 @@ namespace NxEn
 	};
 
 	template<typename T>
-	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::RemovePointer<T>::Type, Component>::Value>>
+	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::DecayPointer<T>::Type, Component>::Value>>
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{

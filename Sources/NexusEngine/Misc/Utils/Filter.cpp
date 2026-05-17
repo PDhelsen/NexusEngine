@@ -9,6 +9,7 @@ namespace NxEn
 			: Query(Query), Filters(), Types(), Ids(), Names(), TypeAndString(), All()
 		{
 			Filters = NxFr::StringUtility::SplitAll(Query, " ");
+
 			Types = Filters.GetCount();
 			Ids = Filters.GetCount();
 			Names = Filters.GetCount();
@@ -45,7 +46,25 @@ namespace NxEn
 		{
 		}
 
-		bool Filter::FilterObject(NxFr::StringView Substring, NxFr::GUID Id, NxFr::StringId Type)
+		NxFr::Set<Object*> Filter::FilterObjects(const NxFr::Collection<Object*> Instances)
+		{
+			NxFr::Set<Object*> Result;
+			for (Object* It : Instances)
+			{
+				if (FilterObject(*It))
+				{
+					Result.Append(It);
+				}
+			}
+			return Result;
+		}
+
+		bool Filter::FilterObject(const Object& Instance)
+		{
+			return FilterInstance(Instance.GetName(), Instance.GetId(), Instance.GetObjectType());
+		}
+
+		bool Filter::FilterInstance(NxFr::StringView Substring, NxFr::GUID Id, NxFr::StringId Type)
 		{
 			bool MatchId = false;
 			bool MatchType = false;
@@ -68,11 +87,6 @@ namespace NxEn
 				(MatchType && !TypeAndString) ||
 				(MatchString && !TypeAndString) ||
 				(MatchType && MatchString && TypeAndString);
-		}
-
-		bool Filter::FilterObject(const Object& Instance)
-		{
-			return FilterObject(Instance.GetName(), Instance.GetId(), Instance.GetObjectType());
 		}
 	}
 }

@@ -144,7 +144,7 @@ namespace NxEn
 		Utils::Filter Filter(Query);
 		for (auto& [Id, Metadata] : Assets)
 		{
-			if (Filter.FilterObject(Metadata.GetPath(), Metadata.GetId(), Metadata.GetType()))
+			if (Filter.FilterInstance(Metadata.GetPath(), Metadata.GetId(), Metadata.GetType()))
 			{
 				Result.Append(Id);
 			}

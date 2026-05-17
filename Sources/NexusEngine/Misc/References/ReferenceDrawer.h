@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-
 #include "NexusEngine/Systems/GUI/GUISystem.h"
 
 namespace NxEn

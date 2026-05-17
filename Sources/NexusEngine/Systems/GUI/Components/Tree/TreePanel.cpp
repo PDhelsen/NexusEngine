@@ -268,7 +268,7 @@ namespace NxEn
 		TreeItem* Item = Root;
 		while (Item)
 		{
-			if (F.FilterObject(Item->GetItemName(), Item->GetItemId(), Item->GetItemType()))
+			if (F.FilterInstance(Item->GetItemName(), Item->GetItemId(), Item->GetItemType()))
 			{
 				ShowItem(Item);
 				Filtered.Append(Item);

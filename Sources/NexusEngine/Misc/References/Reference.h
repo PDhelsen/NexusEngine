@@ -1,7 +1,6 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-
 #include "NexusEngine/Misc/References/ReferenceInstance.h"
 #include "NexusEngine/Misc/References/ReferenceResolver.h"
 #include "NexusEngine/Misc/References/ReferenceDrawer.h"
@@ -12,7 +11,7 @@ namespace NxEn
 	union Reference
 	{
 	public:
-		using P = typename NxFr::RemovePointer<T>::Type*;
+		using P = typename NxFr::DecayPointer<T>::Type*;
 
 		Reference() : Id(0) {}
 		Reference(NxFr::GUID Id) : Id(Id) {}
