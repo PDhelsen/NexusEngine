@@ -42,6 +42,7 @@ namespace NxEn
 
 		NEXUS_ENGINE_API const Window& GetWindow() const { return Target; }
 		NEXUS_ENGINE_API const Monitor& GetMonitor(uint8 Index = 0) const { return Monitors[Index]; }
+		NEXUS_ENGINE_API bool IsFocused() const { return Focused; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;

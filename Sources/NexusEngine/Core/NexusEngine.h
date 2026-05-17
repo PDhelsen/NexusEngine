@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/External/ImGui.h"
+#include "NexusEngine/External/ImGui/API.h"
 
 #include "NexusEngine/Application/Object.h"
 #include "NexusEngine/Application/Application.h"

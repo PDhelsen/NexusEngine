@@ -11,14 +11,3 @@
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
-
-namespace NxEn
-{
-	namespace Imgui
-	{
-		void Initialize();
-		void Shutdown();
-		void Frame();
-		void Render();
-	}
-}

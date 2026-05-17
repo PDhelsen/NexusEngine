@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/GUI/GUISystem.h"
 
-#include "NexusEngine/External/ImGui.h"
+#include "NexusEngine/External/ImGui/ImGui.h"
 
 namespace NxFr
 {
@@ -232,7 +232,7 @@ namespace NxEn
 
 		NEXUS_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
 
-		Imgui::Frame();
+		Imgui::Tick();
 
 		GetMainWindow().Tick(TimeStep);
 

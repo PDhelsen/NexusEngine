@@ -4,7 +4,7 @@
 #include "NexusEngine/Systems/Settings/SettingTemplate.h"
 #include "NexusEngine/Systems/Resources/Resources/Image.h"
 
-#include "NexusEngine/External/Glfw.h"
+#include "NexusEngine/External/Glfw/Glfw.h"
 
 namespace NxEn
 {
@@ -217,6 +217,7 @@ namespace NxEn
 		System::OnInitialize();
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
+		Application::GetSystem<InputSystem>()->GetOnPoll() += Glfw::PollInput;
 #if !NEXUS_EDITOR
 		SetWindowMode((Window::Mode)((uint8)SettingMode->GetValue()));
 		SetWindowMonitor((uint8)SettingMonitor->GetValue());
@@ -235,6 +236,8 @@ namespace NxEn
 		DestroyWindow();
 
 		Glfw::Shutdown();
+
+		Application::GetSystem<InputSystem>()->GetOnPoll() -= Glfw::PollInput;
 
 		System::OnShutdown();
 	}

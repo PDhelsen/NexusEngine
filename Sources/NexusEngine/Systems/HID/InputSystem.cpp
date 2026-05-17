@@ -1,14 +1,12 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/HID/InputSystem.h"
 
-#include "NexusEngine/External/Glfw.h"
-
 namespace NxEn
 {
 	NEXUS_OBJECT_IMPLEMENTATION(InputSystem)
 
 	InputSystem::InputSystem()
-		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Window(nullptr), Schemas(), Buttons(), Axises(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Modifiers(), DirtyFlagButtons(true), DirtyFlagAxises(true)
+		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Window(nullptr), Schemas(), Buttons(), Axises(), Modifiers(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{
 		OnButtonChange += NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
 		OnAxisChange += NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);
@@ -59,7 +57,7 @@ namespace NxEn
 
 	bool InputSystem::CheckMouse() const
 	{
-		return IsMouseOverWindow() && GetMouseDelta() != NxFr::Vector2f::Zero;
+		return IsFocused() && GetMouseDelta() != NxFr::Vector2f::Zero;
 	}
 
 	bool InputSystem::CheckModifier(Input::Modifier Modifier) const
@@ -148,6 +146,11 @@ namespace NxEn
 		DirtyFlagAxises = true;
 	}
 
+	void InputSystem::OnFocusChanged(bool Focus)
+	{
+		Focused = Focus;
+	}
+
 	void InputSystem::UpdateButtons()
 	{
 		if (!DirtyFlagButtons)
@@ -203,7 +206,7 @@ namespace NxEn
 	{
 		NEXUS_INSTUMENT_FUNCTION();
 
-		Glfw::PollInput();
+		OnPoll();
 		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, System, "Unsupported Button pressed");
 	}
 

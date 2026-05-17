@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Core/NexusEngineApplication.h"
 
-#include "NexusEngine/External/Glfw.h"
-
 namespace NxEn
 {
 	const static Command CmdQuit = Command::Create("Application.Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]()

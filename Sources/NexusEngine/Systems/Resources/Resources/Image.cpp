@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Resources/Resources/Image.h"
 
-#include "NexusEngine/External/StbImage.h"
+#include "NexusEngine/External/StbImage/StbImage.h"
 
 namespace NxEn
 {
@@ -23,12 +23,12 @@ namespace NxEn
 	{
 		Resource::Load(FilePath);
 
-		Data = stbi_load(FilePath.C(), &Resolution.x, &Resolution.y, &Channels, 0);
+		Data = StbImage::Load(FilePath, Resolution, Channels);
 	}
 
 	void Image::Unload()
 	{
-		stbi_image_free(Data);
+		StbImage::Free(Data);
 
 		Resource::Unload();
 	}

@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/External/ImGui.h"
+#include "NexusEngine/External/ImGui/ImGui.h"
 
-#include "NexusEngine/External/Glfw.h"
+#include "NexusEngine/External/Glfw/Glfw.h"
 
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -35,7 +35,7 @@ namespace NxEn
 			ImGui::DestroyContext();
 		}
 
-		void Frame()
+		void Tick()
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
@@ -48,7 +48,7 @@ namespace NxEn
 			ImGui_ImplOpenGL3_Clear();
 
 			ImGui::Render();
-			auto Data = ImGui::GetDrawData();
+			ImDrawData* Data = ImGui::GetDrawData();
 			ImGui_ImplOpenGL3_RenderDrawData(Data);
 
 			ImGuiIO& IO = ImGui::GetIO();

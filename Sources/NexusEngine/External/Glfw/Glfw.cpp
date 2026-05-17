@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/External/Glfw.h"
+#include "NexusEngine/External/Glfw/Glfw.h"
 
 #include "glfw/include/GLFW/glfw3.h"
 
@@ -138,9 +138,9 @@ namespace NxEn
 			Conversion[GLFW_KEY_MENU]				= Input::Button::Menu;
 			return Conversion;
 		}
-		static NxFr::Array<Input::Button, NEXUS_KEYCOUNT>& GlfwMouseCodeToNexusButton()
+		static NxFr::Array<Input::Button, NEXUS_MOUSECOUNT>& GlfwMouseCodeToNexusButton()
 		{
-			static NxFr::Array<Input::Button, NEXUS_KEYCOUNT> Conversion;
+			static NxFr::Array<Input::Button, NEXUS_MOUSECOUNT> Conversion;
 			Conversion[GLFW_MOUSE_BUTTON_1] = Input::Button::MouseLeft;
 			Conversion[GLFW_MOUSE_BUTTON_2] = Input::Button::MouseRight;
 			Conversion[GLFW_MOUSE_BUTTON_3] = Input::Button::MouseMiddle;
@@ -151,7 +151,9 @@ namespace NxEn
 			Conversion[GLFW_MOUSE_BUTTON_8] = Input::Button::Mouse5;
 			return Conversion;
 		}
-		static bool MouseFocus = true;
+
+		static WindowSystem* Windows = nullptr;
+		static InputSystem* Inputs = nullptr;
 
 #pragma region Callback
 
@@ -162,21 +164,26 @@ namespace NxEn
 
 		static void CloseCallback(GLFWwindow* Window)
 		{
-			Application::GetSystem<WindowSystem>()->GetOnClose().Invoke();
+			Windows->GetOnClose().Invoke();
 		}
 
 		static void MoveCallback(GLFWwindow* Window, int X, int Y)
 		{
-			Application::GetSystem<WindowSystem>()->GetOnMove().Invoke(NxFr::Vector2i(X, Y));
+			Windows->GetOnMove().Invoke(NxFr::Vector2i(X, Y));
 		}
 
 		static void ResizeCallback(GLFWwindow* Window, int Width, int Height)
 		{
-			Application::GetSystem<WindowSystem>()->GetOnResize().Invoke(NxFr::Vector2i(Width, Height));
+			Windows->GetOnResize().Invoke(NxFr::Vector2i(Width, Height));
 		}
 
 		static void KeyButtonCallback(GLFWwindow* Window, int KeyCode, int ScanCode, int Action, int Mods)
 		{
+			if (!Windows->IsFocused())
+			{
+				return;
+			}
+
 			if (Action != GLFW_PRESS && Action != GLFW_RELEASE)
 			{
 				return;
@@ -184,11 +191,16 @@ namespace NxEn
 
 			Input::Button Button = GlfwKeyCodeToNexusButton()[KeyCode];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
-			Application::GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
+			Inputs->GetOnButtonChange().Invoke(Button, State);
 		}
 
 		static void MouseButtonCallback(GLFWwindow* Window, int Mouse, int Action, int Mods)
 		{
+			if (!Windows->IsFocused())
+			{
+				return;
+			}
+
 			if (Action != GLFW_PRESS && Action != GLFW_RELEASE)
 			{
 				return;
@@ -196,37 +208,38 @@ namespace NxEn
 
 			Input::Button Button = GlfwMouseCodeToNexusButton()[Mouse];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
-			Application::GetSystem<InputSystem>()->GetOnButtonChange().Invoke(Button, State);
+			Inputs->GetOnButtonChange().Invoke(Button, State);
 		}
 
 		static void MouseCallback(GLFWwindow* Window, double X, double Y)
 		{
-			if (!MouseFocus)
+			if (!Windows->IsFocused())
 			{
 				return;
 			}
 
-			Application::GetSystem<InputSystem>()->GetOnMouseChange().Invoke(NxFr::Vector2f(X, Y));
+			Inputs->GetOnMouseChange().Invoke(NxFr::Vector2f(X, Y));
 		}
 
 		static void ScrollCallback(GLFWwindow* Window, double X, double Y)
 		{
-			Application::GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollX, (float)X);
-			Application::GetSystem<InputSystem>()->GetOnAxisChange().Invoke(Input::Axis::ScrollY, (float)Y);
+			if (!Windows->IsFocused())
+			{
+				return;
+			}
+
+			Inputs->GetOnAxisChange().Invoke(Input::Axis::ScrollX, (float)X);
+			Inputs->GetOnAxisChange().Invoke(Input::Axis::ScrollY, (float)Y);
 		}
 
 		static void WindowFocusCallback(GLFWwindow* Window, int Focused)
 		{
-			Application::GetSystem<WindowSystem>()->GetOnFocus().Invoke(Focused > 0);
+			Windows->GetOnFocus().Invoke(Focused > 0);
 		}
 
 		static void MouseFocusCallback(GLFWwindow* Window, int Entered)
 		{
-			MouseFocus = Entered;
-			if (!MouseFocus)
-			{
-				Application::GetSystem<InputSystem>()->GetOnMouseChange().Invoke(-NxFr::Vector2f::One);
-			}
+			Inputs->GetOnFocusChange().Invoke(Entered);
 		}
 
 #pragma endregion
@@ -244,22 +257,21 @@ namespace NxEn
 
 			auto& KeyConversion = GlfwKeyCodeToNexusButton();
 			auto& MouseConversion = GlfwMouseCodeToNexusButton();
-			MouseFocus = false;
+			Windows = Application::GetSystem<WindowSystem>();
+			Inputs = Application::GetSystem<InputSystem>();
 		}
 
 		void Shutdown()
 		{
+			Windows = nullptr;
+			Inputs = nullptr;
+
 			glfwTerminate();
 		}
 
 		void PollInput()
 		{
 			glfwPollEvents();
-		}
-
-		void SetSwapInterval(uint8 Interval)
-		{
-			glfwSwapInterval(Interval);
 		}
 
 		void* GetContext()
@@ -272,30 +284,14 @@ namespace NxEn
 			glfwMakeContextCurrent(NEXUS_WINDOW(Context));
 		}
 
+		void SetSwapInterval(uint8 Interval)
+		{
+			glfwSwapInterval(Interval);
+		}
+
 #pragma endregion
 
 #pragma region Window
-
-		NxFr::Array<void*> GetMonitors()
-		{
-			int Count;
-			GLFWmonitor** Instances = glfwGetMonitors(&Count);
-
-			NxFr::Array<void*> Monitors(Count);
-			for (uint8 Index = 0; Index < Count; ++Index)
-			{
-				Monitors[Index] = Instances[Index];
-			}
-			return Monitors;
-		}
-
-		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate)
-		{
-			const GLFWvidmode* Mode = glfwGetVideoMode(NEXUS_MONITOR(Monitor));
-			Width = Mode->width;
-			Height = Mode->height;
-			RefreshRate = Mode->refreshRate;
-		}
 
 		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, NxFr::Vector2i IconResolution, uint8* IconPixels, uint8 Interval)
 		{
@@ -355,7 +351,6 @@ namespace NxEn
 			glfwSetWindowFocusCallback(Instance, WindowFocusCallback);
 			glfwSetCursorEnterCallback(Instance, MouseFocusCallback);
 
-			MouseFocus = true;
 			return Instance;
 		}
 
@@ -376,7 +371,6 @@ namespace NxEn
 			glfwSetCursorEnterCallback(Instance, nullptr);
 
 			glfwDestroyWindow(Instance);
-			MouseFocus = true;
 		}
 
 		void TickWindow(void* Window)
@@ -443,6 +437,35 @@ namespace NxEn
 			glfwSetWindowIcon(NEXUS_WINDOW(Window), Pixels ? 1 : 0, Pixels ? &Image : nullptr);
 		}
 
+#pragma endregion
+
+#pragma region Monitors
+
+		NxFr::Array<void*> GetMonitors()
+		{
+			int Count;
+			GLFWmonitor** Instances = glfwGetMonitors(&Count);
+
+			NxFr::Array<void*> Monitors(Count);
+			for (uint8 Index = 0; Index < Count; ++Index)
+			{
+				Monitors[Index] = Instances[Index];
+			}
+			return Monitors;
+		}
+
+		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate)
+		{
+			const GLFWvidmode* Mode = glfwGetVideoMode(NEXUS_MONITOR(Monitor));
+			Width = Mode->width;
+			Height = Mode->height;
+			RefreshRate = Mode->refreshRate;
+		}
+
+#pragma endregion
+
+#pragma region Icon
+
 		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom)
 		{
 			if (Cursor != nullptr)
@@ -480,5 +503,6 @@ namespace NxEn
 		}
 
 #pragma endregion
+
 	}
 }

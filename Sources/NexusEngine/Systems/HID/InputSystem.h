@@ -33,8 +33,10 @@ namespace NxEn
 		NEXUS_ENGINE_API NxFr::Event<Input::Button, Input::State>& GetOnButtonChange() { return OnButtonChange; }
 		NEXUS_ENGINE_API NxFr::Event<Input::Axis, float>& GetOnAxisChange() { return OnAxisChange; }
 		NEXUS_ENGINE_API NxFr::Event<NxFr::Vector2f>& GetOnMouseChange() { return OnMouseChange; }
+		NEXUS_ENGINE_API NxFr::Event<bool>& GetOnFocusChange() { return OnFocusChange; }
+		NEXUS_ENGINE_API NxFr::Event<>& GetOnPoll() { return OnPoll; }
 
-		NEXUS_ENGINE_API bool IsMouseOverWindow() const { return MousePosition != -NxFr::Vector2f::One; }
+		NEXUS_ENGINE_API bool IsFocused() const { return Focused; }
 
 	protected:
 		NEXUS_ENGINE_API void OnInitialize() override;
@@ -43,6 +45,7 @@ namespace NxEn
 		NEXUS_ENGINE_API void OnButtonChanged(Input::Button Button, Input::State State);
 		NEXUS_ENGINE_API void OnAxisChanged(Input::Axis Axis, float Delta);
 		NEXUS_ENGINE_API void OnMouseChanged(NxFr::Vector2f Position);
+		NEXUS_ENGINE_API void OnFocusChanged(bool Focus);
 
 	private:
 		NEXUS_ENGINE_API void UpdateButtons();
@@ -56,6 +59,8 @@ namespace NxEn
 		NxFr::Event<Input::Button, Input::State> OnButtonChange;
 		NxFr::Event<Input::Axis, float> OnAxisChange;
 		NxFr::Event<NxFr::Vector2f> OnMouseChange;
+		NxFr::Event<bool> OnFocusChange;
+		NxFr::Event<> OnPoll;
 
 		class WindowSystem* Window;
 
@@ -66,6 +71,7 @@ namespace NxEn
 		NxEn::Input::Modifier Modifiers;
 		NxFr::Vector2f MousePosition;
 		NxFr::Vector2f MouseDelta;
+		bool Focused;
 
 		bool DirtyFlagButtons;
 		bool DirtyFlagAxises;
