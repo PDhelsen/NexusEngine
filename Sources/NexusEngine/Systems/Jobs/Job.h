@@ -4,13 +4,13 @@
 
 namespace NxEn
 {
-	struct Job
+	struct NX_ENGINE_API Job
 	{
 	public:
-		NX_ENGINE_API Job(struct JobCompletion* Completion, const NxFr::Delegate<void()>& Work);
-		NX_ENGINE_API ~Job();
+		Job(struct JobCompletion* Completion, const NxFr::Delegate<void()>& Work);
+		~Job();
 
-		NX_ENGINE_API void Execute();
+		void Execute();
 
 	private:
 		struct JobCompletion* Completion;

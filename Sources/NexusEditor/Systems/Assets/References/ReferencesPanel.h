@@ -6,32 +6,35 @@
 
 namespace NxEd
 {
-	class ReferencesPanel : public NxEn::GUI::Panel
+	class NX_EDITOR_API ReferencesPanel : public NxEn::GUI::Panel
 	{
-		struct Node
+		struct NX_EDITOR_API Node
 		{
+			bool operator==(const Node& Other) const { return Id == Other.Id; }
+			bool operator!=(const Node& Other) const { return !(*this == Other); }
+
 			NxFr::GUID Id;
 			NxFr::String Label;
 			NxFr::Vector2f Position;
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, ReferencesPanel)
+		NX_OBJECT_DECLARATION(ReferencesPanel)
 
-		NX_EDITOR_API void Clear();
-		NX_EDITOR_API void Select(NxFr::GUID Id, bool Keep = false, bool Force = false);
-		NX_EDITOR_API void Refresh();
-		NX_EDITOR_API void Center();
+		void Clear();
+		void Select(NxFr::GUID Id, bool Keep = false, bool Force = false);
+		void Refresh();
+		void Center();
 
-		NX_EDITOR_API bool IsLocked() const { return Lock; }
-		NX_EDITOR_API void SetLocked(bool State) { Lock = State; }
+		bool IsLocked() const { return Lock; }
+		void SetLocked(bool State) { Lock = State; }
 
 	protected:
-		NX_EDITOR_API void OnInitialize() override;
-		NX_EDITOR_API void OnShutdown() override;
-		NX_EDITOR_API void OnEnable() override;
-		NX_EDITOR_API void OnDisable() override;
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnGui(float TimeStep) override;
 
 	private:
 		void DrawHeader();

@@ -6,7 +6,7 @@ namespace NxEn
 {
 	class CommandsSystem;
 
-	struct CommandInfo
+	struct NX_ENGINE_API CommandInfo
 	{
 		static const CommandInfo Dummy;
 
@@ -15,19 +15,19 @@ namespace NxEn
 		float Delay;
 	};
 
-	class Command
+	class NX_ENGINE_API Command
 	{
 	public:
 		template<typename... Args>
 		static Command Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback);
 
-		NX_ENGINE_API Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback);
-		NX_ENGINE_API ~Command();
+		Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback);
+		~Command();
 
-		NX_ENGINE_API void Invoke(NxFr::StringView Args) const;
+		void Invoke(NxFr::StringView Args) const;
 
-		NX_ENGINE_API NxFr::StringId GetId() const { return Id; }
-		NX_ENGINE_API NxFr::StringView GetTooltip() const { return Tooltip; }
+		NxFr::StringId GetId() const { return Id; }
+		NxFr::StringView GetTooltip() const { return Tooltip; }
 
 	private:
 		template<typename Func, uint64... Indices>

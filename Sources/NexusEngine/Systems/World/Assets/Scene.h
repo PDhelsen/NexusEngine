@@ -5,20 +5,20 @@
 
 namespace NxEn
 {
-	class Scene : public Asset
+	class NX_ENGINE_API Scene : public Asset
 	{
 	public:
-		NX_ASSET_DECLARATION(NX_ENGINE_API, Scene)
+		NX_ASSET_DECLARATION(Scene)
 
-		NX_ENGINE_API NxFr::Handle<GameObject> GetRoot() const;
+		NxFr::Handle<GameObject> GetRoot() const;
 
 	protected:
-		NX_ENGINE_API void OnInitialize() override;
+		void OnInitialize() override;
 
-		NX_ENGINE_API void OnGui(float TimeStep) override;
-		NX_ENGINE_API void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
-		NX_ENGINE_API void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
-		NX_ENGINE_API void OnUnload() override;
+		void OnGui(float TimeStep) override;
+		void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
+		void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
+		void OnUnload() override;
 
 	private:
 		NxFr::Handle<GameObject> Root;

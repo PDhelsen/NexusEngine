@@ -10,7 +10,7 @@ namespace NxEn
 
 namespace NxEd
 {
-	class ViewerContextText : public ViewerContext
+	class NX_EDITOR_API ViewerContextText : public ViewerContext
 	{
 		union InspectorTarget
 		{
@@ -24,17 +24,17 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, ViewerContextText)
+		NX_OBJECT_DECLARATION(ViewerContextText)
 
-		NX_EDITOR_API ViewerContextText();
-		NX_EDITOR_API virtual ~ViewerContextText();
+		ViewerContextText();
+		virtual ~ViewerContextText();
 
 	protected:
-		NX_EDITOR_API void Clear() override;
-		NX_EDITOR_API void SetupMenu(NxEn::GUI::Menu& Menu) override;
-		NX_EDITOR_API void SetupTarget(NxEn::Object* Instance) override;
+		void Clear() override;
+		void SetupMenu(NxEn::GUI::Menu& Menu) override;
+		void SetupTarget(NxEn::Object* Instance) override;
 
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnGui(float TimeStep) override;
 
 	private:
 		ViewContextMode Mode;

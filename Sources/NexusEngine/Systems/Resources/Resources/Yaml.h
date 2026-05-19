@@ -4,18 +4,18 @@
 
 namespace NxEn
 {
-	class Yaml : public Resource
+	class NX_ENGINE_API Yaml : public Resource
 	{
 	public:
-		NX_ENGINE_API Yaml(NxFr::StringView Path);
-		NX_ENGINE_API ~Yaml();
+		Yaml(NxFr::StringView Path);
+		~Yaml();
 
-		NX_ENGINE_API YAML::Node& GetRoot() { return Data; }
+		YAML::Node& GetRoot() { return Data; }
 
 	protected:
-		NX_ENGINE_API void Save(NxFr::StringView FilePath) override;
-		NX_ENGINE_API void Load(NxFr::StringView FilePath) override;
-		NX_ENGINE_API void Unload() override;
+		void Save(NxFr::StringView FilePath) override;
+		void Load(NxFr::StringView FilePath) override;
+		void Unload() override;
 
 	private:
 		YAML::Node Data;

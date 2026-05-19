@@ -6,32 +6,32 @@ namespace NxEn
 {
 	namespace GUI
 	{
-		class Element : public Object
+		class NX_ENGINE_API Element : public Object
 		{
 			friend class GUISystem;
 
 		public:
-			NX_OBJECT_DECLARATION(NX_ENGINE_API, Element)
+			NX_OBJECT_DECLARATION(Element)
 
-			NX_ENGINE_API Element();
-			NX_ENGINE_API ~Element();
+			Element();
+			~Element();
 
-			NX_ENGINE_API void Show();
-			NX_ENGINE_API void Hide();
-			NX_ENGINE_API void Close();
+			void Show();
+			void Hide();
+			void Close();
 
-			NX_ENGINE_API NxFr::StringView GetImGuiId() const { return ImGuiId; }
-			NX_ENGINE_API bool IsManual() const { return Manual; }
-			NX_ENGINE_API void SetManual(bool Manual) { this->Manual = Manual; }
+			NxFr::StringView GetImGuiId() const { return ImGuiId; }
+			bool IsManual() const { return Manual; }
+			void SetManual(bool Manual) { this->Manual = Manual; }
 
 		protected:
-			NX_ENGINE_API virtual void OnInitialize() override;
-			NX_ENGINE_API virtual void OnEnable() override;
-			NX_ENGINE_API virtual void OnDisable() override;
-			NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NX_ENGINE_API virtual void OnGui(float TimeStep) = 0;
+			virtual void OnInitialize() override;
+			virtual void OnEnable() override;
+			virtual void OnDisable() override;
+			virtual void OnTick(float TimeStep = 0.0f) override;
+			virtual void OnGui(float TimeStep) = 0;
 
-			NX_ENGINE_API void UpdateImGuiId(NxFr::StringView Name);
+			void UpdateImGuiId(NxFr::StringView Name);
 
 		private:
 			NxFr::String ImGuiId;
@@ -39,10 +39,10 @@ namespace NxEn
 			bool WillClose;
 		};
 
-		class Panel : public Element
+		class NX_ENGINE_API Panel : public Element
 		{
 		public:
-			NX_OBJECT_DECLARATION(NX_ENGINE_API, Panel)
+			NX_OBJECT_DECLARATION(Panel)
 
 			template<typename T>
 			static T* Create()
@@ -54,20 +54,20 @@ namespace NxEn
 				return Instance;
 			}
 
-			NX_ENGINE_API Panel();
-			NX_ENGINE_API virtual ~Panel();
+			Panel();
+			virtual ~Panel();
 
-			NX_ENGINE_API Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
-			NX_ENGINE_API Panel& SetTitle(NxFr::StringView Title);
-			NX_ENGINE_API Panel& SetDock(NxFr::StringView Id);
+			Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
+			Panel& SetTitle(NxFr::StringView Title);
+			Panel& SetDock(NxFr::StringView Id);
 
-			NX_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
-			NX_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
+			ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
+			NxFr::StringView GetTitle() const { return Title; }
 
 		protected:
-			NX_ENGINE_API virtual void OnInitialize() override;
-			NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NX_ENGINE_API virtual void OnGui(float TimeStep) { };
+			virtual void OnInitialize() override;
+			virtual void OnTick(float TimeStep = 0.0f) override;
+			virtual void OnGui(float TimeStep) { };
 
 		private:
 			ImGuiWindowFlags GuiFlags;
@@ -75,7 +75,7 @@ namespace NxEn
 			NxFr::String Dock;
 		};
 
-		class Menu : public Element
+		class NX_ENGINE_API Menu : public Element
 		{
 			friend class GUISystem;
 
@@ -85,23 +85,23 @@ namespace NxEn
 				Callback, Toggle, Enum
 			};
 
-			struct Item
+			struct NX_ENGINE_API Item
 			{
 				friend class Menu;
 
 			public:
-				NX_ENGINE_API static Item Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+				static Item Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 
-				NX_ENGINE_API bool operator==(const Item& Other) const;
-				NX_ENGINE_API bool operator<=(const Item& Other) const;
+				bool operator==(const Item& Other) const;
+				bool operator<=(const Item& Other) const;
 
-				NX_ENGINE_API const NxFr::Delegate<void()>& GetCallback() const { return Callback; }
-				NX_ENGINE_API NxFr::StringView GetPath() const { return Path; }
-				NX_ENGINE_API int64 GetPriority() const { return Priority; }
-				NX_ENGINE_API ItemMode GetMode() const { return Mode; }
+				const NxFr::Delegate<void()>& GetCallback() const { return Callback; }
+				NxFr::StringView GetPath() const { return Path; }
+				int64 GetPriority() const { return Priority; }
+				ItemMode GetMode() const { return Mode; }
 
 			private:
-				NX_ENGINE_API Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
+				Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data);
 
 			private:
 				NxFr::Delegate<void()> Callback;
@@ -113,24 +113,24 @@ namespace NxEn
 				void* Data;
 			};
 
-			NX_OBJECT_DECLARATION(NX_ENGINE_API, Menu)
+			NX_OBJECT_DECLARATION(Menu)
 
-			NX_ENGINE_API Menu(bool Main = false);
-			NX_ENGINE_API virtual ~Menu();
+			Menu(bool Main = false);
+			virtual ~Menu();
 
-			NX_ENGINE_API Menu& AddMenuItem	(NxFr::StringView Path,																	const NxFr::Delegate<void()>& Callback,				int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
-			NX_ENGINE_API Menu& AddMenuToggle(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
-			NX_ENGINE_API Menu& AddMenuEnum	(NxFr::StringView Path, void* Enum,		const NxFr::Array<NxFr::StringView>& Labels,	const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
-			NX_ENGINE_API Menu& Remove(NxFr::StringView Path);
-			NX_ENGINE_API Menu& Clear();
+			Menu& AddMenuItem	(NxFr::StringView Path,																	const NxFr::Delegate<void()>& Callback,				int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			Menu& AddMenuToggle(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			Menu& AddMenuEnum	(NxFr::StringView Path, void* Enum,		const NxFr::Array<NxFr::StringView>& Labels,	const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			Menu& Remove(NxFr::StringView Path);
+			Menu& Clear();
 
-			NX_ENGINE_API const Item& GetMenuItem(uint64 Index = 0) const { return Items[Index]; }
-			NX_ENGINE_API uint64 GetMenuItemCount() const { return Items.GetCount(); }
+			const Item& GetMenuItem(uint64 Index = 0) const { return Items[Index]; }
+			uint64 GetMenuItemCount() const { return Items.GetCount(); }
 
 		protected:
-			NX_ENGINE_API virtual void OnShutdown() override;
-			NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NX_ENGINE_API virtual void OnGui(float TimeStep) { };
+			virtual void OnShutdown() override;
+			virtual void OnTick(float TimeStep = 0.0f) override;
+			virtual void OnGui(float TimeStep) { };
 
 			void AppendItem(const Item& It);
 			void RemoveItem(const Item& It);
@@ -143,7 +143,7 @@ namespace NxEn
 			bool Main;
 		};
 
-		class Popup : public Element
+		class NX_ENGINE_API Popup : public Element
 		{
 			struct Item
 			{
@@ -152,28 +152,28 @@ namespace NxEn
 			};
 
 		public:
-			NX_OBJECT_DECLARATION(NX_ENGINE_API, Popup)
+			NX_OBJECT_DECLARATION(Popup)
 
-			NX_ENGINE_API Popup();
-			NX_ENGINE_API virtual ~Popup();
+			Popup();
+			virtual ~Popup();
 
-			NX_ENGINE_API Popup& SetGuiFlag(ImGuiWindowFlags GuiFlags);
-			NX_ENGINE_API Popup& SetTitle(NxFr::StringView Title);
-			NX_ENGINE_API Popup& SetMessage(NxFr::StringView Message);
-			NX_ENGINE_API Popup& AddButton(NxFr::StringView Label);
-			NX_ENGINE_API Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
-			NX_ENGINE_API Popup& Clear();
+			Popup& SetGuiFlag(ImGuiWindowFlags GuiFlags);
+			Popup& SetTitle(NxFr::StringView Title);
+			Popup& SetMessage(NxFr::StringView Message);
+			Popup& AddButton(NxFr::StringView Label);
+			Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
+			Popup& Clear();
 
-			NX_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
-			NX_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
-			NX_ENGINE_API NxFr::StringView GetMessage() const { return Message; }
-			NX_ENGINE_API NxFr::StringView GetButton(uint64 Index = 0) const { return Callbacks[Index].Label; }
-			NX_ENGINE_API uint64 GetButtonCount() const { return Callbacks.GetCount(); }
+			ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
+			NxFr::StringView GetTitle() const { return Title; }
+			NxFr::StringView GetMessage() const { return Message; }
+			NxFr::StringView GetButton(uint64 Index = 0) const { return Callbacks[Index].Label; }
+			uint64 GetButtonCount() const { return Callbacks.GetCount(); }
 
 		protected:
-			NX_ENGINE_API virtual void OnInitialize() override;
-			NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NX_ENGINE_API virtual void OnGui(float TimeStep) { };
+			virtual void OnInitialize() override;
+			virtual void OnTick(float TimeStep = 0.0f) override;
+			virtual void OnGui(float TimeStep) { };
 
 		private:
 			ImGuiWindowFlags GuiFlags;
@@ -182,29 +182,29 @@ namespace NxEn
 			NxFr::List<Item> Callbacks;
 		};
 
-		class ProgressBar : public Element
+		class NX_ENGINE_API ProgressBar : public Element
 		{
 		public:
-			NX_OBJECT_DECLARATION(NX_ENGINE_API, ProgressBar)
+			NX_OBJECT_DECLARATION(ProgressBar)
 
-			NX_ENGINE_API ProgressBar();
-			NX_ENGINE_API virtual ~ProgressBar();
+			ProgressBar();
+			virtual ~ProgressBar();
 
-			NX_ENGINE_API ProgressBar& SetGuiFlag(ImGuiWindowFlags GuiFlags);
-			NX_ENGINE_API ProgressBar& SetTitle(NxFr::StringView Title);
-			NX_ENGINE_API ProgressBar& SetMessage(NxFr::StringView Message);
-			NX_ENGINE_API ProgressBar& SetCallback(const NxFr::Delegate<void()>& Callback);
-			NX_ENGINE_API ProgressBar& SetProgress(float Progress);
+			ProgressBar& SetGuiFlag(ImGuiWindowFlags GuiFlags);
+			ProgressBar& SetTitle(NxFr::StringView Title);
+			ProgressBar& SetMessage(NxFr::StringView Message);
+			ProgressBar& SetCallback(const NxFr::Delegate<void()>& Callback);
+			ProgressBar& SetProgress(float Progress);
 
-			NX_ENGINE_API ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
-			NX_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
-			NX_ENGINE_API NxFr::StringView GetMessage() const { return Message; }
-			NX_ENGINE_API float GetProgress() const { return Progress; }
+			ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
+			NxFr::StringView GetTitle() const { return Title; }
+			NxFr::StringView GetMessage() const { return Message; }
+			float GetProgress() const { return Progress; }
 
 		protected:
-			NX_ENGINE_API virtual void OnInitialize() override;
-			NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
-			NX_ENGINE_API virtual void OnGui(float TimeStep) { };
+			virtual void OnInitialize() override;
+			virtual void OnTick(float TimeStep = 0.0f) override;
+			virtual void OnGui(float TimeStep) { };
 
 			float ComputePercentage(float TimeStep);
 
@@ -216,22 +216,22 @@ namespace NxEn
 			float Progress;
 		};
 
-		class Window : public NxEn::GUI::Element
+		class NX_ENGINE_API Window : public NxEn::GUI::Element
 		{
 		public:
-			NX_OBJECT_DECLARATION(NX_ENGINE_API, Window)
+			NX_OBJECT_DECLARATION(Window)
 
-			NX_ENGINE_API Window();
-			NX_ENGINE_API ~Window();
+			Window();
+			~Window();
 
-			NX_ENGINE_API Menu& GetMenu() { return MainMenu; }
+			Menu& GetMenu() { return MainMenu; }
 
 		protected:
-			NX_ENGINE_API void OnInitialize() override;
-			NX_ENGINE_API void OnShutdown() override;
-			NX_ENGINE_API void OnEnable() override;
-			NX_ENGINE_API void OnDisable() override;
-			NX_ENGINE_API void OnGui(float TimeStep) override;
+			void OnInitialize() override;
+			void OnShutdown() override;
+			void OnEnable() override;
+			void OnDisable() override;
+			void OnGui(float TimeStep) override;
 
 		private:
 			ImGuiWindowFlags GuiFlags;

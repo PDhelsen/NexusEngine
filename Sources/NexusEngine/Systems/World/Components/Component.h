@@ -2,8 +2,8 @@
 
 #include "NexusEngine/Application/Object.h"
 
-#define NX_COMPONENT_DECLARATION(Dll, Type) \
-NX_OBJECT_DECLARATION(Dll, Type)
+#define NX_COMPONENT_DECLARATION(Type) \
+NX_OBJECT_DECLARATION(Type)
 
 #define NX_COMPONENT_IMPLEMENTATION(Type) \
 NX_OBJECT_IMPLEMENTATION(Type)\
@@ -11,7 +11,7 @@ NxEn::WorldObjectStorage* Storage##Type = NxEn::WorldObjectStorage::Register<Typ
 
 namespace NxEn
 {
-	class Component : public Object
+	class NX_ENGINE_API Component : public Object
 	{
 		friend class WorldObjectFactory;
 		friend class GameObject;
@@ -19,30 +19,30 @@ namespace NxEn
 		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
 
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, Component)
+		NX_OBJECT_DECLARATION(Component)
 
-		NX_ENGINE_API Component();
-		NX_ENGINE_API virtual ~Component();
+		Component();
+		virtual ~Component();
 
-		NX_ENGINE_API void SetEnabled(bool Enabled) override;
-		NX_ENGINE_API bool IsEnabledInHierarchy() const;
-		NX_ENGINE_API bool IsTicking() const override;
+		void SetEnabled(bool Enabled) override;
+		bool IsEnabledInHierarchy() const;
+		bool IsTicking() const override;
 
-		NX_ENGINE_API void PatchReferences();
-		NX_ENGINE_API void UpdateHierarchy();
+		void PatchReferences();
+		void UpdateHierarchy();
 
-		NX_ENGINE_API NxFr::StringView GetName() const override;
-		NX_ENGINE_API NxFr::GUID GetId() const override;
-		NX_ENGINE_API NxFr::Handle<GameObject> GetGameObject() const;
+		NxFr::StringView GetName() const override;
+		NxFr::GUID GetId() const override;
+		NxFr::Handle<GameObject> GetGameObject() const;
 
 	protected:
-		NX_ENGINE_API void OnGui(float TimeStep) override;
-		NX_ENGINE_API void OnClone(const Object& Other) override;
-		NX_ENGINE_API void OnSave(YAML::Node& Node) override;
-		NX_ENGINE_API void OnLoad(const YAML::Node& Node) override;
+		void OnGui(float TimeStep) override;
+		void OnClone(const Object& Other) override;
+		void OnSave(YAML::Node& Node) override;
+		void OnLoad(const YAML::Node& Node) override;
 
-		NX_ENGINE_API virtual void OnPatchReferences();
-		NX_ENGINE_API virtual void OnUpdateHierarchy();
+		virtual void OnPatchReferences();
+		virtual void OnUpdateHierarchy();
 
 	private:
 		NxFr::GUID ComponentId;

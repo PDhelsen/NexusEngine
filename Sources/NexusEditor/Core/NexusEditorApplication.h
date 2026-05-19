@@ -7,15 +7,15 @@ namespace NxEd
 {
 	NX_APPLICATION_DECLARATION(NX_EDITOR_API, ::NxEd::NexusEditorApplication)
 
-	class NexusEditorApplication : public NxEn::NexusEngineApplication
+	class NX_EDITOR_API NexusEditorApplication : public NxEn::NexusEngineApplication
 	{
 	public:
-		NX_EDITOR_API NexusEditorApplication(const NxEn::Project& ProjectInfo);
-		NX_EDITOR_API virtual ~NexusEditorApplication();
+		NexusEditorApplication(const NxEn::Project& ProjectInfo);
+		virtual ~NexusEditorApplication();
 
 	protected:
-		NX_EDITOR_API virtual void OnInitialize() override;
-		NX_EDITOR_API virtual void OnShutdown() override;
-		NX_EDITOR_API virtual void OnExecute() override;
+		virtual void OnInitialize() override;
+		virtual void OnShutdown() override;
+		virtual void OnExecute() override;
 	};
 }

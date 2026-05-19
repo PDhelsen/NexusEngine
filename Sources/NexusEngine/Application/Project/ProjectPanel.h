@@ -6,18 +6,18 @@ namespace NxEn
 {
 	class Project;
 
-	class ProjectPanel : public GUI::Panel
+	class NX_ENGINE_API ProjectPanel : public GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, ProjectPanel)
+		NX_OBJECT_DECLARATION(ProjectPanel)
 
-		NX_ENGINE_API ProjectPanel();
-		NX_ENGINE_API ~ProjectPanel();
+		ProjectPanel();
+		~ProjectPanel();
 
 	protected:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnEnable() override;
-		NX_ENGINE_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnEnable() override;
+		void OnGui(float TimeStep) override;
 
 	private:
 		GUI::Style Style;

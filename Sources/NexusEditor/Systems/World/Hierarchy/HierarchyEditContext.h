@@ -5,29 +5,29 @@
 
 namespace NxEd
 {
-	class HierarchyEditContext : public Edit::Context
+	class NX_EDITOR_API HierarchyEditContext : public Edit::Context
 	{
 	public:
-		NX_EDITOR_API HierarchyEditContext(NxFr::StringId Id, HierarchyPanel* Hierarchy);
-		NX_EDITOR_API ~HierarchyEditContext();
+		HierarchyEditContext(NxFr::StringId Id, HierarchyPanel* Hierarchy);
+		~HierarchyEditContext();
 
 	protected:
-		NX_EDITOR_API NxFr::Array<NxFr::GUID> GetAll() override;
-		NX_EDITOR_API uint64 GetCount() override;
+		NxFr::Array<NxFr::GUID> GetAll() override;
+		uint64 GetCount() override;
 
-		NX_EDITOR_API void Rename() override;
-		NX_EDITOR_API void Duplicate() override;
-		NX_EDITOR_API void Delete() override;
-		NX_EDITOR_API void Cut() override;
-		NX_EDITOR_API void Copy() override;
-		NX_EDITOR_API void Paste() override;
+		void Rename() override;
+		void Duplicate() override;
+		void Delete() override;
+		void Cut() override;
+		void Copy() override;
+		void Paste() override;
 
 	private:
-		NX_EDITOR_API NxFr::Set<NxFr::GUID> FilterSelection();
-		NX_EDITOR_API void CopySelection();
-		NX_EDITOR_API void DestroySelection();
-		NX_EDITOR_API void PasteClipboard();
-		NX_EDITOR_API void ClearClipboard();
+		NxFr::Set<NxFr::GUID> FilterSelection();
+		void CopySelection();
+		void DestroySelection();
+		void PasteClipboard();
+		void ClearClipboard();
 
 	private:
 		HierarchyPanel* Hierarchy;

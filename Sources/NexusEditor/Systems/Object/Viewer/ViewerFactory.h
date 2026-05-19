@@ -6,7 +6,7 @@ namespace NxEd
 {
 	class ViewerContext;
 
-	class ViewerFactory
+	class NX_EDITOR_API ViewerFactory
 	{
 	public:
 		struct Factory
@@ -35,7 +35,7 @@ namespace NxEd
 			ViewerContext* Create() const override { return new F(); };
 		};
 
-		NX_EDITOR_API static Factory* GetFactory(NxFr::StringId Id);
-		NX_EDITOR_API static void SetFactory(NxFr::StringId Id, Factory* Instance);
+		static Factory* GetFactory(NxFr::StringId Id);
+		static void SetFactory(NxFr::StringId Id, Factory* Instance);
 	};
 }

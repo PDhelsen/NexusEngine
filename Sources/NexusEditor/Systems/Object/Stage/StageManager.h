@@ -5,20 +5,20 @@
 
 namespace NxEd
 {
-	class StageManager
+	class NX_EDITOR_API StageManager
 	{
 	public:
-		NX_EDITOR_API StageManager();
-		NX_EDITOR_API ~StageManager();
+		StageManager();
+		~StageManager();
 
-		NX_EDITOR_API Stage* CreateStage(NxEn::Object* Target);
-		NX_EDITOR_API void ShowStage(NxEn::Object* Target);
-		NX_EDITOR_API void DestroyStage(NxEn::Object* Target);
-		NX_EDITOR_API void DestroyDisableStage();
+		Stage* CreateStage(NxEn::Object* Target);
+		void ShowStage(NxEn::Object* Target);
+		void DestroyStage(NxEn::Object* Target);
+		void DestroyDisableStage();
 
-		NX_EDITOR_API Stage* GetStage(NxEn::Object* Target) const;
-		NX_EDITOR_API Stage* GetMainStage() const;
-		NX_EDITOR_API Stage* GetFocusedStage() const;
+		Stage* GetStage(NxEn::Object* Target) const;
+		Stage* GetMainStage() const;
+		Stage* GetFocusedStage() const;
 
 	private:
 		NxFr::Dictionary<NxEn::Object*, Stage*> Stages;

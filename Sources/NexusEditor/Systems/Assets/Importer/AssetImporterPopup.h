@@ -5,24 +5,24 @@
 
 namespace NxEd
 {
-	class AssetImporterPopup : public NxEn::GUI::Popup
+	class NX_EDITOR_API AssetImporterPopup : public NxEn::GUI::Popup
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetImporterPopup)
+		NX_OBJECT_DECLARATION(AssetImporterPopup)
 
-		NX_EDITOR_API static void ShowWithPath(NxFr::StringView Path);
+		static void ShowWithPath(NxFr::StringView Path);
 
-		NX_EDITOR_API AssetImporterPopup();
-		NX_EDITOR_API virtual ~AssetImporterPopup();
+		AssetImporterPopup();
+		virtual ~AssetImporterPopup();
 
 	protected:
-		NX_EDITOR_API void OnInitialize() override;
-		NX_EDITOR_API void OnEnable() override;
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnEnable() override;
+		void OnGui(float TimeStep) override;
 
-		NX_EDITOR_API void Pick();
-		NX_EDITOR_API void SetPath(NxFr::StringView FilePath);
-		NX_EDITOR_API void Import();
+		void Pick();
+		void SetPath(NxFr::StringView FilePath);
+		void Import();
 
 	private:
 		NxEn::GUI::Style Style;

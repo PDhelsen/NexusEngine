@@ -4,18 +4,18 @@
 
 namespace NxEn
 {
-	class HandleManager
+	class NX_ENGINE_API HandleManager
 	{
 		friend class MemorySystem;
 
 	public:
-		NX_ENGINE_API HandleManager(uint64 HandlesPerManager);
-		NX_ENGINE_API HandleManager(const HandleManager& Other) = delete;
-		NX_ENGINE_API HandleManager(HandleManager&& Other) noexcept = delete;
-		NX_ENGINE_API ~HandleManager();
+		HandleManager(uint64 HandlesPerManager);
+		HandleManager(const HandleManager& Other) = delete;
+		HandleManager(HandleManager&& Other) noexcept = delete;
+		~HandleManager();
 
-		NX_ENGINE_API HandleManager& operator=(const HandleManager& Other) = delete;
-		NX_ENGINE_API HandleManager& operator=(HandleManager&& Other) noexcept = delete;
+		HandleManager& operator=(const HandleManager& Other) = delete;
+		HandleManager& operator=(HandleManager&& Other) noexcept = delete;
 
 		template<typename T>
 		NxFr::Handle<T> AcquireHandle(T* Pointer)

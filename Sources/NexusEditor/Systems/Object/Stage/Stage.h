@@ -9,38 +9,38 @@
 
 namespace NxEd
 {
-	class Stage : public NxEn::GUI::Element
+	class NX_EDITOR_API Stage : public NxEn::GUI::Element
 	{
 		friend class StageManager;
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, Stage)
+		NX_OBJECT_DECLARATION(Stage)
 
-		NX_EDITOR_API Stage(NxEn::Object* Target);
-		NX_EDITOR_API ~Stage();
+		Stage(NxEn::Object* Target);
+		~Stage();
 
-		NX_EDITOR_API bool IsVisible() const;
-		NX_EDITOR_API bool IsFocused() const;
-		NX_EDITOR_API bool IsMain() const;
+		bool IsVisible() const;
+		bool IsFocused() const;
+		bool IsMain() const;
 
-		NX_EDITOR_API NxEn::Object* GetTarget() const { return Target; }
-		NX_EDITOR_API NxEn::World* GetWorld() const { return Viewer && Viewer->GetContext() ? Viewer->GetContext()->GetWorld() : nullptr;  }
+		NxEn::Object* GetTarget() const { return Target; }
+		NxEn::World* GetWorld() const { return Viewer && Viewer->GetContext() ? Viewer->GetContext()->GetWorld() : nullptr;  }
 
-		NX_EDITOR_API ViewerPanel* GetViewer() const { return Viewer; }
-		NX_EDITOR_API InspectorPanel* GetInspector() const { return Inspector; }
-		NX_EDITOR_API HierarchyPanel* GetHierarchy() const { return Hierarchy; }
+		ViewerPanel* GetViewer() const { return Viewer; }
+		InspectorPanel* GetInspector() const { return Inspector; }
+		HierarchyPanel* GetHierarchy() const { return Hierarchy; }
 
 	protected:
-		NX_EDITOR_API void OnInitialize() override;
-		NX_EDITOR_API void OnShutdown() override;
-		NX_EDITOR_API void OnEnable() override;
-		NX_EDITOR_API void OnDisable() override;
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnGui(float TimeStep) override;
 
-		NX_EDITOR_API void OnSelectionChanged(NxFr::GUID Id, bool State);
+		void OnSelectionChanged(NxFr::GUID Id, bool State);
 
-		NX_EDITOR_API void DrawDocking();
-		NX_EDITOR_API void DockPanels();
+		void DrawDocking();
+		void DockPanels();
 
 	private:
 		NxEn::Object* Target;

@@ -7,26 +7,26 @@ namespace NxEd
 	class AssetsBrowserItem;
 	class AssetsBrowserPanel;
 
-	class AssetsBrowser
+	class NX_EDITOR_API AssetsBrowser
 	{
 		friend class AssetsBrowserPanel;
 		friend class AssetsBrowserEditContext;
 
 	public:
-		NX_EDITOR_API AssetsBrowser();
-		NX_EDITOR_API ~AssetsBrowser();
+		AssetsBrowser();
+		~AssetsBrowser();
 
-		NX_EDITOR_API void Clear();
-		NX_EDITOR_API void Refresh();
+		void Clear();
+		void Refresh();
 
-		NX_EDITOR_API void Create(NxFr::StringView ItemPath, NxFr::StringId Type);
-		NX_EDITOR_API void Move(NxFr::StringView ItemPath, NxFr::StringView Target);
-		NX_EDITOR_API void Duplicate(NxFr::StringView ItemPath, NxFr::StringView Target);
-		NX_EDITOR_API void Delete(NxFr::StringView ItemPath);
+		void Create(NxFr::StringView ItemPath, NxFr::StringId Type);
+		void Move(NxFr::StringView ItemPath, NxFr::StringView Target);
+		void Duplicate(NxFr::StringView ItemPath, NxFr::StringView Target);
+		void Delete(NxFr::StringView ItemPath);
 
-		NX_EDITOR_API bool Exist(NxFr::StringView ItemPath);
-		NX_EDITOR_API NxFr::StringView Validate(NxFr::StringView ItemPath);
-		NX_EDITOR_API NxFr::String MakeUniquePath(NxFr::StringView ItemPath);
+		bool Exist(NxFr::StringView ItemPath);
+		NxFr::StringView Validate(NxFr::StringView ItemPath);
+		NxFr::String MakeUniquePath(NxFr::StringView ItemPath);
 
 	private:
 		AssetsBrowserItem* FetchItems(NxFr::StringView FsPath, AssetsBrowserItem* Parent);

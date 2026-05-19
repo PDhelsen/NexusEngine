@@ -5,35 +5,35 @@
 
 namespace NxEd
 {
-	class HierarchyItem : public NxEn::TreeItem
+	class NX_EDITOR_API HierarchyItem : public NxEn::TreeItem
 	{
 		friend class HierarchyManager;
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, HierarchyItem)
+		NX_OBJECT_DECLARATION(HierarchyItem)
 
-		NX_EDITOR_API NxFr::StringView GetName() const override { return ImGuiText; }
-		NX_EDITOR_API NxFr::StringView GetDescription() const { return GetItemName(); }
+		NxFr::StringView GetName() const override { return ImGuiText; }
+		NxFr::StringView GetDescription() const { return GetItemName(); }
 
-		NX_EDITOR_API NxFr::StringView GetItemName() const override { return Target->GetName(); }
-		NX_EDITOR_API NxFr::StringId GetItemType() const override { return Target->GetObjectType(); }
-		NX_EDITOR_API NxFr::GUID GetItemId() const override { return Target->GetId(); }
+		NxFr::StringView GetItemName() const override { return Target->GetName(); }
+		NxFr::StringId GetItemType() const override { return Target->GetObjectType(); }
+		NxFr::GUID GetItemId() const override { return Target->GetId(); }
 
-		NX_EDITOR_API NxFr::Handle<NxEn::GameObject> GetTarget() const { return Target; }
+		NxFr::Handle<NxEn::GameObject> GetTarget() const { return Target; }
 
 	private:
-		NX_EDITOR_API HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target);
-		NX_EDITOR_API virtual ~HierarchyItem();
+		HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target);
+		virtual ~HierarchyItem();
 
-		NX_EDITOR_API void OnTick(float TimeStep) override;
+		void OnTick(float TimeStep) override;
 
-		NX_EDITOR_API int8 Compare(const TreeItem& Other) const override;
-		NX_EDITOR_API void CacheImGuiText() override;
+		int8 Compare(const TreeItem& Other) const override;
+		void CacheImGuiText() override;
 
-		NX_EDITOR_API HierarchyItem* GetParent() const override;
-		NX_EDITOR_API HierarchyItem* GetPrevious() const override;
-		NX_EDITOR_API HierarchyItem* GetNext() const override;
-		NX_EDITOR_API HierarchyItem* GetChild() const override;
+		HierarchyItem* GetParent() const override;
+		HierarchyItem* GetPrevious() const override;
+		HierarchyItem* GetNext() const override;
+		HierarchyItem* GetChild() const override;
 
 	private:
 		HierarchyManager* Manager;

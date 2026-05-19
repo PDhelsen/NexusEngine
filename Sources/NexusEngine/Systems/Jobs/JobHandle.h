@@ -4,20 +4,20 @@
 
 namespace NxEn
 {
-	struct JobHandle
+	struct NX_ENGINE_API JobHandle
 	{
 		friend class JobSystem;
 
 	public:
-		NX_ENGINE_API JobHandle(const JobHandle& Other) = delete;
-		NX_ENGINE_API JobHandle(JobHandle&& Other) noexcept;
-		NX_ENGINE_API ~JobHandle();
+		JobHandle(const JobHandle& Other) = delete;
+		JobHandle(JobHandle&& Other) noexcept;
+		~JobHandle();
 
-		NX_ENGINE_API void Wait();
-		NX_ENGINE_API bool IsDone() const;
+		void Wait();
+		bool IsDone() const;
 
 	private:
-		NX_ENGINE_API JobHandle(struct JobCompletion* Completion);
+		JobHandle(struct JobCompletion* Completion);
 
 	private:
 		struct JobCompletion* Completion;

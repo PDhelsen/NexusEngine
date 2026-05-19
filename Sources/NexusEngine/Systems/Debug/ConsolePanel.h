@@ -7,7 +7,7 @@ namespace NxEn
 {
 	class CommandsSystem;
 
-	class ConsolePanel : public GUI::Panel
+	class NX_ENGINE_API ConsolePanel : public GUI::Panel
 	{
 		struct Log
 		{
@@ -18,19 +18,19 @@ namespace NxEn
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, ConsolePanel)
+		NX_OBJECT_DECLARATION(ConsolePanel)
 
-		NX_ENGINE_API static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity);
+		static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity);
 
-		NX_ENGINE_API ConsolePanel();
-		NX_ENGINE_API ~ConsolePanel();
+		ConsolePanel();
+		~ConsolePanel();
 
 	protected:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnShutdown() override;
-		NX_ENGINE_API void OnEnable() override;
-		NX_ENGINE_API void OnDisable() override;
-		NX_ENGINE_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnGui(float TimeStep) override;
 
 		void ExecuteCommand();
 		void AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message);

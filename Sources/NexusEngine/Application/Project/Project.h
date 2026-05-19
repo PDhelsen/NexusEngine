@@ -18,26 +18,26 @@ namespace NxEn
 
 	namespace EntryPoint
 	{
-		NX_ENGINE_API Project CreateProject();
+		Project CreateProject();
 	}
 
-	class Project
+	class NX_ENGINE_API Project
 	{
 	public:
-		NX_ENGINE_API static NxFr::String GetSavedConfigPath(NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, NxFr::StringView Extension, NxFr::StringView SubFolder = "", bool Suffix = false);
+		static NxFr::String GetSavedConfigPath(NxFr::StringView Config, NxFr::StringView Saved, NxFr::StringView Template, NxFr::StringView Extension, NxFr::StringView SubFolder = "", bool Suffix = false);
 
-		NX_ENGINE_API Project();
-		NX_ENGINE_API Project(ProjectMode Mode);
-		NX_ENGINE_API Project(NxFr::StringView Path);
-		NX_ENGINE_API Project(ProjectMode Mode, NxFr::StringView Path);
-		NX_ENGINE_API ~Project();
+		Project();
+		Project(ProjectMode Mode);
+		Project(NxFr::StringView Path);
+		Project(ProjectMode Mode, NxFr::StringView Path);
+		~Project();
 
-		NX_ENGINE_API ProjectMode GetTarget() const { return Mode; }
-		NX_ENGINE_API NxFr::StringView GetPath() const { return Path; }
-		NX_ENGINE_API NxFr::StringView GetName() const { return Name; }
-		NX_ENGINE_API NxFr::StringView GetRootPath() const { return Root; }
-		NX_ENGINE_API NxFr::StringView GetExecutablePath() const { return Executable; }
-		NX_ENGINE_API NxFr::StringView GetDllPath() const { return Dll; }
+		ProjectMode GetTarget() const { return Mode; }
+		NxFr::StringView GetPath() const { return Path; }
+		NxFr::StringView GetName() const { return Name; }
+		NxFr::StringView GetRootPath() const { return Root; }
+		NxFr::StringView GetExecutablePath() const { return Executable; }
+		NxFr::StringView GetDllPath() const { return Dll; }
 
 	private:
 		void Initialize();

@@ -7,15 +7,15 @@ namespace NxSE
 {
 	NX_APPLICATION_DECLARATION(NX_SANDBOX_EDITOR_API, ::NxSE::NexusSandboxEditorApplication)
 
-	class NexusSandboxEditorApplication : public NxEd::NexusEditorApplication
+	class NX_SANDBOX_EDITOR_API NexusSandboxEditorApplication : public NxEd::NexusEditorApplication
 	{
 	public:
-		NX_SANDBOX_EDITOR_API NexusSandboxEditorApplication(const NxEn::Project& ProjectInfo);
-		NX_SANDBOX_EDITOR_API virtual ~NexusSandboxEditorApplication();
+		NexusSandboxEditorApplication(const NxEn::Project& ProjectInfo);
+		virtual ~NexusSandboxEditorApplication();
 
 	protected:
-		NX_SANDBOX_EDITOR_API virtual void OnInitialize() override;
-		NX_SANDBOX_EDITOR_API virtual void OnShutdown() override;
-		NX_SANDBOX_EDITOR_API virtual void OnExecute() override;
+		virtual void OnInitialize() override;
+		virtual void OnShutdown() override;
+		virtual void OnExecute() override;
 	};
 }

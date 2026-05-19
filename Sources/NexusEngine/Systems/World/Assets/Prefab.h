@@ -5,19 +5,19 @@
 
 namespace NxEn
 {
-	class Prefab : public Asset
+	class NX_ENGINE_API Prefab : public Asset
 	{
 	public:
-		NX_ASSET_DECLARATION(NX_ENGINE_API, Prefab)
+		NX_ASSET_DECLARATION(Prefab)
 
-		NX_ENGINE_API NxFr::Handle<GameObject> GetRoot() const;
-		NX_ENGINE_API void SetRoot(NxFr::Handle<GameObject> Instance);
+		NxFr::Handle<GameObject> GetRoot() const;
+		void SetRoot(NxFr::Handle<GameObject> Instance);
 
 	protected:
-		NX_ENGINE_API void OnGui(float TimeStep) override;
-		NX_ENGINE_API void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
-		NX_ENGINE_API void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
-		NX_ENGINE_API void OnUnload() override;
+		void OnGui(float TimeStep) override;
+		void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
+		void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
+		void OnUnload() override;
 
 	private:
 		NxFr::Handle<GameObject> Root;

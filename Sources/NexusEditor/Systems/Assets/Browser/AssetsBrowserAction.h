@@ -5,136 +5,136 @@
 
 namespace NxEd
 {
-	class AssetsBrowserActionCreate : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionCreate : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionCreate)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionCreate)
 
-		NX_EDITOR_API AssetsBrowserActionCreate() : TreeAction("Create", 1, false, false) { }
-		NX_EDITOR_API virtual ~AssetsBrowserActionCreate() = default;
+		AssetsBrowserActionCreate() : TreeAction("Create", 1, false, false) { }
+		virtual ~AssetsBrowserActionCreate() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionRename : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionRename : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionRename)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionRename)
 
-		NX_EDITOR_API AssetsBrowserActionRename() : TreeAction("Rename", 2, false, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionRename() = default;
+		AssetsBrowserActionRename() : TreeAction("Rename", 2, false, false) {}
+		virtual ~AssetsBrowserActionRename() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionDuplicate : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionDuplicate : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionDuplicate)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionDuplicate)
 
-		NX_EDITOR_API AssetsBrowserActionDuplicate() : TreeAction("Duplicate", 3, false, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionDuplicate() = default;
+		AssetsBrowserActionDuplicate() : TreeAction("Duplicate", 3, false, false) {}
+		virtual ~AssetsBrowserActionDuplicate() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionMove : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionMove : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionMove)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionMove)
 
-		NX_EDITOR_API AssetsBrowserActionMove() : TreeAction("Move", 4, false, true) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionMove() = default;
+		AssetsBrowserActionMove() : TreeAction("Move", 4, false, true) {}
+		virtual ~AssetsBrowserActionMove() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionDelete : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionDelete : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionDelete)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionDelete)
 
-		NX_EDITOR_API AssetsBrowserActionDelete() : TreeAction("Delete", 5, false, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionDelete() = default;
+		AssetsBrowserActionDelete() : TreeAction("Delete", 5, false, false) {}
+		virtual ~AssetsBrowserActionDelete() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionImport : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionImport : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionImport)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionImport)
 
-		NX_EDITOR_API AssetsBrowserActionImport() : TreeAction("Import", 6, true, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionImport() = default;
+		AssetsBrowserActionImport() : TreeAction("Import", 6, true, false) {}
+		virtual ~AssetsBrowserActionImport() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionReimport : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionReimport : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionReimport)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionReimport)
 
-		NX_EDITOR_API AssetsBrowserActionReimport() : TreeAction("Reimport", 7, true, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionReimport() = default;
+		AssetsBrowserActionReimport() : TreeAction("Reimport", 7, true, false) {}
+		virtual ~AssetsBrowserActionReimport() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionLoad : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionLoad : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionLoad)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionLoad)
 
-		NX_EDITOR_API AssetsBrowserActionLoad() : TreeAction("Load", 8, true, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionLoad() = default;
+		AssetsBrowserActionLoad() : TreeAction("Load", 8, true, false) {}
+		virtual ~AssetsBrowserActionLoad() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionReload : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionReload : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionReload)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionReload)
 
-		NX_EDITOR_API AssetsBrowserActionReload() : TreeAction("Reload", 9, true, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionReload() = default;
+		AssetsBrowserActionReload() : TreeAction("Reload", 9, true, false) {}
+		virtual ~AssetsBrowserActionReload() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionInstantiate : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionInstantiate : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionReload)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionReload)
 
-		NX_EDITOR_API AssetsBrowserActionInstantiate() : TreeAction("Instantiate", 10, false, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionInstantiate() = default;
+		AssetsBrowserActionInstantiate() : TreeAction("Instantiate", 10, false, false) {}
+		virtual ~AssetsBrowserActionInstantiate() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionView : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionView : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionView)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionView)
 
-		NX_EDITOR_API AssetsBrowserActionView() : TreeAction("View", 11, false, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionView() = default;
+		AssetsBrowserActionView() : TreeAction("View", 11, false, false) {}
+		virtual ~AssetsBrowserActionView() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class AssetsBrowserActionReferences : public NxEn::TreeAction
+	class NX_EDITOR_API AssetsBrowserActionReferences : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserActionReferences)
+		NX_OBJECT_DECLARATION(AssetsBrowserActionReferences)
 
-		NX_EDITOR_API AssetsBrowserActionReferences() : TreeAction("References", 12, false, false) {}
-		NX_EDITOR_API virtual ~AssetsBrowserActionReferences() = default;
+		AssetsBrowserActionReferences() : TreeAction("References", 12, false, false) {}
+		virtual ~AssetsBrowserActionReferences() = default;
 
-		NX_EDITOR_API void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 }
 

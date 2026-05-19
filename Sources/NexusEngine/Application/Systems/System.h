@@ -4,17 +4,17 @@
 
 namespace NxEn
 {
-	class System : public Object
+	class NX_ENGINE_API System : public Object
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, System)
+		NX_OBJECT_DECLARATION(System)
 
-		NX_ENGINE_API System();
-		NX_ENGINE_API virtual ~System();
+		System();
+		virtual ~System();
 
 	protected:
-		NX_ENGINE_API virtual void OnInitialize() override;
-		NX_ENGINE_API virtual void OnShutdown() override;
-		NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f) override;
+		virtual void OnInitialize() override;
+		virtual void OnShutdown() override;
+		virtual void OnTick(float TimeStep = 0.0f) override;
 	};
 }

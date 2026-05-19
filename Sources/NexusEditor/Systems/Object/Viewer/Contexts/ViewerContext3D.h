@@ -4,7 +4,7 @@
 
 namespace NxEd
 {
-	class ViewerContext3D : public ViewerContext
+	class NX_EDITOR_API ViewerContext3D : public ViewerContext
 	{
 		enum class ViewContextMode
 		{
@@ -12,19 +12,19 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, ViewerContext3D)
+		NX_OBJECT_DECLARATION(ViewerContext3D)
 
-		NX_EDITOR_API ViewerContext3D();
-		NX_EDITOR_API virtual ~ViewerContext3D();
+		ViewerContext3D();
+		virtual ~ViewerContext3D();
 
-		NX_EDITOR_API NxEn::World* GetWorld() const override { return World; }
+		NxEn::World* GetWorld() const override { return World; }
 
 	protected:
-		NX_EDITOR_API void Clear() override;
-		NX_EDITOR_API void SetupMenu(NxEn::GUI::Menu& Menu) override;
-		NX_EDITOR_API void SetupTarget(NxEn::Object* Instance) override;
+		void Clear() override;
+		void SetupMenu(NxEn::GUI::Menu& Menu) override;
+		void SetupTarget(NxEn::Object* Instance) override;
 
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnGui(float TimeStep) override;
 
 	private:
 		ViewContextMode Mode;

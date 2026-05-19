@@ -7,16 +7,16 @@ namespace NxEn
 {
 	namespace Utils
 	{
-		class Filter
+		class NX_ENGINE_API Filter
 		{
 		public:
-			NX_ENGINE_API Filter(NxFr::StringView Query);
-			NX_ENGINE_API ~Filter();
+			Filter(NxFr::StringView Query);
+			~Filter();
 
-			NX_ENGINE_API NxFr::Set<Object*> FilterObjects(const NxFr::Collection<Object*> Instances);
-			NX_ENGINE_API bool FilterObject(const Object& Instance);
+			NxFr::Set<Object*> FilterObjects(const NxFr::Collection<Object*> Instances);
+			bool FilterObject(const Object& Instance);
 
-			NX_ENGINE_API bool FilterInstance(NxFr::StringView Substring, NxFr::GUID Id, NxFr::StringId Type);
+			bool FilterInstance(NxFr::StringView Substring, NxFr::GUID Id, NxFr::StringId Type);
 
 		private:
 			NxFr::String Query;

@@ -6,22 +6,22 @@ namespace NxEd
 {
 	class ViewerContext;
 
-	class ViewerPanel : public NxEn::GUI::Panel
+	class NX_EDITOR_API ViewerPanel : public NxEn::GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, ViewerPanel)
+		NX_OBJECT_DECLARATION(ViewerPanel)
 
-		NX_EDITOR_API void Clear();
-		NX_EDITOR_API void Show(NxEn::Object* Instance);
+		void Clear();
+		void Show(NxEn::Object* Instance);
 
-		NX_EDITOR_API ViewerContext* GetContext() const { return Context; }
+		ViewerContext* GetContext() const { return Context; }
 
 	protected:
-		NX_EDITOR_API void OnInitialize() override;
-		NX_EDITOR_API void OnShutdown() override;
-		NX_EDITOR_API void OnEnable() override;
-		NX_EDITOR_API void OnDisable() override;
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnGui(float TimeStep) override;
 
 	private:
 		NxEn::GUI::Menu Menu;

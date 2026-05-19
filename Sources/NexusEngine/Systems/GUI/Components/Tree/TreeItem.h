@@ -4,43 +4,43 @@
 
 namespace NxEn
 {
-	class TreeItem : public Object
+	class NX_ENGINE_API TreeItem : public Object
 	{
 		friend class TreePanel;
 
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, TreeItem)
+		NX_OBJECT_DECLARATION(TreeItem)
 
-		NX_ENGINE_API TreeItem();
-		NX_ENGINE_API virtual ~TreeItem();
+		TreeItem();
+		virtual ~TreeItem();
 
-		NX_ENGINE_API bool operator<(const TreeItem& Other) const;
-		NX_ENGINE_API bool operator<=(const TreeItem& Other) const;
-		NX_ENGINE_API bool operator>(const TreeItem& Other) const;
-		NX_ENGINE_API bool operator>=(const TreeItem& Other) const;
+		bool operator<(const TreeItem& Other) const;
+		bool operator<=(const TreeItem& Other) const;
+		bool operator>(const TreeItem& Other) const;
+		bool operator>=(const TreeItem& Other) const;
 
-		NX_ENGINE_API virtual NxFr::StringView GetName() const override { return ImGuiText; }
-		NX_ENGINE_API virtual NxFr::StringView GetDescription() const { return GetName(); }
+		virtual NxFr::StringView GetName() const override { return ImGuiText; }
+		virtual NxFr::StringView GetDescription() const { return GetName(); }
 
-		NX_ENGINE_API virtual NxFr::StringView GetItemName() const = 0;
-		NX_ENGINE_API virtual NxFr::StringId GetItemType() const = 0;
-		NX_ENGINE_API virtual NxFr::GUID GetItemId() const = 0;
+		virtual NxFr::StringView GetItemName() const = 0;
+		virtual NxFr::StringId GetItemType() const = 0;
+		virtual NxFr::GUID GetItemId() const = 0;
 
-		NX_ENGINE_API virtual bool IsOpened() const { return Expanded; }
-		NX_ENGINE_API virtual void Open(bool State) { Expanded = State; }
-		NX_ENGINE_API virtual bool IsSelected() const { return Selected; }
-		NX_ENGINE_API virtual void Select(bool State) { Selected = State; }
-		NX_ENGINE_API virtual bool IsLeaf() const { return GetChild() == nullptr; }
+		virtual bool IsOpened() const { return Expanded; }
+		virtual void Open(bool State) { Expanded = State; }
+		virtual bool IsSelected() const { return Selected; }
+		virtual void Select(bool State) { Selected = State; }
+		virtual bool IsLeaf() const { return GetChild() == nullptr; }
 
 	protected:
-		NX_ENGINE_API virtual TreeItem* GetIterator();
-		NX_ENGINE_API virtual TreeItem* GetParent() const = 0;
-		NX_ENGINE_API virtual TreeItem* GetPrevious() const = 0;
-		NX_ENGINE_API virtual TreeItem* GetNext() const = 0;
-		NX_ENGINE_API virtual TreeItem* GetChild() const = 0;
+		virtual TreeItem* GetIterator();
+		virtual TreeItem* GetParent() const = 0;
+		virtual TreeItem* GetPrevious() const = 0;
+		virtual TreeItem* GetNext() const = 0;
+		virtual TreeItem* GetChild() const = 0;
 
-		NX_ENGINE_API virtual void CacheImGuiText() = 0;
-		NX_ENGINE_API virtual int8 Compare(const TreeItem& Other) const = 0;
+		virtual void CacheImGuiText() = 0;
+		virtual int8 Compare(const TreeItem& Other) const = 0;
 
 	protected:
 		NxFr::String ImGuiText;

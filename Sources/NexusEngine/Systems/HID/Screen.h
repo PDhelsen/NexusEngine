@@ -6,7 +6,7 @@ namespace NxEn
 {
 	class Image;
 
-	class Window
+	class NX_ENGINE_API Window
 	{
 		friend class WindowSystem;
 
@@ -16,19 +16,19 @@ namespace NxEn
 			Windowed, Borderless, FullScreen
 		};
 
-		NX_ENGINE_API Window();
-		NX_ENGINE_API Window(Mode WindowMode, int8 Monitor, NxFr::Vector2i Position, NxFr::Vector2i Resolution, const NxFr::String& Title, Image* Icon, bool VSync);
-		NX_ENGINE_API ~Window();
+		Window();
+		Window(Mode WindowMode, int8 Monitor, NxFr::Vector2i Position, NxFr::Vector2i Resolution, const NxFr::String& Title, Image* Icon, bool VSync);
+		~Window();
 
-		NX_ENGINE_API Window::Mode GetMode() const { return WindowMode; }
-		NX_ENGINE_API int8 GetMonitor() const { return Monitor; }
-		NX_ENGINE_API NxFr::Vector2i GetPosition() const { return Position; }
-		NX_ENGINE_API NxFr::Vector2i GetResolution() const { return Resolution; }
-		NX_ENGINE_API NxFr::StringView GetTitle() const { return Title; }
-		NX_ENGINE_API const Image* GetIcon() const { return Icon; }
-		NX_ENGINE_API bool GetVSync() const { return VSync; }
+		Window::Mode GetMode() const { return WindowMode; }
+		int8 GetMonitor() const { return Monitor; }
+		NxFr::Vector2i GetPosition() const { return Position; }
+		NxFr::Vector2i GetResolution() const { return Resolution; }
+		NxFr::StringView GetTitle() const { return Title; }
+		const Image* GetIcon() const { return Icon; }
+		bool GetVSync() const { return VSync; }
 
-		NX_ENGINE_API bool IsValid() const { return Instance; }
+		bool IsValid() const { return Instance; }
 
 	private:
 		Mode WindowMode;
@@ -47,14 +47,14 @@ namespace NxEn
 		friend class WindowSystem;
 
 	public:
-		NX_ENGINE_API Monitor();
-		NX_ENGINE_API Monitor(NxFr::Vector2i Resolution, int32 RefreshRate);
-		NX_ENGINE_API ~Monitor();
+		Monitor();
+		Monitor(NxFr::Vector2i Resolution, int32 RefreshRate);
+		~Monitor();
 
-		NX_ENGINE_API NxFr::Vector2i GetResolution() const { return Resolution; }
-		NX_ENGINE_API int32 GetRefreshRate() const { return RefreshRate; }
+		NxFr::Vector2i GetResolution() const { return Resolution; }
+		int32 GetRefreshRate() const { return RefreshRate; }
 
-		NX_ENGINE_API bool IsValid() const { return Instance; }
+		bool IsValid() const { return Instance; }
 
 	private:
 		NxFr::Vector2i Resolution;
@@ -78,15 +78,15 @@ namespace NxEn
 			Default, Custom, Arrow, IBeam, CrossHair, Hand, Resize, NotAllowed
 		};
 
-		NX_ENGINE_API Cursor();
-		NX_ENGINE_API Cursor(Mode CursorMode, Icon CursorIcon, void* IconCustom = nullptr);
-		NX_ENGINE_API ~Cursor();
+		Cursor();
+		Cursor(Mode CursorMode, Icon CursorIcon, void* IconCustom = nullptr);
+		~Cursor();
 
-		NX_ENGINE_API Mode GetMode() const { return CursorMode; }
-		NX_ENGINE_API Icon GetIcon() const { return CursorIcon; }
-		NX_ENGINE_API void* GetIconCustom() const { return IconCustom; }
+		Mode GetMode() const { return CursorMode; }
+		Icon GetIcon() const { return CursorIcon; }
+		void* GetIconCustom() const { return IconCustom; }
 
-		NX_ENGINE_API bool IsValid() const { return Instance; }
+		bool IsValid() const { return Instance; }
 
 	private:
 		Mode CursorMode;

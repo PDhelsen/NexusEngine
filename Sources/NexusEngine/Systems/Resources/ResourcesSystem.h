@@ -7,33 +7,33 @@ namespace NxFr
 {
 	namespace StatsHeader
 	{
-		NX_ENGINE_API extern const NxFr::StringId ResourcesTrackedId;
-		NX_ENGINE_API extern const NxFr::StringId ResourcesLoadedId;
+		extern const NxFr::StringId ResourcesTrackedId;
+		extern const NxFr::StringId ResourcesLoadedId;
 	}
 }
 
 namespace NxEn
 {
-	class ResourcesSystem : public System
+	class NX_ENGINE_API ResourcesSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, ResourcesSystem)
+		NX_OBJECT_DECLARATION(ResourcesSystem)
 
 		template<typename T> T* Load(NxFr::StringView Path);
-		NX_ENGINE_API void Unload(NxFr::StringView Path);
-		NX_ENGINE_API void UnloadAll();
+		void Unload(NxFr::StringView Path);
+		void UnloadAll();
 		template<typename T> T* Create(NxFr::StringView Path);
-		NX_ENGINE_API void Save(NxFr::StringView Path);
-		NX_ENGINE_API void SaveAll();
-		NX_ENGINE_API void Move(NxFr::StringView Path, NxFr::StringView Target);
-		NX_ENGINE_API void Delete(NxFr::StringView Path);
+		void Save(NxFr::StringView Path);
+		void SaveAll();
+		void Move(NxFr::StringView Path, NxFr::StringView Target);
+		void Delete(NxFr::StringView Path);
 
 	private:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+		void OnInitialize() override;
+		void OnTick(float TimeStep = 0.0f) override;
 
-		NX_ENGINE_API NxFr::String GetResourceFilePath(NxFr::StringView Path);
-		NX_ENGINE_API Resource* GetResource(NxFr::StringView Path);
+		NxFr::String GetResourceFilePath(NxFr::StringView Path);
+		Resource* GetResource(NxFr::StringView Path);
 
 	private:
 		NxFr::Dictionary<NxFr::String, Resource*> Resources;

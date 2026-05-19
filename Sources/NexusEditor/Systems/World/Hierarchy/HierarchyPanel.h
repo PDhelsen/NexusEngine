@@ -5,34 +5,34 @@
 
 namespace NxEd
 {
-	class HierarchyPanel : public NxEn::TreePanel
+	class NX_EDITOR_API HierarchyPanel : public NxEn::TreePanel
 	{
 		friend class HierarchyManager;
 		friend class HierarchyEditContext;
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, HierarchyPanel)
+		NX_OBJECT_DECLARATION(HierarchyPanel)
 
-		NX_EDITOR_API void Refresh() override;
+		void Refresh() override;
 
-		NX_EDITOR_API void Show(NxFr::Handle<NxEn::GameObject> Target);
-		NX_EDITOR_API void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
+		void Show(NxFr::Handle<NxEn::GameObject> Target);
+		void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
 
 	protected:
-		NX_EDITOR_API HierarchyPanel(HierarchyManager* Manager);
-		NX_EDITOR_API virtual ~HierarchyPanel();
+		HierarchyPanel(HierarchyManager* Manager);
+		virtual ~HierarchyPanel();
 
-		NX_EDITOR_API void OnInitialize() override;
-		NX_EDITOR_API void OnShutdown() override;
-		NX_EDITOR_API void OnEnable() override;
-		NX_EDITOR_API void OnDisable() override;
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnGui(float TimeStep) override;
 
-		NX_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
-		NX_EDITOR_API void OnDestroyItem(NxEn::TreeItem* Item) override;
-		NX_EDITOR_API void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
+		NxEn::TreeItem* FetchRootItem() override;
+		void OnDestroyItem(NxEn::TreeItem* Item) override;
+		void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
 
-		NX_EDITOR_API void FindItem() override;
+		void FindItem() override;
 
 	private:
 		class EditSystem* Edit;

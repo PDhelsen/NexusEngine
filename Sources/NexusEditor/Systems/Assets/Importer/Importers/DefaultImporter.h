@@ -7,6 +7,6 @@ namespace NxEd
 	class DefaultImporter : public AssetImporter
 	{
 	protected:
-		NX_EDITOR_API void OnImport(YAML::Node& Node, NxFr::StringView ContentPath, bool Reimport) override;
+		void OnImport(YAML::Node& Node, NxFr::StringView ContentPath, bool Reimport) override;
 	};
 }

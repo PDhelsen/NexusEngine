@@ -5,21 +5,21 @@
 
 namespace NxEd
 {
-	class ViewerContext : public NxEn::Object
+	class NX_EDITOR_API ViewerContext : public NxEn::Object
 	{
 		friend class ViewerPanel;
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, ViewerContext)
+		NX_OBJECT_DECLARATION(ViewerContext)
 
-		NX_EDITOR_API ViewerContext() = default;
-		NX_EDITOR_API virtual ~ViewerContext() = default;
+		ViewerContext() = default;
+		virtual ~ViewerContext() = default;
 
-		NX_EDITOR_API virtual NxEn::World* GetWorld() const { return nullptr; }
+		virtual NxEn::World* GetWorld() const { return nullptr; }
 
 	protected:
-		NX_EDITOR_API virtual void Clear() = 0;
-		NX_EDITOR_API virtual void SetupMenu(NxEn::GUI::Menu& Menu) {};
-		NX_EDITOR_API virtual void SetupTarget(NxEn::Object* Instance) = 0;
+		virtual void Clear() = 0;
+		virtual void SetupMenu(NxEn::GUI::Menu& Menu) {};
+		virtual void SetupTarget(NxEn::Object* Instance) = 0;
 	};
 }

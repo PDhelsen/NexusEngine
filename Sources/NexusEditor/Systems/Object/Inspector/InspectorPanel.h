@@ -4,9 +4,9 @@
 
 namespace NxEd
 {
-	class InspectorPanel : public NxEn::GUI::Panel
+	class NX_EDITOR_API InspectorPanel : public NxEn::GUI::Panel
 	{
-		union InspectorTarget
+		union NX_EDITOR_API InspectorTarget
 		{
 			NxEn::Object* Object;
 			NxFr::Handle<NxEn::Object> Handle;
@@ -18,23 +18,23 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(NX_EDITOR_API, InspectorPanel)
+		NX_OBJECT_DECLARATION(InspectorPanel)
 
-		NX_EDITOR_API InspectorPanel();
-		NX_EDITOR_API virtual ~InspectorPanel();
+		InspectorPanel();
+		virtual ~InspectorPanel();
 
-		NX_EDITOR_API void Show(NxEn::Object* Instance, bool Force = false);
-		NX_EDITOR_API void Show(NxFr::Handle<NxEn::Object> Instance, bool Force = false);
+		void Show(NxEn::Object* Instance, bool Force = false);
+		void Show(NxFr::Handle<NxEn::Object> Instance, bool Force = false);
 
-		NX_EDITOR_API bool IsLocked() const { return Lock; }
-		NX_EDITOR_API void SetLocked(bool State) { Lock = State; }
+		bool IsLocked() const { return Lock; }
+		void SetLocked(bool State) { Lock = State; }
 
 	protected:
-		NX_EDITOR_API void OnInitialize() override;
-		NX_EDITOR_API void OnShutdown() override;
-		NX_EDITOR_API void OnEnable() override;
-		NX_EDITOR_API void OnDisable() override;
-		NX_EDITOR_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnGui(float TimeStep) override;
 
 	private:
 		NxEn::GUI::Menu Menu;

@@ -5,24 +5,24 @@
 
 namespace NxEn
 {
-	class JobSystem : public System
+	class NX_ENGINE_API JobSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, JobSystem)
+		NX_OBJECT_DECLARATION(JobSystem)
 
-		NX_ENGINE_API JobHandle Dispatch(uint64 Count, uint64 Group, NxFr::Delegate<void(uint64)> Work);
-		NX_ENGINE_API JobHandle Dispatch(uint64 Count, NxFr::Delegate<void(uint64)> Work);
-		NX_ENGINE_API JobHandle Submit(NxFr::Delegate<void()> Work);
+		JobHandle Dispatch(uint64 Count, uint64 Group, NxFr::Delegate<void(uint64)> Work);
+		JobHandle Dispatch(uint64 Count, NxFr::Delegate<void(uint64)> Work);
+		JobHandle Submit(NxFr::Delegate<void()> Work);
 
-		NX_ENGINE_API bool IsWorking() const;
+		bool IsWorking() const;
 
 	protected:
-		NX_ENGINE_API virtual void OnInitialize() override;
-		NX_ENGINE_API virtual void OnShutdown() override;
+		virtual void OnInitialize() override;
+		virtual void OnShutdown() override;
 
 	private:
-		NX_ENGINE_API void Enqueue(struct JobCompletion* Completion, const NxFr::Delegate<void()>& Work);
-		NX_ENGINE_API void Worker();
+		void Enqueue(struct JobCompletion* Completion, const NxFr::Delegate<void()>& Work);
+		void Worker();
 
 	private:
 		NxFr::Array<NxFr::Thread*> Threads;

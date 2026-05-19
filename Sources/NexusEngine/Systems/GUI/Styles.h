@@ -8,19 +8,19 @@ namespace NxEn
 	{
 		struct Style;
 
-		struct Scope
+		struct NX_ENGINE_API Scope
 		{
 		public:
-			NX_ENGINE_API Scope(NxFr::StringId Id);
-			NX_ENGINE_API Scope(const Style* Instance);
-			NX_ENGINE_API ~Scope();
+			Scope(NxFr::StringId Id);
+			Scope(const Style* Instance);
+			~Scope();
 
 		private:
 			NxFr::StringId Id;
 			const Style* Instance;
 		};
 
-		struct Style
+		struct NX_ENGINE_API Style
 		{
 		public:
 			enum class Preset
@@ -28,50 +28,50 @@ namespace NxEn
 				Text, Button, Panel
 			};
 
-			NX_ENGINE_API inline static const NxFr::StringId IdWidthButton = "WidthButton"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdWidthLabel = "WidthLabel"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdWidthInpuText = "WidthInpuText"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdRed = "Red"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdYellow = "Yellow"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdGreen = "Green"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdCyan = "Cyan"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdBlue = "Blue"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdMagenta = "Magenta"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdText_Normal = "Text_Normal"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdText_Title = "Text_Title"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdButton_Normal = "Button_Normal"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdButton_Pressed = "Button_Pressed"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdInfo = "Info"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdWarning = "Warning"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdError = "Error"_Sid;
-			NX_ENGINE_API inline static const NxFr::StringId IdFatal = "Fatal"_Sid;
+			inline static const NxFr::StringId IdWidthButton = "WidthButton"_Sid;
+			inline static const NxFr::StringId IdWidthLabel = "WidthLabel"_Sid;
+			inline static const NxFr::StringId IdWidthInpuText = "WidthInpuText"_Sid;
+			inline static const NxFr::StringId IdRed = "Red"_Sid;
+			inline static const NxFr::StringId IdYellow = "Yellow"_Sid;
+			inline static const NxFr::StringId IdGreen = "Green"_Sid;
+			inline static const NxFr::StringId IdCyan = "Cyan"_Sid;
+			inline static const NxFr::StringId IdBlue = "Blue"_Sid;
+			inline static const NxFr::StringId IdMagenta = "Magenta"_Sid;
+			inline static const NxFr::StringId IdText_Normal = "Text_Normal"_Sid;
+			inline static const NxFr::StringId IdText_Title = "Text_Title"_Sid;
+			inline static const NxFr::StringId IdButton_Normal = "Button_Normal"_Sid;
+			inline static const NxFr::StringId IdButton_Pressed = "Button_Pressed"_Sid;
+			inline static const NxFr::StringId IdInfo = "Info"_Sid;
+			inline static const NxFr::StringId IdWarning = "Warning"_Sid;
+			inline static const NxFr::StringId IdError = "Error"_Sid;
+			inline static const NxFr::StringId IdFatal = "Fatal"_Sid;
 
-			NX_ENGINE_API static const Style Default;
+			static const Style Default;
 
-			NX_ENGINE_API static NxFr::Dictionary<NxFr::StringId, float>& GetVars();
-			NX_ENGINE_API static float& GetVar(NxFr::StringId Id);
-			NX_ENGINE_API static void RegisterVar(NxFr::StringId Id, float Instance);
-			NX_ENGINE_API static void UnregisterVar(NxFr::StringId Id);
-			NX_ENGINE_API static NxFr::Dictionary<NxFr::StringId, NxFr::Color>& GetColors();
-			NX_ENGINE_API static NxFr::Color& GetColor(NxFr::StringId Id);
-			NX_ENGINE_API static void RegisterColor(NxFr::StringId Id, NxFr::Color Instance);
-			NX_ENGINE_API static void UnregisterColor(NxFr::StringId Id);
-			NX_ENGINE_API static NxFr::Dictionary<NxFr::StringId, Style>& GetStyles();
-			NX_ENGINE_API static Style& GetStyle(NxFr::StringId Id);
-			NX_ENGINE_API static void RegisterStyle(NxFr::StringId Id, const Style& Instance);
-			NX_ENGINE_API static void UnregisterStyle(NxFr::StringId Id);
+			static NxFr::Dictionary<NxFr::StringId, float>& GetVars();
+			static float& GetVar(NxFr::StringId Id);
+			static void RegisterVar(NxFr::StringId Id, float Instance);
+			static void UnregisterVar(NxFr::StringId Id);
+			static NxFr::Dictionary<NxFr::StringId, NxFr::Color>& GetColors();
+			static NxFr::Color& GetColor(NxFr::StringId Id);
+			static void RegisterColor(NxFr::StringId Id, NxFr::Color Instance);
+			static void UnregisterColor(NxFr::StringId Id);
+			static NxFr::Dictionary<NxFr::StringId, Style>& GetStyles();
+			static Style& GetStyle(NxFr::StringId Id);
+			static void RegisterStyle(NxFr::StringId Id, const Style& Instance);
+			static void UnregisterStyle(NxFr::StringId Id);
 
-			NX_ENGINE_API static Style Copy(const Style* Original);
+			static Style Copy(const Style* Original);
 
-			NX_ENGINE_API Style();
-			NX_ENGINE_API ~Style();
+			Style();
+			~Style();
 
-			NX_ENGINE_API void Reset();
-			NX_ENGINE_API void Push() const;
-			NX_ENGINE_API void Pop() const;
-			NX_ENGINE_API void SetPosition() const;
-			NX_ENGINE_API void SetWidth() const;
-			NX_ENGINE_API void SetWidthLabel(NxFr::StringView Label = "") const;
+			void Reset();
+			void Push() const;
+			void Pop() const;
+			void SetPosition() const;
+			void SetWidth() const;
+			void SetWidthLabel(NxFr::StringView Label = "") const;
 
 			Preset StylePreset;
 			NxFr::Vector2f Position;

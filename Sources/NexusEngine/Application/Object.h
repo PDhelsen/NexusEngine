@@ -2,9 +2,9 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 
-#define NX_OBJECT_DECLARATION(Dll, Type)\
-Dll virtual NxFr::StringId GetObjectType() const;\
-Dll static NxFr::StringId GetClassType();
+#define NX_OBJECT_DECLARATION(Type)\
+virtual NxFr::StringId GetObjectType() const;\
+static NxFr::StringId GetClassType();
 
 #define NX_OBJECT_IMPLEMENTATION(Type) \
 NxFr::StringId Type::GetObjectType() const \
@@ -39,10 +39,10 @@ NX_FLAG(NxEn::ObjectFlags, uint8)
 
 namespace NxEn
 {
-	class Object
+	class NX_ENGINE_API Object
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, Object)
+		NX_OBJECT_DECLARATION(Object)
 
 		template<typename T>
 		static T* Create(bool Enable = true)
@@ -67,52 +67,52 @@ namespace NxEn
 			return nullptr;
 		}
 
-		NX_ENGINE_API Object();
-		NX_ENGINE_API virtual ~Object();
+		Object();
+		virtual ~Object();
 
-		NX_ENGINE_API bool operator==(const Object& Other) const;
-		NX_ENGINE_API bool operator!=(const Object& Other) const;
+		bool operator==(const Object& Other) const;
+		bool operator!=(const Object& Other) const;
 
-		NX_ENGINE_API virtual void Initialize();
-		NX_ENGINE_API virtual void Shutdown();
-		NX_ENGINE_API virtual void Tick(float TimeStep = 0.0f);
-		NX_ENGINE_API virtual void DrawGui(float TimeStep = 0.0f);
+		virtual void Initialize();
+		virtual void Shutdown();
+		virtual void Tick(float TimeStep = 0.0f);
+		virtual void DrawGui(float TimeStep = 0.0f);
 
-		NX_ENGINE_API virtual bool IsInitialized() const;
-		NX_ENGINE_API virtual bool IsEnabled() const;
-		NX_ENGINE_API virtual void SetEnabled(bool Enabled);
-		NX_ENGINE_API virtual bool IsTickable() const;
-		NX_ENGINE_API virtual void SetTickable(bool Tickable);
-		NX_ENGINE_API virtual bool IsTicking() const;
+		virtual bool IsInitialized() const;
+		virtual bool IsEnabled() const;
+		virtual void SetEnabled(bool Enabled);
+		virtual bool IsTickable() const;
+		virtual void SetTickable(bool Tickable);
+		virtual bool IsTicking() const;
 
-		NX_ENGINE_API virtual Object* Clone() const;
-		NX_ENGINE_API virtual void Clone(Object* Other) const;
-		NX_ENGINE_API virtual void Clone(const Object* Other);
-		NX_ENGINE_API virtual YAML::Node Save();
-		NX_ENGINE_API virtual void Load(const YAML::Node& Node);
-		NX_ENGINE_API virtual void Unload();
-		NX_ENGINE_API virtual NxFr::Array<NxFr::GUID> GetDependencies();
+		virtual Object* Clone() const;
+		virtual void Clone(Object* Other) const;
+		virtual void Clone(const Object* Other);
+		virtual YAML::Node Save();
+		virtual void Load(const YAML::Node& Node);
+		virtual void Unload();
+		virtual NxFr::Array<NxFr::GUID> GetDependencies();
 
-		NX_ENGINE_API virtual NxFr::StringView GetName() const;
-		NX_ENGINE_API virtual NxFr::GUID GetId() const;
-
-	protected:
-		NX_ENGINE_API virtual void OnInitialize();
-		NX_ENGINE_API virtual void OnShutdown();
-		NX_ENGINE_API virtual void OnEnable();
-		NX_ENGINE_API virtual void OnDisable();
-		NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f);
-		NX_ENGINE_API virtual void OnGui(float TimeStep = 0.0f);
-
-		NX_ENGINE_API virtual void OnClone(const Object& Other);
-		NX_ENGINE_API virtual void OnSave(YAML::Node& Node);
-		NX_ENGINE_API virtual void OnLoad(const YAML::Node& Node);
-		NX_ENGINE_API virtual void OnUnload();
-		NX_ENGINE_API virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);
+		virtual NxFr::StringView GetName() const;
+		virtual NxFr::GUID GetId() const;
 
 	protected:
-		NX_ENGINE_API NX_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;
-		NX_ENGINE_API NX_FORCE_INLINE void SetFlag(ObjectFlags Flag, bool Value);
+		virtual void OnInitialize();
+		virtual void OnShutdown();
+		virtual void OnEnable();
+		virtual void OnDisable();
+		virtual void OnTick(float TimeStep = 0.0f);
+		virtual void OnGui(float TimeStep = 0.0f);
+
+		virtual void OnClone(const Object& Other);
+		virtual void OnSave(YAML::Node& Node);
+		virtual void OnLoad(const YAML::Node& Node);
+		virtual void OnUnload();
+		virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);
+
+	protected:
+		NX_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;
+		NX_FORCE_INLINE void SetFlag(ObjectFlags Flag, bool Value);
 
 	private:
 		ObjectFlags Flags;

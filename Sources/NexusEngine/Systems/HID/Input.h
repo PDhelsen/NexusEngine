@@ -297,48 +297,48 @@ namespace NxEn
 {
 	namespace Input
 	{
-		union Binding
+		union NX_ENGINE_API Binding
 		{
 			struct BindingButton
 			{
-				NX_ENGINE_API BindingButton(Button ButtonInput, State ButtonState);
+				BindingButton(Button ButtonInput, State ButtonState);
 
 				Button ButtonInput;
 				State ButtonState;
 			};
 
-			NX_ENGINE_API Binding(Button ButtonInput, State ButtonState);
-			NX_ENGINE_API Binding(Axis InputAxis);
-			NX_ENGINE_API Binding(NxFr::Rectangle InputMouse);
-			NX_ENGINE_API ~Binding();
+			Binding(Button ButtonInput, State ButtonState);
+			Binding(Axis InputAxis);
+			Binding(NxFr::Rectangle InputMouse);
+			~Binding();
 
-			NX_ENGINE_API Binding& operator=(BindingButton Other);
-			NX_ENGINE_API Binding& operator=(Axis Other);
-			NX_ENGINE_API Binding& operator=(NxFr::Rectangle Other);
+			Binding& operator=(BindingButton Other);
+			Binding& operator=(Axis Other);
+			Binding& operator=(NxFr::Rectangle Other);
 
 			BindingButton InputButton;
 			Axis InputAxis;
 			NxFr::Rectangle InputMouse;
 		};
 
-		struct Trigger
+		struct NX_ENGINE_API Trigger
 		{
 		public:
-			NX_ENGINE_API Trigger(Button ButtonInput, State ButtonTarget, Modifier Modifiers = Modifier::Ignore);
-			NX_ENGINE_API Trigger(Axis AxisInput, Modifier Modifiers = Modifier::Ignore);
-			NX_ENGINE_API Trigger(NxFr::Rectangle MouseInput, Modifier Modifiers = Modifier::Ignore);
-			NX_ENGINE_API Trigger(const Trigger& Other);
-			NX_ENGINE_API ~Trigger();
+			Trigger(Button ButtonInput, State ButtonTarget, Modifier Modifiers = Modifier::Ignore);
+			Trigger(Axis AxisInput, Modifier Modifiers = Modifier::Ignore);
+			Trigger(NxFr::Rectangle MouseInput, Modifier Modifiers = Modifier::Ignore);
+			Trigger(const Trigger& Other);
+			~Trigger();
 
-			NX_ENGINE_API Trigger& operator=(const Trigger& Other);
+			Trigger& operator=(const Trigger& Other);
 
-			NX_ENGINE_API Mode GetMode() const;
-			NX_ENGINE_API Modifier GetModifiers() const;
+			Mode GetMode() const;
+			Modifier GetModifiers() const;
 
-			NX_ENGINE_API Button GetInputButton() const;
-			NX_ENGINE_API State GetInputButtonState() const;
-			NX_ENGINE_API Axis GetInputAxis() const;
-			NX_ENGINE_API NxFr::Rectangle GetInputMouse() const;
+			Button GetInputButton() const;
+			State GetInputButtonState() const;
+			Axis GetInputAxis() const;
+			NxFr::Rectangle GetInputMouse() const;
 
 
 		private:
@@ -347,33 +347,33 @@ namespace NxEn
 			Binding Input;
 		};
 
-		struct Action
+		struct NX_ENGINE_API Action
 		{
 		public:
-			NX_ENGINE_API Action(const Trigger& Input, const NxFr::Delegate<void()>& Callback);
-			NX_ENGINE_API Action(Button ButtonInput, State ButtonTarget, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
-			NX_ENGINE_API Action(Axis AxisInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
-			NX_ENGINE_API Action(NxFr::Rectangle MouseInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
-			NX_ENGINE_API Action(const Action& Other);
-			NX_ENGINE_API ~Action();
+			Action(const Trigger& Input, const NxFr::Delegate<void()>& Callback);
+			Action(Button ButtonInput, State ButtonTarget, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
+			Action(Axis AxisInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
+			Action(NxFr::Rectangle MouseInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
+			Action(const Action& Other);
+			~Action();
 
-			NX_ENGINE_API Action& operator=(const Action& Other);
+			Action& operator=(const Action& Other);
 
-			NX_ENGINE_API const Trigger& GetTrigger() const;
-			NX_ENGINE_API const NxFr::Delegate<void()>& GetCallback() const;
+			const Trigger& GetTrigger() const;
+			const NxFr::Delegate<void()>& GetCallback() const;
 
 		private:
 			Trigger Input;
 			NxFr::Delegate<void()> Callback;
 		};
 
-		struct Schema
+		struct NX_ENGINE_API Schema
 		{
 		public:
-			NX_ENGINE_API Schema();
-			NX_ENGINE_API ~Schema();
+			Schema();
+			~Schema();
 
-			NX_ENGINE_API NxFr::Dictionary<NxFr::StringId, Action>& GetMapping();
+			NxFr::Dictionary<NxFr::StringId, Action>& GetMapping();
 
 		private:
 			NxFr::Dictionary<NxFr::StringId, Action> Actions;

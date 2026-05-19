@@ -7,19 +7,19 @@ namespace NxEn
 {
 	NX_APPLICATION_DECLARATION(NX_ENGINE_API, ::NxEn::NexusEngineApplication)
 
-	class NexusEngineApplication : public Application
+	class NX_ENGINE_API NexusEngineApplication : public Application
 	{
 	public:
-		NX_ENGINE_API NexusEngineApplication(const NxEn::Project& ProjectInfo);
-		NX_ENGINE_API virtual ~NexusEngineApplication();
+		NexusEngineApplication(const NxEn::Project& ProjectInfo);
+		virtual ~NexusEngineApplication();
 
-		NX_ENGINE_API Input::Schema& GetInputSchema() { return InputSchema; }
-		NX_ENGINE_API bool IsHeadless() const { return Headless; }
+		Input::Schema& GetInputSchema() { return InputSchema; }
+		bool IsHeadless() const { return Headless; }
 
 	protected:
-		NX_ENGINE_API virtual void OnInitialize() override;
-		NX_ENGINE_API virtual void OnShutdown() override;
-		NX_ENGINE_API virtual void OnExecute() override;
+		virtual void OnInitialize() override;
+		virtual void OnShutdown() override;
+		virtual void OnExecute() override;
 
 		void ParseCommands();
 

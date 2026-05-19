@@ -45,7 +45,7 @@ namespace NxEn
 		None = 0, Crash = 1
 	};
 
-	class Application
+	class NX_ENGINE_API Application
 	{
 		friend int EntryPoint::Main(int argc, char* argv[]);
 
@@ -55,16 +55,16 @@ namespace NxEn
 		template<typename T>
 		static T* GetSystem() { return (T*)GetSystem(T::GetClassType()); }
 
-		NX_ENGINE_API static Application* GetInstance();
-		NX_ENGINE_API static System* GetSystem(NxFr::StringId Id);
+		static Application* GetInstance();
+		static System* GetSystem(NxFr::StringId Id);
 
-		NX_ENGINE_API Application(const Project& ProjectInfo);
-		NX_ENGINE_API virtual ~Application();
+		Application(const Project& ProjectInfo);
+		virtual ~Application();
 
-		NX_ENGINE_API void Quit();
-		NX_ENGINE_API void Restart();
-		NX_ENGINE_API void Crash(CrashCode ErrorCode);
-		NX_ENGINE_API bool IsRunning() const;
+		void Quit();
+		void Restart();
+		void Crash(CrashCode ErrorCode);
+		bool IsRunning() const;
 
 		Project& GetProject() { return ProjectInfo; }
 		Bootstrapper& GetBootstrapper() { return Bootstrap; }
@@ -73,9 +73,9 @@ namespace NxEn
 		TimeManager& GetTime() { return Time; }
 
 	protected:
-		NX_ENGINE_API virtual void OnInitialize();
-		NX_ENGINE_API virtual void OnShutdown();
-		NX_ENGINE_API virtual void OnExecute();
+		virtual void OnInitialize();
+		virtual void OnShutdown();
+		virtual void OnExecute();
 
 	private:
 		void Run();

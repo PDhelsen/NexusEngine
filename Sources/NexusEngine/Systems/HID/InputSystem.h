@@ -5,55 +5,55 @@
 
 namespace NxEn
 {
-	class InputSystem : public System
+	class NX_ENGINE_API InputSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, InputSystem)
+		NX_OBJECT_DECLARATION(InputSystem)
 
-		NX_ENGINE_API InputSystem();
-		NX_ENGINE_API ~InputSystem();
+		InputSystem();
+		~InputSystem();
 
-		NX_ENGINE_API void Reset();
+		void Reset();
 
-		NX_ENGINE_API void AddSchema(NxFr::StringId Id, Input::Schema* Schema);
-		NX_ENGINE_API void RemoveSchema(NxFr::StringId Id);
-		NX_ENGINE_API Input::Schema* GetSchema(NxFr::StringId Id);
+		void AddSchema(NxFr::StringId Id, Input::Schema* Schema);
+		void RemoveSchema(NxFr::StringId Id);
+		Input::Schema* GetSchema(NxFr::StringId Id);
 
-		NX_ENGINE_API bool CheckButton(Input::Button Button, Input::State State = Input::State::Released) const;
-		NX_ENGINE_API bool CheckAxis(Input::Axis Axis) const;
-		NX_ENGINE_API bool CheckMouse() const;
-		NX_ENGINE_API bool CheckModifier(Input::Modifier Modifier) const;
+		bool CheckButton(Input::Button Button, Input::State State = Input::State::Released) const;
+		bool CheckAxis(Input::Axis Axis) const;
+		bool CheckMouse() const;
+		bool CheckModifier(Input::Modifier Modifier) const;
 
-		NX_ENGINE_API Input::State GetButton(Input::Button Button) const;
-		NX_ENGINE_API float GetAxis(Input::Axis Axis) const;
-		NX_ENGINE_API NxFr::Vector2f GetMousePosition(bool Absolute = false) const;
-		NX_ENGINE_API NxFr::Vector2f GetMouseDelta() const;
-		NX_ENGINE_API Input::Modifier GetModifiers() const;
+		Input::State GetButton(Input::Button Button) const;
+		float GetAxis(Input::Axis Axis) const;
+		NxFr::Vector2f GetMousePosition(bool Absolute = false) const;
+		NxFr::Vector2f GetMouseDelta() const;
+		Input::Modifier GetModifiers() const;
 
-		NX_ENGINE_API NxFr::Event<Input::Button, Input::State>& GetOnButtonChange() { return OnButtonChange; }
-		NX_ENGINE_API NxFr::Event<Input::Axis, float>& GetOnAxisChange() { return OnAxisChange; }
-		NX_ENGINE_API NxFr::Event<NxFr::Vector2f>& GetOnMouseChange() { return OnMouseChange; }
-		NX_ENGINE_API NxFr::Event<bool>& GetOnFocusChange() { return OnFocusChange; }
-		NX_ENGINE_API NxFr::Event<>& GetOnPoll() { return OnPoll; }
+		NxFr::Event<Input::Button, Input::State>& GetOnButtonChange() { return OnButtonChange; }
+		NxFr::Event<Input::Axis, float>& GetOnAxisChange() { return OnAxisChange; }
+		NxFr::Event<NxFr::Vector2f>& GetOnMouseChange() { return OnMouseChange; }
+		NxFr::Event<bool>& GetOnFocusChange() { return OnFocusChange; }
+		NxFr::Event<>& GetOnPoll() { return OnPoll; }
 
-		NX_ENGINE_API bool IsFocused() const { return Focused; }
+		bool IsFocused() const { return Focused; }
 
 	protected:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnShutdown() override;
-		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
-		NX_ENGINE_API void OnButtonChanged(Input::Button Button, Input::State State);
-		NX_ENGINE_API void OnAxisChanged(Input::Axis Axis, float Delta);
-		NX_ENGINE_API void OnMouseChanged(NxFr::Vector2f Position);
-		NX_ENGINE_API void OnFocusChanged(bool Focus);
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnTick(float TimeStep = 0.0f) override;
+		void OnButtonChanged(Input::Button Button, Input::State State);
+		void OnAxisChanged(Input::Axis Axis, float Delta);
+		void OnMouseChanged(NxFr::Vector2f Position);
+		void OnFocusChanged(bool Focus);
 
 	private:
-		NX_ENGINE_API void UpdateButtons();
-		NX_ENGINE_API void UpdateAxises();
-		NX_ENGINE_API void UpdateModifiers();
+		void UpdateButtons();
+		void UpdateAxises();
+		void UpdateModifiers();
 
-		NX_ENGINE_API void PollInputs();
-		NX_ENGINE_API void TriggerActions();
+		void PollInputs();
+		void TriggerActions();
 
 	private:
 		NxFr::Event<Input::Button, Input::State> OnButtonChange;

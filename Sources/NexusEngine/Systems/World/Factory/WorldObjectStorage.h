@@ -20,33 +20,33 @@ namespace NxEn
 			return Instance;
 		}
 
-		NX_ENGINE_API static WorldObjectStorage* GetTemplate(NxFr::StringId Id);
-		NX_ENGINE_API static void SetTemplate(NxFr::StringId Id, WorldObjectStorage* Instance);
-		NX_ENGINE_API static WorldObjectStorage* Create(NxFr::StringId Type, HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos);
+		static WorldObjectStorage* GetTemplate(NxFr::StringId Id);
+		static void SetTemplate(NxFr::StringId Id, WorldObjectStorage* Instance);
+		static WorldObjectStorage* Create(NxFr::StringId Type, HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos);
 
-		NX_ENGINE_API WorldObjectStorage(HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos);
-		NX_ENGINE_API virtual ~WorldObjectStorage();
+		WorldObjectStorage(HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos);
+		virtual ~WorldObjectStorage();
 
-		NX_ENGINE_API NxFr::Handle<Object> Allocate(NxFr::GUID Id);
-		NX_ENGINE_API void Free(NxFr::Handle<Object> Instance);
+		NxFr::Handle<Object> Allocate(NxFr::GUID Id);
+		void Free(NxFr::Handle<Object> Instance);
 
 	protected:
-		NX_ENGINE_API virtual Object& Append() = 0;
-		NX_ENGINE_API virtual void Remove(uint64 Index) = 0;
-		NX_ENGINE_API virtual Object& Get(uint64 Index) = 0;
+		virtual Object& Append() = 0;
+		virtual void Remove(uint64 Index) = 0;
+		virtual Object& Get(uint64 Index) = 0;
 
-		NX_ENGINE_API virtual void Reserve(uint64 Size) = 0;
-		NX_ENGINE_API virtual void Clear() = 0;
+		virtual void Reserve(uint64 Size) = 0;
+		virtual void Clear() = 0;
 
-		NX_ENGINE_API virtual bool IsEmpty() const = 0;
-		NX_ENGINE_API virtual uint64 GetCount() const = 0;
-		NX_ENGINE_API virtual uint64 GetCapacity() const = 0;
+		virtual bool IsEmpty() const = 0;
+		virtual uint64 GetCount() const = 0;
+		virtual uint64 GetCapacity() const = 0;
 
-		NX_ENGINE_API virtual WorldObjectStorage* Clone(HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos) const = 0;
+		virtual WorldObjectStorage* Clone(HandleManager* Handles, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>* Infos) const = 0;
 
 	private:
-		NX_ENGINE_API void EnsureSlot();
-		NX_ENGINE_API void UpdateSlot(uint64 Index);
+		void EnsureSlot();
+		void UpdateSlot(uint64 Index);
 
 	private:
 		HandleManager* Handles;

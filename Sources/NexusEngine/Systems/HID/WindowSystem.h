@@ -7,58 +7,58 @@ namespace NxEn
 {
 	class Image;
 
-	class WindowSystem : public System
+	class NX_ENGINE_API WindowSystem : public System
 	{
 		friend class GUISystem;
 
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, WindowSystem)
+		NX_OBJECT_DECLARATION(WindowSystem)
 
-		NX_ENGINE_API WindowSystem();
-		NX_ENGINE_API ~WindowSystem();
+		WindowSystem();
+		~WindowSystem();
 
-		NX_ENGINE_API void Close();
-		NX_ENGINE_API void Minimize();
-		NX_ENGINE_API void Maximize();
-		NX_ENGINE_API void Restore();
-		NX_ENGINE_API void Show();
-		NX_ENGINE_API void Hide();
-		NX_ENGINE_API void Focus();
+		void Close();
+		void Minimize();
+		void Maximize();
+		void Restore();
+		void Show();
+		void Hide();
+		void Focus();
 
-		NX_ENGINE_API WindowSystem& SetWindowVSync(bool VSync);
-		NX_ENGINE_API WindowSystem& SetWindowMode(Window::Mode Mode);
-		NX_ENGINE_API WindowSystem& SetWindowMonitor(uint8 MonitorIndex);
-		NX_ENGINE_API WindowSystem& SetWindowPosition(NxFr::Vector2i Position);
-		NX_ENGINE_API WindowSystem& SetWindowResolution(NxFr::Vector2i Resolution);
-		NX_ENGINE_API WindowSystem& SetWindowTitle(NxFr::StringView Title);
-		NX_ENGINE_API WindowSystem& SetWindowIcon(Image* Icon);
-		NX_ENGINE_API WindowSystem& SetCursorMode(Cursor::Mode Mode);
-		NX_ENGINE_API WindowSystem& SetCursorIcon(Cursor::Icon Icon, void* IconCustom = nullptr);
+		WindowSystem& SetWindowVSync(bool VSync);
+		WindowSystem& SetWindowMode(Window::Mode Mode);
+		WindowSystem& SetWindowMonitor(uint8 MonitorIndex);
+		WindowSystem& SetWindowPosition(NxFr::Vector2i Position);
+		WindowSystem& SetWindowResolution(NxFr::Vector2i Resolution);
+		WindowSystem& SetWindowTitle(NxFr::StringView Title);
+		WindowSystem& SetWindowIcon(Image* Icon);
+		WindowSystem& SetCursorMode(Cursor::Mode Mode);
+		WindowSystem& SetCursorIcon(Cursor::Icon Icon, void* IconCustom = nullptr);
 
-		NX_ENGINE_API NxFr::Event<>& GetOnClose() { return OnClose; }
-		NX_ENGINE_API NxFr::Event<bool>& GetOnFocus() { return OnFocus; }
-		NX_ENGINE_API NxFr::Event<NxFr::Vector2i>& GetOnMove() { return OnMove; }
-		NX_ENGINE_API NxFr::Event<NxFr::Vector2i>& GetOnResize() { return OnResize; }
+		NxFr::Event<>& GetOnClose() { return OnClose; }
+		NxFr::Event<bool>& GetOnFocus() { return OnFocus; }
+		NxFr::Event<NxFr::Vector2i>& GetOnMove() { return OnMove; }
+		NxFr::Event<NxFr::Vector2i>& GetOnResize() { return OnResize; }
 
-		NX_ENGINE_API const Window& GetWindow() const { return Target; }
-		NX_ENGINE_API const Monitor& GetMonitor(uint8 Index = 0) const { return Monitors[Index]; }
-		NX_ENGINE_API bool IsFocused() const { return Focused; }
+		const Window& GetWindow() const { return Target; }
+		const Monitor& GetMonitor(uint8 Index = 0) const { return Monitors[Index]; }
+		bool IsFocused() const { return Focused; }
 
 	protected:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnShutdown() override;
-		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
-		NX_ENGINE_API void OnFocused(bool Focus);
-		NX_ENGINE_API void OnMoved(NxFr::Vector2i Position);
-		NX_ENGINE_API void OnResized(NxFr::Vector2i Size);
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnTick(float TimeStep = 0.0f) override;
+		void OnFocused(bool Focus);
+		void OnMoved(NxFr::Vector2i Position);
+		void OnResized(NxFr::Vector2i Size);
 
 	private:
-		NX_ENGINE_API void FetchMonitors();
-		NX_ENGINE_API void CreateWindow();
-		NX_ENGINE_API void DestroyWindow();
-		NX_ENGINE_API void TickWindow();
-		NX_ENGINE_API void UpdateCursor();
-		NX_ENGINE_API void ApplySettings();
+		void FetchMonitors();
+		void CreateWindow();
+		void DestroyWindow();
+		void TickWindow();
+		void UpdateCursor();
+		void ApplySettings();
 
 	private:
 		NxFr::Event<> OnClose;

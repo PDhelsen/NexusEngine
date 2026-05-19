@@ -4,20 +4,20 @@
 
 namespace NxEn
 {
-	class SettingsPanel : public GUI::Panel
+	class NX_ENGINE_API SettingsPanel : public GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, SettingsPanel)
+		NX_OBJECT_DECLARATION(SettingsPanel)
 
-		NX_ENGINE_API SettingsPanel();
-		NX_ENGINE_API ~SettingsPanel();
+		SettingsPanel();
+		~SettingsPanel();
 
 	private:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnShutdown() override;
-		NX_ENGINE_API void OnEnable() override;
-		NX_ENGINE_API void OnDisable() override;
-		NX_ENGINE_API void OnGui(float TimeStep) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnGui(float TimeStep) override;
 
 	private:
 		GUI::Menu Menu;

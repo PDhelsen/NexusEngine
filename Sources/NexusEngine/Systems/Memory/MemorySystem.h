@@ -8,35 +8,35 @@ namespace NxFr
 {
 	namespace StatsHeader
 	{
-		NX_ENGINE_API extern const NxFr::StringId MemoryAllocatedId;
-		NX_ENGINE_API extern const NxFr::StringId MemoryAllocationId;
-		NX_ENGINE_API extern const NxFr::StringId PlatformMemoryId;
+		extern const NxFr::StringId MemoryAllocatedId;
+		extern const NxFr::StringId MemoryAllocationId;
+		extern const NxFr::StringId PlatformMemoryId;
 	}
 }
 
 namespace NxEn
 {
-	class MemorySystem : public System
+	class NX_ENGINE_API MemorySystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, MemorySystem)
+		NX_OBJECT_DECLARATION(MemorySystem)
 
-		NX_ENGINE_API static NxEn::HandleManager* GetHandleManager();
-		NX_ENGINE_API static NxEn::Allocator* GetAllocator(AllocatorType Type);
-		NX_ENGINE_API static uint64 GetSmallAllocationSize(uint64 Size);
-		NX_ENGINE_API static uint64 GetAllocatorSize(AllocatorType Type);
+		static NxEn::HandleManager* GetHandleManager();
+		static NxEn::Allocator* GetAllocator(AllocatorType Type);
+		static uint64 GetSmallAllocationSize(uint64 Size);
+		static uint64 GetAllocatorSize(AllocatorType Type);
 
-		NX_ENGINE_API MemorySystem();
-		NX_ENGINE_API ~MemorySystem();
+		MemorySystem();
+		~MemorySystem();
 
-		NX_ENGINE_API void Defragment(bool Full = false);
-		NX_ENGINE_API float GetDefragmentBudget() const;
-		NX_ENGINE_API void SetDefragmentBudget(float Budget);
+		void Defragment(bool Full = false);
+		float GetDefragmentBudget() const;
+		void SetDefragmentBudget(float Budget);
 
 	protected:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnShutdown() override;
-		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+		void OnInitialize() override;
+		void OnShutdown() override;
+		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
 		void Defragment(float Budget, bool All);

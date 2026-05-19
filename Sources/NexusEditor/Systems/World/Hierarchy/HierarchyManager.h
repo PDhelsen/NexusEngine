@@ -6,27 +6,27 @@
 
 namespace NxEd
 {
-	class HierarchyManager
+	class NX_EDITOR_API HierarchyManager
 	{
 		friend class HierarchyPanel;
 		friend class HierarchyEditContext;
 
 	public:
-		NX_EDITOR_API HierarchyManager();
-		NX_EDITOR_API ~HierarchyManager();
+		HierarchyManager();
+		~HierarchyManager();
 
-		NX_EDITOR_API HierarchyPanel* CreatePanel();
-		NX_EDITOR_API void DestroyPanel(HierarchyPanel* Instance);
+		HierarchyPanel* CreatePanel();
+		void DestroyPanel(HierarchyPanel* Instance);
 
-		NX_EDITOR_API HierarchyItem* Convert(NxFr::Handle<NxEn::GameObject> Instance);
+		HierarchyItem* Convert(NxFr::Handle<NxEn::GameObject> Instance);
 
 	private:
-		NX_EDITOR_API void OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId);
+		void OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId);
 
-		NX_EDITOR_API void FetchItems();
-		NX_EDITOR_API void ClearItems();
-		NX_EDITOR_API void AppendItem(NxFr::Handle<NxEn::GameObject> Target);
-		NX_EDITOR_API void RemoveItem(NxFr::Handle<NxEn::GameObject> Target);
+		void FetchItems();
+		void ClearItems();
+		void AppendItem(NxFr::Handle<NxEn::GameObject> Target);
+		void RemoveItem(NxFr::Handle<NxEn::GameObject> Target);
 
 	private:
 		NxEn::WorldSystem* Worlds;

@@ -16,24 +16,24 @@ namespace NxEn
 		COUNT
 	};
 
-	class Allocator : public NxFr::Allocator
+	class NX_ENGINE_API Allocator : public NxFr::Allocator
 	{
 		friend class MemorySystem;
 
 	public:
-		NX_ENGINE_API Allocator(AllocatorType Type);
-		NX_ENGINE_API Allocator(const Allocator& Other) = delete;
-		NX_ENGINE_API Allocator(Allocator&& Other) noexcept = delete;
-		NX_ENGINE_API virtual ~Allocator();
+		Allocator(AllocatorType Type);
+		Allocator(const Allocator& Other) = delete;
+		Allocator(Allocator&& Other) noexcept = delete;
+		virtual ~Allocator();
 
-		NX_ENGINE_API Allocator& operator=(const Allocator& Other) = delete;
-		NX_ENGINE_API Allocator& operator=(Allocator&& Other) noexcept = delete;
+		Allocator& operator=(const Allocator& Other) = delete;
+		Allocator& operator=(Allocator&& Other) noexcept = delete;
 
-		NX_ENGINE_API virtual void Clear();
-		NX_ENGINE_API virtual bool CanAllocate(uint64 Size, uint64 Alignement) const;
-		NX_ENGINE_API virtual bool BelongToAllocator(void* Pointer) const;
+		virtual void Clear();
+		virtual bool CanAllocate(uint64 Size, uint64 Alignement) const;
+		virtual bool BelongToAllocator(void* Pointer) const;
 
-		NX_ENGINE_API AllocatorType GetType() const { return Type; }
+		AllocatorType GetType() const { return Type; }
 
 	protected:
 		virtual void* Allocate(uint64 Size, uint64 Alignement);

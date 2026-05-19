@@ -13,40 +13,40 @@ namespace NxFr
 
 namespace NxEn
 {
-	class CommandsSystem : public System
+	class NX_ENGINE_API CommandsSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(NX_ENGINE_API, CommandsSystem)
+		NX_OBJECT_DECLARATION(CommandsSystem)
 
-		NX_ENGINE_API static Command* GetCommand(NxFr::StringId Id);
-		NX_ENGINE_API static void RegisterCommand(Command* Instance);
-		NX_ENGINE_API static void UnregisterCommand(Command* Instance);
+		static Command* GetCommand(NxFr::StringId Id);
+		static void RegisterCommand(Command* Instance);
+		static void UnregisterCommand(Command* Instance);
 
-		NX_ENGINE_API static CommandInfo ParseCommand(NxFr::StringView Cmd);
-		NX_ENGINE_API static NxFr::List<CommandInfo> ParseCommands(NxFr::StringView Cmds);
-		NX_ENGINE_API static NxFr::List<NxFr::StringView> ParseArguments(NxFr::StringView Args);
+		static CommandInfo ParseCommand(NxFr::StringView Cmd);
+		static NxFr::List<CommandInfo> ParseCommands(NxFr::StringView Cmds);
+		static NxFr::List<NxFr::StringView> ParseArguments(NxFr::StringView Args);
 
-		NX_ENGINE_API CommandsSystem();
-		NX_ENGINE_API ~CommandsSystem();
+		CommandsSystem();
+		~CommandsSystem();
 
-		NX_ENGINE_API void Run(NxFr::StringView Cmd);
-		NX_ENGINE_API void Run(const CommandInfo& Info);
-		NX_ENGINE_API void Execute(NxFr::StringView Cmd);
-		NX_ENGINE_API void Execute(const CommandInfo& Info);
-		NX_ENGINE_API void File(NxFr::String Path);
-		NX_ENGINE_API void Help();
+		void Run(NxFr::StringView Cmd);
+		void Run(const CommandInfo& Info);
+		void Execute(NxFr::StringView Cmd);
+		void Execute(const CommandInfo& Info);
+		void File(NxFr::String Path);
+		void Help();
 
-		NX_ENGINE_API bool IsExecutingCommand() const { return Current != nullptr; }
-		NX_ENGINE_API uint64 GetQueuedCommandCount() const { return Queue.GetCount(); }
-		NX_ENGINE_API const CommandInfo& GetCurrentCommand() const { return IsExecutingCommand() ? *Current : CommandInfo::Dummy; };
+		bool IsExecutingCommand() const { return Current != nullptr; }
+		uint64 GetQueuedCommandCount() const { return Queue.GetCount(); }
+		const CommandInfo& GetCurrentCommand() const { return IsExecutingCommand() ? *Current : CommandInfo::Dummy; };
 
 	protected:
-		NX_ENGINE_API void OnInitialize() override;
-		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+		void OnInitialize() override;
+		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
-		NX_ENGINE_API void PollTerminal();
-		NX_ENGINE_API void FlushCommands(float TimeStep);
+		void PollTerminal();
+		void FlushCommands(float TimeStep);
 
 	private:
 		NxFr::Queue<CommandInfo> Queue;
