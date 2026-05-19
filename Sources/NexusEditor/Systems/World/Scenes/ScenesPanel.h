@@ -16,24 +16,24 @@ namespace NxEd
 		};
 
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, ScenesPanel)
+		NX_OBJECT_DECLARATION(NX_EDITOR_API, ScenesPanel)
 
-		NEXUS_EDITOR_API void Refresh();
+		NX_EDITOR_API void Refresh();
 
 	protected:
-		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnEnable() override;
-		NEXUS_EDITOR_API void OnDisable() override;
-		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
+		NX_EDITOR_API void OnInitialize() override;
+		NX_EDITOR_API void OnEnable() override;
+		NX_EDITOR_API void OnDisable() override;
+		NX_EDITOR_API void OnGui(float TimeStep) override;
 
-		NEXUS_EDITOR_API void OnScenesChanged(NxFr::StringId, NxFr::GUID, NxFr::GUID);
-		NEXUS_EDITOR_API void OnToggle(uint64 Index);
+		NX_EDITOR_API void OnScenesChanged(NxFr::StringId, NxFr::GUID, NxFr::GUID);
+		NX_EDITOR_API void OnToggle(uint64 Index);
 
-		NEXUS_EDITOR_API void Create();
-		NEXUS_EDITOR_API void Load(NxFr::GUID SceneId);
-		NEXUS_EDITOR_API void Unload(NxFr::GUID SceneId);
+		NX_EDITOR_API void Create();
+		NX_EDITOR_API void Load(NxFr::GUID SceneId);
+		NX_EDITOR_API void Unload(NxFr::GUID SceneId);
 
-		NEXUS_EDITOR_API NxFr::GUID GetWorld() const { return WorldsIds[WorldsIndex]; }
+		NX_EDITOR_API NxFr::GUID GetWorld() const { return WorldsIds[WorldsIndex]; }
 
 	private:
 		NxEn::GUI::Style Style;

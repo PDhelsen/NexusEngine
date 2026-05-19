@@ -1,9 +1,9 @@
 #pragma once
 
-#if NEXUS_SANDBOX_EDITOR_DLL
-	#define NEXUS_SANDBOX_EDITOR_API __declspec(dllexport)
+#if NX_SANDBOX_EDITOR_DLL
+	#define NX_SANDBOX_EDITOR_API __declspec(dllexport)
 #else
-	#define NEXUS_SANDBOX_EDITOR_API __declspec(dllimport)
+	#define NX_SANDBOX_EDITOR_API __declspec(dllimport)
 #endif
 
 #include "NexusFramework/Core/NexusFramework.h"

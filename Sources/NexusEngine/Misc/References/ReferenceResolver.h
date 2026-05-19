@@ -12,7 +12,7 @@ namespace NxEn
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{
-			NEXUS_ASSERT(false, Default, "Unsupported resolver");
+			NX_ASSERT(false, Default, "Unsupported resolver");
 			return T();
 		}
 	};
@@ -31,7 +31,7 @@ namespace NxEn
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{
-			NEXUS_ASSERT(WorldInstance, Default, "World required to resolve reference");
+			NX_ASSERT(WorldInstance, Default, "World required to resolve reference");
 			return static_cast<T>(WorldInstance->GetGameObject(WorldObjectReferences::Resolve(Id)));
 		}
 	};
@@ -41,7 +41,7 @@ namespace NxEn
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{
-			NEXUS_ASSERT(WorldInstance, Default, "World required to resolve reference");
+			NX_ASSERT(WorldInstance, Default, "World required to resolve reference");
 			return static_cast<T>(WorldInstance->GetBehaviour(WorldObjectReferences::Resolve(Id)));
 		}
 	};
@@ -51,7 +51,7 @@ namespace NxEn
 	{
 		static T Resolve(NxFr::GUID Id, World* WorldInstance)
 		{
-			NEXUS_ASSERT(WorldInstance, Default, "World required to resolve reference");
+			NX_ASSERT(WorldInstance, Default, "World required to resolve reference");
 			return static_cast<T>(WorldInstance->GetComponent(WorldObjectReferences::Resolve(Id)));
 		}
 	};

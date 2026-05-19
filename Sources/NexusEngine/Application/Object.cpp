@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(Object)
+	NX_OBJECT_IMPLEMENTATION(Object)
 
 	Object::Object()
 		: Flags(ObjectFlags::None)
@@ -109,7 +109,7 @@ namespace NxEn
 
 	Object* Object::Clone() const
 	{
-		NEXUS_ASSERT(false, Default, "Not Implemented");
+		NX_ASSERT(false, Default, "Not Implemented");
 		return nullptr;
 	}
 

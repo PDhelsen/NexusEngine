@@ -55,7 +55,7 @@ namespace NxEn
 			if (Info.Instance->GetObjectType() == Type)
 			{
 				Info.TickRate = ComputeTickRate(TickRate, FixedTimeStep);
-				NEXUS_LOG(Info, Application, "System %s tick rate changed to %f", Type.C(), Info.TickRate);
+				NX_LOG(Info, Application, "System %s tick rate changed to %f", Type.C(), Info.TickRate);
 				break;
 			}
 		}
@@ -65,7 +65,7 @@ namespace NxEn
 	{
 		if (GetSystemsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Application, "There is no systems to tick");
+			NX_LOG(Warning, Application, "There is no systems to tick");
 			return;
 		}
 
@@ -101,7 +101,7 @@ namespace NxEn
 								}
 								else
 								{
-									NEXUS_LOG(Warning, Application, "System (%s) can depend only on another system from the same bucket. %s is not in the same bucket, dependency will be ignored", Type.C(), D.C());
+									NX_LOG(Warning, Application, "System (%s) can depend only on another system from the same bucket. %s is not in the same bucket, dependency will be ignored", Type.C(), D.C());
 								}
 							}
 						}
@@ -144,10 +144,10 @@ namespace NxEn
 			SystemsPerBuckets[BucketIndex] = Range;
 		}
 
-		NEXUS_LOG(Info, Application, "Tick order:")
+		NX_LOG(Info, Application, "Tick order:")
 		for (auto& Info : Systems)
 		{
-			NEXUS_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
+			NX_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
 		}
 	}
 
@@ -160,10 +160,10 @@ namespace NxEn
 			auto& OnTickOnce = OnTicksOnce[BucketIndex];
 			if (OnTickOnce.GetCount() > 0)
 			{
-				NEXUS_INSTUMENT_SCOPE("Tick Once");
+				NX_INSTUMENT_SCOPE("Tick Once");
 				for (uint64 Index = 0; Index < OnTickOnce.GetCount(); ++Index)
 				{
-					NEXUS_INSTUMENT_SCOPE(OnTickOnce[Index].GetSecond());
+					NX_INSTUMENT_SCOPE(OnTickOnce[Index].GetSecond());
 
 					OnTickOnce[Index].GetFirst().Invoke();
 				}
@@ -174,11 +174,11 @@ namespace NxEn
 			auto& OnTick = OnTicks[BucketIndex];
 			if (OnTick.GetCount() > 0)
 			{
-				NEXUS_INSTUMENT_SCOPE("Tick");
+				NX_INSTUMENT_SCOPE("Tick");
 
 				for (uint64 Index = 0; Index < OnTick.GetCount(); ++Index)
 				{
-					NEXUS_INSTUMENT_SCOPE(OnTick[Index].GetSecond());
+					NX_INSTUMENT_SCOPE(OnTick[Index].GetSecond());
 
 					OnTick[Index].GetFirst().Invoke();
 				}
@@ -187,7 +187,7 @@ namespace NxEn
 			SystemRange Range = SystemsPerBuckets[BucketIndex];
 			if (Range.Start != Range.End)
 			{
-				NEXUS_INSTUMENT_SCOPE("Systems");
+				NX_INSTUMENT_SCOPE("Systems");
 
 				for (uint64 SystemIndex = Range.Start; SystemIndex < Range.End; SystemIndex++)
 				{
@@ -195,7 +195,7 @@ namespace NxEn
 					float TimeStep = ComputeTimeStep(Info, DeltaTime);
 					if (TimeStep > 0.0f)
 					{
-						NEXUS_INSTUMENT_SCOPE(Info.Instance->GetObjectType().C());
+						NX_INSTUMENT_SCOPE(Info.Instance->GetObjectType().C());
 
 						Info.Instance->Tick(TimeStep);
 					}
@@ -220,7 +220,7 @@ namespace NxEn
 
 	float Ticker::ComputeTickRate(float TickRate, bool FixedTimeStep) const
 	{
-		NEXUS_ASSERT(!FixedTimeStep || (FixedTimeStep && TickRate > 0.0f), Application, "The system has to either no require a fixed timestep or provide a tick rate greater than 0");
+		NX_ASSERT(!FixedTimeStep || (FixedTimeStep && TickRate > 0.0f), Application, "The system has to either no require a fixed timestep or provide a tick rate greater than 0");
 		return TickRate > 0.0f ? 1.0f / TickRate : 0.0f;
 	}
 

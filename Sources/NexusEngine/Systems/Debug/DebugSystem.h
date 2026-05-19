@@ -9,26 +9,26 @@ namespace NxEn
 		friend class NexusEngineApplication;
 
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, DebugSystem)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, DebugSystem)
 
-		NEXUS_ENGINE_API DebugSystem();
-		NEXUS_ENGINE_API ~DebugSystem();
+		NX_ENGINE_API DebugSystem();
+		NX_ENGINE_API ~DebugSystem();
 
-		NEXUS_ENGINE_API NxFr::Logger* GetLogger() const { return Logger; }
-		NEXUS_ENGINE_API NxFr::Stats* GetStats() const { return Stats; };
-		NEXUS_ENGINE_API NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }
-		NEXUS_ENGINE_API NxFr::MemoryTracker* GetMemory() const { return Memory; }
+		NX_ENGINE_API NxFr::Logger* GetLogger() const { return Logger; }
+		NX_ENGINE_API NxFr::Stats* GetStats() const { return Stats; };
+		NX_ENGINE_API NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }
+		NX_ENGINE_API NxFr::MemoryTracker* GetMemory() const { return Memory; }
 
 	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
-		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnShutdown() override;
+		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
-		NEXUS_ENGINE_API void AutoStart();
-		NEXUS_ENGINE_API void RecordStats();
-		NEXUS_ENGINE_API void TickProfiler();
-		NEXUS_ENGINE_API void ApplySettings();
+		NX_ENGINE_API void AutoStart();
+		NX_ENGINE_API void RecordStats();
+		NX_ENGINE_API void TickProfiler();
+		NX_ENGINE_API void ApplySettings();
 
 	private:
 		NxFr::Logger* Logger;

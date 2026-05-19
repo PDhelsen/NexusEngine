@@ -8,7 +8,7 @@
 
 namespace NxEd
 {
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionCreate)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionCreate)
 
 	void HierarchyActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -25,7 +25,7 @@ namespace NxEd
 		});
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionRename)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionRename)
 
 	void HierarchyActionRename::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -41,7 +41,7 @@ namespace NxEd
 		});
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionDuplicate)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionDuplicate)
 
 	void HierarchyActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -54,7 +54,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionMove)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionMove)
 
 	void HierarchyActionMove::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -74,7 +74,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionDelete)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionDelete)
 
 	void HierarchyActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -87,7 +87,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionPrefabCreate)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionPrefabCreate)
 
 	void HierarchyActionPrefabCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -105,7 +105,7 @@ namespace NxEd
 		});
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionPrefabSave)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionPrefabSave)
 
 	void HierarchyActionPrefabSave::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -117,7 +117,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionPrefabUnpack)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionPrefabUnpack)
 
 	void HierarchyActionPrefabUnpack::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -129,7 +129,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyActionInspect)
+	NX_OBJECT_IMPLEMENTATION(HierarchyActionInspect)
 
 	void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{

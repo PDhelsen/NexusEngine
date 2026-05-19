@@ -21,13 +21,13 @@ namespace NxEn
 		template<typename... Args>
 		static Command Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback);
 
-		NEXUS_ENGINE_API Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback);
-		NEXUS_ENGINE_API ~Command();
+		NX_ENGINE_API Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(NxFr::StringView)>& Callback);
+		NX_ENGINE_API ~Command();
 
-		NEXUS_ENGINE_API void Invoke(NxFr::StringView Args) const;
+		NX_ENGINE_API void Invoke(NxFr::StringView Args) const;
 
-		NEXUS_ENGINE_API NxFr::StringId GetId() const { return Id; }
-		NEXUS_ENGINE_API NxFr::StringView GetTooltip() const { return Tooltip; }
+		NX_ENGINE_API NxFr::StringId GetId() const { return Id; }
+		NX_ENGINE_API NxFr::StringView GetTooltip() const { return Tooltip; }
 
 	private:
 		template<typename Func, uint64... Indices>

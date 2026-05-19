@@ -10,7 +10,7 @@ namespace NxEn
 {
 	namespace Imgui
 	{
-#define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
+#define NX_WINDOW(Window) static_cast<GLFWwindow*>(Window)
 
 		void Initialize()
 		{
@@ -24,7 +24,7 @@ namespace NxEn
 			IO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 			void* Context = Glfw::GetContext();
-			ImGui_ImplGlfw_InitForOpenGL(NEXUS_WINDOW(Context), true);
+			ImGui_ImplGlfw_InitForOpenGL(NX_WINDOW(Context), true);
 			ImGui_ImplOpenGL3_Init();
 		}
 

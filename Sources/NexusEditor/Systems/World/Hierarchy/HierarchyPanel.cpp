@@ -8,7 +8,7 @@
 
 namespace NxEd
 {
-	NEXUS_OBJECT_IMPLEMENTATION(HierarchyPanel)
+	NX_OBJECT_IMPLEMENTATION(HierarchyPanel)
 
 	void HierarchyPanel::Refresh()
 	{

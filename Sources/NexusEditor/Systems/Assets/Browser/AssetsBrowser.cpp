@@ -59,7 +59,7 @@ namespace NxEd
 
 	void AssetsBrowser::Create(NxFr::StringView ItemPath, NxFr::StringId Type)
 	{
-		NEXUS_ASSERT(!ItemPath.IsEmpty(), Default, "Can't create the Assets/ folder");
+		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't create the Assets/ folder");
 
 		NxFr::String TargetPath = MakeUniquePath(Validate(ItemPath));
 
@@ -68,7 +68,7 @@ namespace NxEd
 
 	void AssetsBrowser::Move(NxFr::StringView ItemPath, NxFr::StringView Target)
 	{
-		NEXUS_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
+		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID Id = ItemPathToId(Validate(ItemPath));
 		NxFr::String TargetPath = MakeUniquePath(Validate(Target));
@@ -81,7 +81,7 @@ namespace NxEd
 
 	void AssetsBrowser::Duplicate(NxFr::StringView ItemPath, NxFr::StringView Target)
 	{
-		NEXUS_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
+		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID Id = ItemPathToId(Validate(ItemPath));
 		NxFr::String TargetPath = MakeUniquePath(Validate(Target));
@@ -92,7 +92,7 @@ namespace NxEd
 
 	void AssetsBrowser::Delete(NxFr::StringView ItemPath)
 	{
-		NEXUS_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
+		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID Id = ItemPathToId(Validate(ItemPath));
 		AssetsBrowserItem* Item = GetItem(Id);
@@ -117,7 +117,7 @@ namespace NxEd
 			ItemPath = NxFr::StringUtility::TrimLeading(ItemPath, '/');
 		}
 
-		NEXUS_ASSERT(NxFr::Path::IsDirectory(ItemPath) || (NxFr::Path::IsFile(ItemPath) && NxFr::Path::HasExtension(ItemPath)), Default, "Path %s needs to have an extension or be a directory", ItemPath.C());
+		NX_ASSERT(NxFr::Path::IsDirectory(ItemPath) || (NxFr::Path::IsFile(ItemPath) && NxFr::Path::HasExtension(ItemPath)), Default, "Path %s needs to have an extension or be a directory", ItemPath.C());
 
 		return ItemPath;
 	}

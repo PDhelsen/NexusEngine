@@ -2,7 +2,7 @@
 
 namespace NxEd
 {
-	NEXUS_OBJECT_IMPLEMENTATION(InspectorPanel)
+	NX_OBJECT_IMPLEMENTATION(InspectorPanel)
 
 	InspectorPanel::InspectorPanel()
 		: Target(nullptr), Mode(InspectorMode::None), Lock(false)

@@ -26,18 +26,18 @@ namespace NxEn
 		};
 
 	public:
-		NEXUS_ENGINE_API Bootstrapper();
-		NEXUS_ENGINE_API ~Bootstrapper();
+		NX_ENGINE_API Bootstrapper();
+		NX_ENGINE_API ~Bootstrapper();
 
-		NEXUS_ENGINE_API Bootstrapper& AppendStep(StepBucket Bucket, NxFr::StringView Tag, const Signature& Step);
+		NX_ENGINE_API Bootstrapper& AppendStep(StepBucket Bucket, NxFr::StringView Tag, const Signature& Step);
 
 		template<typename T>
 		Bootstrapper& AppendSystem() { return AppendSystem(T::GetClassType()); }
 		template<typename T, typename D>
 		Bootstrapper& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
 
-		NEXUS_ENGINE_API Bootstrapper& AppendSystem(NxFr::StringId Type);
-		NEXUS_ENGINE_API Bootstrapper& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
+		NX_ENGINE_API Bootstrapper& AppendSystem(NxFr::StringId Type);
+		NX_ENGINE_API Bootstrapper& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
 
 		uint64 GetStepsCount() const { return Steps.GetCount(); }
 		uint64 GetSystemsCount() const { return Systems.GetCount(); }

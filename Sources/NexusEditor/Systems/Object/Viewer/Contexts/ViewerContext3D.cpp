@@ -5,7 +5,7 @@ namespace NxEd
 	static ViewerFactory::Factory* FactoryWorld = ViewerFactory::Register<NxEn::World, ViewerContext3D>();
 	static ViewerFactory::Factory* FactoryPrefab = ViewerFactory::Register<NxEn::Prefab, ViewerContext3D>();
 
-	NEXUS_OBJECT_IMPLEMENTATION(ViewerContext3D)
+	NX_OBJECT_IMPLEMENTATION(ViewerContext3D)
 
 	ViewerContext3D::ViewerContext3D()
 		: Mode(), World(nullptr), Target()
@@ -55,7 +55,7 @@ namespace NxEd
 		{
 			Mode = ViewContextMode::Invalid;
 
-			NEXUS_LOG(Error, System, "Unsupported type for ViewerContext3D")
+			NX_LOG(Error, System, "Unsupported type for ViewerContext3D")
 		}
 	}
 

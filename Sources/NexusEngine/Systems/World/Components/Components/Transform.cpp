@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_COMPONENT_IMPLEMENTATION(Transform)
+	NX_COMPONENT_IMPLEMENTATION(Transform)
 
 	NxFr::Vector3f Transform::TransformPosition(const NxFr::Matrix4x4f& Space, NxFr::Vector3f Position)
 	{

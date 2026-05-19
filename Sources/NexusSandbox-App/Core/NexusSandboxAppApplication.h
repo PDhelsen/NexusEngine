@@ -5,17 +5,17 @@
 
 namespace NxSA
 {
-	NEXUS_APPLICATION_DECLARATION(NEXUS_SANDBOX_APP_API, ::NxSA::NexusSandboxAppApplication)
+	NX_APPLICATION_DECLARATION(NX_SANDBOX_APP_API, ::NxSA::NexusSandboxAppApplication)
 
 	class NexusSandboxAppApplication : public NxAp::NexusAppApplication
 	{
 	public:
-		NEXUS_SANDBOX_APP_API NexusSandboxAppApplication(const NxEn::Project& ProjectInfo);
-		NEXUS_SANDBOX_APP_API virtual ~NexusSandboxAppApplication();
+		NX_SANDBOX_APP_API NexusSandboxAppApplication(const NxEn::Project& ProjectInfo);
+		NX_SANDBOX_APP_API virtual ~NexusSandboxAppApplication();
 
 	protected:
-		NEXUS_SANDBOX_APP_API virtual void OnInitialize() override;
-		NEXUS_SANDBOX_APP_API virtual void OnShutdown() override;
-		NEXUS_SANDBOX_APP_API virtual void OnExecute() override;
+		NX_SANDBOX_APP_API virtual void OnInitialize() override;
+		NX_SANDBOX_APP_API virtual void OnShutdown() override;
+		NX_SANDBOX_APP_API virtual void OnExecute() override;
 	};
 }

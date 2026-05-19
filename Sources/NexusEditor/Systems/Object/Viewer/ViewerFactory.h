@@ -35,7 +35,7 @@ namespace NxEd
 			ViewerContext* Create() const override { return new F(); };
 		};
 
-		NEXUS_EDITOR_API static Factory* GetFactory(NxFr::StringId Id);
-		NEXUS_EDITOR_API static void SetFactory(NxFr::StringId Id, Factory* Instance);
+		NX_EDITOR_API static Factory* GetFactory(NxFr::StringId Id);
+		NX_EDITOR_API static void SetFactory(NxFr::StringId Id, Factory* Instance);
 	};
 }

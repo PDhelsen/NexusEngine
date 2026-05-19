@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_ASSET_IMPLEMENTATION(Table)
+	NX_ASSET_IMPLEMENTATION(Table)
 
 	void Table::OnGui(float TimeStep)
 	{

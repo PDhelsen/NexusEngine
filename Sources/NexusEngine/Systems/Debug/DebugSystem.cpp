@@ -16,7 +16,7 @@ namespace NxFr
 
 namespace NxEn
 {
-#if NEXUS_DEBUG
+#if NX_DEBUG
 	bool AutoFlush = true;
 #else
 	bool AutoFlush = false;
@@ -44,7 +44,7 @@ namespace NxEn
 		if (Enabled == "true") Stats->StartRecording(); else Stats->StopRecording();
 	}));
 
-	NEXUS_OBJECT_IMPLEMENTATION(DebugSystem)
+	NX_OBJECT_IMPLEMENTATION(DebugSystem)
 
 	DebugSystem::DebugSystem()
 		: Logger(NxFr::Globals::Debug::Logs), Stats(nullptr), Instrumentor(nullptr), Memory(nullptr), Time(0.0)
@@ -64,7 +64,7 @@ namespace NxEn
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &DebugSystem::ApplySettings };
 
 		NxFr::String Folder = NxFr::Path::Combine(NxFr::Globals::Paths::Saved, NxFr::Globals::Args->Get("DebugFolder", "debug"));
-		NEXUS_ASSERT(!Folder.IsEmpty(), System, "Folder can't be empty");
+		NX_ASSERT(!Folder.IsEmpty(), System, "Folder can't be empty");
 		NxFr::Directory(Folder).Create();
 
 		Logger->SetAutoFlush(AutoFlush);
@@ -73,8 +73,8 @@ namespace NxEn
 		Stats = new NxFr::Stats(NxFr::Path::Combine(Folder, "stats.csv"));
 		Memory = new NxFr::MemoryTracker();
 
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::FpsId, Decimal, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::TimerMainId, Decimal, Set);
 
 		NxFr::Globals::Debug::Statistiques = Stats;
 		NxFr::Globals::Debug::Instrumentor = Instrumentor;
@@ -122,7 +122,7 @@ namespace NxEn
 
 		if (NxFr::Globals::Args->Has("Profile"))
 		{
-			NEXUS_LOG(Info, System, "Debug Tools will start automatically");
+			NX_LOG(Info, System, "Debug Tools will start automatically");
 			Instrumentor->StartRecording();
 			Stats->StartRecording();
 		}
@@ -133,8 +133,8 @@ namespace NxEn
 		double Now = NxFr::Globals::PlatformTarget->GetProcessorTimer();
 		float DeltaTime = (float)(Now - Time);
 
-		NEXUS_STAT_DECIMAL(NxFr::StatsHeader::FpsId, 1.0f / DeltaTime);
-		NEXUS_STAT_DECIMAL(NxFr::StatsHeader::TimerMainId, DeltaTime);
+		NX_STAT_DECIMAL(NxFr::StatsHeader::FpsId, 1.0f / DeltaTime);
+		NX_STAT_DECIMAL(NxFr::StatsHeader::TimerMainId, DeltaTime);
 
 		Time = Now;
 	}

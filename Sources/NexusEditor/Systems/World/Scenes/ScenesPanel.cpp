@@ -14,7 +14,7 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel ScenesPanel");
 	}));
 
-	NEXUS_OBJECT_IMPLEMENTATION(ScenesPanel)
+	NX_OBJECT_IMPLEMENTATION(ScenesPanel)
 
 	void ScenesPanel::Refresh()
 	{

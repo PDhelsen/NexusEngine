@@ -9,7 +9,7 @@ namespace NxEd
 	static NxFr::Vector2f DockDefaultPos = NxFr::Vector2f(200.0f, 200.0f);
 	static NxFr::Vector2f DockDefaultSize = NxFr::Vector2f(1600.0f, 800.0f);
 
-	NEXUS_OBJECT_IMPLEMENTATION(Stage)
+	NX_OBJECT_IMPLEMENTATION(Stage)
 
 	Stage::Stage(NxEn::Object* Target)
 		: Target(Target), DockId(0), Layout(false), Main(false), Viewer(nullptr), Inspector(nullptr), Hierarchy(nullptr)

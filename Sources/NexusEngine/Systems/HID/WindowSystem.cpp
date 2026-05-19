@@ -13,7 +13,7 @@ namespace NxEn
 	static SettingVar<NxFr::Vector2i>* SettingResolution = SettingVar<NxFr::Vector2i>::Create("Settings", "WindowResolution", NxFr::Vector2i(1920, 1080));
 	static SettingVar<bool>* SettingVSync = SettingVar<bool>::Create("Settings", "WindowVSync", true);
 
-	NEXUS_OBJECT_IMPLEMENTATION(WindowSystem)
+	NX_OBJECT_IMPLEMENTATION(WindowSystem)
 
 	WindowSystem::WindowSystem()
 		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Pointer(), Focused(true)
@@ -111,7 +111,7 @@ namespace NxEn
 	// TODO: Window switch mode at runtime
 	WindowSystem& WindowSystem::SetWindowMode(Window::Mode Mode)
 	{
-		NEXUS_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMode has to be called before the window creation and can't be called afterward");
+		NX_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMode has to be called before the window creation and can't be called afterward");
 
 		Target.WindowMode = Mode;
 		return *this;
@@ -119,7 +119,7 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowMonitor(uint8 MonitorIndex)
 	{
-		NEXUS_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMonitor has to be called before the window creation and can't be called afterward");
+		NX_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMonitor has to be called before the window creation and can't be called afterward");
 
 		Target.Monitor = MonitorIndex;
 		return *this;
@@ -218,7 +218,7 @@ namespace NxEn
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
 		Application::GetSystem<InputSystem>()->GetOnPoll() += Glfw::PollInput;
-#if !NEXUS_EDITOR
+#if !NX_EDITOR
 		SetWindowMode((Window::Mode)((uint8)SettingMode->GetValue()));
 		SetWindowMonitor((uint8)SettingMonitor->GetValue());
 #endif
@@ -265,7 +265,7 @@ namespace NxEn
 
 	void WindowSystem::FetchMonitors()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		NxFr::Array<void*> Instances = Glfw::GetMonitors();
 
@@ -275,13 +275,13 @@ namespace NxEn
 			Monitors[Index].Instance = Instances[Index];
 			Glfw::GetMonitorSettings(Monitors[Index].Instance, Monitors[Index].Resolution.x, Monitors[Index].Resolution.y, Monitors[Index].RefreshRate);
 
-			NEXUS_LOG(Info, System, "Monitor found with resolution %d-%d", Monitors[Index].Resolution.x, Monitors[Index].Resolution.y);
+			NX_LOG(Info, System, "Monitor found with resolution %d-%d", Monitors[Index].Resolution.x, Monitors[Index].Resolution.y);
 		}
 	}
 
 	void WindowSystem::CreateWindow()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		Target.Instance = Glfw::CreateWindow(
 			(uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr,
@@ -289,28 +289,28 @@ namespace NxEn
 			Target.Icon ? Target.Icon->GetResolution() : NxFr::Vector2i::Zero, Target.Icon ? static_cast<uint8*>(Target.Icon->GetPixels()) : nullptr,
 			Target.VSync);
 
-		NEXUS_LOG(Info, System, "Window created with resolution %d-%d", Target.Resolution.x, Target.Resolution.y);
+		NX_LOG(Info, System, "Window created with resolution %d-%d", Target.Resolution.x, Target.Resolution.y);
 	}
 
 	void WindowSystem::DestroyWindow()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		Glfw::DestroyWindow(Target.Instance);
 
-		NEXUS_LOG(Info, System, "Window destroyed");
+		NX_LOG(Info, System, "Window destroyed");
 	}
 
 	void WindowSystem::TickWindow()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		Glfw::TickWindow(Target.Instance);
 	}
 
 	void WindowSystem::UpdateCursor()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		Pointer.Instance = Glfw::UpdateCursorIcon(Target.Instance, Pointer.Instance, (uint8)Pointer.CursorIcon, Pointer.IconCustom);
 		Glfw::SetCursorMode(Target.Instance, (uint32)Pointer.CursorMode);

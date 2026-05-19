@@ -18,19 +18,19 @@ namespace NxEn
 		};
 
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, ConsolePanel)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, ConsolePanel)
 
-		NEXUS_ENGINE_API static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity);
+		NX_ENGINE_API static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity);
 
-		NEXUS_ENGINE_API ConsolePanel();
-		NEXUS_ENGINE_API ~ConsolePanel();
+		NX_ENGINE_API ConsolePanel();
+		NX_ENGINE_API ~ConsolePanel();
 
 	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
-		NEXUS_ENGINE_API void OnEnable() override;
-		NEXUS_ENGINE_API void OnDisable() override;
-		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnShutdown() override;
+		NX_ENGINE_API void OnEnable() override;
+		NX_ENGINE_API void OnDisable() override;
+		NX_ENGINE_API void OnGui(float TimeStep) override;
 
 		void ExecuteCommand();
 		void AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message);

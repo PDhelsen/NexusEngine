@@ -9,16 +9,16 @@ namespace NxEn
 	class TreePanel : public GUI::Panel
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, TreePanel)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, TreePanel)
 
-		NEXUS_ENGINE_API TreePanel();
-		NEXUS_ENGINE_API virtual ~TreePanel();
+		NX_ENGINE_API TreePanel();
+		NX_ENGINE_API virtual ~TreePanel();
 
-		NEXUS_ENGINE_API virtual void Clear();
-		NEXUS_ENGINE_API virtual void Refresh();
+		NX_ENGINE_API virtual void Clear();
+		NX_ENGINE_API virtual void Refresh();
 
-		NEXUS_ENGINE_API virtual void Find(NxFr::StringView Query);
-		NEXUS_ENGINE_API virtual void Select(TreeItem* Item);
+		NX_ENGINE_API virtual void Find(NxFr::StringView Query);
+		NX_ENGINE_API virtual void Select(TreeItem* Item);
 
 		template<typename T>
 		void AppendAction();
@@ -28,33 +28,33 @@ namespace NxEn
 		void RunAction();
 
 	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
-		NEXUS_ENGINE_API void OnEnable() override;
-		NEXUS_ENGINE_API void OnDisable() override;
-		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnShutdown() override;
+		NX_ENGINE_API void OnEnable() override;
+		NX_ENGINE_API void OnDisable() override;
+		NX_ENGINE_API void OnGui(float TimeStep) override;
 
 	protected:
-		NEXUS_ENGINE_API virtual TreeItem* FetchRootItem() = 0;
-		NEXUS_ENGINE_API virtual void OnCreateItem(TreeItem* Item);
-		NEXUS_ENGINE_API virtual void OnDestroyItem(TreeItem* Item);
-		NEXUS_ENGINE_API virtual void OnSelectItem(TreeItem* Item, bool State);
+		NX_ENGINE_API virtual TreeItem* FetchRootItem() = 0;
+		NX_ENGINE_API virtual void OnCreateItem(TreeItem* Item);
+		NX_ENGINE_API virtual void OnDestroyItem(TreeItem* Item);
+		NX_ENGINE_API virtual void OnSelectItem(TreeItem* Item, bool State);
 
-		NEXUS_ENGINE_API virtual void DrawHeader(float TimeStep);
-		NEXUS_ENGINE_API virtual void DrawItem(float TimeStep, TreeItem* Item);
-		NEXUS_ENGINE_API virtual void DrawContext(TreeItem* Item);
-		NEXUS_ENGINE_API virtual void OpenContext(TreeItem* Item);
-		NEXUS_ENGINE_API virtual void HandleSelection(TreeItem* Item);
+		NX_ENGINE_API virtual void DrawHeader(float TimeStep);
+		NX_ENGINE_API virtual void DrawItem(float TimeStep, TreeItem* Item);
+		NX_ENGINE_API virtual void DrawContext(TreeItem* Item);
+		NX_ENGINE_API virtual void OpenContext(TreeItem* Item);
+		NX_ENGINE_API virtual void HandleSelection(TreeItem* Item);
 
-		NEXUS_ENGINE_API virtual void FindItem();
-		NEXUS_ENGINE_API virtual void SelectItem(TreeItem* Item, bool State, bool Additive, bool List);
-		NEXUS_ENGINE_API virtual void ShowItem(TreeItem* Item);
-		NEXUS_ENGINE_API virtual bool IsItemVisible(TreeItem* Item);
+		NX_ENGINE_API virtual void FindItem();
+		NX_ENGINE_API virtual void SelectItem(TreeItem* Item, bool State, bool Additive, bool List);
+		NX_ENGINE_API virtual void ShowItem(TreeItem* Item);
+		NX_ENGINE_API virtual bool IsItemVisible(TreeItem* Item);
 
-		NEXUS_ENGINE_API virtual void ProcessAction();
-		NEXUS_ENGINE_API virtual NxFr::Array<TreeItem*> GatherActionItems(TreeAction* Action);
-		NEXUS_ENGINE_API virtual void GatherActionItems(TreeItem* Item, NxFr::Set<TreeItem*>& Result, bool Recursive);
-		NEXUS_ENGINE_API virtual void SortActions();
+		NX_ENGINE_API virtual void ProcessAction();
+		NX_ENGINE_API virtual NxFr::Array<TreeItem*> GatherActionItems(TreeAction* Action);
+		NX_ENGINE_API virtual void GatherActionItems(TreeItem* Item, NxFr::Set<TreeItem*>& Result, bool Recursive);
+		NX_ENGINE_API virtual void SortActions();
 
 	protected:
 		GUI::Menu Menu;

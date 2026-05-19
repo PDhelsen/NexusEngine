@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_ASSET_IMPLEMENTATION(Artifact)
+	NX_ASSET_IMPLEMENTATION(Artifact)
 
 	void Artifact::OnGui(float TimeStep)
 	{

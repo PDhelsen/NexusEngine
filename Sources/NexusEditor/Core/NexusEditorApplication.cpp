@@ -5,7 +5,7 @@
 
 namespace NxEd
 {
-	NEXUS_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
+	NX_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
 	NexusEditorApplication::NexusEditorApplication(const NxEn::Project& ProjectInfo)
 		: NexusEngineApplication(ProjectInfo)

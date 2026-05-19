@@ -12,7 +12,7 @@ namespace NxFr
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(ResourcesSystem)
+	NX_OBJECT_IMPLEMENTATION(ResourcesSystem)
 
 	void ResourcesSystem::Unload(NxFr::StringView Path)
 	{
@@ -22,7 +22,7 @@ namespace NxEn
 
 		if (Instance == nullptr)
 		{
-			NEXUS_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
 			return;
 		}
 
@@ -53,7 +53,7 @@ namespace NxEn
 
 		if (Instance == nullptr)
 		{
-			NEXUS_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
 			return;
 		}
 
@@ -111,8 +111,8 @@ namespace NxEn
 		System::OnInitialize();
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesTrackedId, Integer, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesLoadedId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesTrackedId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesLoadedId, Integer, Set);
 	}
 
 	void ResourcesSystem::OnTick(float TimeStep)
@@ -128,8 +128,8 @@ namespace NxEn
 			}
 		}
 
-		NEXUS_STAT_INTEGER(NxFr::StatsHeader::ResourcesTrackedId, Resources.GetCount());
-		NEXUS_STAT_INTEGER(NxFr::StatsHeader::ResourcesLoadedId, Loaded);
+		NX_STAT_INTEGER(NxFr::StatsHeader::ResourcesTrackedId, Resources.GetCount());
+		NX_STAT_INTEGER(NxFr::StatsHeader::ResourcesLoadedId, Loaded);
 	}
 
 	NxFr::String ResourcesSystem::GetResourceFilePath(NxFr::StringView Path)

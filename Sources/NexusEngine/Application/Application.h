@@ -12,17 +12,17 @@ namespace NxFr
 {
 	namespace LoggerChannel
 	{
-		NEXUS_ENGINE_API extern const NxFr::StringId Application;
+		NX_ENGINE_API extern const NxFr::StringId Application;
 	}
 }
 
-#define NEXUS_APPLICATION_DECLARATION(Dll, Name)\
+#define NX_APPLICATION_DECLARATION(Dll, Name)\
 namespace EntryPoint\
 {\
 	extern "C" Dll NxEn::Application* CreateApplication(const NxEn::Project& ProjectInfo);\
 	extern "C" Dll void DestroyApplication(NxEn::Application* Application);\
 }
-#define NEXUS_APPLICATION_IMPLEMENTATION(Name)\
+#define NX_APPLICATION_IMPLEMENTATION(Name)\
 namespace EntryPoint\
 {\
 	NxEn::Application* CreateApplication(const NxEn::Project& ProjectInfo)\
@@ -55,16 +55,16 @@ namespace NxEn
 		template<typename T>
 		static T* GetSystem() { return (T*)GetSystem(T::GetClassType()); }
 
-		NEXUS_ENGINE_API static Application* GetInstance();
-		NEXUS_ENGINE_API static System* GetSystem(NxFr::StringId Id);
+		NX_ENGINE_API static Application* GetInstance();
+		NX_ENGINE_API static System* GetSystem(NxFr::StringId Id);
 
-		NEXUS_ENGINE_API Application(const Project& ProjectInfo);
-		NEXUS_ENGINE_API virtual ~Application();
+		NX_ENGINE_API Application(const Project& ProjectInfo);
+		NX_ENGINE_API virtual ~Application();
 
-		NEXUS_ENGINE_API void Quit();
-		NEXUS_ENGINE_API void Restart();
-		NEXUS_ENGINE_API void Crash(CrashCode ErrorCode);
-		NEXUS_ENGINE_API bool IsRunning() const;
+		NX_ENGINE_API void Quit();
+		NX_ENGINE_API void Restart();
+		NX_ENGINE_API void Crash(CrashCode ErrorCode);
+		NX_ENGINE_API bool IsRunning() const;
 
 		Project& GetProject() { return ProjectInfo; }
 		Bootstrapper& GetBootstrapper() { return Bootstrap; }
@@ -73,9 +73,9 @@ namespace NxEn
 		TimeManager& GetTime() { return Time; }
 
 	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize();
-		NEXUS_ENGINE_API virtual void OnShutdown();
-		NEXUS_ENGINE_API virtual void OnExecute();
+		NX_ENGINE_API virtual void OnInitialize();
+		NX_ENGINE_API virtual void OnShutdown();
+		NX_ENGINE_API virtual void OnExecute();
 
 	private:
 		void Run();

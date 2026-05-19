@@ -7,7 +7,7 @@ namespace NxEn
 	{
 #pragma region Element
 
-		NEXUS_OBJECT_IMPLEMENTATION(Element)
+		NX_OBJECT_IMPLEMENTATION(Element)
 
 		Element::Element()
 			: Manual(false), WillClose(false)
@@ -79,7 +79,7 @@ namespace NxEn
 
 #pragma region Panel
 
-		NEXUS_OBJECT_IMPLEMENTATION(Panel)
+		NX_OBJECT_IMPLEMENTATION(Panel)
 
 		Panel::Panel()
 			: GuiFlags(0), Title("")
@@ -158,7 +158,7 @@ namespace NxEn
 		static const char* MenuPathEdit					= "Edit/";
 		static const char* MenuPathFile					= "File/";
 
-		NEXUS_OBJECT_IMPLEMENTATION(Menu)
+		NX_OBJECT_IMPLEMENTATION(Menu)
 
 		Menu::Item Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
@@ -172,7 +172,7 @@ namespace NxEn
 		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
 			: Callback(Callback), Validate(Validate), Path(Path), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
 		{
-			NEXUS_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%lld)", MenuPriorityOffsetBase);
+			NX_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%lld)", MenuPriorityOffsetBase);
 
 			if		(NxFr::StringUtility::Start(Path, MenuPathProject))		this->Priority -= MenuPriorityOffsetProject;
 			else if (NxFr::StringUtility::Start(Path, MenuPathTools))		this->Priority -= MenuPriorityOffsetTools;
@@ -371,7 +371,7 @@ namespace NxEn
 
 #pragma region Popup
 
-		NEXUS_OBJECT_IMPLEMENTATION(Popup)
+		NX_OBJECT_IMPLEMENTATION(Popup)
 
 		Popup::Popup()
 			: GuiFlags(0), Title(""), Message(""), Callbacks()
@@ -466,7 +466,7 @@ namespace NxEn
 
 #pragma region Progress
 
-		NEXUS_OBJECT_IMPLEMENTATION(ProgressBar)
+		NX_OBJECT_IMPLEMENTATION(ProgressBar)
 
 		ProgressBar::ProgressBar()
 			: GuiFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
@@ -559,7 +559,7 @@ namespace NxEn
 
 #pragma region Window
 
-		NEXUS_OBJECT_IMPLEMENTATION(Window)
+		NX_OBJECT_IMPLEMENTATION(Window)
 
 		Window::Window()
 			: GuiFlags(0), MainMenu(true)

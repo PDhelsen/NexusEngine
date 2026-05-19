@@ -5,7 +5,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(TreePanel)
+	NX_OBJECT_IMPLEMENTATION(TreePanel)
 
 	TreePanel::TreePanel()
 		: Menu(), Style(),

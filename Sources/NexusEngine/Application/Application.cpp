@@ -27,7 +27,7 @@ namespace NxEn
 		: ProjectInfo(ProjectInfo), Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
 	{
 		NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Application, true);
-		NEXUS_ASSERT(Instance == nullptr, Application, "Application was already created");
+		NX_ASSERT(Instance == nullptr, Application, "Application was already created");
 		Instance = this;
 	}
 
@@ -38,14 +38,14 @@ namespace NxEn
 
 	void Application::Quit()
 	{
-		NEXUS_LOG(Info, Application, "Application was requested to quit");
+		NX_LOG(Info, Application, "Application was requested to quit");
 
 		WantsToQuit = true;
 	}
 
 	void Application::Restart()
 	{
-		NEXUS_LOG(Info, Application, "Application was requested to restart");
+		NX_LOG(Info, Application, "Application was requested to restart");
 
 		EntryPoint::ScheduleRestart();
 		Quit();
@@ -53,7 +53,7 @@ namespace NxEn
 
 	void Application::Crash(CrashCode ErrorCode)
 	{
-		NEXUS_LOG(Info, Application, "Application crashed with code %d", ErrorCode);
+		NX_LOG(Info, Application, "Application crashed with code %d", ErrorCode);
 
 		EntryPoint::SetErrorCode((int8)ErrorCode);
 		Quit();
@@ -69,7 +69,7 @@ namespace NxEn
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Console Arguments", []() { NxFr::Globals::Args->Print(); });
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Setup Project", [&]()
 		{
-			NEXUS_LOG(Info, Default, "Application %s starting in %s Mode", ProjectInfo.GetName().C(), NxFr::StringUtility::ToString(ProjectInfo.GetTarget()).C());
+			NX_LOG(Info, Default, "Application %s starting in %s Mode", ProjectInfo.GetName().C(), NxFr::StringUtility::ToString(ProjectInfo.GetTarget()).C());
 			NxFr::Globals::PlatformTarget->SetWorkingDirectory(ProjectInfo.GetRootPath());
 		});
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Setup Paths & Folders", &NxFr::Globals::CreatePathsAndFolders);
@@ -79,7 +79,7 @@ namespace NxEn
 	{
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Application duration", []()
 		{
-			NEXUS_LOG(Info, Default, "Application last for %llu seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
+			NX_LOG(Info, Default, "Application last for %llu seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		});
 		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Cleanup Folders", &NxFr::Globals::DestroyTempFolder);
 	}
@@ -115,7 +115,7 @@ namespace NxEn
 
 		while (IsRunning())
 		{
-			NEXUS_INSTUMENT_SCOPE("Frame");
+			NX_INSTUMENT_SCOPE("Frame");
 
 			float DeltaTime = Time.GetDeltaTime();
 			Ticks.Tick(DeltaTime);

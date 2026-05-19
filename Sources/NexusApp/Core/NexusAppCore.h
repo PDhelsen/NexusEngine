@@ -1,9 +1,9 @@
 #pragma once
 
-#if NEXUS_APP_DLL
-	#define NEXUS_APP_API __declspec(dllexport)
+#if NX_APP_DLL
+	#define NX_APP_API __declspec(dllexport)
 #else
-	#define NEXUS_APP_API __declspec(dllimport)
+	#define NX_APP_API __declspec(dllimport)
 #endif
 
 #include "NexusFramework/Core/NexusFramework.h"

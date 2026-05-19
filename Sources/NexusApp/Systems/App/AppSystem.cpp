@@ -3,7 +3,7 @@
 
 namespace NxAp
 {
-	NEXUS_OBJECT_IMPLEMENTATION(AppSystem)
+	NX_OBJECT_IMPLEMENTATION(AppSystem)
 
 	AppSystem::AppSystem()
 		: InputSchema(), Window(NxEn::GUISystem::GetWindow())

@@ -57,29 +57,29 @@ workspace (Engine)
         toolset "msc"
 
     filter "toolset:msc"
-        defines { "NEXUS_MSVC" }
+        defines { "NX_MSVC" }
     	disablewarnings { "4244", "4267", "4251" }
 
     filter "platforms:Win64*"
-        defines { "NEXUS_WINDOWS" }
+        defines { "NX_WINDOWS" }
         architecture "x64"
 		system "windows"
 
     filter "platforms:*-Editor"
-        defines { "NEXUS_EDITOR" }
+        defines { "NX_EDITOR" }
 
     filter "configurations:Debug"
-        defines { "NEXUS_DEBUG" }
+        defines { "NX_DEBUG" }
         symbols "On"
         optimize "Off"
 
     filter "configurations:Release"
-        defines { "NEXUS_RELEASE" }
+        defines { "NX_RELEASE" }
         symbols "On"
         optimize "On"
 
     filter "configurations:Distrib"
-        defines { "NEXUS_DISTRIB" }
+        defines { "NX_DISTRIB" }
         symbols "Off"
         optimize "On"
 
@@ -142,7 +142,7 @@ project (Engine)
 
 	defines
 	{
-		"NEXUS_ENGINE_DLL",
+		"NX_ENGINE_DLL",
 		"GLFW_DLL"
 	}
 
@@ -192,7 +192,7 @@ project (App)
 
 	defines
 	{
-		"NEXUS_APP_DLL"
+		"NX_APP_DLL"
 	}
 
     postbuildcommands
@@ -241,7 +241,7 @@ project (Editor)
 
 	defines
 	{
-		"NEXUS_EDITOR_DLL"
+		"NX_EDITOR_DLL"
 	}
 
     postbuildcommands
@@ -347,7 +347,7 @@ project (Sandbox .. "-App")
 
 	defines
 	{
-		"NEXUS_SANDBOX_APP_DLL"
+		"NX_SANDBOX_APP_DLL"
 	}
 
     postbuildcommands
@@ -400,7 +400,7 @@ project (Sandbox .. "-Editor")
 
 	defines
 	{
-		"NEXUS_SANDBOX_EDITOR_DLL"
+		"NX_SANDBOX_EDITOR_DLL"
 	}
 
     postbuildcommands

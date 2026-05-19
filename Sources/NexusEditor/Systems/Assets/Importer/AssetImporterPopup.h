@@ -8,21 +8,21 @@ namespace NxEd
 	class AssetImporterPopup : public NxEn::GUI::Popup
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetImporterPopup)
+		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetImporterPopup)
 
-		NEXUS_EDITOR_API static void ShowWithPath(NxFr::StringView Path);
+		NX_EDITOR_API static void ShowWithPath(NxFr::StringView Path);
 
-		NEXUS_EDITOR_API AssetImporterPopup();
-		NEXUS_EDITOR_API virtual ~AssetImporterPopup();
+		NX_EDITOR_API AssetImporterPopup();
+		NX_EDITOR_API virtual ~AssetImporterPopup();
 
 	protected:
-		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnEnable() override;
-		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
+		NX_EDITOR_API void OnInitialize() override;
+		NX_EDITOR_API void OnEnable() override;
+		NX_EDITOR_API void OnGui(float TimeStep) override;
 
-		NEXUS_EDITOR_API void Pick();
-		NEXUS_EDITOR_API void SetPath(NxFr::StringView FilePath);
-		NEXUS_EDITOR_API void Import();
+		NX_EDITOR_API void Pick();
+		NX_EDITOR_API void SetPath(NxFr::StringView FilePath);
+		NX_EDITOR_API void Import();
 
 	private:
 		NxEn::GUI::Style Style;

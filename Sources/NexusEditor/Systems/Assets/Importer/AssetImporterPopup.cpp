@@ -13,7 +13,7 @@ namespace NxEd
 
 	const static float ButtonWidth = 100.0f;
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetImporterPopup)
+	NX_OBJECT_IMPLEMENTATION(AssetImporterPopup)
 
 	void AssetImporterPopup::ShowWithPath(NxFr::StringView Path)
 	{

@@ -10,23 +10,23 @@ namespace NxEn
 	{
 		namespace Utils
 		{
-			NEXUS_ENGINE_API NxFr::Vector2f Fill(NxFr::Vector2f Offset = NxFr::Vector2f::Zero, float Count = 0.0f, bool IncludePadding = true, bool Window = false);
-			NEXUS_ENGINE_API NxFr::Vector2f Center(float WidgetSize, float Count = 0.0f, bool IncludePadding = true);
-			NEXUS_ENGINE_API float Center(NxFr::StringView Text);
-			NEXUS_ENGINE_API NxFr::String GenerateId(NxFr::StringView Label = "", NxFr::StringView Id = "");
-			NEXUS_ENGINE_API bool IsPanelActive();
+			NX_ENGINE_API NxFr::Vector2f Fill(NxFr::Vector2f Offset = NxFr::Vector2f::Zero, float Count = 0.0f, bool IncludePadding = true, bool Window = false);
+			NX_ENGINE_API NxFr::Vector2f Center(float WidgetSize, float Count = 0.0f, bool IncludePadding = true);
+			NX_ENGINE_API float Center(NxFr::StringView Text);
+			NX_ENGINE_API NxFr::String GenerateId(NxFr::StringView Label = "", NxFr::StringView Id = "");
+			NX_ENGINE_API bool IsPanelActive();
 		}
 
 		namespace Draw
 		{
-			NEXUS_ENGINE_API void Label(NxFr::StringView Data, const Style* Visual);
-			NEXUS_ENGINE_API void Label(NxFr::StringView Data);
-			NEXUS_ENGINE_API void Text(NxFr::StringView Data, const Style* Visual);
-			NEXUS_ENGINE_API void Text(NxFr::StringView Data);
-			NEXUS_ENGINE_API bool Input(NxFr::String& Data, NxFr::StringView Id, const Style* Visual);
-			NEXUS_ENGINE_API bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag = 0);
-			NEXUS_ENGINE_API bool Button(NxFr::StringView Data, const Style* Visual);
-			NEXUS_ENGINE_API bool Button(NxFr::StringView Data, NxFr::Vector2f Size = NxFr::Vector2f::Zero);
+			NX_ENGINE_API void Label(NxFr::StringView Data, const Style* Visual);
+			NX_ENGINE_API void Label(NxFr::StringView Data);
+			NX_ENGINE_API void Text(NxFr::StringView Data, const Style* Visual);
+			NX_ENGINE_API void Text(NxFr::StringView Data);
+			NX_ENGINE_API bool Input(NxFr::String& Data, NxFr::StringView Id, const Style* Visual);
+			NX_ENGINE_API bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag = 0);
+			NX_ENGINE_API bool Button(NxFr::StringView Data, const Style* Visual);
+			NX_ENGINE_API bool Button(NxFr::StringView Data, NxFr::Vector2f Size = NxFr::Vector2f::Zero);
 		}
 
 		template<typename T>
@@ -98,7 +98,7 @@ namespace NxEn
 
 			static bool Field(NxFr::StringView& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NEXUS_ASSERT(false, Default, "Unsupported");
+				NX_ASSERT(false, Default, "Unsupported");
 				return false;
 			}
 		};
@@ -116,7 +116,7 @@ namespace NxEn
 
 			static bool Field(const char*& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NEXUS_ASSERT(false, Default, "Unsupported");
+				NX_ASSERT(false, Default, "Unsupported");
 				return false;
 			}
 		};

@@ -23,7 +23,7 @@ namespace NxEn
 		{
 			if (ErrorCode != 0)
 			{
-				NEXUS_LOG(Warning, Application, "Error Code was already set to %d", ErrorCode);
+				NX_LOG(Warning, Application, "Error Code was already set to %d", ErrorCode);
 				return;
 			}
 

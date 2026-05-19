@@ -19,7 +19,7 @@ namespace NxEd
 		return Type == NxEn::Scene::GetClassType() || Type == NxEn::Prefab::GetClassType();
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionCreate)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionCreate)
 
 	void AssetsBrowserActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>&Items)
 	{
@@ -43,7 +43,7 @@ namespace NxEd
 		});
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionRename)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionRename)
 
 	void AssetsBrowserActionRename::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -73,7 +73,7 @@ namespace NxEd
 		});
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionDuplicate)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionDuplicate)
 
 	void AssetsBrowserActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -86,7 +86,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionMove)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionMove)
 
 	void AssetsBrowserActionMove::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -98,7 +98,7 @@ namespace NxEd
 		AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
 		AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Items[0]);
 
-		NEXUS_ASSERT(Target->GetObjectType() == AssetsBrowserItemDirectory::GetClassType(), System, "Can only move AssetsBrowserItem to directory");
+		NX_ASSERT(Target->GetObjectType() == AssetsBrowserItemDirectory::GetClassType(), System, "Can only move AssetsBrowserItem to directory");
 
 		for (uint64 Index = 1; Index < Items.GetCount(); ++Index)
 		{
@@ -107,7 +107,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionDelete)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionDelete)
 
 	void AssetsBrowserActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -129,7 +129,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionImport)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionImport)
 
 	void AssetsBrowserActionImport::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -154,7 +154,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReimport)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionReimport)
 
 	void AssetsBrowserActionReimport::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -169,7 +169,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionLoad)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionLoad)
 
 	void AssetsBrowserActionLoad::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -185,7 +185,7 @@ namespace NxEd
 			NxFr::GUID Id = Item->GetItemId();
 			if (IsInstantiable(Assets, Id))
 			{
-				NEXUS_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
+				NX_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
 				continue;
 			}
 
@@ -193,7 +193,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReload)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionReload)
 
 	void AssetsBrowserActionReload::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -209,7 +209,7 @@ namespace NxEd
 			NxFr::GUID Id = Item->GetItemId();
 			if (IsInstantiable(Assets, Id))
 			{
-				NEXUS_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
+				NX_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
 				continue;
 			}
 
@@ -217,7 +217,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionInstantiate)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionInstantiate)
 
 	void AssetsBrowserActionInstantiate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -247,12 +247,12 @@ namespace NxEd
 			}
 			else
 			{
-				NEXUS_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
+				NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
 			}
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionView)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionView)
 
 	void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -292,7 +292,7 @@ namespace NxEd
 		Editor->GetStageManager().ShowStage(Target);
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserActionReferences)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionReferences)
 
 	void AssetsBrowserActionReferences::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{

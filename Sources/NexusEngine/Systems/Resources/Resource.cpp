@@ -10,7 +10,7 @@ namespace NxEn
 
 	Resource::~Resource()
 	{
-		NEXUS_ASSERT(!IsLoaded(), Default, "Resource %s was not unloaded", Path.C());
+		NX_ASSERT(!IsLoaded(), Default, "Resource %s was not unloaded", Path.C());
 	}
 
 	void Resource::Save(NxFr::StringView FilePath)

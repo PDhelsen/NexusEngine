@@ -9,7 +9,7 @@ namespace NxEn
 
 	static SettingVar<bool>* SettingConsoleAutoScroll = SettingVar<bool>::Create("Settings", "ConsoleAutoScroll", true);
 
-	NEXUS_OBJECT_IMPLEMENTATION(ConsolePanel)
+	NX_OBJECT_IMPLEMENTATION(ConsolePanel)
 
 	NxFr::StringId ConsolePanel::GetStyle(NxFr::LoggerVerbosity Verbosity)
 	{

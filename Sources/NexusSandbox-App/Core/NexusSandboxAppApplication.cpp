@@ -2,7 +2,7 @@
 
 namespace NxSA
 {
-	NEXUS_APPLICATION_IMPLEMENTATION(::NxSA::NexusSandboxAppApplication)
+	NX_APPLICATION_IMPLEMENTATION(::NxSA::NexusSandboxAppApplication)
 
 	NexusSandboxAppApplication::NexusSandboxAppApplication(const NxEn::Project& ProjectInfo)
 		: NexusAppApplication(ProjectInfo)

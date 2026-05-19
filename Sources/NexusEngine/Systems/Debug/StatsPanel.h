@@ -7,15 +7,15 @@ namespace NxEn
 	class StatsPanel : public GUI::Panel
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, StatsPanel)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, StatsPanel)
 
-		NEXUS_ENGINE_API StatsPanel();
-		NEXUS_ENGINE_API ~StatsPanel();
+		NX_ENGINE_API StatsPanel();
+		NX_ENGINE_API ~StatsPanel();
 
 	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnEnable() override;
-		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnEnable() override;
+		NX_ENGINE_API void OnGui(float TimeStep) override;
 
 		void DrawButtons();
 		void DrawFilter();

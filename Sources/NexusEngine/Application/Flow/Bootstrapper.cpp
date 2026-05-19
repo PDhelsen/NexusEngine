@@ -53,7 +53,7 @@ namespace NxEn
 	{
 		if (GetStepsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Application, "Bootstrap - There is no steps to execute");
+			NX_LOG(Warning, Application, "Bootstrap - There is no steps to execute");
 			return;
 		}
 
@@ -65,7 +65,7 @@ namespace NxEn
 				continue;
 			}
 
-			NEXUS_LOG(Info, Application, "Bootstrap - Steps: %s", Info.Tag.C());
+			NX_LOG(Info, Application, "Bootstrap - Steps: %s", Info.Tag.C());
 			Info.Callback.Invoke();
 		}
 	}
@@ -74,7 +74,7 @@ namespace NxEn
 	{
 		if (GetSystemsCount() == 0)
 		{
-			NEXUS_LOG(Warning, Application, "Bootstrap - There is no systems to execute");
+			NX_LOG(Warning, Application, "Bootstrap - There is no systems to execute");
 			return;
 		}
 
@@ -83,7 +83,7 @@ namespace NxEn
 		for (uint64 Index = 0; Index < Instances.GetCount(); ++Index)
 		{
 			System* Instance = Instances[Index];
-			NEXUS_LOG(Info, Application, "Bootstrap - Systems: %s", Instance->GetObjectType().C());
+			NX_LOG(Info, Application, "Bootstrap - Systems: %s", Instance->GetObjectType().C());
 			if (Boot)
 			{
 				Instance->Initialize();

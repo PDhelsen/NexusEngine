@@ -67,7 +67,7 @@ namespace NxEd
 		}
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(ViewerContextText)
+	NX_OBJECT_IMPLEMENTATION(ViewerContextText)
 
 	ViewerContextText::ViewerContextText()
 		: Mode(), Target()
@@ -107,7 +107,7 @@ namespace NxEd
 		{
 			Mode = ViewContextMode::Invalid;
 
-			NEXUS_LOG(Error, System, "Unsupported type for ViewerContextText")
+			NX_LOG(Error, System, "Unsupported type for ViewerContextText")
 		}
 	}
 

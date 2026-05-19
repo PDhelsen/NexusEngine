@@ -7,8 +7,8 @@ namespace NxFr
 {
 	namespace StatsHeader
 	{
-		NEXUS_ENGINE_API extern const NxFr::StringId ResourcesTrackedId;
-		NEXUS_ENGINE_API extern const NxFr::StringId ResourcesLoadedId;
+		NX_ENGINE_API extern const NxFr::StringId ResourcesTrackedId;
+		NX_ENGINE_API extern const NxFr::StringId ResourcesLoadedId;
 	}
 }
 
@@ -17,23 +17,23 @@ namespace NxEn
 	class ResourcesSystem : public System
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, ResourcesSystem)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, ResourcesSystem)
 
 		template<typename T> T* Load(NxFr::StringView Path);
-		NEXUS_ENGINE_API void Unload(NxFr::StringView Path);
-		NEXUS_ENGINE_API void UnloadAll();
+		NX_ENGINE_API void Unload(NxFr::StringView Path);
+		NX_ENGINE_API void UnloadAll();
 		template<typename T> T* Create(NxFr::StringView Path);
-		NEXUS_ENGINE_API void Save(NxFr::StringView Path);
-		NEXUS_ENGINE_API void SaveAll();
-		NEXUS_ENGINE_API void Move(NxFr::StringView Path, NxFr::StringView Target);
-		NEXUS_ENGINE_API void Delete(NxFr::StringView Path);
+		NX_ENGINE_API void Save(NxFr::StringView Path);
+		NX_ENGINE_API void SaveAll();
+		NX_ENGINE_API void Move(NxFr::StringView Path, NxFr::StringView Target);
+		NX_ENGINE_API void Delete(NxFr::StringView Path);
 
 	private:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
-		NEXUS_ENGINE_API NxFr::String GetResourceFilePath(NxFr::StringView Path);
-		NEXUS_ENGINE_API Resource* GetResource(NxFr::StringView Path);
+		NX_ENGINE_API NxFr::String GetResourceFilePath(NxFr::StringView Path);
+		NX_ENGINE_API Resource* GetResource(NxFr::StringView Path);
 
 	private:
 		NxFr::Dictionary<NxFr::String, Resource*> Resources;
@@ -48,7 +48,7 @@ namespace NxEn
 
 		if (Instance != nullptr)
 		{
-			NEXUS_LOG(Warning, Default, "Resources %s is already tracked", Path.C());
+			NX_LOG(Warning, Default, "Resources %s is already tracked", Path.C());
 			return nullptr;
 		}
 

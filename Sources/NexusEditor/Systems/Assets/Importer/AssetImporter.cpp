@@ -64,9 +64,9 @@ namespace NxEd
 		Metadata = Exist ? &Assets->GetMetadata(Id) : nullptr;
 		Type = Exist ? Metadata->GetType() : Type.GetId() != 0 ? Type : GetType(Extension);
 
-		NEXUS_ASSERT(!(!Exist && Type.GetId() == 0), Default, "AssetImporter needs a Type to import a file");
-		NEXUS_ASSERT(!(!Exist && (ContentPath.IsEmpty() || !NxFr::Path::HasExtension(ContentPath) || NxFr::Path::GetExtension(ContentPath) == NxEn::AssetMetadata::AssetExtension)), Default, "AssetImporter needs a file path with an extension different to the asset extension to import a file");
-		NEXUS_ASSERT(!(Exist && Id == 0), Default, "AssetImporter needs an Id to reimport an asset");
+		NX_ASSERT(!(!Exist && Type.GetId() == 0), Default, "AssetImporter needs a Type to import a file");
+		NX_ASSERT(!(!Exist && (ContentPath.IsEmpty() || !NxFr::Path::HasExtension(ContentPath) || NxFr::Path::GetExtension(ContentPath) == NxEn::AssetMetadata::AssetExtension)), Default, "AssetImporter needs a file path with an extension different to the asset extension to import a file");
+		NX_ASSERT(!(Exist && Id == 0), Default, "AssetImporter needs an Id to reimport an asset");
 
 		AssetImporter* Importer = GetImporter(Type);
 		YAML::Node Node = Exist ? Assets->GetImportData(Id) : YAML::Node();
@@ -76,7 +76,7 @@ namespace NxEd
 		}
 		else
 		{
-			NEXUS_LOG(Warning, System, "There is no importer linked to this type %s", Type.C());
+			NX_LOG(Warning, System, "There is no importer linked to this type %s", Type.C());
 		}
 
 		Instance = Exist ? Assets->Reimport(Id, Node) : Assets->Import(Type, Node, Path, Extension);

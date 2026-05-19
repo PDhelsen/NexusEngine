@@ -14,7 +14,7 @@ namespace NxEn
 	class WorldSystem : public System
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, WorldSystem)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, WorldSystem)
 
 		inline static const NxFr::StringId DummyId = "Dummy"_Sid;
 		inline static const NxFr::StringId WorldId = "World"_Sid;
@@ -22,38 +22,38 @@ namespace NxEn
 		inline static const NxFr::StringId AppendedId = "Added"_Sid;
 		inline static const NxFr::StringId RemovedId = "Removed"_Sid;
 
-		NEXUS_ENGINE_API WorldSystem();
-		NEXUS_ENGINE_API ~WorldSystem();
+		NX_ENGINE_API WorldSystem();
+		NX_ENGINE_API ~WorldSystem();
 
-		NEXUS_ENGINE_API World* CreateWorld(NxFr::StringId Name, bool References = false);
-		NEXUS_ENGINE_API World* GetWorld(NxFr::GUID WorldId = WorldId);
-		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetWorlds();
-		NEXUS_ENGINE_API void DestroyWorld(NxFr::GUID WorldId);
+		NX_ENGINE_API World* CreateWorld(NxFr::StringId Name, bool References = false);
+		NX_ENGINE_API World* GetWorld(NxFr::GUID WorldId = WorldId);
+		NX_ENGINE_API NxFr::Array<NxFr::GUID> GetWorlds();
+		NX_ENGINE_API void DestroyWorld(NxFr::GUID WorldId);
 
-		NEXUS_ENGINE_API Scene* CreateScene(NxFr::StringView Path, NxFr::GUID WorldId = WorldId);
-		NEXUS_ENGINE_API void SaveScene(NxFr::GUID SceneId);
-		NEXUS_ENGINE_API void SaveScenes();
-		NEXUS_ENGINE_API Scene* LoadScene(NxFr::GUID SceneId, NxFr::GUID WorldId = WorldId);
-		NEXUS_ENGINE_API Scene* LoadSceneSingle(NxFr::GUID SceneId, NxFr::GUID WorldId = WorldId);
-		NEXUS_ENGINE_API void UnloadScene(NxFr::GUID SceneId);
-		NEXUS_ENGINE_API NxFr::GUID IsSceneLoaded(NxFr::GUID SceneId);
-		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetScenes(NxFr::GUID WorldId = 0);
+		NX_ENGINE_API Scene* CreateScene(NxFr::StringView Path, NxFr::GUID WorldId = WorldId);
+		NX_ENGINE_API void SaveScene(NxFr::GUID SceneId);
+		NX_ENGINE_API void SaveScenes();
+		NX_ENGINE_API Scene* LoadScene(NxFr::GUID SceneId, NxFr::GUID WorldId = WorldId);
+		NX_ENGINE_API Scene* LoadSceneSingle(NxFr::GUID SceneId, NxFr::GUID WorldId = WorldId);
+		NX_ENGINE_API void UnloadScene(NxFr::GUID SceneId);
+		NX_ENGINE_API NxFr::GUID IsSceneLoaded(NxFr::GUID SceneId);
+		NX_ENGINE_API NxFr::Array<NxFr::GUID> GetScenes(NxFr::GUID WorldId = 0);
 
-		NEXUS_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
-		NEXUS_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);
-		NEXUS_ENGINE_API Prefab* LoadPrefab(NxFr::GUID PrefabId);
-		NEXUS_ENGINE_API void UnloadPrefab(NxFr::GUID PrefabId);
-		NEXUS_ENGINE_API void UnpackPrefab(NxFr::Handle<GameObject> Target);
-		NEXUS_ENGINE_API NxFr::Handle<GameObject> InstantiatePrefab(Prefab* Instance, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = WorldId);
+		NX_ENGINE_API Prefab* CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path);
+		NX_ENGINE_API void SavePrefab(NxFr::Handle<GameObject> Target);
+		NX_ENGINE_API Prefab* LoadPrefab(NxFr::GUID PrefabId);
+		NX_ENGINE_API void UnloadPrefab(NxFr::GUID PrefabId);
+		NX_ENGINE_API void UnpackPrefab(NxFr::Handle<GameObject> Target);
+		NX_ENGINE_API NxFr::Handle<GameObject> InstantiatePrefab(Prefab* Instance, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = WorldId);
 
-		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldEvent() { return OnWorldEvent; }
-		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnSceneEvent() { return OnSceneEvent; }
-		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnGameObjectEvent() { return OnGameObjectEvent; }
+		NX_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldEvent() { return OnWorldEvent; }
+		NX_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnSceneEvent() { return OnSceneEvent; }
+		NX_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnGameObjectEvent() { return OnGameObjectEvent; }
 
 	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
-		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnShutdown() override;
+		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
 	private:
 		NxFr::Event<NxFr::StringId, NxFr::GUID> OnWorldEvent;

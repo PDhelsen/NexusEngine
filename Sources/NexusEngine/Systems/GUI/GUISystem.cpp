@@ -64,7 +64,7 @@ namespace NxEn
 		return NxFr::StringUtility::Split(Id, "/");
 	}
 
-	NEXUS_OBJECT_IMPLEMENTATION(GUISystem)
+	NX_OBJECT_IMPLEMENTATION(GUISystem)
 
 	GUI::Window* GUISystem::GetWindow()
 	{
@@ -114,13 +114,13 @@ namespace NxEn
 	void GUISystem::RegisterElement(GUI::Element* Element)
 	{
 		Elements.Append(Element);
-		NEXUS_LOG(Info, System, "Register GUI element: %s", Element->GetName().C());
+		NX_LOG(Info, System, "Register GUI element: %s", Element->GetName().C());
 	}
 
 	void GUISystem::UnregisterElement(GUI::Element* Element)
 	{
 		Elements.Remove(Element);
-		NEXUS_LOG(Info, System, "Unegister GUI element: %s", Element->GetName().C());
+		NX_LOG(Info, System, "Unegister GUI element: %s", Element->GetName().C());
 	}
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
@@ -137,7 +137,7 @@ namespace NxEn
 			LoadLayoutNexus(Path);
 		}
 
-		NEXUS_LOG(Info, System, "GUI layout %s loaded", Name.C());
+		NX_LOG(Info, System, "GUI layout %s loaded", Name.C());
 	}
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
@@ -152,7 +152,7 @@ namespace NxEn
 		}
 		SaveLayoutNexus(Path);
 
-		NEXUS_LOG(Info, System, "GUI layout %s saved", Name.C());
+		NX_LOG(Info, System, "GUI layout %s saved", Name.C());
 	}
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
@@ -168,7 +168,7 @@ namespace NxEn
 		LoadThemeImGui(Data["ImGui"]);
 		LoadThemeNexus(Data["Nexus"]);
 
-		NEXUS_LOG(Info, System, "GUI style %s loaded", Name.C());
+		NX_LOG(Info, System, "GUI style %s loaded", Name.C());
 	}
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
@@ -185,7 +185,7 @@ namespace NxEn
 
 		NxFr::Yaml::SerializeFile(Data, Path);
 
-		NEXUS_LOG(Info, System, "GUI style %s saved", Name.C());
+		NX_LOG(Info, System, "GUI style %s saved", Name.C());
 	}
 
 	GUI::Panel* GUISystem::GetActivePanel() const
@@ -202,7 +202,7 @@ namespace NxEn
 		System::OnInitialize();
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, Integer, Set);
 
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder)).Create();
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Saved, Folder)).Create();
@@ -230,7 +230,7 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		NEXUS_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
+		NX_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
 
 		Imgui::Tick();
 
@@ -312,14 +312,14 @@ namespace NxEn
 
 	void GUISystem::LoadLayoutImGui(const NxFr::String& Path) const
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		ImGui::LoadIniSettingsFromDisk(Path.C());
 	}
 
 	void GUISystem::LoadLayoutNexus(const NxFr::String& Path) const
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Read, false);
@@ -341,14 +341,14 @@ namespace NxEn
 
 	void GUISystem::SaveLayoutImGui(const NxFr::String& Path) const
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		ImGui::SaveIniSettingsToDisk(Path.C());
 	}
 
 	void GUISystem::SaveLayoutNexus(const NxFr::String& Path) const
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Write, true);
@@ -367,7 +367,7 @@ namespace NxEn
 
 	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();
 
@@ -500,7 +500,7 @@ namespace NxEn
 
 	void GUISystem::LoadThemeNexus(const YAML::Node& Node)
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		const YAML::Node& Vars = Node["Vars"];
 		for (YAML::const_iterator It = Vars.begin(); It != Vars.end(); ++It)
@@ -541,7 +541,7 @@ namespace NxEn
 
 	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();
 
@@ -680,7 +680,7 @@ namespace NxEn
 
 	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter) const
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		Emitter << YAML::BeginMap;
 

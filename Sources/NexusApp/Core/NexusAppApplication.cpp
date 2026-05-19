@@ -4,7 +4,7 @@
 
 namespace NxAp
 {
-	NEXUS_APPLICATION_IMPLEMENTATION(::NxAp::NexusAppApplication)
+	NX_APPLICATION_IMPLEMENTATION(::NxAp::NexusAppApplication)
 
 	NexusAppApplication::NexusAppApplication(const NxEn::Project& ProjectInfo)
 		: NexusEngineApplication(ProjectInfo)

@@ -2,11 +2,11 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 
-#define NEXUS_OBJECT_DECLARATION(Dll, Type)\
+#define NX_OBJECT_DECLARATION(Dll, Type)\
 Dll virtual NxFr::StringId GetObjectType() const;\
 Dll static NxFr::StringId GetClassType();
 
-#define NEXUS_OBJECT_IMPLEMENTATION(Type) \
+#define NX_OBJECT_IMPLEMENTATION(Type) \
 NxFr::StringId Type::GetObjectType() const \
 {\
 	return Type::GetClassType();\
@@ -35,14 +35,14 @@ namespace NxEn
 	};
 }
 
-NEXUS_FLAG(NxEn::ObjectFlags, uint8)
+NX_FLAG(NxEn::ObjectFlags, uint8)
 
 namespace NxEn
 {
 	class Object
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, Object)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, Object)
 
 		template<typename T>
 		static T* Create(bool Enable = true)
@@ -67,52 +67,52 @@ namespace NxEn
 			return nullptr;
 		}
 
-		NEXUS_ENGINE_API Object();
-		NEXUS_ENGINE_API virtual ~Object();
+		NX_ENGINE_API Object();
+		NX_ENGINE_API virtual ~Object();
 
-		NEXUS_ENGINE_API bool operator==(const Object& Other) const;
-		NEXUS_ENGINE_API bool operator!=(const Object& Other) const;
+		NX_ENGINE_API bool operator==(const Object& Other) const;
+		NX_ENGINE_API bool operator!=(const Object& Other) const;
 
-		NEXUS_ENGINE_API virtual void Initialize();
-		NEXUS_ENGINE_API virtual void Shutdown();
-		NEXUS_ENGINE_API virtual void Tick(float TimeStep = 0.0f);
-		NEXUS_ENGINE_API virtual void DrawGui(float TimeStep = 0.0f);
+		NX_ENGINE_API virtual void Initialize();
+		NX_ENGINE_API virtual void Shutdown();
+		NX_ENGINE_API virtual void Tick(float TimeStep = 0.0f);
+		NX_ENGINE_API virtual void DrawGui(float TimeStep = 0.0f);
 
-		NEXUS_ENGINE_API virtual bool IsInitialized() const;
-		NEXUS_ENGINE_API virtual bool IsEnabled() const;
-		NEXUS_ENGINE_API virtual void SetEnabled(bool Enabled);
-		NEXUS_ENGINE_API virtual bool IsTickable() const;
-		NEXUS_ENGINE_API virtual void SetTickable(bool Tickable);
-		NEXUS_ENGINE_API virtual bool IsTicking() const;
+		NX_ENGINE_API virtual bool IsInitialized() const;
+		NX_ENGINE_API virtual bool IsEnabled() const;
+		NX_ENGINE_API virtual void SetEnabled(bool Enabled);
+		NX_ENGINE_API virtual bool IsTickable() const;
+		NX_ENGINE_API virtual void SetTickable(bool Tickable);
+		NX_ENGINE_API virtual bool IsTicking() const;
 
-		NEXUS_ENGINE_API virtual Object* Clone() const;
-		NEXUS_ENGINE_API virtual void Clone(Object* Other) const;
-		NEXUS_ENGINE_API virtual void Clone(const Object* Other);
-		NEXUS_ENGINE_API virtual YAML::Node Save();
-		NEXUS_ENGINE_API virtual void Load(const YAML::Node& Node);
-		NEXUS_ENGINE_API virtual void Unload();
-		NEXUS_ENGINE_API virtual NxFr::Array<NxFr::GUID> GetDependencies();
+		NX_ENGINE_API virtual Object* Clone() const;
+		NX_ENGINE_API virtual void Clone(Object* Other) const;
+		NX_ENGINE_API virtual void Clone(const Object* Other);
+		NX_ENGINE_API virtual YAML::Node Save();
+		NX_ENGINE_API virtual void Load(const YAML::Node& Node);
+		NX_ENGINE_API virtual void Unload();
+		NX_ENGINE_API virtual NxFr::Array<NxFr::GUID> GetDependencies();
 
-		NEXUS_ENGINE_API virtual NxFr::StringView GetName() const;
-		NEXUS_ENGINE_API virtual NxFr::GUID GetId() const;
-
-	protected:
-		NEXUS_ENGINE_API virtual void OnInitialize();
-		NEXUS_ENGINE_API virtual void OnShutdown();
-		NEXUS_ENGINE_API virtual void OnEnable();
-		NEXUS_ENGINE_API virtual void OnDisable();
-		NEXUS_ENGINE_API virtual void OnTick(float TimeStep = 0.0f);
-		NEXUS_ENGINE_API virtual void OnGui(float TimeStep = 0.0f);
-
-		NEXUS_ENGINE_API virtual void OnClone(const Object& Other);
-		NEXUS_ENGINE_API virtual void OnSave(YAML::Node& Node);
-		NEXUS_ENGINE_API virtual void OnLoad(const YAML::Node& Node);
-		NEXUS_ENGINE_API virtual void OnUnload();
-		NEXUS_ENGINE_API virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);
+		NX_ENGINE_API virtual NxFr::StringView GetName() const;
+		NX_ENGINE_API virtual NxFr::GUID GetId() const;
 
 	protected:
-		NEXUS_ENGINE_API NEXUS_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;
-		NEXUS_ENGINE_API NEXUS_FORCE_INLINE void SetFlag(ObjectFlags Flag, bool Value);
+		NX_ENGINE_API virtual void OnInitialize();
+		NX_ENGINE_API virtual void OnShutdown();
+		NX_ENGINE_API virtual void OnEnable();
+		NX_ENGINE_API virtual void OnDisable();
+		NX_ENGINE_API virtual void OnTick(float TimeStep = 0.0f);
+		NX_ENGINE_API virtual void OnGui(float TimeStep = 0.0f);
+
+		NX_ENGINE_API virtual void OnClone(const Object& Other);
+		NX_ENGINE_API virtual void OnSave(YAML::Node& Node);
+		NX_ENGINE_API virtual void OnLoad(const YAML::Node& Node);
+		NX_ENGINE_API virtual void OnUnload();
+		NX_ENGINE_API virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);
+
+	protected:
+		NX_ENGINE_API NX_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;
+		NX_ENGINE_API NX_FORCE_INLINE void SetFlag(ObjectFlags Flag, bool Value);
 
 	private:
 		ObjectFlags Flags;

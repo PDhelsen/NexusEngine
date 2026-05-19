@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(System)
+	NX_OBJECT_IMPLEMENTATION(System)
 
 	System::System()
 	{

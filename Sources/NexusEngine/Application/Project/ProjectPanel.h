@@ -9,15 +9,15 @@ namespace NxEn
 	class ProjectPanel : public GUI::Panel
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, ProjectPanel)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, ProjectPanel)
 
-		NEXUS_ENGINE_API ProjectPanel();
-		NEXUS_ENGINE_API ~ProjectPanel();
+		NX_ENGINE_API ProjectPanel();
+		NX_ENGINE_API ~ProjectPanel();
 
 	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnEnable() override;
-		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnEnable() override;
+		NX_ENGINE_API void OnGui(float TimeStep) override;
 
 	private:
 		GUI::Style Style;

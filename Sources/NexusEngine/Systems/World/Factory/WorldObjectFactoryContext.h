@@ -8,10 +8,10 @@ namespace NxEn
 	struct WorldObjectFactoryContext
 	{
 	public:
-		NEXUS_ENGINE_API static WorldObjectFactory* GetFactory();
+		NX_ENGINE_API static WorldObjectFactory* GetFactory();
 
-		NEXUS_ENGINE_API WorldObjectFactoryContext(World* Instance);
-		NEXUS_ENGINE_API ~WorldObjectFactoryContext();
+		NX_ENGINE_API WorldObjectFactoryContext(World* Instance);
+		NX_ENGINE_API ~WorldObjectFactoryContext();
 	};
 }
 

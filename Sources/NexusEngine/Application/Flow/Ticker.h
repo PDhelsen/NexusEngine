@@ -59,22 +59,22 @@ namespace NxEn
 		inline static const float TwicePerSecond = 2.0f;
 		inline static const float OncePerSecond = 1.0f;
 
-		NEXUS_ENGINE_API Ticker();
-		NEXUS_ENGINE_API ~Ticker();
+		NX_ENGINE_API Ticker();
+		NX_ENGINE_API ~Ticker();
 
-		NEXUS_ENGINE_API void AppendTickCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
-		NEXUS_ENGINE_API void AppendTickOnceCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
-		NEXUS_ENGINE_API void RemoveTickCallback(TickBucket Bucket, const Signature& Callback);
+		NX_ENGINE_API void AppendTickCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
+		NX_ENGINE_API void AppendTickOnceCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
+		NX_ENGINE_API void RemoveTickCallback(TickBucket Bucket, const Signature& Callback);
 
 		template<typename T>
 		Ticker& AppendSystem(TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false) { return AppendSystem(T::GetClassType(), Bucket, TickRate, FixedTimeStep); }
 		template<typename T, typename D>
 		Ticker& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
 
-		NEXUS_ENGINE_API Ticker& AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false);
-		NEXUS_ENGINE_API Ticker& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
+		NX_ENGINE_API Ticker& AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false);
+		NX_ENGINE_API Ticker& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
 
-		NEXUS_ENGINE_API void SetTickRate(NxFr::StringId Type, float TickRate, bool FixedTimeStep = false);
+		NX_ENGINE_API void SetTickRate(NxFr::StringId Type, float TickRate, bool FixedTimeStep = false);
 
 		uint64 GetSystemsCount() const { return Systems.GetCount(); }
 

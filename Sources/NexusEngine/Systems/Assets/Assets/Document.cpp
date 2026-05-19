@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_ASSET_IMPLEMENTATION(Document)
+	NX_ASSET_IMPLEMENTATION(Document)
 
 	void Document::OnGui(float TimeStep)
 	{

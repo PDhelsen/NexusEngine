@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_ASSET_IMPLEMENTATION(Prefab)
+	NX_ASSET_IMPLEMENTATION(Prefab)
 
 	NxFr::Handle<GameObject> Prefab::GetRoot() const
 	{

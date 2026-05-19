@@ -31,7 +31,7 @@ namespace NxEn
 
 	void* Allocator::Allocate(uint64 Size, uint64 Alignement)
 	{
-		NEXUS_ASSERT(Size < MemorySystem::GetAllocatorSize(Type) || Type == AllocatorType::Raw, Default, "Allocation size requested overflow allocator size");
+		NX_ASSERT(Size < MemorySystem::GetAllocatorSize(Type) || Type == AllocatorType::Raw, Default, "Allocation size requested overflow allocator size");
 
 		NxFr::Allocator* Alloc = GetAllocator(Size, Alignement);
 
@@ -53,10 +53,10 @@ namespace NxEn
 			return nullptr;
 		}
 
-		NEXUS_ASSERT(Size < MemorySystem::GetAllocatorSize(Type), Default, "Allocation size requested overflow allocator size");
+		NX_ASSERT(Size < MemorySystem::GetAllocatorSize(Type), Default, "Allocation size requested overflow allocator size");
 
 		NxFr::Allocator* Alloc = GetAllocator(Pointer);
-		NEXUS_ASSERT(Alloc, System, "Memory was not allocated from this allocator");
+		NX_ASSERT(Alloc, System, "Memory was not allocated from this allocator");
 
 		if (Alloc->CanAllocate(Size, Alignement))
 		{
@@ -92,7 +92,7 @@ namespace NxEn
 		}
 
 		NxFr::Allocator* Alloc = GetAllocator(Pointer);
-		NEXUS_ASSERT(Alloc, System, "Memory was not allocated from this allocator");
+		NX_ASSERT(Alloc, System, "Memory was not allocated from this allocator");
 
 		uint64 Marker = Alloc->UsedAmount();
 

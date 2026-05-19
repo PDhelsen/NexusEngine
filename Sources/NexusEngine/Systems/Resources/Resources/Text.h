@@ -7,15 +7,15 @@ namespace NxEn
 	class Text : public Resource
 	{
 	public:
-		NEXUS_ENGINE_API Text(NxFr::StringView Path);
-		NEXUS_ENGINE_API ~Text();
+		NX_ENGINE_API Text(NxFr::StringView Path);
+		NX_ENGINE_API ~Text();
 
-		NEXUS_ENGINE_API NxFr::String& GetText() { return Data; }
+		NX_ENGINE_API NxFr::String& GetText() { return Data; }
 
 	protected:
-		NEXUS_ENGINE_API void Save(NxFr::StringView FilePath) override;
-		NEXUS_ENGINE_API void Load(NxFr::StringView FilePath) override;
-		NEXUS_ENGINE_API void Unload() override;
+		NX_ENGINE_API void Save(NxFr::StringView FilePath) override;
+		NX_ENGINE_API void Load(NxFr::StringView FilePath) override;
+		NX_ENGINE_API void Unload() override;
 
 	private:
 		NxFr::String Data;

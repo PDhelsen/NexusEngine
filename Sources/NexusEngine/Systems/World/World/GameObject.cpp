@@ -9,7 +9,7 @@ namespace NxEn
 	static const NxFr::String YamlId = "Id";
 	static const NxFr::String YamlReference = "Reference";
 
-	NEXUS_OBJECT_IMPLEMENTATION(GameObject)
+	NX_OBJECT_IMPLEMENTATION(GameObject)
 
 	GameObject::GameObject()
 		: WorldId(0), GameObjectId(0), ReferenceId(0),
@@ -469,7 +469,7 @@ namespace NxEn
 
 		if (!Target || Index > 0)
 		{
-			NEXUS_LOG(Error, System, "Failed to find requested child on GameObject %s", Name.C());
+			NX_LOG(Error, System, "Failed to find requested child on GameObject %s", Name.C());
 			return NxFr::Handle<GameObject>();
 		}
 
@@ -488,7 +488,7 @@ namespace NxEn
 
 		if (!Target || Index > 0)
 		{
-			NEXUS_LOG(Error, System, "Failed to find requested child on GameObject %s", Name.C());
+			NX_LOG(Error, System, "Failed to find requested child on GameObject %s", Name.C());
 			return NxFr::Handle<GameObject>();
 		}
 
@@ -743,7 +743,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
 
 		Name = Node["Name"].as<NxFr::String>();
-		NEXUS_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
+		NX_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		ReferenceId = Node["Reference"].as<NxFr::GUID>();
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());

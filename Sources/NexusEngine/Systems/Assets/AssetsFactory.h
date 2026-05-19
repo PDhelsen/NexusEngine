@@ -34,7 +34,7 @@ namespace NxEn
 			Asset* Create() const override { return new T(); };
 		};
 
-		NEXUS_ENGINE_API static Factory* GetFactory(NxFr::StringId Id);
-		NEXUS_ENGINE_API static void SetFactory(NxFr::StringId Id, Factory* Instance);
+		NX_ENGINE_API static Factory* GetFactory(NxFr::StringId Id);
+		NX_ENGINE_API static void SetFactory(NxFr::StringId Id, Factory* Instance);
 	};
 }

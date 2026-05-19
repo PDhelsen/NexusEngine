@@ -1,12 +1,12 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Project/Project.h"
 
-#define NEXUS_PROJECT_DLL "NexusProject-"
+#define NX_PROJECT_DLL "NexusProject-"
 
-#if NEXUS_EDITOR
-#define NEXUS_SUFFIX "_editor"
+#if NX_EDITOR
+#define NX_SUFFIX "_editor"
 #else
-#define NEXUS_SUFFIX "_app"
+#define NX_SUFFIX "_app"
 #endif
 
 namespace NxEn
@@ -81,15 +81,15 @@ namespace NxEn
 		NxFr::String Path;
 		if (!Config.IsEmpty())
 		{
-			Path = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, SubFolder, Config + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
+			Path = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, SubFolder, Config + (Suffix ? NX_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 		}
 		else
 		{
-			Path = NxFr::Path::Combine(NxFr::Globals::Paths::Saved, SubFolder, Saved + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
+			Path = NxFr::Path::Combine(NxFr::Globals::Paths::Saved, SubFolder, Saved + (Suffix ? NX_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 
 			if (!NxFr::Path::Exist(Path) && !Template.IsEmpty())
 			{
-				NxFr::String Target = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, SubFolder, Template + (Suffix ? NEXUS_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
+				NxFr::String Target = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, SubFolder, Template + (Suffix ? NX_SUFFIX : "") + NxFr::Path::SeparatorExtension + Extension);
 				if (Extension.IsEmpty())
 				{
 					NxFr::Directory(Target).Copy(Path);
@@ -161,6 +161,6 @@ namespace NxEn
 
 	NxFr::String Project::ComputeDllName()
 	{
-		return NxFr::StringView(NEXUS_PROJECT_DLL) + NxFr::StringUtility::ToString(Mode) + NxFr::StringView(".dll");
+		return NxFr::StringView(NX_PROJECT_DLL) + NxFr::StringUtility::ToString(Mode) + NxFr::StringView(".dll");
 	}
 }

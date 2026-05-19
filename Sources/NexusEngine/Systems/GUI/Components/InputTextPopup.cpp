@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(InputTextPopup)
+	NX_OBJECT_IMPLEMENTATION(InputTextPopup)
 
 	InputTextPopup* InputTextPopup::GetInstance()
 	{

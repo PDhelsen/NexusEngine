@@ -31,7 +31,7 @@ namespace NxEn
 		Application::GetSystem<SettingsSystem>()->ApplySettings();
 	}));
 
-	NEXUS_OBJECT_IMPLEMENTATION(SettingsSystem)
+	NX_OBJECT_IMPLEMENTATION(SettingsSystem)
 
 	Setting* SettingsSystem::GetSetting(NxFr::StringView Id)
 	{
@@ -76,7 +76,7 @@ namespace NxEn
 			}
 		}
 
-		NEXUS_LOG(Info, System, "Settings loaded from: %s", Path.C());
+		NX_LOG(Info, System, "Settings loaded from: %s", Path.C());
 	}
 
 	void SettingsSystem::SaveSettings() const
@@ -97,13 +97,13 @@ namespace NxEn
 			NxFr::Yaml::SerializeFile(Root, PagePath);
 		}
 
-		NEXUS_LOG(Info, System, "Settings saved to : %s", Path.C());
+		NX_LOG(Info, System, "Settings saved to : %s", Path.C());
 	}
 
 	void SettingsSystem::ApplySettings()
 	{
 		OnChange.Invoke();
-		NEXUS_LOG(Info, System, "Settings applied");
+		NX_LOG(Info, System, "Settings applied");
 	}
 
 	NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> SettingsSystem::GetAllSettings() const

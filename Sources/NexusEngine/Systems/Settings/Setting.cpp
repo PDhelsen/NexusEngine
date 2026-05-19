@@ -5,34 +5,34 @@ namespace NxEn
 {
 	void Setting::Set(NxFr::StringView Value)
 	{
-		NEXUS_ASSERT(false, Default, "Not implemented");
+		NX_ASSERT(false, Default, "Not implemented");
 	}
 
 	void Setting::Set(uint64 Index, NxFr::StringView Value)
 	{
-		NEXUS_ASSERT(false, Default, "Not implemented");
+		NX_ASSERT(false, Default, "Not implemented");
 	}
 
 	void Setting::Set(NxFr::StringView Key, NxFr::StringView Value)
 	{
-		NEXUS_ASSERT(false, Default, "Not implemented");
+		NX_ASSERT(false, Default, "Not implemented");
 	}
 
 	NxFr::String Setting::Get()
 	{
-		NEXUS_ASSERT(false, Default, "Not implemented");
+		NX_ASSERT(false, Default, "Not implemented");
 		return NxFr::StringUtility::Empty;
 	}
 
 	NxFr::String Setting::Get(uint64 Index)
 	{
-		NEXUS_ASSERT(false, Default, "Not implemented");
+		NX_ASSERT(false, Default, "Not implemented");
 		return NxFr::StringUtility::Empty;
 	}
 
 	NxFr::String Setting::Get(NxFr::StringView Key)
 	{
-		NEXUS_ASSERT(false, Default, "Not implemented");
+		NX_ASSERT(false, Default, "Not implemented");
 		return NxFr::StringUtility::Empty;
 	}
 

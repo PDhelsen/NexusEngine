@@ -21,7 +21,7 @@ namespace NxEd
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Select(Item);
 	}));
 
-	NEXUS_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
+	NX_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
 
 	void AssetsBrowserPanel::Refresh()
 	{

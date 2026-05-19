@@ -11,23 +11,23 @@ namespace NxEd
 		friend class AssetsBrowserEditContext;
 
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, AssetsBrowserPanel)
+		NX_OBJECT_DECLARATION(NX_EDITOR_API, AssetsBrowserPanel)
 
-		NEXUS_EDITOR_API void Refresh() override;
+		NX_EDITOR_API void Refresh() override;
 
-		NEXUS_EDITOR_API void Select(NxFr::GUID Id);
-		NEXUS_EDITOR_API void Select(NxFr::StringView Path);
+		NX_EDITOR_API void Select(NxFr::GUID Id);
+		NX_EDITOR_API void Select(NxFr::StringView Path);
 
 	protected:
-		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnShutdown() override;
-		NEXUS_EDITOR_API void OnEnable() override;
-		NEXUS_EDITOR_API void OnDisable() override;
-		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
+		NX_EDITOR_API void OnInitialize() override;
+		NX_EDITOR_API void OnShutdown() override;
+		NX_EDITOR_API void OnEnable() override;
+		NX_EDITOR_API void OnDisable() override;
+		NX_EDITOR_API void OnGui(float TimeStep) override;
 
-		NEXUS_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
-		NEXUS_EDITOR_API void OnDestroyItem(NxEn::TreeItem* Item) override;
-		NEXUS_EDITOR_API void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
+		NX_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
+		NX_EDITOR_API void OnDestroyItem(NxEn::TreeItem* Item) override;
+		NX_EDITOR_API void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
 
 	private:
 		class EditSystem* Edit;

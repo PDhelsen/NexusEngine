@@ -13,7 +13,7 @@ namespace NxEn
 		Application::GetSystem<CommandsSystem>()->Execute("Application.Quit");
 	}), 2);
 
-	NEXUS_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
+	NX_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
 		: Application(ProjectInfo), InputSchema(), Headless(NxFr::Globals::Args->Has("Headless"))

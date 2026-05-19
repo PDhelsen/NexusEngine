@@ -9,17 +9,17 @@ namespace NxEn
 		friend class ResourcesSystem;
 
 	public:
-		NEXUS_ENGINE_API Resource(NxFr::StringView Path);
-		NEXUS_ENGINE_API virtual ~Resource();
+		NX_ENGINE_API Resource(NxFr::StringView Path);
+		NX_ENGINE_API virtual ~Resource();
 
-		NEXUS_ENGINE_API NxFr::StringView GetPath() const { return Path; }
-		NEXUS_ENGINE_API NxFr::StringView GetName() const { return NxFr::Path::GetName(Path); }
-		NEXUS_ENGINE_API bool IsLoaded() const { return Loaded; };
+		NX_ENGINE_API NxFr::StringView GetPath() const { return Path; }
+		NX_ENGINE_API NxFr::StringView GetName() const { return NxFr::Path::GetName(Path); }
+		NX_ENGINE_API bool IsLoaded() const { return Loaded; };
 
 	protected:
-		NEXUS_ENGINE_API virtual void Save(NxFr::StringView FilePath);
-		NEXUS_ENGINE_API virtual void Load(NxFr::StringView FilePath);
-		NEXUS_ENGINE_API virtual void Unload();
+		NX_ENGINE_API virtual void Save(NxFr::StringView FilePath);
+		NX_ENGINE_API virtual void Load(NxFr::StringView FilePath);
+		NX_ENGINE_API virtual void Unload();
 
 	private:
 		NxFr::String Path;

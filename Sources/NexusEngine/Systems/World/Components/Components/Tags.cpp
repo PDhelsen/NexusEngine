@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_COMPONENT_IMPLEMENTATION(Tags)
+	NX_COMPONENT_IMPLEMENTATION(Tags)
 
 	Tags::Tags()
 		: Items()

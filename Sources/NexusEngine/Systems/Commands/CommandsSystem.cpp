@@ -31,7 +31,7 @@ namespace NxEn
 		Application::GetSystem<CommandsSystem>()->File(Path);
 	}));
 
-	NEXUS_OBJECT_IMPLEMENTATION(CommandsSystem)
+	NX_OBJECT_IMPLEMENTATION(CommandsSystem)
 
 	Command* CommandsSystem::GetCommand(NxFr::StringId Id)
 	{
@@ -145,7 +145,7 @@ namespace NxEn
 
 	void CommandsSystem::Execute(const CommandInfo& Info)
 	{
-		NEXUS_INSTUMENT_SCOPE(Info.Id.C());
+		NX_INSTUMENT_SCOPE(Info.Id.C());
 
 		Current = &Info;
 
@@ -154,15 +154,15 @@ namespace NxEn
 
 		if (!IsValid)
 		{
-			NEXUS_LOG(Warning, System, "Invalid command: %s", Info.Id.C());
+			NX_LOG(Warning, System, "Invalid command: %s", Info.Id.C());
 		}
 		else if (!Info.Args.IsEmpty())
 		{
-			NEXUS_LOG(Info, Command, "%s: %s", Info.Id.C(), Info.Args.C());
+			NX_LOG(Info, Command, "%s: %s", Info.Id.C(), Info.Args.C());
 		}
 		else
 		{
-			NEXUS_LOG(Info, Command, "%s", Info.Id.C());
+			NX_LOG(Info, Command, "%s", Info.Id.C());
 		}
 
 		if (IsValid)
@@ -197,7 +197,7 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::StringId, Command*>& Commands = GetCommands();
 		for (auto& [Id, Cmd] : Commands)
 		{
-			NEXUS_LOG(Info, Default, "Command: %s - %s", Id.C(), Cmd->GetTooltip().C());
+			NX_LOG(Info, Default, "Command: %s - %s", Id.C(), Cmd->GetTooltip().C());
 		}
 	}
 

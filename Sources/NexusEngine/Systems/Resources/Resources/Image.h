@@ -7,17 +7,17 @@ namespace NxEn
 	class Image : public Resource
 	{
 	public:
-		NEXUS_ENGINE_API Image(NxFr::StringView Path);
-		NEXUS_ENGINE_API ~Image();
+		NX_ENGINE_API Image(NxFr::StringView Path);
+		NX_ENGINE_API ~Image();
 
-		NEXUS_ENGINE_API NxFr::Vector2i GetResolution() { return Resolution; }
-		NEXUS_ENGINE_API int32 GetChannels() { return Channels; }
-		NEXUS_ENGINE_API void* GetPixels() { return Data; }
+		NX_ENGINE_API NxFr::Vector2i GetResolution() { return Resolution; }
+		NX_ENGINE_API int32 GetChannels() { return Channels; }
+		NX_ENGINE_API void* GetPixels() { return Data; }
 
 	protected:
-		NEXUS_ENGINE_API void Save(NxFr::StringView FilePath) override;
-		NEXUS_ENGINE_API void Load(NxFr::StringView FilePath) override;
-		NEXUS_ENGINE_API void Unload() override;
+		NX_ENGINE_API void Save(NxFr::StringView FilePath) override;
+		NX_ENGINE_API void Load(NxFr::StringView FilePath) override;
+		NX_ENGINE_API void Unload() override;
 
 	private:
 		NxFr::Vector2i Resolution;

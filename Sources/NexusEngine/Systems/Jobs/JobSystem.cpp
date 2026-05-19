@@ -10,7 +10,7 @@ namespace NxEn
 {
 	static NxEn::SettingVar<uint64>* SettingThreadCounts = NxEn::SettingVar<uint64>::Create("Settings", "JobReservedThread", 4);
 
-	NEXUS_OBJECT_IMPLEMENTATION(JobSystem)
+	NX_OBJECT_IMPLEMENTATION(JobSystem)
 
 	JobHandle JobSystem::Dispatch(uint64 Count, uint64 Group, NxFr::Delegate<void(uint64)> Work)
 	{

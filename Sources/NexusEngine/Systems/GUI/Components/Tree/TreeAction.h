@@ -8,17 +8,17 @@ namespace NxEn
 	class TreeAction : public Object
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, TreeAction)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, TreeAction)
 
-		NEXUS_ENGINE_API TreeAction(NxFr::StringView Label, int64 Priority, bool Recursive, bool LastSelectedFirst);
-		NEXUS_ENGINE_API virtual ~TreeAction();
+		NX_ENGINE_API TreeAction(NxFr::StringView Label, int64 Priority, bool Recursive, bool LastSelectedFirst);
+		NX_ENGINE_API virtual ~TreeAction();
 
-		NEXUS_ENGINE_API virtual void Execute(const NxFr::Array<TreeItem*>& Items) = 0;
+		NX_ENGINE_API virtual void Execute(const NxFr::Array<TreeItem*>& Items) = 0;
 
-		NEXUS_ENGINE_API NxFr::StringView GetName() const override { return Label; }
-		NEXUS_ENGINE_API int64 GetPriority() const { return Priority; }
-		NEXUS_ENGINE_API bool IsRecursive() const { return Recursive; }
-		NEXUS_ENGINE_API bool IsLastSelectedFirst() const { return LastSelectedFirst; }
+		NX_ENGINE_API NxFr::StringView GetName() const override { return Label; }
+		NX_ENGINE_API int64 GetPriority() const { return Priority; }
+		NX_ENGINE_API bool IsRecursive() const { return Recursive; }
+		NX_ENGINE_API bool IsLastSelectedFirst() const { return LastSelectedFirst; }
 
 	private:
 		NxFr::String Label;

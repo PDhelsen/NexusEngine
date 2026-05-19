@@ -5,7 +5,7 @@ namespace NxEn
 {
 	static StylesPanel* Panel = GUI::Panel::Create<StylesPanel>();
 
-	NEXUS_OBJECT_IMPLEMENTATION(StylesPanel)
+	NX_OBJECT_IMPLEMENTATION(StylesPanel)
 
 	void StylesPanel::OnInitialize()
 	{

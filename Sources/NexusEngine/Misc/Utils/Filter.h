@@ -10,13 +10,13 @@ namespace NxEn
 		class Filter
 		{
 		public:
-			NEXUS_ENGINE_API Filter(NxFr::StringView Query);
-			NEXUS_ENGINE_API ~Filter();
+			NX_ENGINE_API Filter(NxFr::StringView Query);
+			NX_ENGINE_API ~Filter();
 
-			NEXUS_ENGINE_API NxFr::Set<Object*> FilterObjects(const NxFr::Collection<Object*> Instances);
-			NEXUS_ENGINE_API bool FilterObject(const Object& Instance);
+			NX_ENGINE_API NxFr::Set<Object*> FilterObjects(const NxFr::Collection<Object*> Instances);
+			NX_ENGINE_API bool FilterObject(const Object& Instance);
 
-			NEXUS_ENGINE_API bool FilterInstance(NxFr::StringView Substring, NxFr::GUID Id, NxFr::StringId Type);
+			NX_ENGINE_API bool FilterInstance(NxFr::StringView Substring, NxFr::GUID Id, NxFr::StringId Type);
 
 		private:
 			NxFr::String Query;

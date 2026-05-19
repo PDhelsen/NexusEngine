@@ -39,7 +39,7 @@ namespace NxEn
 		Worlds->InstantiatePrefab(Instance);
 	}));
 
-	NEXUS_OBJECT_IMPLEMENTATION(WorldSystem)
+	NX_OBJECT_IMPLEMENTATION(WorldSystem)
 
 	WorldSystem::WorldSystem()
 		: OnWorldEvent(), OnGameObjectEvent(), Worlds()
@@ -55,7 +55,7 @@ namespace NxEn
 		NxFr::GUID WorldId = Name;
 		if (Worlds.TryGet(WorldId))
 		{
-			NEXUS_LOG(Warning, System, "World %llu already exist", WorldId);
+			NX_LOG(Warning, System, "World %llu already exist", WorldId);
 			return GetWorld(WorldId);
 		}
 
@@ -75,7 +75,7 @@ namespace NxEn
 		World** Instance = Worlds.TryGet(WorldId);
 		if (!Instance)
 		{
-			NEXUS_LOG(Error, System, "World %llu doesn't exist", WorldId);
+			NX_LOG(Error, System, "World %llu doesn't exist", WorldId);
 			return nullptr;
 		}
 
@@ -99,7 +99,7 @@ namespace NxEn
 	{
 		if (!Worlds.TryGet(WorldId))
 		{
-			NEXUS_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
 			return;
 		}
 
@@ -141,7 +141,7 @@ namespace NxEn
 	{
 		if (!IsSceneLoaded(SceneId))
 		{
-			NEXUS_LOG(Error, System, "Scene %llu is not loaded", SceneId);
+			NX_LOG(Error, System, "Scene %llu is not loaded", SceneId);
 			return;
 		}
 
@@ -160,7 +160,7 @@ namespace NxEn
 	{
 		if (IsSceneLoaded(SceneId))
 		{
-			NEXUS_LOG(Error, System, "Scene %llu is already loaded", SceneId);
+			NX_LOG(Error, System, "Scene %llu is already loaded", SceneId);
 			return nullptr;
 		}
 
@@ -196,7 +196,7 @@ namespace NxEn
 		NxFr::GUID WorldId = IsSceneLoaded(SceneId);
 		if (!WorldId)
 		{
-			NEXUS_LOG(Error, System, "Scene %llu is not loaded", SceneId, WorldId);
+			NX_LOG(Error, System, "Scene %llu is not loaded", SceneId, WorldId);
 			return;
 		}
 

@@ -103,25 +103,25 @@ namespace NxEn
 
 		Button Trigger::GetInputButton() const
 		{
-			NEXUS_ASSERT(Mode == Mode::Button, Default, "Input mode is not set to button");
+			NX_ASSERT(Mode == Mode::Button, Default, "Input mode is not set to button");
 			return Input.InputButton.ButtonInput;
 		}
 
 		State Trigger::GetInputButtonState() const
 		{
-			NEXUS_ASSERT(Mode == Mode::Button, Default, "Input mode is not set to button");
+			NX_ASSERT(Mode == Mode::Button, Default, "Input mode is not set to button");
 			return Input.InputButton.ButtonState;
 		}
 
 		Axis Trigger::GetInputAxis() const
 		{
-			NEXUS_ASSERT(Mode == Mode::Axis, Default, "Input mode is not set to axis");
+			NX_ASSERT(Mode == Mode::Axis, Default, "Input mode is not set to axis");
 			return Input.InputAxis;
 		}
 
 		NxFr::Rectangle Trigger::GetInputMouse() const
 		{
-			NEXUS_ASSERT(Mode == Mode::Mouse, Default, "Input mode is not set to mouse");
+			NX_ASSERT(Mode == Mode::Mouse, Default, "Input mode is not set to mouse");
 			return Input.InputMouse;
 		}
 

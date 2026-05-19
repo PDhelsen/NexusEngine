@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(Behaviour)
+	NX_OBJECT_IMPLEMENTATION(Behaviour)
 
 	Behaviour::Behaviour()
 		: BehaviourId(0), Target()
@@ -88,8 +88,8 @@ namespace NxEn
 
 	void Behaviour::OnLoad(const YAML::Node& Node)
 	{
-		NEXUS_ASSERT(BehaviourId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
-		NEXUS_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
+		NX_ASSERT(BehaviourId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
+		NX_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 	}
 

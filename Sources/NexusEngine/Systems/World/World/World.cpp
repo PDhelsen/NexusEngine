@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(World)
+	NX_OBJECT_IMPLEMENTATION(World)
 
 	World::World(NxFr::StringId Name, bool Reference)
 		: WorldId(Name), Factory(WorldId, Reference), Root()
@@ -17,7 +17,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> World::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent)
 	{
-		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
+		NX_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
 
 		if (!Parent && Root)
 		{
@@ -34,7 +34,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> World::DuplicateGameObject(NxFr::Handle<GameObject> Target, NxFr::Handle<GameObject> Parent, bool Instantiate)
 	{
-		NEXUS_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
+		NX_ASSERT(!Parent || Belong(Parent), Default, "Parent should belong to the same Factory");
 
 		if (!Parent)
 		{
@@ -56,7 +56,7 @@ namespace NxEn
 
 	void World::DestroyGameObject(NxFr::Handle<GameObject> Instance)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+		NX_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
 
 		if (!Instance)
 		{
@@ -72,8 +72,8 @@ namespace NxEn
 
 	void World::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Target, int64 Index)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
-		NEXUS_ASSERT(Belong(Target), Default, "Target should belong to the same Factory");
+		NX_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+		NX_ASSERT(Belong(Target), Default, "Target should belong to the same Factory");
 
 		if (!Target)
 		{
@@ -90,7 +90,7 @@ namespace NxEn
 
 	void World::DetachGameObject(NxFr::Handle<GameObject> Instance)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+		NX_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
 
 		Factory.DetachGameObject(Instance);
 		Instance->UpdateHierarchy();
@@ -98,7 +98,7 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> World::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
-		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
+		NX_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
 
 		NxFr::Handle<Behaviour> Instance = Factory.CreateBehaviour(Type, Target);
 		Instance->Initialize();
@@ -110,7 +110,7 @@ namespace NxEn
 
 	void World::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+		NX_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
 
 		if (!Instance)
 		{
@@ -128,7 +128,7 @@ namespace NxEn
 
 	NxFr::Handle<Component> World::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
-		NEXUS_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
+		NX_ASSERT(Belong(Target), Default, "Instance should belong to the same Factory");
 
 		NxFr::Handle<Component> Instance = Factory.CreateComponent(Type, Target);
 		Instance->Initialize();
@@ -140,7 +140,7 @@ namespace NxEn
 
 	void World::DestroyComponent(NxFr::Handle<Component> Instance)
 	{
-		NEXUS_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
+		NX_ASSERT(Belong(Instance), Default, "Instance should belong to the same Factory");
 
 		if (!Instance)
 		{

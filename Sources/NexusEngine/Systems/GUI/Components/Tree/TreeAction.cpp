@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(TreeAction)
+	NX_OBJECT_IMPLEMENTATION(TreeAction)
 
 	TreeAction::TreeAction(NxFr::StringView Label, int64 Priority, bool Recursive, bool LastSelectedFirst)
 		: Label(Label), Priority(Priority), Recursive(Recursive), LastSelectedFirst(LastSelectedFirst)

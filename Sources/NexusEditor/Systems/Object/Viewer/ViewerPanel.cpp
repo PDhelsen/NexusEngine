@@ -4,7 +4,7 @@
 
 namespace NxEd
 {
-	NEXUS_OBJECT_IMPLEMENTATION(ViewerPanel)
+	NX_OBJECT_IMPLEMENTATION(ViewerPanel)
 
 	void ViewerPanel::Clear()
 	{
@@ -31,7 +31,7 @@ namespace NxEd
 		Context = ViewerFactory::Create(Instance->GetObjectType());
 		if (!Context)
 		{
-			NEXUS_LOG(Warning, System, "No ViewerContext is associated to this object %llu", Instance->GetId());
+			NX_LOG(Warning, System, "No ViewerContext is associated to this object %llu", Instance->GetId());
 			return;
 		}
 

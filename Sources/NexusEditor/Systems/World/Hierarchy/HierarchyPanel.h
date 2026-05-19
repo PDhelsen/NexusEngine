@@ -11,28 +11,28 @@ namespace NxEd
 		friend class HierarchyEditContext;
 
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, HierarchyPanel)
+		NX_OBJECT_DECLARATION(NX_EDITOR_API, HierarchyPanel)
 
-		NEXUS_EDITOR_API void Refresh() override;
+		NX_EDITOR_API void Refresh() override;
 
-		NEXUS_EDITOR_API void Show(NxFr::Handle<NxEn::GameObject> Target);
-		NEXUS_EDITOR_API void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
+		NX_EDITOR_API void Show(NxFr::Handle<NxEn::GameObject> Target);
+		NX_EDITOR_API void SelectGameObject(NxFr::Handle<NxEn::GameObject> Target);
 
 	protected:
-		NEXUS_EDITOR_API HierarchyPanel(HierarchyManager* Manager);
-		NEXUS_EDITOR_API virtual ~HierarchyPanel();
+		NX_EDITOR_API HierarchyPanel(HierarchyManager* Manager);
+		NX_EDITOR_API virtual ~HierarchyPanel();
 
-		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnShutdown() override;
-		NEXUS_EDITOR_API void OnEnable() override;
-		NEXUS_EDITOR_API void OnDisable() override;
-		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
+		NX_EDITOR_API void OnInitialize() override;
+		NX_EDITOR_API void OnShutdown() override;
+		NX_EDITOR_API void OnEnable() override;
+		NX_EDITOR_API void OnDisable() override;
+		NX_EDITOR_API void OnGui(float TimeStep) override;
 
-		NEXUS_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
-		NEXUS_EDITOR_API void OnDestroyItem(NxEn::TreeItem* Item) override;
-		NEXUS_EDITOR_API void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
+		NX_EDITOR_API NxEn::TreeItem* FetchRootItem() override;
+		NX_EDITOR_API void OnDestroyItem(NxEn::TreeItem* Item) override;
+		NX_EDITOR_API void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
 
-		NEXUS_EDITOR_API void FindItem() override;
+		NX_EDITOR_API void FindItem() override;
 
 	private:
 		class EditSystem* Edit;

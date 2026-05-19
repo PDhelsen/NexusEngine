@@ -7,15 +7,15 @@ namespace NxEn
 {
 	namespace Glfw
 	{
-	#define NEXUS_WINDOW(Window) static_cast<GLFWwindow*>(Window)
-	#define NEXUS_MONITOR(Monitor) static_cast<GLFWmonitor*>(Monitor)
-	#define NEXUS_CURSOR(Cursor) static_cast<GLFWcursor*>(Cursor)
-	#define NEXUS_KEYCOUNT (GLFW_KEY_LAST + 1)
-	#define NEXUS_MOUSECOUNT (GLFW_MOUSE_BUTTON_LAST + 1)
+	#define NX_WINDOW(Window) static_cast<GLFWwindow*>(Window)
+	#define NX_MONITOR(Monitor) static_cast<GLFWmonitor*>(Monitor)
+	#define NX_CURSOR(Cursor) static_cast<GLFWcursor*>(Cursor)
+	#define NX_KEYCOUNT (GLFW_KEY_LAST + 1)
+	#define NX_MOUSECOUNT (GLFW_MOUSE_BUTTON_LAST + 1)
 
-		static NxFr::Array<Input::Button, NEXUS_KEYCOUNT>& GlfwKeyCodeToNexusButton()
+		static NxFr::Array<Input::Button, NX_KEYCOUNT>& GlfwKeyCodeToNexusButton()
 		{
-			static NxFr::Array<Input::Button, NEXUS_KEYCOUNT> Conversion;
+			static NxFr::Array<Input::Button, NX_KEYCOUNT> Conversion;
 			Conversion[GLFW_KEY_SPACE]				= Input::Button::Space;
 			Conversion[GLFW_KEY_APOSTROPHE]			= Input::Button::Apostrophe;
 			Conversion[GLFW_KEY_COMMA]				= Input::Button::Comma;
@@ -138,9 +138,9 @@ namespace NxEn
 			Conversion[GLFW_KEY_MENU]				= Input::Button::Menu;
 			return Conversion;
 		}
-		static NxFr::Array<Input::Button, NEXUS_MOUSECOUNT>& GlfwMouseCodeToNexusButton()
+		static NxFr::Array<Input::Button, NX_MOUSECOUNT>& GlfwMouseCodeToNexusButton()
 		{
-			static NxFr::Array<Input::Button, NEXUS_MOUSECOUNT> Conversion;
+			static NxFr::Array<Input::Button, NX_MOUSECOUNT> Conversion;
 			Conversion[GLFW_MOUSE_BUTTON_1] = Input::Button::MouseLeft;
 			Conversion[GLFW_MOUSE_BUTTON_2] = Input::Button::MouseRight;
 			Conversion[GLFW_MOUSE_BUTTON_3] = Input::Button::MouseMiddle;
@@ -159,7 +159,7 @@ namespace NxEn
 
 		static void ErrorCallback(int ErrorCode, const char* Description)
 		{
-			NEXUS_LOG(Error, Default, "Error (%d): %s", ErrorCode, Description);
+			NX_LOG(Error, Default, "Error (%d): %s", ErrorCode, Description);
 		}
 
 		static void CloseCallback(GLFWwindow* Window)
@@ -251,7 +251,7 @@ namespace NxEn
 			glfwSetErrorCallback(ErrorCallback);
 			if (!glfwInit())
 			{
-				NEXUS_LOG(Error, Default, "Failed to init glfw");
+				NX_LOG(Error, Default, "Failed to init glfw");
 				return;
 			}
 
@@ -281,7 +281,7 @@ namespace NxEn
 
 		void SetContext(void* Context)
 		{
-			glfwMakeContextCurrent(NEXUS_WINDOW(Context));
+			glfwMakeContextCurrent(NX_WINDOW(Context));
 		}
 
 		void SetSwapInterval(uint8 Interval)
@@ -308,7 +308,7 @@ namespace NxEn
 				// Borderless
 				case 1:
 				{
-					GLFWmonitor* Target = NEXUS_MONITOR(Monitor);
+					GLFWmonitor* Target = NX_MONITOR(Monitor);
 					const GLFWvidmode* VideoMode = glfwGetVideoMode(Target);
 					glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
 					Instance = glfwCreateWindow(VideoMode->width, VideoMode->height, Title.C(), nullptr, nullptr);
@@ -318,7 +318,7 @@ namespace NxEn
 				// FullScreen
 				case 2:
 				{
-					GLFWmonitor* Target = NEXUS_MONITOR(Monitor);
+					GLFWmonitor* Target = NX_MONITOR(Monitor);
 					const GLFWvidmode* VideoMode = glfwGetVideoMode(Target);
 					glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
 					Instance = glfwCreateWindow(VideoMode->width, VideoMode->height, Title.C(), Target, nullptr);
@@ -328,7 +328,7 @@ namespace NxEn
 
 			if (!Instance)
 			{
-				NEXUS_LOG(Error, Default, "Failed to create window");
+				NX_LOG(Error, Default, "Failed to create window");
 				return nullptr;
 			}
 
@@ -356,7 +356,7 @@ namespace NxEn
 
 		void DestroyWindow(void* Window)
 		{
-			GLFWwindow* Instance = NEXUS_WINDOW(Window);
+			GLFWwindow* Instance = NX_WINDOW(Window);
 
 			glfwSetWindowCloseCallback(Instance, nullptr);
 			glfwSetWindowPosCallback(Instance, nullptr);
@@ -375,57 +375,57 @@ namespace NxEn
 
 		void TickWindow(void* Window)
 		{
-			glfwSwapBuffers(NEXUS_WINDOW(Window));
+			glfwSwapBuffers(NX_WINDOW(Window));
 		}
 
 		void CloseWindow(void* Window)
 		{
-			glfwSetWindowShouldClose(NEXUS_WINDOW(Window), 1);
+			glfwSetWindowShouldClose(NX_WINDOW(Window), 1);
 		}
 
 		void MinimizeWindow(void* Window)
 		{
-			glfwIconifyWindow(NEXUS_WINDOW(Window));
+			glfwIconifyWindow(NX_WINDOW(Window));
 		}
 
 		void MaximizeWindow(void* Window)
 		{
-			glfwMaximizeWindow(NEXUS_WINDOW(Window));
+			glfwMaximizeWindow(NX_WINDOW(Window));
 		}
 
 		void RestoreWindow(void* Window)
 		{
-			glfwRestoreWindow(NEXUS_WINDOW(Window));
+			glfwRestoreWindow(NX_WINDOW(Window));
 		}
 
 		void ShowWindow(void* Window)
 		{
-			glfwShowWindow(NEXUS_WINDOW(Window));
+			glfwShowWindow(NX_WINDOW(Window));
 		}
 
 		void HideWindow(void* Window)
 		{
-			glfwHideWindow(NEXUS_WINDOW(Window));
+			glfwHideWindow(NX_WINDOW(Window));
 		}
 
 		void FocusWindow(void* Window)
 		{
-			glfwFocusWindow(NEXUS_WINDOW(Window));
+			glfwFocusWindow(NX_WINDOW(Window));
 		}
 
 		void SetWindowPosition(void* Window, NxFr::Vector2i Position)
 		{
-			glfwSetWindowPos(NEXUS_WINDOW(Window), Position.x, Position.y);
+			glfwSetWindowPos(NX_WINDOW(Window), Position.x, Position.y);
 		}
 
 		void SetWindowSize(void* Window, NxFr::Vector2i Size)
 		{
-			glfwSetWindowSize(NEXUS_WINDOW(Window), Size.x, Size.y);
+			glfwSetWindowSize(NX_WINDOW(Window), Size.x, Size.y);
 		}
 
 		void SetWindowTitle(void* Window, NxFr::StringView Title)
 		{
-			glfwSetWindowTitle(NEXUS_WINDOW(Window), Title.C());
+			glfwSetWindowTitle(NX_WINDOW(Window), Title.C());
 		}
 
 		void SetWindowIcon(void* Window, NxFr::Vector2i Resolution, uint8* Pixels)
@@ -434,7 +434,7 @@ namespace NxEn
 			Image.width = Resolution.x;
 			Image.height = Resolution.y;
 			Image.pixels = Pixels;
-			glfwSetWindowIcon(NEXUS_WINDOW(Window), Pixels ? 1 : 0, Pixels ? &Image : nullptr);
+			glfwSetWindowIcon(NX_WINDOW(Window), Pixels ? 1 : 0, Pixels ? &Image : nullptr);
 		}
 
 #pragma endregion
@@ -456,7 +456,7 @@ namespace NxEn
 
 		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate)
 		{
-			const GLFWvidmode* Mode = glfwGetVideoMode(NEXUS_MONITOR(Monitor));
+			const GLFWvidmode* Mode = glfwGetVideoMode(NX_MONITOR(Monitor));
 			Width = Mode->width;
 			Height = Mode->height;
 			RefreshRate = Mode->refreshRate;
@@ -470,7 +470,7 @@ namespace NxEn
 		{
 			if (Cursor != nullptr)
 			{
-				glfwDestroyCursor(NEXUS_CURSOR(Cursor));
+				glfwDestroyCursor(NX_CURSOR(Cursor));
 			}
 
 			switch (Icon)
@@ -485,7 +485,7 @@ namespace NxEn
 			case 7: Cursor = glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR); break;
 			}
 
-			glfwSetCursor(NEXUS_WINDOW(Window), NEXUS_CURSOR(Cursor));
+			glfwSetCursor(NX_WINDOW(Window), NX_CURSOR(Cursor));
 			return Cursor;
 		}
 
@@ -499,7 +499,7 @@ namespace NxEn
 			case 3: Mode = (uint32)GLFW_CURSOR_DISABLED; break;
 			}
 
-			glfwSetInputMode(NEXUS_WINDOW(Window), GLFW_CURSOR, Mode);
+			glfwSetInputMode(NX_WINDOW(Window), GLFW_CURSOR, Mode);
 		}
 
 #pragma endregion

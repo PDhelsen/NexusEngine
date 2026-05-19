@@ -14,33 +14,33 @@ namespace NxEd
 		friend class StageManager;
 
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, Stage)
+		NX_OBJECT_DECLARATION(NX_EDITOR_API, Stage)
 
-		NEXUS_EDITOR_API Stage(NxEn::Object* Target);
-		NEXUS_EDITOR_API ~Stage();
+		NX_EDITOR_API Stage(NxEn::Object* Target);
+		NX_EDITOR_API ~Stage();
 
-		NEXUS_EDITOR_API bool IsVisible() const;
-		NEXUS_EDITOR_API bool IsFocused() const;
-		NEXUS_EDITOR_API bool IsMain() const;
+		NX_EDITOR_API bool IsVisible() const;
+		NX_EDITOR_API bool IsFocused() const;
+		NX_EDITOR_API bool IsMain() const;
 
-		NEXUS_EDITOR_API NxEn::Object* GetTarget() const { return Target; }
-		NEXUS_EDITOR_API NxEn::World* GetWorld() const { return Viewer && Viewer->GetContext() ? Viewer->GetContext()->GetWorld() : nullptr;  }
+		NX_EDITOR_API NxEn::Object* GetTarget() const { return Target; }
+		NX_EDITOR_API NxEn::World* GetWorld() const { return Viewer && Viewer->GetContext() ? Viewer->GetContext()->GetWorld() : nullptr;  }
 
-		NEXUS_EDITOR_API ViewerPanel* GetViewer() const { return Viewer; }
-		NEXUS_EDITOR_API InspectorPanel* GetInspector() const { return Inspector; }
-		NEXUS_EDITOR_API HierarchyPanel* GetHierarchy() const { return Hierarchy; }
+		NX_EDITOR_API ViewerPanel* GetViewer() const { return Viewer; }
+		NX_EDITOR_API InspectorPanel* GetInspector() const { return Inspector; }
+		NX_EDITOR_API HierarchyPanel* GetHierarchy() const { return Hierarchy; }
 
 	protected:
-		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnShutdown() override;
-		NEXUS_EDITOR_API void OnEnable() override;
-		NEXUS_EDITOR_API void OnDisable() override;
-		NEXUS_EDITOR_API void OnGui(float TimeStep) override;
+		NX_EDITOR_API void OnInitialize() override;
+		NX_EDITOR_API void OnShutdown() override;
+		NX_EDITOR_API void OnEnable() override;
+		NX_EDITOR_API void OnDisable() override;
+		NX_EDITOR_API void OnGui(float TimeStep) override;
 
-		NEXUS_EDITOR_API void OnSelectionChanged(NxFr::GUID Id, bool State);
+		NX_EDITOR_API void OnSelectionChanged(NxFr::GUID Id, bool State);
 
-		NEXUS_EDITOR_API void DrawDocking();
-		NEXUS_EDITOR_API void DockPanels();
+		NX_EDITOR_API void DrawDocking();
+		NX_EDITOR_API void DockPanels();
 
 	private:
 		NxEn::Object* Target;

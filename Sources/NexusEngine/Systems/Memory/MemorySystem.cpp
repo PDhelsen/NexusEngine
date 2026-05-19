@@ -20,7 +20,7 @@ namespace NxEn
 	static SettingVar<uint64>* SettingHandlesPerManager = SettingVar<uint64>::Create("Settings", "MemoryHandlesPerManager", 1024);
 	static SettingVar<uint64>* SettingSmallParamsSmallest = SettingVar<uint64>::Create("Settings", "MemorySmallParamsSmallest", 8);
 	static SettingVar<uint64>* SettingSmallParamsLargest = SettingVar<uint64>::Create("Settings", "MemorySmallParamsLargest", 256);
-	static SettingSeq<uint64>* SettingSizes = SettingSeq<uint64>::Create("Settings", "MemoryAllocatorsSize", { 0, NEXUS_MEMORY_ALLOCATOR_SIZE, NEXUS_MEMORY_ALLOCATOR_SIZE, NEXUS_MEMORY_ALLOCATOR_SIZE, NEXUS_MEMORY_ALLOCATOR_SIZE, NEXUS_MEMORY_ALLOCATOR_SIZE, NEXUS_MEMORY_ALLOCATOR_SIZE, });
+	static SettingSeq<uint64>* SettingSizes = SettingSeq<uint64>::Create("Settings", "MemoryAllocatorsSize", { 0, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, });
 
 	static HandleManager& GetHandles() { static HandleManager Instance(SettingHandlesPerManager->GetValue()); return Instance; }
 	static Allocator& GetRawAllocator() { static Allocator Instance(AllocatorType::Raw); return Instance; }
@@ -31,7 +31,7 @@ namespace NxEn
 	static Allocator& GetSmallAllocator() { static Allocator Instance(AllocatorType::Small); return Instance; }
 	static Allocator& GetManagedAllocator() { static Allocator Instance(AllocatorType::Managed); return Instance; }
 
-	NEXUS_OBJECT_IMPLEMENTATION(MemorySystem)
+	NX_OBJECT_IMPLEMENTATION(MemorySystem)
 
 	NxEn::HandleManager* MemorySystem::GetHandleManager()
 	{
@@ -58,13 +58,13 @@ namespace NxEn
 	{
 		if (Size > SettingSmallParamsLargest->GetValue())
 		{
-			NEXUS_LOG(Warning, System, "Requested small allocation size is too large. Allocation will come from the Raw allocator");
+			NX_LOG(Warning, System, "Requested small allocation size is too large. Allocation will come from the Raw allocator");
 			return 0;
 		}
 
 		if (Size < SettingSmallParamsSmallest->GetValue())
 		{
-			NEXUS_LOG(Warning, System, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
+			NX_LOG(Warning, System, "Requested small allocation size is lower than the smallest. It will be round up to the smallest");
 			return SettingSmallParamsSmallest->GetValue();
 		}
 
@@ -83,7 +83,7 @@ namespace NxEn
 			return NxFr::Integer::MaxUI64;
 		}
 
-		uint64 Size = NEXUS_MEMORY_ALLOCATOR_SIZE;
+		uint64 Size = NX_MEMORY_ALLOCATOR_SIZE;
 		if (SettingSizes != nullptr && SettingSizes->GetValue().GetCount() > 0)
 		{
 			Size = SettingSizes->GetValue()[(uint64)Type];
@@ -103,7 +103,7 @@ namespace NxEn
 
 	void MemorySystem::Defragment(bool Full)
 	{
-		NEXUS_LOG(Info, System, "Memory - Defragmentation (Full: %s)", Full ? "true" : "false");
+		NX_LOG(Info, System, "Memory - Defragmentation (Full: %s)", Full ? "true" : "false");
 		Defragment(SettingDefragmentBudget->GetValue(), Full);
 	}
 
@@ -121,13 +121,13 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		NEXUS_ASSERT(NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsSmallest->GetValue()) && NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsLargest->GetValue()), System, "SmallAllocatorParams have to be PowerOfTwo");
-		NEXUS_ASSERT(GetAllocatorSize(NxEn::AllocatorType::Raw) == NxFr::Integer::MaxUI64, System, "Can't set the size of the Raw allocator");
+		NX_ASSERT(NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsSmallest->GetValue()) && NxFr::Math::IsPowerOfTwo((uint64)SettingSmallParamsLargest->GetValue()), System, "SmallAllocatorParams have to be PowerOfTwo");
+		NX_ASSERT(GetAllocatorSize(NxEn::AllocatorType::Raw) == NxFr::Integer::MaxUI64, System, "Can't set the size of the Raw allocator");
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, Integer, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, Integer, Set);
-		NEXUS_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, Integer, Set);
 	}
 
 	void MemorySystem::OnShutdown()
@@ -154,7 +154,7 @@ namespace NxEn
 	// TODO: Defragmentation might not be full because Handle might be scattered across multiple manager
 	void MemorySystem::Defragment(float Budget, bool All)
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		NxFr::Stopwatch Watch(true);
 
@@ -175,11 +175,11 @@ namespace NxEn
 	void MemorySystem::RecordMemoryStats()
 	{
 		NxFr::MemoryTracker* Tracker = NxFr::Globals::Debug::Memory;
-		NEXUS_STAT_INTEGER(NxFr::StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());
-		NEXUS_STAT_INTEGER(NxFr::StatsHeader::MemoryAllocationId, Tracker->GetAllocationCount());
+		NX_STAT_INTEGER(NxFr::StatsHeader::MemoryAllocatedId, Tracker->GetAllocatedAmount());
+		NX_STAT_INTEGER(NxFr::StatsHeader::MemoryAllocationId, Tracker->GetAllocationCount());
 
 		NxFr::Platform* Platform = NxFr::Globals::PlatformTarget;
 		NxFr::Platform::MemoryInfo MemoryInfo = Platform->GetMemoryInfo();
-		NEXUS_STAT_INTEGER(NxFr::StatsHeader::PlatformMemoryId, MemoryInfo.CurrentUsage);
+		NX_STAT_INTEGER(NxFr::StatsHeader::PlatformMemoryId, MemoryInfo.CurrentUsage);
 	}
 }

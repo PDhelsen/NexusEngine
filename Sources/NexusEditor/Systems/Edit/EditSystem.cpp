@@ -77,13 +77,13 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Paste");
 	}));
 
-	NEXUS_OBJECT_IMPLEMENTATION(EditSystem)
+	NX_OBJECT_IMPLEMENTATION(EditSystem)
 
 	void EditSystem::RegisterContext(NxFr::StringId Id, Edit::Context* Ctx)
 	{
 		if (Contexts.TryGet(Id))
 		{
-			NEXUS_LOG(Error, System, "Context %s already exist", Id.GetString().C());
+			NX_LOG(Error, System, "Context %s already exist", Id.GetString().C());
 		}
 
 		Contexts.Append(Id, Ctx);
@@ -93,7 +93,7 @@ namespace NxEd
 	{
 		if (!Contexts.TryGet(Id))
 		{
-			NEXUS_LOG(Error, System, "Context %s doesn't exist", Id.GetString().C());
+			NX_LOG(Error, System, "Context %s doesn't exist", Id.GetString().C());
 			return nullptr;
 		}
 

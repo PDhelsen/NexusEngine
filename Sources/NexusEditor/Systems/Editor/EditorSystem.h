@@ -10,28 +10,28 @@ namespace NxEd
 	class EditorSystem : public NxEn::System
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_EDITOR_API, EditorSystem)
+		NX_OBJECT_DECLARATION(NX_EDITOR_API, EditorSystem)
 
-		NEXUS_EDITOR_API EditorSystem();
-		NEXUS_EDITOR_API ~EditorSystem();
+		NX_EDITOR_API EditorSystem();
+		NX_EDITOR_API ~EditorSystem();
 
-		NEXUS_EDITOR_API void SaveAll();
+		NX_EDITOR_API void SaveAll();
 
-		NEXUS_EDITOR_API NxFr::Event<>& GetOnSave() { return OnSave; }
+		NX_EDITOR_API NxFr::Event<>& GetOnSave() { return OnSave; }
 
-		NEXUS_EDITOR_API NxEn::Input::Schema& GetInputsSchema() { return InputSchema; }
-		NEXUS_EDITOR_API NxEn::GUI::Window& GetWindow() { return *Window; }
-		NEXUS_EDITOR_API AssetsBrowser& GetAssetsBrowser() { return *Browser; }
-		NEXUS_EDITOR_API HierarchyManager& GetHierarchyManager() { return *Hierarchy; }
-		NEXUS_EDITOR_API StageManager& GetStageManager() { return *Stages; }
+		NX_EDITOR_API NxEn::Input::Schema& GetInputsSchema() { return InputSchema; }
+		NX_EDITOR_API NxEn::GUI::Window& GetWindow() { return *Window; }
+		NX_EDITOR_API AssetsBrowser& GetAssetsBrowser() { return *Browser; }
+		NX_EDITOR_API HierarchyManager& GetHierarchyManager() { return *Hierarchy; }
+		NX_EDITOR_API StageManager& GetStageManager() { return *Stages; }
 
 
 	protected:
-		NEXUS_EDITOR_API void OnInitialize() override;
-		NEXUS_EDITOR_API void OnShutdown() override;
-		NEXUS_EDITOR_API void OnTick(float TimeStep = 0.0f) override;
+		NX_EDITOR_API void OnInitialize() override;
+		NX_EDITOR_API void OnShutdown() override;
+		NX_EDITOR_API void OnTick(float TimeStep = 0.0f) override;
 
-		NEXUS_EDITOR_API void ApplySettings();
+		NX_EDITOR_API void ApplySettings();
 
 	private:
 		NxFr::Event<> OnSave;

@@ -18,7 +18,7 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Editor.Save");
 	}), 1);
 
-	NEXUS_OBJECT_IMPLEMENTATION(EditorSystem)
+	NX_OBJECT_IMPLEMENTATION(EditorSystem)
 
 	EditorSystem::EditorSystem()
 		: OnSave(), InputSchema(), Window(NxEn::GUISystem::GetWindow()), Browser(nullptr), Hierarchy(nullptr)
@@ -31,10 +31,10 @@ namespace NxEd
 
 	void EditorSystem::SaveAll()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		OnSave.Invoke();
-		NEXUS_LOG(Info, System, "Saved");
+		NX_LOG(Info, System, "Saved");
 	}
 
 	void EditorSystem::OnInitialize()

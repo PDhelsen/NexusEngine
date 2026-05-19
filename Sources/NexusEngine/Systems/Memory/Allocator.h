@@ -21,19 +21,19 @@ namespace NxEn
 		friend class MemorySystem;
 
 	public:
-		NEXUS_ENGINE_API Allocator(AllocatorType Type);
-		NEXUS_ENGINE_API Allocator(const Allocator& Other) = delete;
-		NEXUS_ENGINE_API Allocator(Allocator&& Other) noexcept = delete;
-		NEXUS_ENGINE_API virtual ~Allocator();
+		NX_ENGINE_API Allocator(AllocatorType Type);
+		NX_ENGINE_API Allocator(const Allocator& Other) = delete;
+		NX_ENGINE_API Allocator(Allocator&& Other) noexcept = delete;
+		NX_ENGINE_API virtual ~Allocator();
 
-		NEXUS_ENGINE_API Allocator& operator=(const Allocator& Other) = delete;
-		NEXUS_ENGINE_API Allocator& operator=(Allocator&& Other) noexcept = delete;
+		NX_ENGINE_API Allocator& operator=(const Allocator& Other) = delete;
+		NX_ENGINE_API Allocator& operator=(Allocator&& Other) noexcept = delete;
 
-		NEXUS_ENGINE_API virtual void Clear();
-		NEXUS_ENGINE_API virtual bool CanAllocate(uint64 Size, uint64 Alignement) const;
-		NEXUS_ENGINE_API virtual bool BelongToAllocator(void* Pointer) const;
+		NX_ENGINE_API virtual void Clear();
+		NX_ENGINE_API virtual bool CanAllocate(uint64 Size, uint64 Alignement) const;
+		NX_ENGINE_API virtual bool BelongToAllocator(void* Pointer) const;
 
-		NEXUS_ENGINE_API AllocatorType GetType() const { return Type; }
+		NX_ENGINE_API AllocatorType GetType() const { return Type; }
 
 	protected:
 		virtual void* Allocate(uint64 Size, uint64 Alignement);

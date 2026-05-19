@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NEXUS_OBJECT_IMPLEMENTATION(InputSystem)
+	NX_OBJECT_IMPLEMENTATION(InputSystem)
 
 	InputSystem::InputSystem()
 		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Window(nullptr), Schemas(), Buttons(), Axises(), Modifiers(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
@@ -31,13 +31,13 @@ namespace NxEn
 	void InputSystem::AddSchema(NxFr::StringId Id, Input::Schema* Schema)
 	{
 		Schemas.AppendOrAssign(Id, Schema);
-		NEXUS_LOG(Info, System, "Register Input schema: %s", Id.C());
+		NX_LOG(Info, System, "Register Input schema: %s", Id.C());
 	}
 
 	void InputSystem::RemoveSchema(NxFr::StringId Id)
 	{
 		Schemas.Remove(Id);
-		NEXUS_LOG(Info, System, "Unregister Input schema: %s", Id.C());
+		NX_LOG(Info, System, "Unregister Input schema: %s", Id.C());
 	}
 
 	Input::Schema* InputSystem::GetSchema(NxFr::StringId Id)
@@ -204,15 +204,15 @@ namespace NxEn
 
 	void InputSystem::PollInputs()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		OnPoll();
-		NEXUS_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, System, "Unsupported Button pressed");
+		NX_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, System, "Unsupported Button pressed");
 	}
 
 	void InputSystem::TriggerActions()
 	{
-		NEXUS_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_FUNCTION();
 
 		for (auto& [Id, Schema] : Schemas)
 		{

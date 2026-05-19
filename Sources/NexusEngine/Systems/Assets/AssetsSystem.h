@@ -8,8 +8,8 @@ namespace NxFr
 {
 	namespace StatsHeader
 	{
-		NEXUS_ENGINE_API extern const NxFr::StringId AssetsTrackedId;
-		NEXUS_ENGINE_API extern const NxFr::StringId AssetsLoadedId;
+		NX_ENGINE_API extern const NxFr::StringId AssetsTrackedId;
+		NX_ENGINE_API extern const NxFr::StringId AssetsLoadedId;
 	}
 }
 namespace NxEn
@@ -26,7 +26,7 @@ namespace NxEn
 		const NxFr::StringId EventUnloadedId = "Unloaded"_Sid;
 		const NxFr::StringId EventImportedId = "Imported"_Sid;
 
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, AssetsSystem)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, AssetsSystem)
 
 		template<typename T>
 		T* Create(NxFr::StringView Path = "", NxFr::StringView Extension = "");
@@ -41,51 +41,51 @@ namespace NxEn
 		template<typename T>
 		T* GetAsset(NxFr::GUID Id);
 
-		NEXUS_ENGINE_API Asset* Create(NxFr::StringId Type, NxFr::StringView Path = "", NxFr::StringView Extension = "");
-		NEXUS_ENGINE_API void Rename(NxFr::GUID Id, NxFr::StringView Name);
-		NEXUS_ENGINE_API void Move(NxFr::GUID Id, NxFr::StringView Path);
-		NEXUS_ENGINE_API void Copy(NxFr::GUID Id, NxFr::StringView Path);
-		NEXUS_ENGINE_API void Delete(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Save(NxFr::GUID Id, bool Force = false);
-		NEXUS_ENGINE_API void SaveDirty();
+		NX_ENGINE_API Asset* Create(NxFr::StringId Type, NxFr::StringView Path = "", NxFr::StringView Extension = "");
+		NX_ENGINE_API void Rename(NxFr::GUID Id, NxFr::StringView Name);
+		NX_ENGINE_API void Move(NxFr::GUID Id, NxFr::StringView Path);
+		NX_ENGINE_API void Copy(NxFr::GUID Id, NxFr::StringView Path);
+		NX_ENGINE_API void Delete(NxFr::GUID Id);
+		NX_ENGINE_API void Save(NxFr::GUID Id, bool Force = false);
+		NX_ENGINE_API void SaveDirty();
 
-		NEXUS_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
-		NEXUS_ENGINE_API Asset* Acquire(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
-		NEXUS_ENGINE_API Asset* Load(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Reload(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Unload(NxFr::GUID Id);
-		NEXUS_ENGINE_API void Purge(bool SaveIfDirty);
+		NX_ENGINE_API void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
+		NX_ENGINE_API Asset* Acquire(NxFr::GUID Id);
+		NX_ENGINE_API void Release(NxFr::GUID Id, bool Keep = false);
+		NX_ENGINE_API Asset* Load(NxFr::GUID Id);
+		NX_ENGINE_API void Reload(NxFr::GUID Id);
+		NX_ENGINE_API void Unload(NxFr::GUID Id);
+		NX_ENGINE_API void Purge(bool SaveIfDirty);
 
-		NEXUS_ENGINE_API Asset* Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
-		NEXUS_ENGINE_API Asset* Reimport(NxFr::GUID Id, const YAML::Node& Node);
+		NX_ENGINE_API Asset* Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
+		NX_ENGINE_API Asset* Reimport(NxFr::GUID Id, const YAML::Node& Node);
 
-		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
-		NEXUS_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
-		NEXUS_ENGINE_API NxFr::String IdToPath(NxFr::GUID Id) const;
+		NX_ENGINE_API NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
+		NX_ENGINE_API NxFr::GUID PathToId(NxFr::StringView Path) const;
+		NX_ENGINE_API NxFr::String IdToPath(NxFr::GUID Id) const;
 
-		NEXUS_ENGINE_API Asset* GetAsset(NxFr::GUID Id);
-		NEXUS_ENGINE_API AssetHandle& GetHandle(NxFr::GUID Id);
-		NEXUS_ENGINE_API AssetMetadata& GetMetadata(NxFr::GUID Id);
-		NEXUS_ENGINE_API YAML::Node GetImportData(NxFr::GUID Id);
-		NEXUS_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recusive = false);
+		NX_ENGINE_API Asset* GetAsset(NxFr::GUID Id);
+		NX_ENGINE_API AssetHandle& GetHandle(NxFr::GUID Id);
+		NX_ENGINE_API AssetMetadata& GetMetadata(NxFr::GUID Id);
+		NX_ENGINE_API YAML::Node GetImportData(NxFr::GUID Id);
+		NX_ENGINE_API NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recusive = false);
 
-		NEXUS_ENGINE_API bool IsTracked(NxFr::GUID Id) const;
-		NEXUS_ENGINE_API bool IsLoaded(NxFr::GUID Id) const;
+		NX_ENGINE_API bool IsTracked(NxFr::GUID Id) const;
+		NX_ENGINE_API bool IsLoaded(NxFr::GUID Id) const;
 
-		NEXUS_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnEvent() { return OnEvent; }
-		NEXUS_ENGINE_API NxFr::Event<Asset*>& GetOnSave() { return OnSave; }
+		NX_ENGINE_API NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnEvent() { return OnEvent; }
+		NX_ENGINE_API NxFr::Event<Asset*>& GetOnSave() { return OnSave; }
 
 	private:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
-		NEXUS_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnShutdown() override;
+		NX_ENGINE_API void OnTick(float TimeStep = 0.0f) override;
 
-		NEXUS_ENGINE_API void RecordStats() const;
-		NEXUS_ENGINE_API void UpdateStats() const;
+		NX_ENGINE_API void RecordStats() const;
+		NX_ENGINE_API void UpdateStats() const;
 
-		NEXUS_ENGINE_API Asset* Reset(NxFr::GUID Id);
-		NEXUS_ENGINE_API void FetchDependencies(NxFr::GUID Id, bool Recusive, NxFr::Set<NxFr::GUID>& Result);
+		NX_ENGINE_API Asset* Reset(NxFr::GUID Id);
+		NX_ENGINE_API void FetchDependencies(NxFr::GUID Id, bool Recusive, NxFr::Set<NxFr::GUID>& Result);
 
 	private:
 		NxFr::Event<NxFr::StringId, NxFr::GUID> OnEvent;

@@ -57,7 +57,7 @@ namespace NxEn
 			}
 		}
 
-		NEXUS_ASSERT(!Queue.IsEmpty(), Application, "Impossible to start sorting the systems because each one depened on another one, probably circular dependency.");
+		NX_ASSERT(!Queue.IsEmpty(), Application, "Impossible to start sorting the systems because each one depened on another one, probably circular dependency.");
 
 		while (!Queue.IsEmpty())
 		{
@@ -79,7 +79,7 @@ namespace NxEn
 			Dependencies.Dependents.Clear();
 		}
 		
-		NEXUS_ASSERT(Index == SystemsDependencies.GetCount(), Application, "Some Systems were not sorted, probaly unable to resolve all the dependencies");
+		NX_ASSERT(Index == SystemsDependencies.GetCount(), Application, "Some Systems were not sorted, probaly unable to resolve all the dependencies");
 
 		return Result;
 	}

@@ -7,14 +7,14 @@ namespace NxEn
 	struct JobCompletion
 	{
 	public:
-		NEXUS_ENGINE_API JobCompletion(uint64 Count);
-		NEXUS_ENGINE_API ~JobCompletion();
+		NX_ENGINE_API JobCompletion(uint64 Count);
+		NX_ENGINE_API ~JobCompletion();
 
-		NEXUS_ENGINE_API void Release();
+		NX_ENGINE_API void Release();
 
-		NEXUS_ENGINE_API void Signal();
-		NEXUS_ENGINE_API void Wait();
-		NEXUS_ENGINE_API bool IsDone() const;
+		NX_ENGINE_API void Signal();
+		NX_ENGINE_API void Wait();
+		NX_ENGINE_API bool IsDone() const;
 
 	private:
 		NxFr::Atomic Count;

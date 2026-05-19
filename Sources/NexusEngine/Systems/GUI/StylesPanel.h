@@ -7,14 +7,14 @@ namespace NxEn
 	class StylesPanel : public GUI::Panel
 	{
 	public:
-		NEXUS_OBJECT_DECLARATION(NEXUS_ENGINE_API, StylePanel)
+		NX_OBJECT_DECLARATION(NX_ENGINE_API, StylePanel)
 
 	protected:
-		NEXUS_ENGINE_API void OnInitialize() override;
-		NEXUS_ENGINE_API void OnShutdown() override;
-		NEXUS_ENGINE_API void OnEnable() override;
-		NEXUS_ENGINE_API void OnDisable() override;
-		NEXUS_ENGINE_API void OnGui(float TimeStep) override;
+		NX_ENGINE_API void OnInitialize() override;
+		NX_ENGINE_API void OnShutdown() override;
+		NX_ENGINE_API void OnEnable() override;
+		NX_ENGINE_API void OnDisable() override;
+		NX_ENGINE_API void OnGui(float TimeStep) override;
 
 	private:
 		GUI::Menu Menu;
