@@ -6,7 +6,7 @@
 namespace NxEn
 {
 	template<typename T>
-	union Reference;
+	struct Reference;
 
 	namespace GUI
 	{

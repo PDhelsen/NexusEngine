@@ -1,21 +1,20 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Misc/References/ReferenceInstance.h"
+#include "NexusEngine/Misc/References/ReferenceGetter.h"
 #include "NexusEngine/Misc/References/ReferenceResolver.h"
 #include "NexusEngine/Misc/References/ReferenceDrawer.h"
 
 namespace NxEn
 {
 	template<typename T>
-	union Reference
+	struct Reference
 	{
 	public:
-		using P = typename NxFr::DecayPointer<T>::Type*;
+		using P = typename ReferenceGetter<T>::P;
 
-		Reference() : Id(0) {}
-		Reference(NxFr::GUID Id) : Id(Id) {}
-		Reference(T Other) : Instance(Other) {}
+		Reference(NxFr::GUID Id) : Id(Id), Instance(nullptr) {}
+		Reference(T Other) : Id(Other->GetId()), Instance(Other) {}
 
 		inline explicit operator bool() const { return IsValid(); }
 		inline explicit operator P () { return GetInstance(); }
@@ -23,27 +22,32 @@ namespace NxEn
 		inline P operator->() { return GetInstance(); }
 		inline const P operator->() const { return GetInstance(); }
 
-		inline bool operator==(const Reference<T>& Other) const { return GetRawId() == Other.GetRawId(); }
-		inline bool operator!=(const Reference<T>& Other) const { return GetRawId() != Other.GetRawId(); }
+		inline bool operator==(const Reference<T>& Other) const { return GetId() == Other.GetId(); }
+		inline bool operator!=(const Reference<T>& Other) const { return GetId() != Other.GetId(); }
 
 		inline bool IsValid() const
 		{
 			return Id != 0;
 		}
 
-		inline NxFr::GUID GetRawId() const
+		inline bool IsResolved() const
+		{
+			return Instance != nullptr;
+		}
+
+		inline NxFr::GUID GetId() const
 		{
 			return Id;
 		}
 
 		inline NxFr::GUID GetInstanceId() const
 		{
-			return IsValid() ? GetInstance()->GetId() : 0;
+			return IsResolved() ? GetInstance()->GetId() : 0;
 		}
 
 		inline P GetInstance() const
 		{
-			return ReferenceInstance<T>::Get(Instance);
+			return IsResolved() ? ReferenceGetter<T>::Get(Instance) : nullptr;
 		}
 
 		inline void Resolve(World* WorldInstance = nullptr)

@@ -10,7 +10,7 @@ namespace NxEn
 	template<typename T, typename = void>
 	struct ReferenceResolver
 	{
-		static T Resolve(NxFr::GUID Id, World* WorldInstance)
+		static T Resolve(NxFr::GUID Id, const World* WorldInstance)
 		{
 			NX_ASSERT(false, Default, "Unsupported resolver");
 			return T();
@@ -20,7 +20,7 @@ namespace NxEn
 	template<typename T>
 	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::DecayPointer<T>::Type, Asset>::Value>>
 	{
-		static T Resolve(NxFr::GUID Id, World* WorldInstance)
+		static T Resolve(NxFr::GUID Id, const World* WorldInstance)
 		{
 			return static_cast<T>(Application::GetSystem<AssetsSystem>()->Load(Id));
 		}
@@ -29,7 +29,7 @@ namespace NxEn
 	template<typename T>
 	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::IsSameType<typename NxFr::DecayPointer<T>::Type, GameObject>::Value>>
 	{
-		static T Resolve(NxFr::GUID Id, World* WorldInstance)
+		static T Resolve(NxFr::GUID Id, const World* WorldInstance)
 		{
 			NX_ASSERT(WorldInstance, Default, "World required to resolve reference");
 			return static_cast<T>(WorldInstance->GetGameObject(WorldObjectReferences::Resolve(Id)));
@@ -39,7 +39,7 @@ namespace NxEn
 	template<typename T>
 	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::DecayPointer<T>::Type, Behaviour>::Value>>
 	{
-		static T Resolve(NxFr::GUID Id, World* WorldInstance)
+		static T Resolve(NxFr::GUID Id, const World* WorldInstance)
 		{
 			NX_ASSERT(WorldInstance, Default, "World required to resolve reference");
 			return static_cast<T>(WorldInstance->GetBehaviour(WorldObjectReferences::Resolve(Id)));
@@ -49,7 +49,7 @@ namespace NxEn
 	template<typename T>
 	struct ReferenceResolver<T, NxFr::EnableIf<NxFr::InheritFrom<typename NxFr::DecayPointer<T>::Type, Component>::Value>>
 	{
-		static T Resolve(NxFr::GUID Id, World* WorldInstance)
+		static T Resolve(NxFr::GUID Id, const World* WorldInstance)
 		{
 			NX_ASSERT(WorldInstance, Default, "World required to resolve reference");
 			return static_cast<T>(WorldInstance->GetComponent(WorldObjectReferences::Resolve(Id)));
