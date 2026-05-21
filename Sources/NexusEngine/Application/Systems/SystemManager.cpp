@@ -21,37 +21,26 @@ namespace NxEn
 	{
 	}
 
-	System* SystemManager::GetSystem(NxFr::StringId Type) const
+	NxFr::Array<System*> SystemManager::SortSystems(const NxFr::Dictionary<NxFr::StringId, NxFr::Set<NxFr::StringId>>& SystemsAndDependencies) const
 	{
-		auto Instance = Systems.TryGet(Type);
-		return Instance ? *Instance : nullptr;
-	}
-
-	void SystemManager::RegisterSystem(System* Instance)
-	{
-		Systems.Append(Instance->GetObjectType(), Instance);
-	}
-
-	void SystemManager::UnregisterSystem(System* Instance)
-	{
-		Systems.Remove(Instance->GetObjectType());
-	}
-
-	NxFr::Array<System*> SystemManager::SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const
-	{
-		NxFr::Array<System*> Result = NxFr::Array<System*>(SystemsDependencies.GetCount());
+		NxFr::Array<System*> Result = NxFr::Array<System*>(SystemsAndDependencies.GetCount());
+		NxFr::Dictionary<NxFr::StringId, DependencyInfo> Infos = SystemsAndDependencies.GetCount();
 		NxFr::Queue<NxFr::StringId> Queue;
 		uint64 Index = 0;
 
-		for (auto& [Type, Dependencies] : SystemsDependencies)
+		for (auto& [Type, Dependencies] : SystemsAndDependencies)
 		{
-			for (auto& Dependency : Dependencies.Dependencies)
+			Infos.AppendConstruct(Type, Dependencies, NxFr::List<NxFr::StringId>(), Dependencies.GetCount());
+		}
+
+		for (auto& [Type, Info] : Infos)
+		{
+			for (auto& Dependency : Info.Dependencies)
 			{
-				SystemsDependencies[Dependency].Dependents.Append(Type);
+				Infos[Dependency].Dependents.Append(Type);
 			}
-			
-			Dependencies.WaitOn = Dependencies.Dependencies.GetCount();
-			if (Dependencies.WaitOn == 0)
+
+			if (Info.WaitOn == 0)
 			{
 				Queue.Append(Type);
 			}
@@ -63,23 +52,20 @@ namespace NxEn
 		{
 			NxFr::StringId Type = Queue.Get();
 			Queue.Remove();
-			
-			SystemDependencies& Dependencies = SystemsDependencies[Type];
+
+			DependencyInfo& Info = Infos[Type];
 			Result[Index++] = const_cast<System*>(Systems[Type]);
-			
-			for (auto& Dependent : Dependencies.Dependents)
+
+			for (auto& Dependent : Info.Dependents)
 			{
-				if (--SystemsDependencies[Dependent].WaitOn == 0)
+				if (--Infos[Dependent].WaitOn == 0)
 				{
 					Queue.Append(Dependent);
 				}
 			}
-			
-			Dependencies.Dependencies.Clear();
-			Dependencies.Dependents.Clear();
 		}
-		
-		NX_ASSERT(Index == SystemsDependencies.GetCount(), Application, "Some Systems were not sorted, probaly unable to resolve all the dependencies");
+
+		NX_ASSERT(Index == Infos.GetCount(), Application, "Some Systems were not sorted, probaly unable to resolve all the dependencies");
 
 		return Result;
 	}

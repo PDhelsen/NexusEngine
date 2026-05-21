@@ -28,21 +28,20 @@ namespace NxEn
 		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
 		{
 			NxFr::List<SystemInfo>& SystemsBucket = Systems[BucketIndex];
-			NxFr::Dictionary<NxFr::StringId, SystemDependencies> DependenciesBucket = SystemsBucket.GetCount();
+			NxFr::Dictionary<NxFr::StringId, NxFr::Set<NxFr::StringId>> DependenciesBucket = SystemsBucket.GetCount();
 
 			for (uint64 SystemIndex = 0; SystemIndex < SystemsBucket.GetCount(); ++SystemIndex)
 			{
 				SystemInfo& Info = SystemsBucket[SystemIndex];
-				SystemDependencies& Dependencies = SystemsDependencies[Info.Type];
-				SystemDependencies& FilteredDependencies = DependenciesBucket.Append(Info.Type, SystemDependencies());
+				NxFr::Set<NxFr::StringId>& Dependencies = SystemsDependencies[Info.Type];
+				NxFr::Set<NxFr::StringId>& FilteredDependencies = DependenciesBucket.Append(Info.Type, NxFr::Set<NxFr::StringId>());
 
-				for (uint64 DependencyIndex = 0; DependencyIndex < Dependencies.Dependencies.GetCount(); ++DependencyIndex)
+				for (const auto& Dependency : Dependencies)
 				{
-					NxFr::StringId DependencyType = Dependencies.Dependencies[DependencyIndex];
-					auto SystemIt = GetSystemInfo(DependencyType);
+					auto SystemIt = GetSystemInfo(Dependency);
 					if (SystemIt == Systems.End()->End())
 					{
-						NX_LOG(Error, Application, "There is no system with Id %s", DependencyType.C());
+						NX_LOG(Error, Application, "There is no system with Id %s", Dependency.C());
 						continue;
 					}
 					if (SystemIt->Bucket != (Ticker::TickBucket)BucketIndex)
@@ -51,7 +50,7 @@ namespace NxEn
 						continue;
 					}
 
-					FilteredDependencies.Dependencies.Append(DependencyType);
+					FilteredDependencies.Append(Dependency);
 				}
 			}
 
@@ -159,13 +158,13 @@ namespace NxEn
 	Ticker& Ticker::AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
 	{
 		Systems[(uint64)Bucket].AppendConstruct(Bucket, Type, nullptr, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
-		SystemsDependencies.Append(Type, SystemDependencies());
+		SystemsDependencies.Append(Type, NxFr::Set<NxFr::StringId>());
 		return *this;
 	}
 
 	Ticker& Ticker::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
 	{
-		SystemsDependencies[Type].Dependencies.Append(Dependency);
+		SystemsDependencies[Type].TryAppend(Dependency);
 		return *this;
 	}
 

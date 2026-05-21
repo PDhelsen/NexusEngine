@@ -48,13 +48,13 @@ namespace NxEn
 
 	Bootstrapper& Bootstrapper::AppendSystem(NxFr::StringId Type)
 	{
-		Systems.Append(Type, SystemDependencies());
+		Systems.Append(Type, NxFr::Set<NxFr::StringId>());
 		return *this;
 	}
 
 	Bootstrapper& Bootstrapper::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
 	{
-		Systems[Type].Dependencies.Append(Dependency);
+		Systems[Type].TryAppend(Dependency);
 		return *this;
 	}
 

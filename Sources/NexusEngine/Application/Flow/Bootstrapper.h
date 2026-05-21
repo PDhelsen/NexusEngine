@@ -1,10 +1,11 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Application/Systems/SystemManager.h"
 
 namespace NxEn
 {
+	class System;
+
 	class NX_ENGINE_API Bootstrapper
 	{
 	public:
@@ -42,6 +43,6 @@ namespace NxEn
 		void ExecuteSystems(const NxFr::Delegate<void(System*)>& Callback);
 
 		NxFr::List<StepInfo> Steps;
-		NxFr::Dictionary<NxFr::StringId, SystemDependencies> Systems;
+		NxFr::Dictionary<NxFr::StringId, NxFr::Set<NxFr::StringId>> Systems;
 	};
 }

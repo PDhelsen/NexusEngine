@@ -1,10 +1,11 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Application/Systems/SystemManager.h"
 
 namespace NxEn
 {
+	class System;
+
 	class NX_ENGINE_API Ticker
 	{
 	public:
@@ -84,6 +85,6 @@ namespace NxEn
 		NxFr::List<TickInfo> TicksBuffer;
 
 		NxFr::Array<NxFr::List<SystemInfo>> Systems;
-		NxFr::Dictionary<NxFr::StringId, SystemDependencies> SystemsDependencies;
+		NxFr::Dictionary<NxFr::StringId, NxFr::Set<NxFr::StringId>> SystemsDependencies;
 	};
 }

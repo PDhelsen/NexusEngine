@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 
 namespace NxFr
@@ -12,16 +13,6 @@ namespace NxFr
 
 namespace NxEn
 {
-	struct SystemDependencies
-	{
-	public:
-		NxFr::List<NxFr::StringId> Dependencies;
-		NxFr::List<NxFr::StringId> Dependents;
-		uint64 WaitOn = 0;
-
-		SystemDependencies() = default;
-	};
-
 	class NX_ENGINE_API SystemManager
 	{
 	public:
@@ -29,20 +20,41 @@ namespace NxEn
 		~SystemManager();
 
 		template<typename T>
-		T* GetSystem() const { return (T*)GetSystem(T::GetClassType()); }
+		T* CreateSystem()
+		{
+			T* Instance = new T();
+			Systems.Append(T::GetClassType(), Instance);
+			return Instance;
+		};
 		template<typename T>
-		T* CreateSystem() { T* Instance = new T(); RegisterSystem(Instance); return Instance; };
+		void DestroySystem()
+		{
+			System* Instance = Systems[T::GetClassType()];
+			Systems.Remove(Instance->GetObjectType());
+			delete Instance;
+		}
 		template<typename T>
-		void DestroySystem() { System* Instance = Systems[T::GetClassType()]; UnregisterSystem(Instance); delete Instance; }
+		T* GetSystem() const
+		{
+			return (T*)GetSystem(T::GetClassType());
+		}
+		System* GetSystem(NxFr::StringId Id) const
+		{
+			auto Instance = Systems.TryGet(Id);
+			return Instance ? *Instance : nullptr;
+		}
 
-		System* GetSystem(NxFr::StringId Type) const;
-		void RegisterSystem(System* Instance);
-		void UnregisterSystem(System* Instance);
-		NxFr::Array<System*> SortSystems(NxFr::Dictionary<NxFr::StringId, SystemDependencies>& SystemsDependencies) const;
-
-		uint64 GetCount() const { return Systems.GetCount(); }
+		NxFr::Array<System*> SortSystems(const NxFr::Dictionary<NxFr::StringId, NxFr::Set<NxFr::StringId>>& SystemsAndDependencies) const;
 
 	private:
+		struct DependencyInfo
+		{
+		public:
+			const NxFr::Set<NxFr::StringId> Dependencies;
+			NxFr::List<NxFr::StringId> Dependents;
+			uint64 WaitOn = 0;
+		};
+
 		NxFr::Dictionary<NxFr::StringId, System*> Systems;
 	};
 }
