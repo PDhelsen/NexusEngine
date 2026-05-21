@@ -61,32 +61,32 @@ namespace NxEn
 
 	bool Application::IsRunning() const
 	{
-		return !WantsToQuit && EntryPoint::GetErrorCode() == 0;
+		return !WantsToQuit;
 	}
 
 	void Application::OnInitialize()
 	{
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Console Arguments", []() { NxFr::Globals::Args->Print(); });
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Setup Project", [&]()
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Console Arguments", []() { NxFr::Globals::Args->Print(); });
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Setup Project", [&]()
 		{
 			NX_LOG(Info, Default, "Application %s starting in %s Mode", ProjectInfo.GetName().C(), NxFr::StringUtility::ToString(ProjectInfo.GetTarget()).C());
 			NxFr::Globals::PlatformTarget->SetWorkingDirectory(ProjectInfo.GetRootPath());
 		});
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Setup Paths & Folders", &NxFr::Globals::CreatePathsAndFolders);
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Setup Paths & Folders", &NxFr::Globals::CreatePathsAndFolders);
 	}
 
 	void Application::OnShutdown()
 	{
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::BeforeSystem, "Application duration", []()
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Application duration", []()
 		{
 			NX_LOG(Info, Default, "Application last for %llu seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		});
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Cleanup Folders", &NxFr::Globals::DestroyTempFolder);
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Cleanup Folders", &NxFr::Globals::DestroyTempFolder);
 	}
 
 	void Application::OnExecute()
 	{
-		Ticks.AppendTickOnceCallback(Ticker::TickBucket::Input, "Start TimeManager", { &Time, &TimeManager::Run });
+		Ticks.AppendTick(Ticker::TickBucket::Input, "Start TimeManager", { &Time, &TimeManager::Run }, true);
 	}
 
 	void Application::Run()

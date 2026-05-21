@@ -84,11 +84,11 @@ namespace NxEn
 			Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>().AppendDependency<GUISystem, DebugSystem>();
 		}
 
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Apply Settings", []()
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Apply Settings", []()
 		{
 			Application::GetSystem<SettingsSystem>()->ApplySettings();
 		});
-		Bootstrap.AppendStep(Bootstrapper::StepBucket::AfterSystem, "Start Profiler", []()
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Start Profiler", []()
 		{
 			Application::GetSystem<DebugSystem>()->AutoStart();
 		});
@@ -134,7 +134,7 @@ namespace NxEn
 			Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output).AppendDependency<WindowSystem, GUISystem>();
 		}
 
-		Ticks.AppendTickOnceCallback(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands });
+		Ticks.AppendTick(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands }, true);
 	}
 
 	void NexusEngineApplication::ParseCommands()

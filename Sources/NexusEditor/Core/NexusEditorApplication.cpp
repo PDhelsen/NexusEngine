@@ -50,7 +50,7 @@ namespace NxEd
 			Bootstrap.AppendDependency<EditorSystem, NxEn::GUISystem>();
 		}
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::AfterSystem, "Load Layout", []()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Load Layout", []()
 		{
 			Application::GetSystem<NxEn::GUISystem>()->LoadLayout();
 		});
@@ -71,7 +71,7 @@ namespace NxEd
 			Unbootstrap.AppendDependency<NxEn::GUISystem, EditorSystem>();
 		}
 
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::StepBucket::BeforeSystem, "Save Layout", []()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Save Layout", []()
 		{
 			Application::GetSystem<NxEn::GUISystem>()->SaveLayout();
 		});

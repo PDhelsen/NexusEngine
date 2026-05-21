@@ -3,14 +3,9 @@
 
 namespace NxEn
 {
-	Ticker::SystemInfo::SystemInfo(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
-		: Instance(nullptr), Bucket(Bucket), Timer(0), TickRate(TickRate), FixedTimeStep(FixedTimeStep)
-	{
-		Instance = Application::GetInstance()->GetSystems().GetSystem(Type);
-	}
-
 	Ticker::Ticker()
-		: Systems(), SystemsPerBuckets((uint64)TickBucket::COUNT), SystemsDependencies(), OnTicks((uint64)TickBucket::COUNT), OnTicksOnce((uint64)TickBucket::COUNT), CallbacksBuffer()
+		: Ticks((uint64)TickBucket::COUNT), TicksBuffer(),
+		Systems((uint64)TickBucket::COUNT), SystemsDependencies()
 	{
 		
 	}
@@ -20,24 +15,150 @@ namespace NxEn
 		
 	}
 
-	void Ticker::AppendTickCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback)
+	void Ticker::Run()
 	{
-		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, false, false);
+		if (SystemsDependencies.IsEmpty())
+		{
+			NX_LOG(Warning, Application, "There is no systems to tick");
+			return;
+		}
+
+		SystemManager& Manager = Application::GetInstance()->GetSystems();
+
+		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
+		{
+			NxFr::List<SystemInfo>& SystemsBucket = Systems[BucketIndex];
+			NxFr::Dictionary<NxFr::StringId, SystemDependencies> DependenciesBucket = SystemsBucket.GetCount();
+
+			for (uint64 SystemIndex = 0; SystemIndex < SystemsBucket.GetCount(); ++SystemIndex)
+			{
+				SystemInfo& Info = SystemsBucket[SystemIndex];
+				SystemDependencies& Dependencies = SystemsDependencies[Info.Type];
+				SystemDependencies& FilteredDependencies = DependenciesBucket.Append(Info.Type, SystemDependencies());
+
+				for (uint64 DependencyIndex = 0; DependencyIndex < Dependencies.Dependencies.GetCount(); ++DependencyIndex)
+				{
+					NxFr::StringId DependencyType = Dependencies.Dependencies[DependencyIndex];
+					auto SystemIt = GetSystemInfo(DependencyType);
+					if (SystemIt == Systems.End()->End())
+					{
+						NX_LOG(Error, Application, "There is no system with Id %s", DependencyType.C());
+						continue;
+					}
+					if (SystemIt->Bucket != (Ticker::TickBucket)BucketIndex)
+					{
+						NX_LOG(Warning, Application, "System %s can depend only on systems inside the same bucket", Info.Type.C());
+						continue;
+					}
+
+					FilteredDependencies.Dependencies.Append(DependencyType);
+				}
+			}
+
+			if (DependenciesBucket.IsEmpty())
+			{
+				continue;
+			}
+
+			NxFr::Array<System*> Instances = Manager.SortSystems(DependenciesBucket);
+			for (uint64 InstanceIndex = 0; InstanceIndex < Instances.GetCount(); ++InstanceIndex)
+			{
+				System* Instance = Instances[InstanceIndex];
+
+				uint64 SystemIndex = 0;
+				for (SystemIndex = 0; SystemIndex < SystemsBucket.GetCount(); ++SystemIndex)
+				{
+					if (SystemsBucket[SystemIndex].Type == Instance->GetObjectType())
+					{
+						break;
+					}
+				}
+
+				SystemInfo& Info = SystemsBucket[SystemIndex];
+				Info.Instance = Instance;
+				if (SystemIndex != InstanceIndex)
+				{
+					NxFr::ContainerUtility::Swap<SystemInfo>(SystemsBucket, SystemIndex, InstanceIndex);
+				}
+			}
+		}
+
+		NX_LOG(Info, Application, "Tick order:")
+		for (auto& Bucket : Systems)
+		{
+			for (auto& Info : Bucket)
+			{
+				NX_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
+			}
+		}
 	}
 
-	void Ticker::AppendTickOnceCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback)
+	void Ticker::Tick(float DeltaTime)
 	{
-		CallbacksBuffer.AppendConstruct(Bucket, Callback, Tag, true, false);
+		FlushTicksBuffer();
+
+		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
+		{
+			NxFr::List<TickInfo>& TicksBucket = Ticks[BucketIndex];
+			if (!TicksBucket.IsEmpty())
+			{
+				NX_INSTUMENT_SCOPE(InstrumentsMarkers[BucketIndex][0]);
+
+				uint64 TicksIndex = 0;
+				while (TicksIndex < TicksBucket.GetCount())
+				{
+					TickInfo& Info = TicksBucket[TicksIndex];
+					NX_INSTUMENT_SCOPE(Info.Tag.C());
+					Info.Callback();
+
+					if (Info.Once)
+					{
+						TicksBucket.Remove(TicksIndex);
+					}
+					else
+					{
+						TicksIndex++;
+					}
+				}
+			}
+
+			NxFr::List<SystemInfo>& SystemsBucket = Systems[BucketIndex];
+			if (!SystemsBucket.IsEmpty())
+			{
+				NX_INSTUMENT_SCOPE(InstrumentsMarkers[BucketIndex][1]);
+
+				for (uint64 SystemsIndex = 0; SystemsIndex < SystemsBucket.GetCount(); ++SystemsIndex)
+				{
+					SystemInfo& Info = SystemsBucket[SystemsIndex];
+					float TimeStep = ComputeTimeStep(Info, DeltaTime);
+
+					if (TimeStep <= 0.0f)
+					{
+						continue;
+					}
+
+					NX_INSTUMENT_SCOPE(Info.Instance->GetObjectType().C());
+					Info.Instance->Tick(TimeStep);
+				}
+			}
+		}
 	}
 
-	void Ticker::RemoveTickCallback(TickBucket Bucket, const Signature& Callback)
+	Ticker& Ticker::AppendTick(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback, bool Once)
 	{
-		CallbacksBuffer.AppendConstruct(Bucket, Callback, "", true, true);
+		TicksBuffer.AppendConstruct(Bucket, Tag, Callback, Once, false);
+		return *this;
+	}
+
+	Ticker& Ticker::RemoveTick(TickBucket Bucket, NxFr::StringView Tag)
+	{
+		TicksBuffer.AppendConstruct(Bucket, Tag, nullptr, false, true);
+		return *this;
 	}
 
 	Ticker& Ticker::AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
 	{
-		Systems.AppendConstruct(Type, Bucket, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
+		Systems[(uint64)Bucket].AppendConstruct(Bucket, Type, nullptr, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
 		SystemsDependencies.Append(Type, SystemDependencies());
 		return *this;
 	}
@@ -50,164 +171,39 @@ namespace NxEn
 
 	void Ticker::SetTickRate(NxFr::StringId Type, float TickRate, bool FixedTimeStep)
 	{
-		for (auto& Info : Systems)
+		auto It = GetSystemInfo(Type);
+		if (It != Systems.End()->End())
 		{
-			if (Info.Instance->GetObjectType() == Type)
-			{
-				Info.TickRate = ComputeTickRate(TickRate, FixedTimeStep);
-				NX_LOG(Info, Application, "System %s tick rate changed to %f", Type.C(), Info.TickRate);
-				break;
-			}
+			It->TickRate = ComputeTickRate(TickRate, FixedTimeStep);
+			NX_LOG(Info, Application, "System %s tick rate changed to %f", Type.C(), It->TickRate);
 		}
 	}
 
-	void Ticker::Run()
+	void Ticker::FlushTicksBuffer()
 	{
-		if (GetSystemsCount() == 0)
+		for (TickInfo& Info : TicksBuffer)
 		{
-			NX_LOG(Warning, Application, "There is no systems to tick");
-			return;
-		}
-
-		uint64 SortedIndex = 0;
-		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> DependenciesPerBucket(GetSystemsCount());
-		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
-		{
-			TickBucket Bucket = (TickBucket)BucketIndex;
-			DependenciesPerBucket.Clear();
-
-			SystemRange Range = { 0, 0 };
-			Range.Start = SortedIndex;
-
-			// Split by Bucket
-			for (auto It = Systems.Begin(); It != Systems.End(); ++It)
+			if (!Info.Remove)
 			{
-				if (It->Bucket == Bucket)
-				{
-					NxFr::StringId Type = It->Instance->GetObjectType();
-
-					// Validate dependencies
-					SystemDependencies& RawDependencies = SystemsDependencies[Type];
-					SystemDependencies CleanedDependencies;
-					for (auto& D : RawDependencies.Dependencies)
-					{
-						for (auto& S : Systems)
-						{
-							if (D == S.Instance->GetObjectType())
-							{
-								if (Bucket == S.Bucket)
-								{
-									CleanedDependencies.Dependencies.Append(D);
-								}
-								else
-								{
-									NX_LOG(Warning, Application, "System (%s) can depend only on another system from the same bucket. %s is not in the same bucket, dependency will be ignored", Type.C(), D.C());
-								}
-							}
-						}
-					}
-
-					DependenciesPerBucket.Append(Type, CleanedDependencies);
-				}
+				Ticks[(uint64)Info.Bucket].AppendConstruct(Info);
+				
 			}
-
-			if (DependenciesPerBucket.GetCount() == 0)
+			else
 			{
-				Range.End = SortedIndex;
-				SystemsPerBuckets[BucketIndex] = Range;
-				continue;
-			}
-
-			// Sort System in Array
-			SystemManager& Manager = Application::GetInstance()->GetSystems();
-			NxFr::Array<System*> SortedSystemsPerBucket = Manager.SortSystems(DependenciesPerBucket);
-			for (auto It = SortedSystemsPerBucket.Begin(); It != SortedSystemsPerBucket.End(); ++It)
-			{
-				uint64 UnsortedIndex = 0;
-				for (UnsortedIndex = 0; UnsortedIndex < Systems.GetCount(); ++UnsortedIndex)
+				auto It = GeTickInfo(Info.Tag);
+				if (It != Ticks.End()->End())
 				{
-					if (It.Get()->GetObjectType() == Systems[UnsortedIndex].Instance->GetObjectType())
-					{
-						break;
-					}
-				}
-
-				if (UnsortedIndex != SortedIndex)
-				{
-					NxFr::ContainerUtility::Swap<SystemInfo>(Systems, UnsortedIndex, SortedIndex);
-				}
-
-				SortedIndex++;
-			}
-
-			Range.End = SortedIndex;
-			SystemsPerBuckets[BucketIndex] = Range;
-		}
-
-		NX_LOG(Info, Application, "Tick order:")
-		for (auto& Info : Systems)
-		{
-			NX_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
-		}
-	}
-
-	void Ticker::Tick(float DeltaTime)
-	{
-		FlushCallbackBuffer();
-
-		for (uint64 BucketIndex = 0; BucketIndex < (uint64)TickBucket::COUNT; ++BucketIndex)
-		{
-			auto& OnTickOnce = OnTicksOnce[BucketIndex];
-			if (OnTickOnce.GetCount() > 0)
-			{
-				NX_INSTUMENT_SCOPE("Tick Once");
-				for (uint64 Index = 0; Index < OnTickOnce.GetCount(); ++Index)
-				{
-					NX_INSTUMENT_SCOPE(OnTickOnce[Index].GetSecond());
-
-					OnTickOnce[Index].GetFirst().Invoke();
-				}
-
-				OnTickOnce.Clear();
-			}
-
-			auto& OnTick = OnTicks[BucketIndex];
-			if (OnTick.GetCount() > 0)
-			{
-				NX_INSTUMENT_SCOPE("Tick");
-
-				for (uint64 Index = 0; Index < OnTick.GetCount(); ++Index)
-				{
-					NX_INSTUMENT_SCOPE(OnTick[Index].GetSecond());
-
-					OnTick[Index].GetFirst().Invoke();
-				}
-			}
-
-			SystemRange Range = SystemsPerBuckets[BucketIndex];
-			if (Range.Start != Range.End)
-			{
-				NX_INSTUMENT_SCOPE("Systems");
-
-				for (uint64 SystemIndex = Range.Start; SystemIndex < Range.End; SystemIndex++)
-				{
-					SystemInfo& Info = Systems[SystemIndex];
-					float TimeStep = ComputeTimeStep(Info, DeltaTime);
-					if (TimeStep > 0.0f)
-					{
-						NX_INSTUMENT_SCOPE(Info.Instance->GetObjectType().C());
-
-						Info.Instance->Tick(TimeStep);
-					}
+					Ticks[(uint64)Info.Bucket].Remove(It.Id());
 				}
 			}
 		}
+
+		TicksBuffer.Clear();
 	}
 
 	float Ticker::ComputeTimeStep(SystemInfo& Info, float DeltaTime) const
 	{
 		Info.Timer += DeltaTime;
-		
 		if (Info.Timer < Info.TickRate)
 		{
 			return 0.0f;
@@ -221,48 +217,38 @@ namespace NxEn
 	float Ticker::ComputeTickRate(float TickRate, bool FixedTimeStep) const
 	{
 		NX_ASSERT(!FixedTimeStep || (FixedTimeStep && TickRate > 0.0f), Application, "The system has to either no require a fixed timestep or provide a tick rate greater than 0");
-		return TickRate > 0.0f ? 1.0f / TickRate : 0.0f;
+		return TickRate > 0.0f ? 1.0f / TickRate : TickRate;
 	}
 
-	void Ticker::FlushCallbackBuffer()
+	NxFr::List<Ticker::TickInfo>::I Ticker::GeTickInfo(NxFr::StringView Tag) const
 	{
-		for (uint64 BucketIndex = 0; BucketIndex < CallbacksBuffer.GetCount(); ++BucketIndex)
+		for (auto BucketIt = Ticks.Begin(); BucketIt != Ticks.End(); ++BucketIt)
 		{
-			CallbackInfo& Info = CallbacksBuffer[BucketIndex];
-			if (Info.Remove)
+			for (auto TickIt = BucketIt->Begin(); TickIt != BucketIt->End(); ++TickIt)
 			{
-				uint64 Index = 0;
-				bool Found = false;
-
-				auto& Callbacks = OnTicks[(uint64)Info.Bucket];
-				for (uint64 CallbackIndex = 0; CallbackIndex < Callbacks.GetCount(); ++CallbackIndex)
+				if (TickIt->Tag == Tag)
 				{
-					if (Callbacks[CallbackIndex].GetFirst() == Info.Callback)
-					{
-						Found = true;
-						Index = CallbackIndex;
-						break;
-					}
-				}
-
-				if (Found)
-				{
-					Callbacks.Remove(Index);
-				}
-			}
-			else
-			{
-				if (Info.Once)
-				{
-					OnTicksOnce[(uint64)Info.Bucket].AppendConstruct(Info.Callback, Info.Tag);
-				}
-				else
-				{
-					OnTicks[(uint64)Info.Bucket].AppendConstruct(Info.Callback, Info.Tag);
+					return TickIt;
 				}
 			}
 		}
 
-		CallbacksBuffer.Clear();
+		return Ticks.End()->End();
+	}
+
+	NxFr::List<Ticker::SystemInfo>::I Ticker::GetSystemInfo(NxFr::StringId Id) const
+	{
+		for (auto BucketIt = Systems.Begin(); BucketIt != Systems.End(); ++BucketIt)
+		{
+			for (auto SystemIt = BucketIt->Begin(); SystemIt != BucketIt->End(); ++SystemIt)
+			{
+				if (SystemIt->Type == Id)
+				{
+					return SystemIt;
+				}
+			}
+		}
+
+		return Systems.End()->End();
 	}
 }

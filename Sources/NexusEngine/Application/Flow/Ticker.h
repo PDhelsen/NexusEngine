@@ -7,8 +7,6 @@ namespace NxEn
 {
 	class NX_ENGINE_API Ticker
 	{
-		friend class Application;
-
 	public:
 		using Signature = NxFr::Delegate<void()>;
 
@@ -23,36 +21,6 @@ namespace NxEn
 			COUNT
 		};
 
-	private:
-		struct SystemInfo
-		{
-		public:
-			System* Instance;
-			TickBucket Bucket;
-			float Timer;
-			float TickRate;
-			bool FixedTimeStep;
-
-			SystemInfo(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep);
-		};
-
-		struct SystemRange
-		{
-		public:
-			uint64 Start = 0;
-			uint64 End = 0;
-		};
-
-		struct CallbackInfo
-		{
-			TickBucket Bucket;
-			Signature Callback;
-			NxFr::StringView Tag;
-			bool Once;
-			bool Remove;
-		};
-
-	public:
 		inline static const float HighFrequency = 60.0f;
 		inline static const float MediumFrequency = 30.0f;
 		inline static const float LowFrequency = 10.0f;
@@ -62,37 +30,60 @@ namespace NxEn
 		Ticker();
 		~Ticker();
 
-		void AppendTickCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
-		void AppendTickOnceCallback(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback);
-		void RemoveTickCallback(TickBucket Bucket, const Signature& Callback);
+		void Run();
+		void Tick(float DeltaTime);
 
+		Ticker& AppendTick(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback, bool Once = false);
+		Ticker& RemoveTick(TickBucket Bucket, NxFr::StringView Tag);
 		template<typename T>
 		Ticker& AppendSystem(TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false) { return AppendSystem(T::GetClassType(), Bucket, TickRate, FixedTimeStep); }
+		Ticker& AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false);
 		template<typename T, typename D>
 		Ticker& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
-
-		Ticker& AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate = 0.0f, bool FixedTimeStep = false);
 		Ticker& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
 
 		void SetTickRate(NxFr::StringId Type, float TickRate, bool FixedTimeStep = false);
 
-		uint64 GetSystemsCount() const { return Systems.GetCount(); }
-
 	private:
-		void Run();
-		void Tick(float DeltaTime);
+		struct TickInfo
+		{
+			TickBucket Bucket;
+			NxFr::String Tag;
+			Signature Callback;
+			bool Once;
+			bool Remove;
+		};
 
+		struct SystemInfo
+		{
+		public:
+			TickBucket Bucket;
+			NxFr::StringId Type;
+			System* Instance;
+			float Timer;
+			float TickRate;
+			bool FixedTimeStep;
+		};
+
+		inline static const NxFr::Array<NxFr::Array<NxFr::StringView>> InstrumentsMarkers =
+		{
+			{ "Ticks - Input", "Systems - Input" },
+			{ "Ticks - Project", "Systems - Project" },
+			{ "Ticks - Engine", "Systems - Engine" },
+			{ "Ticks - Output", "Systems - Output" },
+			{ "Ticks - Cleanup", "Systems - Cleanup" }
+		};
+
+		void FlushTicksBuffer();
 		float ComputeTimeStep(SystemInfo& Info, float DeltaTime) const;
 		float ComputeTickRate(float TickRate, bool FixedTimeStep) const;
-		void FlushCallbackBuffer();
+		NxFr::List<TickInfo>::I GeTickInfo(NxFr::StringView Tag) const;
+		NxFr::List<SystemInfo>::I GetSystemInfo(NxFr::StringId Id) const;
 
-	private:
-		NxFr::List<SystemInfo> Systems;
-		NxFr::Array<SystemRange> SystemsPerBuckets;
-		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> SystemsDependencies;
+		NxFr::Array<NxFr::List<TickInfo>> Ticks;
+		NxFr::List<TickInfo> TicksBuffer;
 
-		NxFr::Array<NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>>> OnTicks;
-		NxFr::Array<NxFr::List<NxFr::Tuple<Signature, NxFr::StringView>>> OnTicksOnce;
-		NxFr::List<CallbackInfo> CallbacksBuffer;
+		NxFr::Array<NxFr::List<SystemInfo>> Systems;
+		NxFr::Dictionary<NxFr::StringId, SystemDependencies> SystemsDependencies;
 	};
 }

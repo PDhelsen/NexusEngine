@@ -7,19 +7,15 @@ namespace NxEn
 {
 	namespace EntryPoint
 	{
-		// -------------------------------------------------------------------------------------------------------------------------------
-		// Variables
-		// -------------------------------------------------------------------------------------------------------------------------------
-
 		bool Restart = false;
-		int8 ErrorCode = 0;
+		int ErrorCode = 0;
 
 		void ScheduleRestart()
 		{
 			Restart = true;
 		}
 
-		void SetErrorCode(int8 Code)
+		void SetErrorCode(int32 Code)
 		{
 			if (ErrorCode != 0)
 			{
@@ -30,47 +26,21 @@ namespace NxEn
 			ErrorCode = Code;
 		}
 
-		int GetErrorCode()
-		{
-			return ErrorCode;
-		}
-
-		// -------------------------------------------------------------------------------------------------------------------------------
-		// Steps
-		// -------------------------------------------------------------------------------------------------------------------------------
-
-		static void CreateLogger()
-		{
-			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-			NxFr::Globals::Debug::Logs = new NxFr::Logger(NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE | NxFr::LoggerOutput::Callback, "", true);
-			NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Default, true);
-			NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Verbose, true);
-		}
-
-		static void DestroyLogger()
-		{
-			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-			NxFr::Globals::Debug::Logs->Flush();
-			delete NxFr::Globals::Debug::Logs;
-		}
-
-		// -------------------------------------------------------------------------------------------------------------------------------
-		// Main
-		// -------------------------------------------------------------------------------------------------------------------------------
-
 		int Main(int argc, char* argv[])
 		{
-			NxFr::Allocator::Scope Context(nullptr);
+			// Globals - Initialization
+			NxFr::Allocator::Scope Memory(nullptr);
 			NxFr::Globals::CreateArgs(argc, argv);
 			NxFr::Globals::CreatePlatform();
-			CreateLogger();
+			NxFr::Globals::Debug::Logs = new NxFr::Logger(NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE, "", true);
+			NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Default, true);
 
+			// Project
 			Project ProjectInfo = CreateProject();
 			auto CreateApplication = NxFr::Globals::PlatformTarget->GetFunctionFromDll<Application*, const Project&>(ProjectInfo.GetDllPath(), "CreateApplication");
 			auto DestroyApplication = NxFr::Globals::PlatformTarget->GetFunctionFromDll<void, Application*>(ProjectInfo.GetDllPath(), "DestroyApplication");
 
+			// Application
 			do
 			{
 				Restart = false;
@@ -81,8 +51,10 @@ namespace NxEn
 
 			} while (Restart);
 
+			// Globals - Shutdown
 			NxFr::Globals::PlatformTarget->ClearDll();
-			DestroyLogger();
+			NxFr::Globals::Debug::Logs->Flush();
+			delete NxFr::Globals::Debug::Logs;
 
 			return ErrorCode;
 		}

@@ -4,6 +4,7 @@
 namespace NxEn
 {
 	Bootstrapper::Bootstrapper()
+		: Steps(), Systems()
 	{
 	}
 
@@ -11,9 +12,37 @@ namespace NxEn
 	{
 	}
 
-	Bootstrapper& Bootstrapper::AppendStep(StepBucket Bucket, NxFr::StringView Tag, const Signature& Step)
+	void Bootstrapper::RunBoot()
 	{
-		Steps.AppendConstruct(Bucket, Step, Tag);
+		ExecuteSteps(BootBucket::BeforeSystem);
+		ExecuteSystems([](System* Instance)
+		{
+			Instance->Initialize();
+			Instance->SetEnabled(true);
+		});
+		ExecuteSteps(BootBucket::AfterSystem);
+
+		Steps.Clear();
+		Systems.Clear();
+	}
+
+	void Bootstrapper::RunUnboot()
+	{
+		ExecuteSteps(BootBucket::BeforeSystem);
+		ExecuteSystems([](System* Instance)
+		{
+			Instance->SetEnabled(false);
+			Instance->Shutdown();
+		});
+		ExecuteSteps(BootBucket::AfterSystem);
+
+		Steps.Clear();
+		Systems.Clear();
+	}
+
+	Bootstrapper& Bootstrapper::AppendStep(BootBucket Bucket, NxFr::StringView Tag, const Signature& Step)
+	{
+		Steps.AppendConstruct(Bucket, Tag, Step);
 		return *this;
 	}
 
@@ -29,29 +58,9 @@ namespace NxEn
 		return *this;
 	}
 
-	void Bootstrapper::RunBoot()
+	void Bootstrapper::ExecuteSteps(BootBucket Bucket)
 	{
-		ExecuteSteps(true, StepBucket::BeforeSystem);
-		ExecuteSystems(true);
-		ExecuteSteps(true, StepBucket::AfterSystem);
-
-		Steps.Clear();
-		Systems.Clear();
-	}
-
-	void Bootstrapper::RunUnboot()
-	{
-		ExecuteSteps(false, StepBucket::BeforeSystem);
-		ExecuteSystems(false);
-		ExecuteSteps(false, StepBucket::AfterSystem);
-
-		Steps.Clear();
-		Systems.Clear();
-	}
-
-	void Bootstrapper::ExecuteSteps(bool Boot, StepBucket Bucket)
-	{
-		if (GetStepsCount() == 0)
+		if (Steps.IsEmpty())
 		{
 			NX_LOG(Warning, Application, "Bootstrap - There is no steps to execute");
 			return;
@@ -70,9 +79,9 @@ namespace NxEn
 		}
 	}
 
-	void Bootstrapper::ExecuteSystems(bool Boot)
+	void Bootstrapper::ExecuteSystems(const NxFr::Delegate<void(System*)>& Callback)
 	{
-		if (GetSystemsCount() == 0)
+		if (Systems.IsEmpty())
 		{
 			NX_LOG(Warning, Application, "Bootstrap - There is no systems to execute");
 			return;
@@ -80,20 +89,12 @@ namespace NxEn
 
 		SystemManager& Manager = Application::GetInstance()->GetSystems();
 		NxFr::Array<System*> Instances = Manager.SortSystems(Systems);
+
 		for (uint64 Index = 0; Index < Instances.GetCount(); ++Index)
 		{
 			System* Instance = Instances[Index];
 			NX_LOG(Info, Application, "Bootstrap - Systems: %s", Instance->GetObjectType().C());
-			if (Boot)
-			{
-				Instance->Initialize();
-				Instance->SetEnabled(true);
-			}
-			else
-			{
-				Instance->SetEnabled(false);
-				Instance->Shutdown();
-			}
+			Callback(Instance);
 		}
 	}
 }

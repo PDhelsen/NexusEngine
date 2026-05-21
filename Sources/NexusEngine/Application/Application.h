@@ -5,7 +5,7 @@
 #include "NexusEngine/Application/Flow/EntryPoint.h"
 #include "NexusEngine/Application/Flow/Bootstrapper.h"
 #include "NexusEngine/Application/Flow/Ticker.h"
-#include "NexusEngine/Application/Systems/TimeManager.h"
+#include "NexusEngine/Application/Flow/TimeManager.h"
 #include "NexusEngine/Application/Systems/SystemManager.h"
 
 namespace NxFr

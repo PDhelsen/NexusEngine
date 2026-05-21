@@ -7,50 +7,41 @@ namespace NxEn
 {
 	class NX_ENGINE_API Bootstrapper
 	{
-		friend class Application;
-
 	public:
 		using Signature = NxFr::Delegate<void()>;
 
-		enum class StepBucket
+		enum class BootBucket
 		{
-			BeforeSystem, AfterSystem
+			BeforeSystem,
+			AfterSystem
 		};
+
+		Bootstrapper();
+		~Bootstrapper();
+
+		void RunBoot();
+		void RunUnboot();
+
+		Bootstrapper& AppendStep(BootBucket Bucket, NxFr::StringView Tag, const Signature& Step);
+		template<typename T>
+		Bootstrapper& AppendSystem() { return AppendSystem(T::GetClassType()); }
+		Bootstrapper& AppendSystem(NxFr::StringId Type);
+		template<typename T, typename D>
+		Bootstrapper& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
+		Bootstrapper& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
 
 	private:
 		struct StepInfo
 		{
-			StepBucket Bucket;
+			BootBucket Bucket;
+			NxFr::String Tag;
 			Signature Callback;
-			NxFr::StringView Tag;
 		};
 
-	public:
-		Bootstrapper();
-		~Bootstrapper();
+		void ExecuteSteps(BootBucket Bucket);
+		void ExecuteSystems(const NxFr::Delegate<void(System*)>& Callback);
 
-		Bootstrapper& AppendStep(StepBucket Bucket, NxFr::StringView Tag, const Signature& Step);
-
-		template<typename T>
-		Bootstrapper& AppendSystem() { return AppendSystem(T::GetClassType()); }
-		template<typename T, typename D>
-		Bootstrapper& AppendDependency() { return AppendDependency(T::GetClassType(), D::GetClassType()); }
-
-		Bootstrapper& AppendSystem(NxFr::StringId Type);
-		Bootstrapper& AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency);
-
-		uint64 GetStepsCount() const { return Steps.GetCount(); }
-		uint64 GetSystemsCount() const { return Systems.GetCount(); }
-
-	private:
-		void RunBoot();
-		void RunUnboot();
-
-		void ExecuteSteps(bool Boot, StepBucket Bucket);
-		void ExecuteSystems(bool Boot);
-
-	private:
 		NxFr::List<StepInfo> Steps;
-		NxFr::Dictionary<NxFr::StringId, NxEn::SystemDependencies> Systems;
+		NxFr::Dictionary<NxFr::StringId, SystemDependencies> Systems;
 	};
 }
