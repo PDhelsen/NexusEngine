@@ -50,7 +50,7 @@ namespace NxEn
 
 	void SettingsSystem::LoadSettings() const
 	{
-		NxFr::String Path = Project::GetSavedConfigPath(Folder, "", "", "");
+		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
 
 		for (auto& [Page, Instances] : Settings)
@@ -81,7 +81,7 @@ namespace NxEn
 
 	void SettingsSystem::SaveSettings() const
 	{
-		NxFr::String Path = Project::GetSavedConfigPath(Folder, "", "", "");
+		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
 		NxFr::Array<NxFr::Array<Setting*>> Settings = GetAllSettingsSorted();
 
 		for (NxFr::Array<Setting*>& Page : Settings)

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Application/Project/Project.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
 
 namespace NxEn
 {
-	class Project;
-
 	class NX_ENGINE_API ProjectPanel : public GUI::Panel
 	{
 	public:

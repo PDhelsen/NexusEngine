@@ -7,23 +7,41 @@ namespace NxEn
 {
 	namespace EntryPoint
 	{
-		bool Restart = false;
-		int ErrorCode = 0;
+		static int ErrorCode = 0;
+		static bool Restart = false;
 
-		void ScheduleRestart()
+		static Project CreateProject()
 		{
-			Restart = true;
-		}
+			// Lookup Cmdline args (Named)
+			NxFr::StringView PathArg = NxFr::Globals::Args->Get("Project");
+			NxFr::String Path = NxFr::Path::Normalize(PathArg);
 
-		void SetErrorCode(int32 Code)
-		{
-			if (ErrorCode != 0)
+			// Lookup Cmdline args (Positional)
+			if (Path.IsEmpty())
 			{
-				NX_LOG(Warning, Application, "Error Code was already set to %d", ErrorCode);
-				return;
+				PathArg = NxFr::Globals::Args->Get(1);
+				if (NxFr::Path::GetExtension(PathArg) == "nexus")
+				{
+					Path = NxFr::Path::Normalize(PathArg);
+				}
 			}
 
-			ErrorCode = Code;
+			// Lookup working directory
+			if (Path.IsEmpty())
+			{
+				NxFr::String WorkingDir = NxFr::Globals::PlatformTarget->GetWorkingDirectory();
+				NxFr::List<NxFr::String> Files = NxFr::Directory(WorkingDir).GetFiles();
+				for (auto& File : Files)
+				{
+					if (NxFr::Path::GetExtension(File) == "nexus")
+					{
+						Path = Move(File);
+						break;
+					}
+				}
+			}
+
+			return Project(Path);
 		}
 
 		int Main(int argc, char* argv[])
@@ -57,6 +75,22 @@ namespace NxEn
 			delete NxFr::Globals::Debug::Logs;
 
 			return ErrorCode;
+		}
+
+		void SetErrorCode(int32 Code)
+		{
+			if (ErrorCode != 0)
+			{
+				NX_LOG(Warning, Application, "Error Code was already set to %d", ErrorCode);
+				return;
+			}
+
+			ErrorCode = Code;
+		}
+
+		void ScheduleRestart()
+		{
+			Restart = true;
 		}
 	}
 }

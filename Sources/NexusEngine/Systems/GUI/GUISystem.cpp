@@ -22,6 +22,11 @@ namespace NxEn
 	const NxFr::StringView ExtensionStyle = "style";
 	const NxFr::StringView ExtensionLayout = "layout";
 
+	static NxFr::String GeneratePath(NxFr::StringView Name, NxFr::StringView Extension)
+	{
+		return NxFr::Path::Combine(Folder, Name + NxFr::Path::SeparatorExtension + Extension);
+	}
+
 	static GUI::Window& GetMainWindow()
 	{
 		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
@@ -125,13 +130,19 @@ namespace NxEn
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
-		NxFr::String Path = Project::GetSavedConfigPath(Name, NameImGui, NameDefault, ExtensionImGui, Folder);
+		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
+			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
+			GeneratePath(NameDefault, ExtensionImGui),
+			Name.IsEmpty());
 		if (NxFr::Path::Exist(Path))
 		{
 			LoadLayoutImGui(Path);
 		}
 
-		Path = Project::GetSavedConfigPath(Name, NameLayout, NameDefault, ExtensionLayout, Folder);
+		Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
+			GeneratePath((!Name.IsEmpty() ? Name : NameLayout), ExtensionLayout),
+			GeneratePath(NameDefault, ExtensionLayout),
+			Name.IsEmpty());
 		if (NxFr::Path::Exist(Path))
 		{
 			LoadLayoutNexus(Path);
@@ -142,10 +153,14 @@ namespace NxEn
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
-		NxFr::String Path = Project::GetSavedConfigPath(Name, NameImGui, "", ExtensionImGui, Folder);
+		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
+			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
+			"", Name.IsEmpty());
 		SaveLayoutImGui(Path);
 
-		Path = Project::GetSavedConfigPath(Name, NameLayout, "", ExtensionLayout, Folder);
+		Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
+			GeneratePath((!Name.IsEmpty() ? Name : NameLayout), ExtensionLayout),
+			"", Name.IsEmpty());
 		if (!Name.IsEmpty() && !NxFr::Path::Exist(Path))
 		{
 			AddMenuWindowLayouts(Name);
@@ -157,7 +172,10 @@ namespace NxEn
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
-		NxFr::String Path = Project::GetSavedConfigPath(Name, NameStyle, NameDefault, ExtensionStyle, Folder);
+		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
+			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
+			GeneratePath(NameDefault, ExtensionStyle),
+			Name.IsEmpty());
 		if (!NxFr::Path::Exist(Path))
 		{
 			return;
@@ -173,7 +191,9 @@ namespace NxEn
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
 	{
-		NxFr::String Path = Project::GetSavedConfigPath(Name, NameStyle, "", ExtensionStyle, Folder);
+		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
+			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
+			"", Name.IsEmpty());
 
 		YAML::Emitter Data;
 		Data << YAML::BeginMap;

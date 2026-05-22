@@ -69,7 +69,7 @@ namespace NxEn
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Console Arguments", []() { NxFr::Globals::Args->Print(); });
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Setup Project", [&]()
 		{
-			NX_LOG(Info, Default, "Application %s starting in %s Mode", ProjectInfo.GetName().C(), NxFr::StringUtility::ToString(ProjectInfo.GetTarget()).C());
+			NX_LOG(Info, Default, "Application %s starting in %s Mode", ProjectInfo.GetName().C(), NxFr::StringUtility::ToString(ProjectInfo.GetMode()).C());
 			NxFr::Globals::PlatformTarget->SetWorkingDirectory(ProjectInfo.GetRootPath());
 		});
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Setup Paths & Folders", &NxFr::Globals::CreatePathsAndFolders);

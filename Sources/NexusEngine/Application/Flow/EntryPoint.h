@@ -6,9 +6,9 @@ namespace NxEn
 {
 	namespace EntryPoint
 	{
-		void ScheduleRestart();
-		void SetErrorCode(int32 Code);
-
 		NX_ENGINE_API int Main(int argc, char* argv[]);
+
+		void SetErrorCode(int32 Code);
+		void ScheduleRestart();
 	}
 }

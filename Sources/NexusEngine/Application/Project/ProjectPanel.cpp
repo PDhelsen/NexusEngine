@@ -38,11 +38,11 @@ namespace NxEn
 
 	void ProjectPanel::OnGui(float TimeStep)
 	{
-		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetTarget()), "Mode", &Style);
+		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetMode()), "Mode", &Style);
 		ImGui::Separator();
 		GUI::Drawer<NxFr::String>::Property(Infos->GetName(), "Name", &Style);
 		GUI::Drawer<NxFr::String>::Property(Infos->GetRootPath(), "Root", &Style);
-		GUI::Drawer<NxFr::String>::Property(Infos->GetPath(), "Path", &Style);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetProjectPath(), "Path", &Style);
 		ImGui::Separator();
 		GUI::Drawer<NxFr::String>::Property(Infos->GetExecutablePath(), "Executable", &Style);
 		GUI::Drawer<NxFr::String>::Property(Infos->GetDllPath(), "Dll", &Style);
