@@ -13,9 +13,16 @@ namespace NxAp
 		NexusAppApplication(const NxEn::Project& ProjectInfo);
 		virtual ~NexusAppApplication();
 
+		NxEn::Input::Schema& GetInputApp() { return Inputs; }
+
 	protected:
 		virtual void OnInitialize() override;
 		virtual void OnShutdown() override;
 		virtual void OnRun() override;
+
+	private:
+		void ShowWindow();
+
+		NxEn::Input::Schema Inputs;
 	};
 }

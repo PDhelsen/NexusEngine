@@ -1,7 +1,7 @@
 #include "NexusEditor/Systems/Object/Stage/Stage.h"
 
 #include "NexusEditor/Systems/Edit/EditSystem.h"
-#include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEditor/Systems/Object/Viewer/Contexts/ViewerContext3D.h"
 
 namespace NxEd
@@ -58,14 +58,14 @@ namespace NxEd
 		Inspector->SetTitle("Inspector##" + IdString);
 		Inspector->SetManual(true);
 
-		Hierarchy = NxEn::Application::GetSystem<EditorSystem>()->GetHierarchyManager().CreatePanel();
+		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager().CreatePanel();
 		Hierarchy->SetTitle("Hierarchy##" + IdString);
 		Hierarchy->SetManual(true);
 	}
 
 	void Stage::OnShutdown()
 	{
-		NxEn::Application::GetSystem<EditorSystem>()->GetHierarchyManager().DestroyPanel(Hierarchy);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager().DestroyPanel(Hierarchy);
 
 		Inspector->Shutdown();
 		delete Inspector;

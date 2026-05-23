@@ -2,29 +2,29 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
-#include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Core/NexusEditorApplication.h"
 
 namespace NxEd
 {
 	const static NxEn::Command CmdAssetBrowserCreateDirectory = NxEn::Command::Create("Assets.Browser.Create.Directory"_Sid, "Create at path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Item)
 	{
-		NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser().Create(Item, 0);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser().Create(Item, 0);
 	}));
 	const static NxEn::Command CmdAssetBrowserCreateFile = NxEn::Command::Create("Assets.Browser.Create.File"_Sid, "Create at path in the browser", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Item, NxFr::StringView Type)
 	{
-		NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser().Create(Item, NxFr::StringId(Type));
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser().Create(Item, NxFr::StringId(Type));
 	}));
 	const static NxEn::Command CmdAssetBrowserMove = NxEn::Command::Create("Assets.Browser.Move"_Sid, "Move path in the browser", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Item, NxFr::StringView Target)
 	{
-		NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser().Move(Item, Target);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser().Move(Item, Target);
 	}));
 	const static NxEn::Command CmdAssetBrowserDuplicate = NxEn::Command::Create("Assets.Browser.Duplicate"_Sid, "Duplicate path in the browser", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Item, NxFr::StringView Target)
 	{
-		NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser().Duplicate(Item, Target);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser().Duplicate(Item, Target);
 	}));
 	const static NxEn::Command CmdAssetBrowserDelete = NxEn::Command::Create("Assets.Browser.Delete"_Sid, "Delete path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Item)
 	{
-		NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser().Delete(Item);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser().Delete(Item);
 	}));
 
 	AssetsBrowser::AssetsBrowser()

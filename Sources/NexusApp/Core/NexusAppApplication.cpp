@@ -1,18 +1,18 @@
 #include "NexusApp/Core/NexusAppApplication.h"
 
-#include "NexusApp/Systems/App/AppSystem.h"
+#include "NexusEngine/Systems/Debug/ConsolePanel.h"
 
 namespace NxAp
 {
 	NX_APPLICATION_IMPLEMENTATION(::NxAp::NexusAppApplication)
 
 	NexusAppApplication::NexusAppApplication(const NxEn::Project& ProjectInfo)
-		: NexusEngineApplication(ProjectInfo)
+		: NexusEngineApplication(ProjectInfo), Inputs()
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 
-		Systems.CreateSystem<AppSystem>();
-
+		Inputs.GetMapping().Append("Window"_Sid, NxEn::Input::Action(NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None, { this, &NexusAppApplication::ShowWindow }));
+		Systems.GetSystem<NxEn::InputSystem>()->AddSchema("App"_Sid, &Inputs);
 		if (!IsHeadless())
 		{
 			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
@@ -25,30 +25,33 @@ namespace NxAp
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 
-		Systems.DestroySystem<AppSystem>();
+		Systems.GetSystem<NxEn::InputSystem>()->RemoveSchema("App"_Sid);
 	}
 
 	void NexusAppApplication::OnInitialize()
 	{
 		NexusEngineApplication::OnInitialize();
-		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
-
-		Bootstrap.AppendSystem<AppSystem>();
 	}
 
 	void NexusAppApplication::OnShutdown()
 	{
 		NexusEngineApplication::OnShutdown();
-		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
-
-		Unbootstrap.AppendSystem<AppSystem>();
 	}
 
 	void NexusAppApplication::OnRun()
 	{
 		NexusEngineApplication::OnRun();
-		NxEn::Ticker& Ticks = GetTicker();
+	}
 
-		Ticks.AppendSystem<AppSystem>(NxEn::Ticker::TickBucket::Engine);
+	void NexusAppApplication::ShowWindow()
+	{
+		NxEn::GUI::Window& Window = GetWindow();
+
+		bool State = !Window.IsEnabled();
+		Window.SetEnabled(State);
+
+		NxEn::ConsolePanel* Console = NxEn::GUISystem::GetPanel<NxEn::ConsolePanel>();
+		Console->SetDock(Window.GetImGuiId());
+		Console->SetEnabled(State);
 	}
 }

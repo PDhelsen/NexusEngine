@@ -3,7 +3,7 @@
 
 #include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
 
-#include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -135,7 +135,7 @@ namespace NxEd
 	{
 		HierarchyItem* Item = static_cast<HierarchyItem*>(Items[0]);
 
-		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
+		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
 		InspectorPanel* Inspector = Editor->GetStageManager().GetFocusedStage()->GetInspector();
 
 		Inspector->Show(Item->GetTarget(), true);

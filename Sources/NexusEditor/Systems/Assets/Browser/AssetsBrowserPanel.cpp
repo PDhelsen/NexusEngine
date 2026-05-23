@@ -4,7 +4,7 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 
-#include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
@@ -64,7 +64,7 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnEnable()
 	{
-		Browser = &NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+		Browser = &NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 		Context = new AssetsBrowserEditContext(GetImGuiId(), this);
 		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)

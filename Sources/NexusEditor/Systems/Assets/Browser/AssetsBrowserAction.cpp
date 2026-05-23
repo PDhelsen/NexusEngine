@@ -8,7 +8,7 @@
 #include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
 #include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
 
-#include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -26,7 +26,7 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+			AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
 			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
@@ -50,7 +50,7 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+			AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 			for (auto Item : Items)
 			{
@@ -77,7 +77,7 @@ namespace NxEd
 
 	void AssetsBrowserActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 		for (auto& Item : Items)
 		{
@@ -95,7 +95,7 @@ namespace NxEd
 			return;
 		}
 
-		AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 		AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Items[0]);
 
 		NX_ASSERT(Target->GetObjectType() == AssetsBrowserItemDirectory::GetClassType(), System, "Can only move AssetsBrowserItem to directory");
@@ -111,7 +111,7 @@ namespace NxEd
 
 	void AssetsBrowserActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 		NxFr::Array<NxFr::String> Paths(Items.GetCount());
 		for (uint64 Index = 0; Index < Paths.GetCount(); ++Index)
@@ -133,7 +133,7 @@ namespace NxEd
 
 	void AssetsBrowserActionImport::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowser& Browser = NxEn::Application::GetSystem<EditorSystem>()->GetAssetsBrowser();
+		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 		bool Dirty = false;
 
 		for (auto& Item : Items)
@@ -223,7 +223,7 @@ namespace NxEd
 	{
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
+		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
 		NxFr::GUID WorldId = NxEn::WorldSystem::WorldId.GetId();
 
 		for (auto& Item : Items)
@@ -258,7 +258,7 @@ namespace NxEd
 	{
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		EditorSystem* Editor = NxEn::Application::GetSystem<EditorSystem>();
+		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
 
 		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
 		if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())

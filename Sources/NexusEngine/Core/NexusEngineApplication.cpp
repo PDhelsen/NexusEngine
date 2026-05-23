@@ -16,7 +16,7 @@ namespace NxEn
 	NX_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
-		: Application(ProjectInfo), InputSchema(), Headless(NxFr::Globals::Args->Has("Headless"))
+		: Application(ProjectInfo), Window(*GUISystem::GetWindow()), Inputs(), Headless(NxFr::Globals::Args->Has("Headless"))
 	{
 		SystemManager& Systems = GetSystems();
 
@@ -35,7 +35,7 @@ namespace NxEn
 			Systems.CreateSystem<GUISystem>();
 		}
 
-		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &InputSchema);
+		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &Inputs);
 		if (!IsHeadless())
 		{
 			WindowSystem* Window = Systems.GetSystem<WindowSystem>();
@@ -47,6 +47,8 @@ namespace NxEn
 	NexusEngineApplication::~NexusEngineApplication()
 	{
 		SystemManager& Systems = GetSystems();
+
+		Systems.GetSystem<InputSystem>()->RemoveSchema("Application"_Sid);
 
 		Systems.DestroySystem<SettingsSystem>();
 		Systems.DestroySystem<DebugSystem>();

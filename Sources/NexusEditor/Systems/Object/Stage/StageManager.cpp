@@ -1,12 +1,12 @@
 #include "NexusEditor/Systems/Object/Stage/StageManager.h"
-#include "NexusEditor/Systems/Editor/EditorSystem.h"
+#include "NexusEditor/Core/NexusEditorApplication.h"
 
 namespace NxEd
 {
 	const static NxEn::GUI::Menu::Item MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/World/Stage", NxFr::Delegate<void()>([]()
 	{
 		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
-		StageManager& Stages = NxEn::Application::GetSystem<EditorSystem>()->GetStageManager();
+		StageManager& Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
 
 		Stage* StageView = Stages.GetStage(World);
 		if (!StageView)
@@ -22,7 +22,7 @@ namespace NxEd
 		NxFr::GUID Id = Assets->PathToId(Path);
 		NxEn::Asset* Target = Assets->Load(Id);
 
-		StageManager& Stages = NxEn::Application::GetSystem<EditorSystem>()->GetStageManager();
+		StageManager& Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
 		Stage* Instance = Stages.GetStage(Target);
 		if (!Instance)
 		{
@@ -33,7 +33,7 @@ namespace NxEd
 
 	const static NxEn::Command CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Query)
 	{
-		StageManager& Stages = NxEn::Application::GetSystem<EditorSystem>()->GetStageManager();
+		StageManager& Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
 		Stage* Instance = Stages.GetFocusedStage();
 
 		NxEn::World* World = Instance->GetWorld();
