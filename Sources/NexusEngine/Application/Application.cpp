@@ -29,33 +29,6 @@ namespace NxEn
 		Instance = nullptr;
 	}
 
-	void Application::Initialize()
-	{
-		OnInitialize();
-		Bootstrap.RunBoot();
-	}
-
-	void Application::Shutdown()
-	{
-		OnShutdown();
-		Bootstrap.RunUnboot();
-	}
-
-	void Application::Run()
-	{
-		OnRun();
-		Ticks.Run();
-
-		while (IsRunning())
-		{
-			NX_INSTUMENT_SCOPE("Frame");
-
-			float DeltaTime = Time.GetDeltaTime();
-			Ticks.Tick(DeltaTime);
-			Time.Tick();
-		}
-	}
-
 	void Application::Quit()
 	{
 		NX_LOG(Info, Application, "Application was requested to quit");
@@ -113,5 +86,32 @@ namespace NxEn
 	void Application::OnRun()
 	{
 		Ticks.AppendTick(Ticker::TickBucket::Input, "Start TimeManager", { &Time, &TimeManager::Run }, true);
+	}
+
+	void Application::Initialize()
+	{
+		OnInitialize();
+		Bootstrap.RunBoot();
+	}
+
+	void Application::Shutdown()
+	{
+		OnShutdown();
+		Bootstrap.RunUnboot();
+	}
+
+	void Application::Run()
+	{
+		OnRun();
+		Ticks.Run();
+
+		while (IsRunning())
+		{
+			NX_INSTUMENT_SCOPE("Frame");
+
+			float DeltaTime = Time.GetDeltaTime();
+			Ticks.Tick(DeltaTime);
+			Time.Tick();
+		}
 	}
 }

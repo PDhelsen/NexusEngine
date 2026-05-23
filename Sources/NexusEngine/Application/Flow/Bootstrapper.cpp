@@ -12,6 +12,24 @@ namespace NxEn
 	{
 	}
 
+	Bootstrapper& Bootstrapper::AppendStep(BootBucket Bucket, NxFr::StringView Tag, const Signature& Step)
+	{
+		Steps.AppendConstruct(Bucket, Tag, Step);
+		return *this;
+	}
+
+	Bootstrapper& Bootstrapper::AppendSystem(NxFr::StringId Type)
+	{
+		Systems.Append(Type, NxFr::Set<NxFr::StringId>());
+		return *this;
+	}
+
+	Bootstrapper& Bootstrapper::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
+	{
+		Systems[Type].TryAppend(Dependency);
+		return *this;
+	}
+
 	void Bootstrapper::RunBoot()
 	{
 		ExecuteSteps(BootBucket::BeforeSystem);
@@ -38,24 +56,6 @@ namespace NxEn
 
 		Steps.Clear();
 		Systems.Clear();
-	}
-
-	Bootstrapper& Bootstrapper::AppendStep(BootBucket Bucket, NxFr::StringView Tag, const Signature& Step)
-	{
-		Steps.AppendConstruct(Bucket, Tag, Step);
-		return *this;
-	}
-
-	Bootstrapper& Bootstrapper::AppendSystem(NxFr::StringId Type)
-	{
-		Systems.Append(Type, NxFr::Set<NxFr::StringId>());
-		return *this;
-	}
-
-	Bootstrapper& Bootstrapper::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
-	{
-		Systems[Type].TryAppend(Dependency);
-		return *this;
 	}
 
 	void Bootstrapper::ExecuteSteps(BootBucket Bucket)

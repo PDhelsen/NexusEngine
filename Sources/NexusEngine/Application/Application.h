@@ -3,6 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Project/Project.h"
 #include "NexusEngine/Application/Systems/SystemManager.h"
+#include "NexusEngine/Application/Flow/EntryPoint.h"
 #include "NexusEngine/Application/Flow/Bootstrapper.h"
 #include "NexusEngine/Application/Flow/Ticker.h"
 #include "NexusEngine/Application/Flow/TimeManager.h"
@@ -39,6 +40,8 @@ namespace NxEn
 {
 	class NX_ENGINE_API Application
 	{
+		friend int EntryPoint::Main(int argc, char* argv[]);
+
 	public:
 		enum class CrashCode
 		{
@@ -54,10 +57,6 @@ namespace NxEn
 
 		Application(const Project& ProjectInfo);
 		virtual ~Application();
-
-		void Initialize();
-		void Shutdown();
-		void Run();
 
 		void Quit();
 		void Crash(CrashCode ErrorCode);
@@ -76,6 +75,10 @@ namespace NxEn
 		virtual void OnRun();
 
 	private:
+		void Initialize();
+		void Shutdown();
+		void Run();
+
 		static Application* Instance;
 
 		Project ProjectInfo;

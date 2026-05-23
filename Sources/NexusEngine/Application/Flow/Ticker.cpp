@@ -15,6 +15,41 @@ namespace NxEn
 		
 	}
 
+	Ticker& Ticker::AppendTick(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback, bool Once)
+	{
+		TicksBuffer.AppendConstruct(Bucket, Tag, Callback, Once, false);
+		return *this;
+	}
+
+	Ticker& Ticker::RemoveTick(TickBucket Bucket, NxFr::StringView Tag)
+	{
+		TicksBuffer.AppendConstruct(Bucket, Tag, nullptr, false, true);
+		return *this;
+	}
+
+	Ticker& Ticker::AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
+	{
+		Systems[(uint64)Bucket].AppendConstruct(Bucket, Type, nullptr, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
+		SystemsDependencies.Append(Type, NxFr::Set<NxFr::StringId>());
+		return *this;
+	}
+
+	Ticker& Ticker::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
+	{
+		SystemsDependencies[Type].TryAppend(Dependency);
+		return *this;
+	}
+
+	void Ticker::SetTickRate(NxFr::StringId Type, float TickRate, bool FixedTimeStep)
+	{
+		auto It = GetSystemInfo(Type);
+		if (It != Systems.End()->End())
+		{
+			It->TickRate = ComputeTickRate(TickRate, FixedTimeStep);
+			NX_LOG(Info, Application, "System %s tick rate changed to %f", Type.C(), It->TickRate);
+		}
+	}
+
 	void Ticker::Run()
 	{
 		if (SystemsDependencies.IsEmpty())
@@ -83,13 +118,13 @@ namespace NxEn
 		}
 
 		NX_LOG(Info, Application, "Tick order:")
-		for (auto& Bucket : Systems)
-		{
-			for (auto& Info : Bucket)
+			for (auto& Bucket : Systems)
 			{
-				NX_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
+				for (auto& Info : Bucket)
+				{
+					NX_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
+				}
 			}
-		}
 	}
 
 	void Ticker::Tick(float DeltaTime)
@@ -140,41 +175,6 @@ namespace NxEn
 					Info.Instance->Tick(TimeStep);
 				}
 			}
-		}
-	}
-
-	Ticker& Ticker::AppendTick(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback, bool Once)
-	{
-		TicksBuffer.AppendConstruct(Bucket, Tag, Callback, Once, false);
-		return *this;
-	}
-
-	Ticker& Ticker::RemoveTick(TickBucket Bucket, NxFr::StringView Tag)
-	{
-		TicksBuffer.AppendConstruct(Bucket, Tag, nullptr, false, true);
-		return *this;
-	}
-
-	Ticker& Ticker::AppendSystem(NxFr::StringId Type, TickBucket Bucket, float TickRate, bool FixedTimeStep)
-	{
-		Systems[(uint64)Bucket].AppendConstruct(Bucket, Type, nullptr, ComputeTickRate(TickRate, FixedTimeStep), FixedTimeStep);
-		SystemsDependencies.Append(Type, NxFr::Set<NxFr::StringId>());
-		return *this;
-	}
-
-	Ticker& Ticker::AppendDependency(NxFr::StringId Type, NxFr::StringId Dependency)
-	{
-		SystemsDependencies[Type].TryAppend(Dependency);
-		return *this;
-	}
-
-	void Ticker::SetTickRate(NxFr::StringId Type, float TickRate, bool FixedTimeStep)
-	{
-		auto It = GetSystemInfo(Type);
-		if (It != Systems.End()->End())
-		{
-			It->TickRate = ComputeTickRate(TickRate, FixedTimeStep);
-			NX_LOG(Info, Application, "System %s tick rate changed to %f", Type.C(), It->TickRate);
 		}
 	}
 

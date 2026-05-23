@@ -1,13 +1,14 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Application/Systems/System.h"
 
 namespace NxEn
 {
-	class System;
-
 	class NX_ENGINE_API Bootstrapper
 	{
+		friend class Application;
+
 	public:
 		using Signature = NxFr::Delegate<void()>;
 
@@ -19,9 +20,6 @@ namespace NxEn
 
 		Bootstrapper();
 		~Bootstrapper();
-
-		void RunBoot();
-		void RunUnboot();
 
 		Bootstrapper& AppendStep(BootBucket Bucket, NxFr::StringView Tag, const Signature& Step);
 		template<typename T>
@@ -38,6 +36,9 @@ namespace NxEn
 			NxFr::String Tag;
 			Signature Callback;
 		};
+
+		void RunBoot();
+		void RunUnboot();
 
 		void ExecuteSteps(BootBucket Bucket);
 		void ExecuteSystems(const NxFr::Delegate<void(System*)>& Callback);

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Application/Systems/System.h"
 
 namespace NxEn
 {
-	class System;
-
 	class NX_ENGINE_API Ticker
 	{
+		friend class Application;
+
 	public:
 		using Signature = NxFr::Delegate<void()>;
 
@@ -30,9 +31,6 @@ namespace NxEn
 
 		Ticker();
 		~Ticker();
-
-		void Run();
-		void Tick(float DeltaTime);
 
 		Ticker& AppendTick(TickBucket Bucket, NxFr::StringView Tag, const Signature& Callback, bool Once = false);
 		Ticker& RemoveTick(TickBucket Bucket, NxFr::StringView Tag);
@@ -74,6 +72,9 @@ namespace NxEn
 			{ "Ticks - Output", "Systems - Output" },
 			{ "Ticks - Cleanup", "Systems - Cleanup" }
 		};
+
+		void Run();
+		void Tick(float DeltaTime);
 
 		void FlushTicksBuffer();
 		float ComputeTimeStep(SystemInfo& Info, float DeltaTime) const;

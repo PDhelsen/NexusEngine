@@ -6,12 +6,11 @@ namespace NxEn
 {
 	class NX_ENGINE_API TimeManager
 	{
+		friend class Application;
+
 	public:
 		TimeManager();
 		~TimeManager();
-
-		void Run();
-		void Tick();
 
 		uint64 GetFrameIndex() const { return FrameIndex; }
 		float GetDeltaTime() const { return (float)DeltaTime; }
@@ -22,6 +21,9 @@ namespace NxEn
 		float GetMultiplier() const { return Multiplier; }
 
 	private:
+		void Run();
+		void Tick();
+
 		NxFr::Stopwatch Watch;
 
 		uint64 FrameIndex;
