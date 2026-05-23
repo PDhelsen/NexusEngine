@@ -3,14 +3,6 @@
 
 #include "NexusEngine/Application/Flow/EntryPoint.h"
 
-namespace NxFr
-{
-	namespace LoggerChannel
-	{
-		const NxFr::StringId Application = "Application"_Sid;
-	}
-}
-
 namespace NxEn
 {
 	Application* Application::Instance = nullptr;

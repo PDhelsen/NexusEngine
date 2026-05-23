@@ -5,14 +5,6 @@
 #include "NexusEngine/Systems/GUI/Styles.h"
 #include "NexusEngine/Systems/GUI/Utils.h"
 
-namespace NxFr
-{
-	namespace StatsHeader
-	{
-		extern const NxFr::StringId GuiElementsId;
-	}
-}
-
 namespace NxEn
 {
 	class NX_ENGINE_API GUISystem : public System

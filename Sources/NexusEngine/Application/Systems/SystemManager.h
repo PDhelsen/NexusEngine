@@ -7,7 +7,7 @@ namespace NxFr
 {
 	namespace LoggerChannel
 	{
-		NX_ENGINE_API extern const NxFr::StringId System;
+		inline const NxFr::StringId System = "System"_Sid;
 	}
 }
 

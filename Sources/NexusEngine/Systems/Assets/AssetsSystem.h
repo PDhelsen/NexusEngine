@@ -4,14 +4,6 @@
 #include "NexusEngine/Systems/Assets/Asset.h"
 #include "NexusEngine/Systems/Assets/AssetMetadata.h"
 
-namespace NxFr
-{
-	namespace StatsHeader
-	{
-		extern const NxFr::StringId AssetsTrackedId;
-		extern const NxFr::StringId AssetsLoadedId;
-	}
-}
 namespace NxEn
 {
 	class NX_ENGINE_API AssetsSystem : public System

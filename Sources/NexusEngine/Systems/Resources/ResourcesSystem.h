@@ -3,15 +3,6 @@
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Resources/Resource.h"
 
-namespace NxFr
-{
-	namespace StatsHeader
-	{
-		extern const NxFr::StringId ResourcesTrackedId;
-		extern const NxFr::StringId ResourcesLoadedId;
-	}
-}
-
 namespace NxEn
 {
 	class NX_ENGINE_API ResourcesSystem : public System

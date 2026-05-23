@@ -4,16 +4,6 @@
 #include "NexusEngine/Systems/Memory/HandleManager.h"
 #include "NexusEngine/Systems/Memory/Allocator.h"
 
-namespace NxFr
-{
-	namespace StatsHeader
-	{
-		extern const NxFr::StringId MemoryAllocatedId;
-		extern const NxFr::StringId MemoryAllocationId;
-		extern const NxFr::StringId PlatformMemoryId;
-	}
-}
-
 namespace NxEn
 {
 	class NX_ENGINE_API MemorySystem : public System
