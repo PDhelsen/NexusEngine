@@ -116,9 +116,9 @@ namespace NxEn
 		Application::OnShutdown();
 	}
 
-	void NexusEngineApplication::OnExecute()
+	void NexusEngineApplication::OnRun()
 	{
-		Application::OnExecute();
+		Application::OnRun();
 		Ticker& Ticks = GetTicker();
 
 		Ticks.AppendSystem<InputSystem>(Ticker::TickBucket::Input);

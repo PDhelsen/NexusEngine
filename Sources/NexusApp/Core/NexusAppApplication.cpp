@@ -44,9 +44,9 @@ namespace NxAp
 		Unbootstrap.AppendSystem<AppSystem>();
 	}
 
-	void NexusAppApplication::OnExecute()
+	void NexusAppApplication::OnRun()
 	{
-		NexusEngineApplication::OnExecute();
+		NexusEngineApplication::OnRun();
 		NxEn::Ticker& Ticks = GetTicker();
 
 		Ticks.AppendSystem<AppSystem>(NxEn::Ticker::TickBucket::Engine);

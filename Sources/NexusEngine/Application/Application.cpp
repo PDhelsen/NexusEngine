@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Application.h"
 
+#include "NexusEngine/Application/Flow/EntryPoint.h"
+
 namespace NxFr
 {
 	namespace LoggerChannel
@@ -11,29 +13,47 @@ namespace NxFr
 
 namespace NxEn
 {
-	static Application* Instance = nullptr;
-
-	Application* Application::GetInstance()
-	{
-		return Instance;
-	}
-
-	System* Application::GetSystem(NxFr::StringId Id)
-	{
-		return Instance->GetSystems().GetSystem(Id);
-	}
+	Application* Application::Instance = nullptr;
 
 	Application::Application(const Project& ProjectInfo)
-		: ProjectInfo(ProjectInfo), Bootstrap(), Ticks(), Systems(), Time(), WantsToQuit(false)
+		: ProjectInfo(ProjectInfo), Systems(), Bootstrap(), Ticks(), Time(), WantsToQuit(false), CrashReason(CrashCode::None)
 	{
-		NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Application, true);
 		NX_ASSERT(Instance == nullptr, Application, "Application was already created");
 		Instance = this;
+
+		NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Application, true);
 	}
 
 	Application::~Application()
 	{
 		Instance = nullptr;
+	}
+
+	void Application::Initialize()
+	{
+		OnInitialize();
+		Bootstrap.RunBoot();
+	}
+
+	void Application::Shutdown()
+	{
+		OnShutdown();
+		Bootstrap.RunUnboot();
+	}
+
+	void Application::Run()
+	{
+		OnRun();
+		Ticks.Run();
+
+		while (IsRunning())
+		{
+			NX_INSTUMENT_SCOPE("Frame");
+
+			float DeltaTime = Time.GetDeltaTime();
+			Ticks.Tick(DeltaTime);
+			Time.Tick();
+		}
 	}
 
 	void Application::Quit()
@@ -43,20 +63,26 @@ namespace NxEn
 		WantsToQuit = true;
 	}
 
+	void Application::Crash(CrashCode ErrorCode)
+	{
+		if (CrashReason != CrashCode::None)
+		{
+			return;
+		}
+
+		NX_LOG(Info, Application, "Application crashed with code %d", ErrorCode);
+
+		CrashReason = ErrorCode;
+		EntryPoint::SetErrorCode((int32)ErrorCode);
+		WantsToQuit = true;
+	}
+
 	void Application::Restart()
 	{
 		NX_LOG(Info, Application, "Application was requested to restart");
 
 		EntryPoint::ScheduleRestart();
-		Quit();
-	}
-
-	void Application::Crash(CrashCode ErrorCode)
-	{
-		NX_LOG(Info, Application, "Application crashed with code %d", ErrorCode);
-
-		EntryPoint::SetErrorCode((int8)ErrorCode);
-		Quit();
+		WantsToQuit = true;
 	}
 
 	bool Application::IsRunning() const
@@ -84,42 +110,8 @@ namespace NxEn
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Cleanup Folders", &NxFr::Globals::DestroyTempFolder);
 	}
 
-	void Application::OnExecute()
+	void Application::OnRun()
 	{
 		Ticks.AppendTick(Ticker::TickBucket::Input, "Start TimeManager", { &Time, &TimeManager::Run }, true);
-	}
-
-	void Application::Run()
-	{
-		Initialize();
-		Execute();
-		Shutdown();
-	}
-
-	void Application::Initialize()
-	{
-		OnInitialize();
-		Bootstrap.RunBoot();
-	}
-
-	void Application::Shutdown()
-	{
-		OnShutdown();
-		Bootstrap.RunUnboot();
-	}
-
-	void Application::Execute()
-	{
-		OnExecute();
-		Ticks.Run();
-
-		while (IsRunning())
-		{
-			NX_INSTUMENT_SCOPE("Frame");
-
-			float DeltaTime = Time.GetDeltaTime();
-			Ticks.Tick(DeltaTime);
-			Time.Tick();
-		}
 	}
 }

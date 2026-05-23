@@ -64,7 +64,9 @@ namespace NxEn
 				Restart = false;
 
 				Application* Instance = CreateApplication.Invoke(ProjectInfo);
+				Instance->Initialize();
 				Instance->Run();
+				Instance->Shutdown();
 				DestroyApplication.Invoke(Instance);
 
 			} while (Restart);
@@ -79,12 +81,6 @@ namespace NxEn
 
 		void SetErrorCode(int32 Code)
 		{
-			if (ErrorCode != 0)
-			{
-				NX_LOG(Warning, Application, "Error Code was already set to %d", ErrorCode);
-				return;
-			}
-
 			ErrorCode = Code;
 		}
 

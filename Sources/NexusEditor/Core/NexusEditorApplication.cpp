@@ -77,9 +77,9 @@ namespace NxEd
 		});
 	}
 
-	void NexusEditorApplication::OnExecute()
+	void NexusEditorApplication::OnRun()
 	{
-		NexusEngineApplication::OnExecute();
+		NexusEngineApplication::OnRun();
 		NxEn::Ticker& Ticks = GetTicker();
 
 		Ticks.AppendSystem<EditorSystem>(NxEn::Ticker::TickBucket::Engine);

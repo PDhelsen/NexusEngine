@@ -23,8 +23,8 @@ namespace NxSE
 		NexusEditorApplication::OnShutdown();
 	}
 
-	void NexusSandboxEditorApplication::OnExecute()
+	void NexusSandboxEditorApplication::OnRun()
 	{
-		NexusEditorApplication::OnExecute();
+		NexusEditorApplication::OnRun();
 	}
 }

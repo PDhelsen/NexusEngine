@@ -2,11 +2,10 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Project/Project.h"
-#include "NexusEngine/Application/Flow/EntryPoint.h"
+#include "NexusEngine/Application/Systems/SystemManager.h"
 #include "NexusEngine/Application/Flow/Bootstrapper.h"
 #include "NexusEngine/Application/Flow/Ticker.h"
 #include "NexusEngine/Application/Flow/TimeManager.h"
-#include "NexusEngine/Application/Systems/SystemManager.h"
 
 namespace NxFr
 {
@@ -27,70 +26,66 @@ namespace EntryPoint\
 {\
 	NxEn::Application* CreateApplication(const NxEn::Project& ProjectInfo)\
 	{\
-		NxFr::Allocator::Scope Allocator(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General));\
 		return new Name(ProjectInfo);\
 	}\
 	\
 	void DestroyApplication(NxEn::Application* Application)\
 	{\
-		NxFr::Allocator::Scope Allocator(NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::General));\
 		delete Application;\
 	}\
 }
 
 namespace NxEn
 {
-	enum class CrashCode : int8
-	{
-		None = 0, Crash = 1
-	};
-
 	class NX_ENGINE_API Application
 	{
-		friend int EntryPoint::Main(int argc, char* argv[]);
-
 	public:
+		enum class CrashCode
+		{
+			None = 0, Crash = 1
+		};
+
 		template<typename T>
 		static T* GetInstance() { return (T*)GetInstance(); }
+		static Application* GetInstance() { return Instance; }
 		template<typename T>
 		static T* GetSystem() { return (T*)GetSystem(T::GetClassType()); }
-
-		static Application* GetInstance();
-		static System* GetSystem(NxFr::StringId Id);
+		static System* GetSystem(NxFr::StringId Id) { return Instance->GetSystems().GetSystem(Id); }
 
 		Application(const Project& ProjectInfo);
 		virtual ~Application();
 
+		void Initialize();
+		void Shutdown();
+		void Run();
+
 		void Quit();
-		void Restart();
 		void Crash(CrashCode ErrorCode);
+		void Restart();
 		bool IsRunning() const;
 
 		Project& GetProject() { return ProjectInfo; }
+		SystemManager& GetSystems() { return Systems; }
 		Bootstrapper& GetBootstrapper() { return Bootstrap; }
 		Ticker& GetTicker() { return Ticks; }
-		SystemManager& GetSystems() { return Systems; }
 		TimeManager& GetTime() { return Time; }
 
 	protected:
 		virtual void OnInitialize();
 		virtual void OnShutdown();
-		virtual void OnExecute();
+		virtual void OnRun();
 
 	private:
-		void Run();
-		void Initialize();
-		void Shutdown();
-		void Execute();
+		static Application* Instance;
 
-	private:
 		Project ProjectInfo;
+		SystemManager Systems;
 		Bootstrapper Bootstrap;
 		Ticker Ticks;
-		SystemManager Systems;
 		TimeManager Time;
 
 		bool WantsToQuit;
+		CrashCode CrashReason;
 	};
 }
 

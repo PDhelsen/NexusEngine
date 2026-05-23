@@ -23,8 +23,8 @@ namespace NxSA
 		NexusAppApplication::OnShutdown();
 	}
 
-	void NexusSandboxAppApplication::OnExecute()
+	void NexusSandboxAppApplication::OnRun()
 	{
-		NexusAppApplication::OnExecute();
+		NexusAppApplication::OnRun();
 	}
 }

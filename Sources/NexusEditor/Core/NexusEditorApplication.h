@@ -16,6 +16,6 @@ namespace NxEd
 	protected:
 		virtual void OnInitialize() override;
 		virtual void OnShutdown() override;
-		virtual void OnExecute() override;
+		virtual void OnRun() override;
 	};
 }
