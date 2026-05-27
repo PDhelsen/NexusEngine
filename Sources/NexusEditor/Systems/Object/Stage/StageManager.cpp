@@ -6,14 +6,14 @@ namespace NxEd
 	const static NxEn::GUI::Menu::Item MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/World/Stage", NxFr::Delegate<void()>([]()
 	{
 		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
-		StageManager& Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
+		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
 
-		Stage* StageView = Stages.GetStage(World);
+		Stage* StageView = Stages->GetStage(World);
 		if (!StageView)
 		{
-			StageView = Stages.CreateStage(World);
+			StageView = Stages->CreateStage(World);
 		}
-		Stages.ShowStage(World);
+		Stages->ShowStage(World);
 	}));
 
 	const static NxEn::Command CmdStageShowAsset = NxEn::Command::Create("Stage.Show.Asset"_Sid, "Show asset on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
@@ -22,19 +22,19 @@ namespace NxEd
 		NxFr::GUID Id = Assets->PathToId(Path);
 		NxEn::Asset* Target = Assets->Load(Id);
 
-		StageManager& Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
-		Stage* Instance = Stages.GetStage(Target);
+		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
+		Stage* Instance = Stages->GetStage(Target);
 		if (!Instance)
 		{
-			Instance = Stages.CreateStage(Target);
+			Instance = Stages->CreateStage(Target);
 		}
-		Stages.ShowStage(Target);
+		Stages->ShowStage(Target);
 	}));
 
 	const static NxEn::Command CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Query)
 	{
-		StageManager& Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
-		Stage* Instance = Stages.GetFocusedStage();
+		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
+		Stage* Instance = Stages->GetFocusedStage();
 
 		NxEn::World* World = Instance->GetWorld();
 		if (!World)

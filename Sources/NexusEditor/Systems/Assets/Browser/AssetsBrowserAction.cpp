@@ -26,7 +26,7 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
+			AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
 			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
@@ -38,7 +38,7 @@ namespace NxEd
 				NxFr::StringView Directory = Instance->IsDirectory() ? Instance->GetTargetPath() : Instance->GetDirectory();
 				NxFr::String Path = NxFr::Path::Combine(Directory, Name);
 
-				Browser.Create(Path, Type);
+				Browser->Create(Path, Type);
 			}
 		});
 	}
@@ -50,7 +50,7 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
+			AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 			for (auto Item : Items)
 			{
@@ -68,7 +68,7 @@ namespace NxEd
 					Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + NxFr::Path::SeparatorExtension + Instance->GetExtension()));
 				}
 
-				Browser.Move(Instance->GetTargetPath(), Path);
+				Browser->Move(Instance->GetTargetPath(), Path);
 			}
 		});
 	}
@@ -77,12 +77,12 @@ namespace NxEd
 
 	void AssetsBrowserActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
+		AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 		for (auto& Item : Items)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
-			Browser.Duplicate(Instance->GetTargetPath(), Instance->GetTargetPath());
+			Browser->Duplicate(Instance->GetTargetPath(), Instance->GetTargetPath());
 		}
 	}
 
@@ -95,7 +95,7 @@ namespace NxEd
 			return;
 		}
 
-		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
+		AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 		AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Items[0]);
 
 		NX_ASSERT(Target->GetObjectType() == AssetsBrowserItemDirectory::GetClassType(), System, "Can only move AssetsBrowserItem to directory");
@@ -103,7 +103,7 @@ namespace NxEd
 		for (uint64 Index = 1; Index < Items.GetCount(); ++Index)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[Index]);
-			Browser.Move(Instance->GetTargetPath(), NxFr::Path::Combine(Target->GetTargetPath(), Instance->GetName()));
+			Browser->Move(Instance->GetTargetPath(), NxFr::Path::Combine(Target->GetTargetPath(), Instance->GetName()));
 		}
 	}
 
@@ -111,7 +111,7 @@ namespace NxEd
 
 	void AssetsBrowserActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
+		AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 		NxFr::Array<NxFr::String> Paths(Items.GetCount());
 		for (uint64 Index = 0; Index < Paths.GetCount(); ++Index)
@@ -122,9 +122,9 @@ namespace NxEd
 
 		for (auto& Item : Paths)
 		{
-			if (Browser.Exist(Item))
+			if (Browser->Exist(Item))
 			{
-				Browser.Delete(Item);
+				Browser->Delete(Item);
 			}
 		}
 	}
@@ -133,7 +133,7 @@ namespace NxEd
 
 	void AssetsBrowserActionImport::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowser& Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
+		AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 		bool Dirty = false;
 
 		for (auto& Item : Items)
@@ -150,7 +150,7 @@ namespace NxEd
 
 		if (Dirty)
 		{
-			Browser.Refresh();
+			Browser->Refresh();
 		}
 	}
 
@@ -283,13 +283,13 @@ namespace NxEd
 			Target = Assets->Load(Id);
 		}
 
-
-		Stage* StageView = Editor->GetStageManager().GetStage(Target);
+		StageManager* Manager = Editor->GetStageManager();
+		Stage* StageView = Manager->GetStage(Target);
 		if (!StageView)
 		{
-			StageView = Editor->GetStageManager().CreateStage(Target);
+			StageView = Manager->CreateStage(Target);
 		}
-		Editor->GetStageManager().ShowStage(Target);
+		Manager->ShowStage(Target);
 	}
 
 	NX_OBJECT_IMPLEMENTATION(AssetsBrowserActionReferences)

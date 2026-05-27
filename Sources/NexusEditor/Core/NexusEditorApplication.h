@@ -21,10 +21,10 @@ namespace NxEd
 
 		NxFr::Event<>& GetOnSave() { return OnSave; }
 
-		NxEn::Input::Schema& GetInputsEditor() { return Inputs; }
-		AssetsBrowser& GetAssetsBrowser() { return *Browser; }
-		HierarchyManager& GetHierarchyManager() { return *Hierarchy; }
-		StageManager& GetStageManager() { return *Stages; }
+		NxEn::Input::Schema* GetInputsEditor() { return Inputs; }
+		AssetsBrowser* GetAssetsBrowser() { return Browser; }
+		HierarchyManager* GetHierarchyManager() { return Hierarchy; }
+		StageManager* GetStageManager() { return Stages; }
 
 	protected:
 		virtual void OnInitialize() override;
@@ -36,7 +36,7 @@ namespace NxEd
 
 		NxFr::Event<> OnSave;
 
-		NxEn::Input::Schema Inputs;
+		NxEn::Input::Schema* Inputs;
 		AssetsBrowser* Browser;
 		HierarchyManager* Hierarchy;
 		StageManager* Stages;

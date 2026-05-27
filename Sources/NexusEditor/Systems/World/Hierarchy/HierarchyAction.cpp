@@ -136,7 +136,7 @@ namespace NxEd
 		HierarchyItem* Item = static_cast<HierarchyItem*>(Items[0]);
 
 		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
-		InspectorPanel* Inspector = Editor->GetStageManager().GetFocusedStage()->GetInspector();
+		InspectorPanel* Inspector = Editor->GetStageManager()->GetFocusedStage()->GetInspector();
 
 		Inspector->Show(Item->GetTarget(), true);
 	}

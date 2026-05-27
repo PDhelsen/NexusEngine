@@ -16,15 +16,14 @@ namespace NxEn
 	NX_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
-		: Application(ProjectInfo), Window(*GUISystem::GetWindow()), Inputs(), Headless(NxFr::Globals::Args->Has("Headless"))
+		: Application(ProjectInfo), Window(GUISystem::GetWindow()), Inputs(nullptr), Headless(NxFr::Globals::Args->Has("Headless"))
 	{
 		SystemManager& Systems = GetSystems();
-
-		Systems.CreateSystem<SettingsSystem>();
 		Systems.CreateSystem<DebugSystem>();
 		Systems.CreateSystem<MemorySystem>();
 		Systems.CreateSystem<JobSystem>();
 		Systems.CreateSystem<CommandsSystem>();
+		Systems.CreateSystem<SettingsSystem>();
 		Systems.CreateSystem<InputSystem>();
 		Systems.CreateSystem<ResourcesSystem>();
 		Systems.CreateSystem<AssetsSystem>();
@@ -34,27 +33,16 @@ namespace NxEn
 			Systems.CreateSystem<WindowSystem>();
 			Systems.CreateSystem<GUISystem>();
 		}
-
-		Systems.GetSystem<InputSystem>()->AddSchema("Application"_Sid, &Inputs);
-		if (!IsHeadless())
-		{
-			WindowSystem* Window = Systems.GetSystem<WindowSystem>();
-			Window->GetOnClose() += { (Application*)this, &Application::Quit };
-			Window->SetWindowTitle(GetProject().GetName());
-		}
 	}
 
 	NexusEngineApplication::~NexusEngineApplication()
 	{
 		SystemManager& Systems = GetSystems();
-
-		Systems.GetSystem<InputSystem>()->RemoveSchema("Application"_Sid);
-
-		Systems.DestroySystem<SettingsSystem>();
 		Systems.DestroySystem<DebugSystem>();
 		Systems.DestroySystem<MemorySystem>();
 		Systems.DestroySystem<JobSystem>();
 		Systems.DestroySystem<CommandsSystem>();
+		Systems.DestroySystem<SettingsSystem>();
 		Systems.DestroySystem<InputSystem>();
 		Systems.DestroySystem<ResourcesSystem>();
 		Systems.DestroySystem<AssetsSystem>();
@@ -71,15 +59,28 @@ namespace NxEn
 		Application::OnInitialize();
 		Bootstrapper& Bootstrap = GetBootstrapper();
 
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
+		{
+			Inputs = new Input::Schema();
+			GetSystem<InputSystem>()->AddSchema("Engine"_Sid, Inputs);
+
+			if (!IsHeadless())
+			{
+				WindowSystem* Window = GetSystem<WindowSystem>();
+				Window->GetOnClose() += { (Application*)this, & Application::Quit };
+				Window->SetWindowTitle(GetProject().GetName());
+			}
+		});
+
+		Bootstrap.AppendSystem<DebugSystem>();
+		Bootstrap.AppendSystem<CommandsSystem>();
 		Bootstrap.AppendSystem<SettingsSystem>();
-		Bootstrap.AppendSystem<DebugSystem>().AppendDependency<DebugSystem, SettingsSystem>();
-		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
-		Bootstrap.AppendSystem<JobSystem>();
-		Bootstrap.AppendSystem<CommandsSystem>().AppendDependency<CommandsSystem, MemorySystem>();
 		Bootstrap.AppendSystem<InputSystem>();
-		Bootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, DebugSystem>().AppendDependency<ResourcesSystem, MemorySystem>();
-		Bootstrap.AppendSystem<AssetsSystem>().AppendDependency<AssetsSystem, DebugSystem>().AppendDependency<AssetsSystem, MemorySystem>();
-		Bootstrap.AppendSystem<WorldSystem>().AppendDependency<WorldSystem, DebugSystem>().AppendDependency<WorldSystem, MemorySystem>();
+		Bootstrap.AppendSystem<JobSystem>().AppendDependency<JobSystem, SettingsSystem>();
+		Bootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, DebugSystem>();
+		Bootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, DebugSystem>();
+		Bootstrap.AppendSystem<AssetsSystem>().AppendDependency<AssetsSystem, ResourcesSystem>();
+		Bootstrap.AppendSystem<WorldSystem>().AppendDependency<WorldSystem, AssetsSystem>();
 		if (!IsHeadless())
 		{
 			Bootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, SettingsSystem>().AppendDependency<InputSystem, WindowSystem>();
@@ -88,11 +89,11 @@ namespace NxEn
 
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Apply Settings", []()
 		{
-			Application::GetSystem<SettingsSystem>()->ApplySettings();
+			GetSystem<SettingsSystem>()->ApplySettings();
 		});
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Start Profiler", []()
 		{
-			Application::GetSystem<DebugSystem>()->AutoStart();
+			GetSystem<DebugSystem>()->AutoStart();
 		});
 	}
 
@@ -100,19 +101,31 @@ namespace NxEn
 	{
 		Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendSystem<SettingsSystem>();
-		Unbootstrap.AppendSystem<CommandsSystem>();
-		Unbootstrap.AppendSystem<JobSystem>();
-		Unbootstrap.AppendSystem<ResourcesSystem>();
-		Unbootstrap.AppendSystem<AssetsSystem>();
-		Unbootstrap.AppendSystem<WorldSystem>();
+		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
+		{
+			GetSystem<InputSystem>()->RemoveSchema("Engine"_Sid);
+			delete Inputs;
+
+			if (!IsHeadless())
+			{
+				WindowSystem* Window = GetSystem<WindowSystem>();
+				Window->GetOnClose() -= { (Application*)this, & Application::Quit };
+			}
+		});
+
 		Unbootstrap.AppendSystem<DebugSystem>();
-		Unbootstrap.AppendSystem<MemorySystem>().AppendDependency<MemorySystem, CommandsSystem>().AppendDependency<MemorySystem, ResourcesSystem>().AppendDependency<MemorySystem, AssetsSystem>().AppendDependency<MemorySystem, WorldSystem>();
+		Unbootstrap.AppendSystem<MemorySystem>();
+		Unbootstrap.AppendSystem<JobSystem>();
+		Unbootstrap.AppendSystem<CommandsSystem>();
+		Unbootstrap.AppendSystem<SettingsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
+		Unbootstrap.AppendSystem<WorldSystem>();
+		Unbootstrap.AppendSystem<AssetsSystem>().AppendDependency<AssetsSystem, WorldSystem>();
+		Unbootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, AssetsSystem>();
 		if (!IsHeadless())
 		{
-			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>();
-			Unbootstrap.AppendSystem<GUISystem>().AppendDependency<WindowSystem, GUISystem>();
+			Unbootstrap.AppendSystem<GUISystem>();
+			Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>().AppendDependency<WindowSystem, GUISystem>();
 		}
 
 		Application::OnShutdown();
@@ -123,20 +136,20 @@ namespace NxEn
 		Application::OnRun();
 		Ticker& Ticks = GetTicker();
 
+		Ticks.AppendTick(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands }, true);
+
 		Ticks.AppendSystem<InputSystem>(Ticker::TickBucket::Input);
 		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, Ticker::LowFrequency).AppendDependency<CommandsSystem, InputSystem>();
-		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
-		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 		Ticks.AppendSystem<ResourcesSystem>(Ticker::TickBucket::Engine);
-		Ticks.AppendSystem<AssetsSystem>(Ticker::TickBucket::Engine);
-		Ticks.AppendSystem<WorldSystem>(Ticker::TickBucket::Engine);
+		Ticks.AppendSystem<AssetsSystem>(Ticker::TickBucket::Engine).AppendDependency<AssetsSystem, ResourcesSystem>();
+		Ticks.AppendSystem<WorldSystem>(Ticker::TickBucket::Engine).AppendDependency<WorldSystem, AssetsSystem>();
 		if (!IsHeadless())
 		{
 			Ticks.AppendSystem<GUISystem>(Ticker::TickBucket::Output);
 			Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output).AppendDependency<WindowSystem, GUISystem>();
 		}
-
-		Ticks.AppendTick(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands }, true);
+		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
+		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
 	}
 
 	void NexusEngineApplication::ParseCommands()

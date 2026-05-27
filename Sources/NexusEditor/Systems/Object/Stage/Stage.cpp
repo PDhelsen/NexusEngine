@@ -58,14 +58,14 @@ namespace NxEd
 		Inspector->SetTitle("Inspector##" + IdString);
 		Inspector->SetManual(true);
 
-		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager().CreatePanel();
+		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->CreatePanel();
 		Hierarchy->SetTitle("Hierarchy##" + IdString);
 		Hierarchy->SetManual(true);
 	}
 
 	void Stage::OnShutdown()
 	{
-		NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager().DestroyPanel(Hierarchy);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->DestroyPanel(Hierarchy);
 
 		Inspector->Shutdown();
 		delete Inspector;

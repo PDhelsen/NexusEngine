@@ -5,7 +5,6 @@
 
 #include "NexusEditor/Systems/Edit/EditSystem.h"
 
-
 namespace NxEd
 {
 	static NxEn::SettingMap<NxFr::String>* SettingShortcuts = NxEn::SettingMap<NxFr::String>::Create("Editor", "Shortcuts", {});
@@ -23,28 +22,15 @@ namespace NxEd
 	NX_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
 	NexusEditorApplication::NexusEditorApplication(const NxEn::Project& ProjectInfo)
-		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(), Browser(), Hierarchy(), Stages()
+		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(nullptr), Browser(nullptr), Hierarchy(nullptr), Stages(nullptr)
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 		Systems.CreateSystem<EditSystem>();
-
-		OnSave += [](){ Application::GetSystem<NxEn::GUISystem>()->SaveLayout(); };
-		OnSave += [](){ Application::GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
-		OnSave += [](){ Application::GetSystem<NxEn::AssetsSystem>()->SaveDirty(); };
-		OnSave += [](){ Application::GetSystem<NxEn::WorldSystem>()->SaveScenes(); };
-
-		if (!IsHeadless())
-		{
-			NxEn::WindowSystem* Window = Systems.GetSystem<NxEn::WindowSystem>();
-			Window->SetWindowMode(NxEn::Window::Mode::Windowed);
-			Window->SetCursorMode(NxEn::Cursor::Mode::Default);
-		}
 	}
 
 	NexusEditorApplication::~NexusEditorApplication()
 	{
 		NxEn::SystemManager& Systems = GetSystems();
-
 		Systems.DestroySystem<EditSystem>();
 	}
 
@@ -59,10 +45,34 @@ namespace NxEd
 	void NexusEditorApplication::OnInitialize()
 	{
 		NexusEngineApplication::OnInitialize();
-		NxEn::SystemManager& Systems = GetSystems();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
+		{
+			Inputs = new NxEn::Input::Schema();
+			GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, Inputs);
+
+			if (!IsHeadless())
+			{
+				NxEn::WindowSystem* Window = GetSystem<NxEn::WindowSystem>();
+				Window->SetWindowMode(NxEn::Window::Mode::Windowed);
+				Window->SetCursorMode(NxEn::Cursor::Mode::Default);
+			}
+		});
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Settings", [&]()
+		{
+			GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, & NexusEditorApplication::ApplySettings };
+		});
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Save", [&]()
+		{
+			OnSave += []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
+			OnSave += []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
+			OnSave += []() { GetSystem<NxEn::AssetsSystem>()->SaveDirty(); };
+			OnSave += []() { GetSystem<NxEn::WorldSystem>()->SaveScenes(); };
+		});
+
 		Bootstrap.AppendSystem<EditSystem>();
+
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Assets & Worlds", [&]()
 		{
 			Browser = new AssetsBrowser();
@@ -71,52 +81,63 @@ namespace NxEd
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
 		{
-			auto* Icon = Application::GetSystem<NxEn::ResourcesSystem>()->Load<NxEn::Image>("Logo_Small.png");
-			Application::GetSystem<NxEn::WindowSystem>()->SetWindowIcon(Icon);
+			NxEn::Image* Icon = GetSystem<NxEn::ResourcesSystem>()->Load<NxEn::Image>("Logo_Small.png");
+			GetSystem<NxEn::WindowSystem>()->SetWindowIcon(Icon);
+		});
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Show Window", [&]()
+		{
+			GetInstance<NexusEditorApplication>()->GetWindow()->Show();
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Load Layout", []()
 		{
-			Application::GetSystem<NxEn::GUISystem>()->LoadLayout();
+			GetSystem<NxEn::GUISystem>()->LoadLayout();
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Show Window", []()
-		{
-			Application::GetInstance<NexusEditorApplication>()->GetWindow().Show();
-		});
-
-		Systems.GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, &Inputs);
-		Systems.GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, &NexusEditorApplication::ApplySettings };
 	}
 
 	void NexusEditorApplication::OnShutdown()
 	{
-		NexusEngineApplication::OnShutdown();
-		NxEn::SystemManager& Systems = GetSystems();
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
-
-		Unbootstrap.AppendSystem<EditSystem>();
 
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Save Layout", []()
 		{
-			Application::GetSystem<NxEn::GUISystem>()->SaveLayout();
+			GetSystem<NxEn::GUISystem>()->SaveLayout();
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Hide Window", []()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Hide Window", []()
 		{
-			Application::GetInstance<NexusEditorApplication>()->GetWindow().Hide();
+			GetInstance<NexusEditorApplication>()->GetWindow()->Hide();
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Set Icon", []()
 		{
-			Application::GetSystem<NxEn::ResourcesSystem>()->Unload("Logo_Small.png");
-			Application::GetSystem<NxEn::WindowSystem>()->SetWindowIcon(nullptr);
+			GetSystem<NxEn::WindowSystem>()->SetWindowIcon(nullptr);
+			GetSystem<NxEn::ResourcesSystem>()->Unload("Logo_Small.png");
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Assets & Worlds", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Assets & Worlds", [&]()
 		{
 			delete Stages;
 			delete Hierarchy;
 			delete Browser;
 		});
 
-		Systems.GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
-		Systems.GetSystem<NxEn::SettingsSystem>()->GetOnChange() -= { this, &NexusEditorApplication::ApplySettings };
+		Unbootstrap.AppendSystem<EditSystem>();
+
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
+		{
+			GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
+			delete Inputs;
+		});
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Settings", [&]()
+		{
+			GetSystem<NxEn::SettingsSystem>()->GetOnChange() -= { this, & NexusEditorApplication::ApplySettings };
+		});
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Save", [&]()
+		{
+			OnSave -= []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
+			OnSave -= []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
+			OnSave -= []() { GetSystem<NxEn::AssetsSystem>()->SaveDirty(); };
+			OnSave -= []() { GetSystem<NxEn::WorldSystem>()->SaveScenes(); };
+		});
+
+		NexusEngineApplication::OnShutdown();
 	}
 
 	void NexusEditorApplication::OnRun()
@@ -124,14 +145,13 @@ namespace NxEd
 		NexusEngineApplication::OnRun();
 		NxEn::Ticker& Ticks = GetTicker();
 
-		Ticks.AppendSystem<EditSystem>(NxEn::Ticker::TickBucket::Engine);
 		Ticks.AppendTick(NxEn::Ticker::TickBucket::Engine, "Stages", [&]() { Stages->DestroyDisableStage(); });
 	}
 
 	void NexusEditorApplication::ApplySettings()
 	{
 		auto& Shortcuts = SettingShortcuts->GetValue();
-		auto& Mapping = Inputs.GetMapping();
+		auto& Mapping = Inputs->GetMapping();
 
 		for (auto& [Command, Shortcut] : Shortcuts)
 		{

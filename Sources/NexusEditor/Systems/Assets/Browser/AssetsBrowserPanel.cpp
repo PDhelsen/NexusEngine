@@ -64,7 +64,7 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnEnable()
 	{
-		Browser = &NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
+		Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 
 		Context = new AssetsBrowserEditContext(GetImGuiId(), this);
 		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
