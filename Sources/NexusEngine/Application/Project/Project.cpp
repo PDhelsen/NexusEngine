@@ -5,7 +5,7 @@ namespace NxEn
 {
 	Project::Project(NxFr::StringView Path)
 	{
-		NX_ASSERT(!Path.IsEmpty() && NxFr::Path::GetExtension(Path) == "nexus" && NxFr::Path::IsFile(Path) && NxFr::Path::Exist(Path), Default, "Project needs a valid path (.nexus) to initialize");
+		NX_ASSERT(!Path.IsEmpty() && NxFr::Path::GetExtension(Path) == "nexus" && NxFr::Path::IsFile(Path) && NxFr::Path::Exist(Path), Application, "Project needs a valid path (.nexus) to initialize");
 
 		ProjectPath = Path;
 		RootPath = NxFr::Path::GetDriveAndFolder(Path);

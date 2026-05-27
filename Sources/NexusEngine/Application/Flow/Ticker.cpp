@@ -118,13 +118,13 @@ namespace NxEn
 		}
 
 		NX_LOG(Info, Application, "Tick order:")
-			for (auto& Bucket : Systems)
+		for (auto& Bucket : Systems)
+		{
+			for (auto& Info : Bucket)
 			{
-				for (auto& Info : Bucket)
-				{
-					NX_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
-				}
+				NX_LOG(Info, Application, "- %s", Info.Instance->GetObjectType().C());
 			}
+		}
 	}
 
 	void Ticker::Tick(float DeltaTime)
