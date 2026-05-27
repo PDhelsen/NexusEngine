@@ -43,11 +43,6 @@ namespace NxEn
 		friend int EntryPoint::Main(int argc, char* argv[]);
 
 	public:
-		enum class CrashCode
-		{
-			None = 0, Crash = 1
-		};
-
 		template<typename T>
 		static T* GetInstance() { return (T*)GetInstance(); }
 		static Application* GetInstance() { return Instance; }
@@ -59,7 +54,7 @@ namespace NxEn
 		virtual ~Application();
 
 		void Quit();
-		void Crash(CrashCode ErrorCode);
+		void Crash(int32 ErrorCode);
 		void Restart();
 		bool IsRunning() const;
 
@@ -88,7 +83,7 @@ namespace NxEn
 		TimeManager Time;
 
 		bool WantsToQuit;
-		CrashCode CrashReason;
+		int32 CrashReason;
 	};
 }
 

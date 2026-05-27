@@ -8,7 +8,7 @@ namespace NxEn
 	Application* Application::Instance = nullptr;
 
 	Application::Application(const Project& ProjectInfo)
-		: ProjectInfo(ProjectInfo), Systems(), Bootstrap(), Ticks(), Time(), WantsToQuit(false), CrashReason(CrashCode::None)
+		: ProjectInfo(ProjectInfo), Systems(), Bootstrap(), Ticks(), Time(), WantsToQuit(false), CrashReason(0)
 	{
 		NX_ASSERT(Instance == nullptr, Application, "Application was already created");
 		Instance = this;
@@ -28,9 +28,9 @@ namespace NxEn
 		WantsToQuit = true;
 	}
 
-	void Application::Crash(CrashCode ErrorCode)
+	void Application::Crash(int32 ErrorCode)
 	{
-		if (CrashReason != CrashCode::None)
+		if (CrashReason != 0)
 		{
 			return;
 		}
