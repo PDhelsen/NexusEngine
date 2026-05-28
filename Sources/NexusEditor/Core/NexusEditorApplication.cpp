@@ -52,12 +52,9 @@ namespace NxEd
 			Inputs = new NxEn::Input::Schema();
 			GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, Inputs);
 
-			if (!IsHeadless())
-			{
-				NxEn::WindowSystem* Window = GetSystem<NxEn::WindowSystem>();
-				Window->SetWindowMode(NxEn::Window::Mode::Windowed);
-				Window->SetCursorMode(NxEn::Cursor::Mode::Default);
-			}
+			NxEn::WindowSystem* Window = GetSystem<NxEn::WindowSystem>();
+			Window->SetWindowMode(NxEn::Window::Mode::Windowed);
+			Window->SetCursorMode(NxEn::Cursor::Mode::Default);
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Settings", [&]()
 		{

@@ -33,12 +33,9 @@ namespace NxAp
 			);
 			GetSystem<NxEn::InputSystem>()->AddSchema("App"_Sid, Inputs);
 
-			if (!IsHeadless())
-			{
-				NxEn::WindowSystem* Window = GetSystem<NxEn::WindowSystem>();
-				Window->SetWindowMode(NxEn::Window::Mode::FullScreen);
-				Window->SetCursorMode(NxEn::Cursor::Mode::Captured);
-			}
+			NxEn::WindowSystem* Window = GetSystem<NxEn::WindowSystem>();
+			Window->SetWindowMode(NxEn::Window::Mode::FullScreen);
+			Window->SetCursorMode(NxEn::Cursor::Mode::Captured);
 		});
 	}
 

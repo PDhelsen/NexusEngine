@@ -103,6 +103,11 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowVSync(bool VSync)
 	{
+		if (!Target.IsValid())
+		{
+			return *this;
+		}
+
 		Target.VSync = VSync;
 		Glfw::SetSwapInterval(VSync);
 		return *this;
@@ -223,8 +228,12 @@ namespace NxEn
 		SetWindowMonitor((uint8)SettingMonitor->GetValue());
 #endif
 
-		Glfw::Initialize();
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
 
+		Glfw::Initialize();
 		FetchMonitors();
 		CreateWindow();
 		UpdateCursor();
@@ -232,19 +241,29 @@ namespace NxEn
 
 	void WindowSystem::OnShutdown()
 	{
-		SetCursorIcon(Cursor::Icon::Default);
-		DestroyWindow();
-
-		Glfw::Shutdown();
+		System::OnShutdown();
 
 		Application::GetSystem<InputSystem>()->GetOnPoll() -= Glfw::PollInput;
 
-		System::OnShutdown();
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
+		SetCursorIcon(Cursor::Icon::Default);
+		DestroyWindow();
+		Glfw::Shutdown();
 	}
 
 	void WindowSystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);
+
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		TickWindow();
 	}
 

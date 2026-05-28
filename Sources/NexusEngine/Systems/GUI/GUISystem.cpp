@@ -130,6 +130,11 @@ namespace NxEn
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
 			GeneratePath(NameDefault, ExtensionImGui),
@@ -153,6 +158,11 @@ namespace NxEn
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
 			"", Name.IsEmpty());
@@ -172,6 +182,11 @@ namespace NxEn
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
 			GeneratePath(NameDefault, ExtensionStyle),
@@ -191,6 +206,11 @@ namespace NxEn
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
 			"", Name.IsEmpty());
@@ -210,6 +230,11 @@ namespace NxEn
 
 	GUI::Panel* GUISystem::GetActivePanel() const
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return nullptr;
+		}
+
 		NxFr::StringView Name = ImGui::GetCurrentContext()->NavWindow->RootWindow->Name;
 		NxFr::StringId Id = ImGuiToNexusId(Name);
 		NxFr::Dictionary<NxFr::StringId, GUI::Panel*>& Panels = GetPanels();
@@ -227,8 +252,11 @@ namespace NxEn
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder)).Create();
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Saved, Folder)).Create();
 
-		Imgui::Initialize();
-		LoadTheme();
+		if (!Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			Imgui::Initialize();
+			LoadTheme();
+		}
 
 		GetMainWindow().Initialize();
 
@@ -240,8 +268,11 @@ namespace NxEn
 	{
 		GetMainWindow().Shutdown();
 
-		SaveTheme();
-		Imgui::Shutdown();
+		if (!Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			SaveTheme();
+			Imgui::Shutdown();
+		}
 		
 		System::OnShutdown();
 	}
@@ -251,6 +282,11 @@ namespace NxEn
 		System::OnTick(TimeStep);
 
 		NX_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
+
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
 
 		Imgui::Tick();
 

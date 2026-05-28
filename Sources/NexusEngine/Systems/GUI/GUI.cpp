@@ -20,11 +20,21 @@ namespace NxEn
 
 		void Element::Show()
 		{
+			if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+			{
+				return;
+			}
+
 			SetEnabled(true);
 		}
 
 		void Element::Hide()
 		{
+			if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+			{
+				return;
+			}
+
 			SetEnabled(false);
 		}
 
