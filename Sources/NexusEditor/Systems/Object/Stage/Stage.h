@@ -35,7 +35,7 @@ namespace NxEd
 		void OnShutdown() override;
 		void OnEnable() override;
 		void OnDisable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 		void OnSelectionChanged(NxFr::GUID Id, bool State);
 

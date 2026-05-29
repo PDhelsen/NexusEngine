@@ -25,7 +25,7 @@ namespace NxEd
 		HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target);
 		virtual ~HierarchyItem();
 
-		void OnTick(float TimeStep) override;
+		void OnDraw() override;
 
 		int8 Compare(const TreeItem& Other) const override;
 		void CacheImGuiText() override;

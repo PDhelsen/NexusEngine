@@ -12,7 +12,7 @@ namespace NxEn
 		YAML::Node& GetRoot() { return Data; }
 
 	protected:
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 		void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		void OnUnload() override;

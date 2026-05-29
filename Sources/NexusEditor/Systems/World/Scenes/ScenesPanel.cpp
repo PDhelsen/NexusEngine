@@ -76,12 +76,12 @@ namespace NxEd
 		Assets = nullptr;
 	}
 
-	void ScenesPanel::OnGui(float TimeStep)
+	void ScenesPanel::OnDraw()
 	{
 		static const float Width = 100.0f;
 
 		Style.Position.x = -1.0f;
-		Menu.Tick(TimeStep);
+		Menu.Draw();
 
 		int32 Toggle = -1;
 		float Origin = ImGui::GetCursorPosX();

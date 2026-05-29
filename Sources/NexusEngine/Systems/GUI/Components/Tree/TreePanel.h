@@ -32,7 +32,7 @@ namespace NxEn
 		void OnShutdown() override;
 		void OnEnable() override;
 		void OnDisable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 	protected:
 		virtual TreeItem* FetchRootItem() = 0;
@@ -40,8 +40,8 @@ namespace NxEn
 		virtual void OnDestroyItem(TreeItem* Item);
 		virtual void OnSelectItem(TreeItem* Item, bool State);
 
-		virtual void DrawHeader(float TimeStep);
-		virtual void DrawItem(float TimeStep, TreeItem* Item);
+		virtual void DrawHeader();
+		virtual void DrawItem(TreeItem* Item);
 		virtual void DrawContext(TreeItem* Item);
 		virtual void OpenContext(TreeItem* Item);
 		virtual void HandleSelection(TreeItem* Item);

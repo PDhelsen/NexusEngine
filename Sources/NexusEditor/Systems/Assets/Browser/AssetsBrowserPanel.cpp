@@ -85,14 +85,14 @@ namespace NxEd
 		Edit = nullptr;
 	}
 
-	void AssetsBrowserPanel::OnGui(float TimeStep)
+	void AssetsBrowserPanel::OnDraw()
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
 			Edit::Context::SetCurrent(Context);
 		}
 
-		TreePanel::OnGui(TimeStep);
+		TreePanel::OnDraw();
 	}
 
 	NxEn::TreeItem* AssetsBrowserPanel::FetchRootItem()

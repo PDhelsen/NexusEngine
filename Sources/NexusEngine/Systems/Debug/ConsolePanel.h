@@ -30,7 +30,7 @@ namespace NxEn
 		void OnShutdown() override;
 		void OnEnable() override;
 		void OnDisable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 		void ExecuteCommand();
 		void AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message);

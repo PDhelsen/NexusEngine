@@ -5,9 +5,9 @@ namespace NxEn
 {
 	NX_ASSET_IMPLEMENTATION(Table)
 
-	void Table::OnGui(float TimeStep)
+	void Table::OnDraw()
 	{
-		Asset::OnGui(TimeStep);
+		Asset::OnDraw();
 	}
 
 	void Table::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)

@@ -13,7 +13,7 @@ namespace NxEn
 		uint64 GetCount() { return Data.GetCount(); }
 
 	private:
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 		void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		void OnUnload() override;

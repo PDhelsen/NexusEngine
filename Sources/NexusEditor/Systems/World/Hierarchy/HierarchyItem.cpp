@@ -13,7 +13,7 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyItem::OnTick(float TimeStep)
+	void HierarchyItem::OnDraw()
 	{
 		CacheImGuiText();
 	}

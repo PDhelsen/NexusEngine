@@ -114,14 +114,14 @@ namespace NxEd
 		Element::OnDisable();
 	}
 
-	void Stage::OnGui(float TimeStep)
+	void Stage::OnDraw()
 	{
 		DrawDocking();
 		DockPanels();
 
-		Viewer->Tick(TimeStep);
-		Inspector->Tick(TimeStep);
-		Hierarchy->Tick(TimeStep);
+		Viewer->Draw();
+		Inspector->Draw();
+		Hierarchy->Draw();
 	}
 
 	void Stage::OnSelectionChanged(NxFr::GUID Id, bool State)

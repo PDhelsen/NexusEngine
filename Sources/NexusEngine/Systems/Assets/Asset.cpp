@@ -18,7 +18,7 @@ namespace NxEn
 	{
 	}
 
-	void Asset::OnGui(float TimeStep)
+	void Asset::OnDraw()
 	{
 		const AssetMetadata& Medata = GetMetadata(Id);
 

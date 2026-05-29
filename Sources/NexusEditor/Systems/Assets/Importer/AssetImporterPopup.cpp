@@ -51,7 +51,7 @@ namespace NxEd
 		Style.WidthLabel = ButtonWidth;
 	}
 
-	void AssetImporterPopup::OnGui(float TimeStep)
+	void AssetImporterPopup::OnDraw()
 	{
 		Style.Width = NxEn::GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Path").x + NxEn::GUI::Style::GetVar(NxEn::GUI::Style::IdWidthButton)), 0, true, true).x - ButtonWidth;
 		NxEn::GUI::Drawer<NxFr::String>::Field(Path, "Path", "", &Style);

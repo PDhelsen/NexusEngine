@@ -120,9 +120,9 @@ namespace NxEd
 		Panel::OnDisable();
 	}
 
-	void ReferencesPanel::OnGui(float TimeStep)
+	void ReferencesPanel::OnDraw()
 	{
-		Menu.Tick(TimeStep);
+		Menu.Draw();
 
 		DrawHeader();
 		DrawCanvas();

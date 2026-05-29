@@ -101,7 +101,7 @@ namespace NxEn
 		float HalfWindowSize = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * (1.0f / 2.0f);
 		float ThirdWindowSize = (ImGui::GetContentRegionAvail().x - 2.0f * ImGui::GetStyle().ItemSpacing.x) * (1.0f / 3.0f);
 
-		OnGui(TimeStep);
+		OnDraw();
 		ImGui::Separator();
 
 		for (uint64 Index = 0; Index < Behaviours.GetCount(); ++Index)
@@ -127,7 +127,7 @@ namespace NxEn
 				continue;
 			}
 
-			B->DrawGui(TimeStep);
+			B->Draw();
 			ImGui::Separator();
 
 			ImGui::PopID();
@@ -156,7 +156,7 @@ namespace NxEn
 				continue;
 			}
 
-			C->DrawGui(TimeStep);
+			C->Draw();
 			ImGui::Separator();
 
 			ImGui::PopID();
@@ -692,7 +692,7 @@ namespace NxEn
 		}
 	}
 
-	void GameObject::OnGui(float TimeStep)
+	void GameObject::OnDraw()
 	{
 		GUI::Drawer<NxFr::String>::Field(Name, "Name");
 

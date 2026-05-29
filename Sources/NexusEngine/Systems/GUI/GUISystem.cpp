@@ -288,7 +288,7 @@ namespace NxEn
 
 		Imgui::Tick();
 
-		GetMainWindow().Tick(TimeStep);
+		GetMainWindow().Draw();
 
 		for (auto& Element : Elements)
 		{
@@ -297,7 +297,7 @@ namespace NxEn
 				continue;
 			}
 
-			Element->Tick(TimeStep);
+			Element->Draw();
 		}
 
 		// ImGui::ShowDemoWindow();

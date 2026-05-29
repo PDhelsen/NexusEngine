@@ -18,7 +18,7 @@ namespace NxEd
 	protected:
 		void OnInitialize() override;
 		void OnEnable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 		void Pick();
 		void SetPath(NxFr::StringView FilePath);

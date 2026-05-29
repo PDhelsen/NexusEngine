@@ -57,7 +57,7 @@ namespace NxEd
 		}
 	}
 
-	void ViewerContext3D::OnGui(float TimeStep)
+	void ViewerContext3D::OnDraw()
 	{
 		NxEn::GUI::Drawer<NxFr::StringView>::Property(Target->GetName());
 	}

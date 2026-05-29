@@ -82,7 +82,7 @@ namespace NxEn
 		bool IsRoot() const { return !Parent && !Prev && !Next; };
 
 	protected:
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 		void OnClone(const Object& Other) override;
 		void OnSave(YAML::Node& Node) override;
 		void OnLoad(const YAML::Node& Node) override;

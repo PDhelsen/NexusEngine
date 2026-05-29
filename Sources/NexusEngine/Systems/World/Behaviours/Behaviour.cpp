@@ -55,7 +55,7 @@ namespace NxEn
 		return Target;
 	}
 
-	void Behaviour::OnGui(float TimeStep)
+	void Behaviour::OnDraw()
 	{
 		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
 		GUI::Drawer<NxFr::GUID>::Property(BehaviourId, "Id");

@@ -80,14 +80,14 @@ namespace NxEd
 		Edit = nullptr;
 	}
 
-	void HierarchyPanel::OnGui(float TimeStep)
+	void HierarchyPanel::OnDraw()
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
 			Edit::Context::SetCurrent(Context);
 		}
 
-		TreePanel::OnGui(TimeStep);
+		TreePanel::OnDraw();
 	}
 
 	NxEn::TreeItem* HierarchyPanel::FetchRootItem()

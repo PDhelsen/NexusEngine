@@ -220,9 +220,9 @@ namespace NxEn
 		return GetMatrix(TransformSpace::World).Inverse();
 	}
 
-	void Transform::OnGui(float TimeStep)
+	void Transform::OnDraw()
 	{
-		Component::OnGui(TimeStep);
+		Component::OnDraw();
 
 		if (GUI::Drawer<NxFr::Vector3f>::Field(Position, "Position"))
 		{

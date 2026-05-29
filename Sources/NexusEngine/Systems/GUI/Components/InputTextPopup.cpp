@@ -42,7 +42,7 @@ namespace NxEn
 		Style.Reset();
 	}
 
-	void InputTextPopup::OnGui(float TimeStep)
+	void InputTextPopup::OnDraw()
 	{
 		if (GUI::Draw::Input(Input, "##", &Style))
 		{

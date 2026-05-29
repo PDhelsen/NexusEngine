@@ -53,9 +53,9 @@ namespace NxEn
 		Panel::OnDisable();
 	}
 
-	void SettingsPanel::OnGui(float TimeStep)
+	void SettingsPanel::OnDraw()
 	{
-		Menu.Tick(TimeStep);
+		Menu.Draw();
 
 		ImGui::BeginChild("Pages", { GUI::Style::GetVar(GUI::Style::IdWidthLabel), 0.0f}, true);
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)

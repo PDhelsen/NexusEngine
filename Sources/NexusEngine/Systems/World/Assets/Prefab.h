@@ -14,7 +14,7 @@ namespace NxEn
 		void SetRoot(NxFr::Handle<GameObject> Instance);
 
 	protected:
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 		void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
 		void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
 		void OnUnload() override;

@@ -15,7 +15,7 @@ namespace NxEn
 	protected:
 		void OnInitialize() override;
 		void OnEnable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 		void DrawButtons();
 		void DrawFilter();

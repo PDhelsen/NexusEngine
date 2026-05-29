@@ -103,11 +103,11 @@ namespace NxEn
 		Panel::OnDisable();
 	}
 
-	void ConsolePanel::OnGui(float TimeStep)
+	void ConsolePanel::OnDraw()
 	{
 		// Menu
 		{
-			Menu.Tick(TimeStep);
+			Menu.Draw();
 
 			if (ImGui::BeginMenuBar())
 			{

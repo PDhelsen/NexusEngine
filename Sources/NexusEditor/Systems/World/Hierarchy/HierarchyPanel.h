@@ -26,7 +26,7 @@ namespace NxEd
 		void OnShutdown() override;
 		void OnEnable() override;
 		void OnDisable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 		NxEn::TreeItem* FetchRootItem() override;
 		void OnDestroyItem(NxEn::TreeItem* Item) override;

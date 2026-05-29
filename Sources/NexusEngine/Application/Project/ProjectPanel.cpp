@@ -34,7 +34,7 @@ namespace NxEn
 		Infos = &Application::GetInstance()->GetProject();
 	}
 
-	void ProjectPanel::OnGui(float TimeStep)
+	void ProjectPanel::OnDraw()
 	{
 		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetMode()), "Mode", &Style);
 		ImGui::Separator();

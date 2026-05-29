@@ -66,14 +66,14 @@ namespace NxEd
 		Panel::OnDisable();
 	}
 
-	void ViewerPanel::OnGui(float TimeStep)
+	void ViewerPanel::OnDraw()
 	{
 		if (!Context)
 		{
 			return;
 		}
 
-		Menu.Tick(TimeStep);
-		Context->OnGui(TimeStep);
+		Menu.Draw();
+		Context->OnDraw();
 	}
 }

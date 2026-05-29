@@ -56,9 +56,9 @@ namespace NxEn
 		OnTick(TimeStep);
 	}
 
-	void Object::DrawGui(float TimeStep)
+	void Object::Draw()
 	{
-		OnGui(TimeStep);
+		OnDraw();
 	}
 
 	Object* Object::Clone() const

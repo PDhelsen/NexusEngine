@@ -54,7 +54,7 @@ namespace NxEn
 		return Target;
 	}
 
-	void Component::OnGui(float TimeStep)
+	void Component::OnDraw()
 	{
 		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
 		GUI::Drawer<NxFr::GUID>::Property(ComponentId, "Id");

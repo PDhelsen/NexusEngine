@@ -25,11 +25,8 @@ namespace NxEn
 			void SetManual(bool Manual) { this->Manual = Manual; }
 
 		protected:
-			virtual void OnInitialize() override;
 			virtual void OnEnable() override;
 			virtual void OnDisable() override;
-			virtual void OnTick(float TimeStep = 0.0f) override;
-			virtual void OnGui(float TimeStep) = 0;
 
 			void UpdateImGuiId(NxFr::StringView Name);
 
@@ -58,6 +55,8 @@ namespace NxEn
 			Panel();
 			virtual ~Panel();
 
+			virtual void Draw() override;
+
 			Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			Panel& SetTitle(NxFr::StringView Title);
 			Panel& SetDock(NxFr::StringView Id);
@@ -67,8 +66,6 @@ namespace NxEn
 
 		protected:
 			virtual void OnInitialize() override;
-			virtual void OnTick(float TimeStep = 0.0f) override;
-			virtual void OnGui(float TimeStep) { };
 
 		private:
 			ImGuiWindowFlags GuiFlags;
@@ -119,6 +116,8 @@ namespace NxEn
 			Menu(bool Main = false);
 			virtual ~Menu();
 
+			virtual void Draw() override;
+
 			Menu& AddMenuItem	(NxFr::StringView Path,																	const NxFr::Delegate<void()>& Callback,				int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			Menu& AddMenuToggle(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			Menu& AddMenuEnum	(NxFr::StringView Path, void* Enum,		const NxFr::Array<NxFr::StringView>& Labels,	const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
@@ -130,12 +129,10 @@ namespace NxEn
 
 		protected:
 			virtual void OnShutdown() override;
-			virtual void OnTick(float TimeStep = 0.0f) override;
-			virtual void OnGui(float TimeStep) { };
 
 			void AppendItem(const Item& It);
 			void RemoveItem(const Item& It);
-			void DrawMenu(float TimeStep);
+			void DrawMenu();
 			void DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const;
 
 		private:
@@ -158,6 +155,8 @@ namespace NxEn
 			Popup();
 			virtual ~Popup();
 
+			virtual void Draw() override;
+
 			Popup& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			Popup& SetTitle(NxFr::StringView Title);
 			Popup& SetMessage(NxFr::StringView Message);
@@ -173,8 +172,6 @@ namespace NxEn
 
 		protected:
 			virtual void OnInitialize() override;
-			virtual void OnTick(float TimeStep = 0.0f) override;
-			virtual void OnGui(float TimeStep) { };
 
 		private:
 			ImGuiWindowFlags GuiFlags;
@@ -191,6 +188,8 @@ namespace NxEn
 			ProgressBar();
 			virtual ~ProgressBar();
 
+			virtual void Draw() override;
+
 			ProgressBar& SetGuiFlag(ImGuiWindowFlags GuiFlags);
 			ProgressBar& SetTitle(NxFr::StringView Title);
 			ProgressBar& SetMessage(NxFr::StringView Message);
@@ -204,8 +203,6 @@ namespace NxEn
 
 		protected:
 			virtual void OnInitialize() override;
-			virtual void OnTick(float TimeStep = 0.0f) override;
-			virtual void OnGui(float TimeStep) { };
 
 			float ComputePercentage(float TimeStep);
 
@@ -225,6 +222,8 @@ namespace NxEn
 			Window();
 			~Window();
 
+			virtual void Draw() override;
+
 			Menu& GetMenu() { return MainMenu; }
 
 		protected:
@@ -232,7 +231,6 @@ namespace NxEn
 			void OnShutdown() override;
 			void OnEnable() override;
 			void OnDisable() override;
-			void OnGui(float TimeStep) override;
 
 		private:
 			ImGuiWindowFlags GuiFlags;

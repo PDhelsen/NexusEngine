@@ -54,7 +54,7 @@ namespace NxEn
 		NxFr::Matrix4x4f WorldToLocal() const;
 
 	protected:
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 		void OnClone(const Object& Other) override;
 		void OnSave(YAML::Node& Node) override;
 		void OnLoad(const YAML::Node& Node) override;

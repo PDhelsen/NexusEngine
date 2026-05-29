@@ -5,9 +5,9 @@ namespace NxEn
 {
 	NX_ASSET_IMPLEMENTATION(Artifact)
 
-	void Artifact::OnGui(float TimeStep)
+	void Artifact::OnDraw()
 	{
-		Asset::OnGui(TimeStep);
+		Asset::OnDraw();
 
 		GUI::Drawer<uint64>::Property(Data.GetCount(), "Size");
 	}

@@ -34,7 +34,7 @@ namespace NxEd
 		void SetupMenu(NxEn::GUI::Menu& Menu) override;
 		void SetupTarget(NxEn::Object* Instance) override;
 
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 	private:
 		ViewContextMode Mode;

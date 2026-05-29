@@ -63,9 +63,9 @@ namespace NxEn
 		return Result;
 	}
 
-	void Tags::OnGui(float TimeStep)
+	void Tags::OnDraw()
 	{
-		Component::OnGui(TimeStep);
+		Component::OnDraw();
 
 		GUI::Drawer<NxFr::Set<NxFr::String>>::Field(Items, "Items");
 	}

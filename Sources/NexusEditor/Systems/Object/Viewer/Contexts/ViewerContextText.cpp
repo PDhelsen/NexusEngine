@@ -109,7 +109,7 @@ namespace NxEd
 		}
 	}
 
-	void ViewerContextText::OnGui(float TimeStep)
+	void ViewerContextText::OnDraw()
 	{
 		if (Mode == ViewContextMode::Document)
 		{

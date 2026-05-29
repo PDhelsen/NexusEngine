@@ -48,11 +48,6 @@ namespace NxEn
 			Application::GetInstance()->GetTicker().AppendTick(Ticker::TickBucket::Cleanup, "Destroy Gui element", [=]() { SetEnabled(false); Shutdown(); delete this; }, true);
 		}
 
-		void Element::OnInitialize()
-		{
-			SetTickable(true);
-		}
-
 		void Element::OnEnable()
 		{
 			if (Manual)
@@ -73,11 +68,6 @@ namespace NxEn
 			Application::GetSystem<GUISystem>()->UnregisterElement(this);
 		}
 
-		void Element::OnTick(float TimeStep)
-		{
-			OnGui(TimeStep);
-		}
-
 		void Element::UpdateImGuiId(NxFr::StringView Name)
 		{
 			ImGuiId = Name + "##" + GetObjectType().C();
@@ -94,6 +84,27 @@ namespace NxEn
 
 		Panel::~Panel()
 		{
+		}
+
+		void Panel::Draw()
+		{
+			bool IsOpen = true;
+
+			if (!Dock.IsEmpty())
+			{
+				ImGui::SetNextWindowDockID(ImGui::GetID(Dock.C()), ImGuiCond_FirstUseEver);
+			}
+
+			if (ImGui::Begin(GetImGuiId().C(), &IsOpen, GuiFlags))
+			{
+				OnDraw();
+			}
+			ImGui::End();
+
+			if (!IsOpen)
+			{
+				Hide();
+			}
 		}
 
 		Panel& Panel::SetGuiFlag(ImGuiWindowFlags GuiFlags)
@@ -121,27 +132,6 @@ namespace NxEn
 
 			SetGuiFlag(ImGuiWindowFlags_NoCollapse);
 			SetTitle(GetObjectType().C());
-		}
-
-		void Panel::OnTick(float TimeStep)
-		{
-			bool IsOpen = true;
-
-			if (!Dock.IsEmpty())
-			{
-				ImGui::SetNextWindowDockID(ImGui::GetID(Dock.C()), ImGuiCond_FirstUseEver);
-			}
-
-			if (ImGui::Begin(GetImGuiId().C(), &IsOpen, GuiFlags))
-			{
-				OnGui(TimeStep);
-			}
-			ImGui::End();
-
-			if (!IsOpen)
-			{
-				Hide();
-			}
 		}
 
 #pragma endregion
@@ -207,6 +197,26 @@ namespace NxEn
 		{
 		}
 
+		void Menu::Draw()
+		{
+			if (Main)
+			{
+				if (ImGui::BeginMainMenuBar())
+				{
+					DrawMenu();
+				}
+				ImGui::EndMainMenuBar();
+			}
+			else
+			{
+				if (ImGui::BeginMenuBar())
+				{
+					DrawMenu();
+				}
+				ImGui::EndMenuBar();
+			}
+		}
+
 		Menu& Menu::AddMenuItem(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
 			AppendItem(Item(Callback, Validate, Path, Priority, ItemMode::Callback, 0, nullptr));
@@ -261,26 +271,6 @@ namespace NxEn
 			Labels.Clear();
 		}
 
-		void Menu::OnTick(float TimeStep)
-		{
-			if (Main)
-			{
-				if (ImGui::BeginMainMenuBar())
-				{
-					DrawMenu(TimeStep);
-				}
-				ImGui::EndMainMenuBar();
-			}
-			else
-			{
-				if (ImGui::BeginMenuBar())
-				{
-					DrawMenu(TimeStep);
-				}
-				ImGui::EndMenuBar();
-			}
-		}
-
 		void Menu::AppendItem(const Item& It)
 		{
 			Items.Append(It);
@@ -306,7 +296,7 @@ namespace NxEn
 			}
 		}
 
-		void Menu::DrawMenu(float TimeStep)
+		void Menu::DrawMenu()
 		{
 			for (uint64 Index = 0; Index < Items.GetCount(); ++Index)
 			{
@@ -315,7 +305,7 @@ namespace NxEn
 				DrawItem(Item, Sections, 0);
 			}
 
-			OnGui(TimeStep);
+			OnDraw();
 		}
 
 		void Menu::DrawItem(const Item& It, const NxFr::List<NxFr::StringView>& Sections, uint64 Depth) const
@@ -384,6 +374,41 @@ namespace NxEn
 		{
 		}
 
+		void Popup::Draw()
+		{
+			ImGui::OpenPopup(Title.C());
+			if (ImGui::BeginPopupModal(Title.C(), nullptr, GuiFlags))
+			{
+				if (!Message.IsEmpty())
+				{
+					ImGui::SetCursorPosX(GUI::Utils::Center(Message));
+					ImGui::Text(Message.C());
+				}
+
+				OnDraw();
+
+				ImGui::SetCursorPosX(GUI::Utils::Center(GUI::Style::GetVar(GUI::Style::IdWidthButton), Callbacks.GetCount()).x);
+				for (uint64 Index = 0; Index < Callbacks.GetCount(); ++Index)
+				{
+					Item& Button = Callbacks[Index];
+					if (ImGui::Button(Button.Label.C(), { GUI::Style::GetVar(GUI::Style::IdWidthButton), 0.0f }))
+					{
+						if (!Button.Callback.IsNull())
+						{
+							Button.Callback.Invoke();
+						}
+
+						Hide();
+
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::SameLine();
+				}
+			}
+			ImGui::EndPopup();
+		}
+
 		Popup& Popup::SetGuiFlag(ImGuiWindowFlags GuiFlags)
 		{
 			this->GuiFlags |= GuiFlags;
@@ -429,41 +454,6 @@ namespace NxEn
 			SetTitle(GetObjectType().C());
 		}
 
-		void Popup::OnTick(float TimeStep)
-		{
-			ImGui::OpenPopup(Title.C());
-			if (ImGui::BeginPopupModal(Title.C(), nullptr, GuiFlags))
-			{
-				if (!Message.IsEmpty())
-				{
-					ImGui::SetCursorPosX(GUI::Utils::Center(Message));
-					ImGui::Text(Message.C());
-				}
-
-				OnGui(TimeStep);
-
-				ImGui::SetCursorPosX(GUI::Utils::Center(GUI::Style::GetVar(GUI::Style::IdWidthButton), Callbacks.GetCount()).x);
-				for (uint64 Index = 0; Index < Callbacks.GetCount(); ++Index)
-				{
-					Item& Button = Callbacks[Index];
-					if (ImGui::Button(Button.Label.C(), { GUI::Style::GetVar(GUI::Style::IdWidthButton), 0.0f }))
-					{
-						if (!Button.Callback.IsNull())
-						{
-							Button.Callback.Invoke();
-						}
-
-						Hide();
-
-						ImGui::CloseCurrentPopup();
-					}
-
-					ImGui::SameLine();
-				}
-			}
-			ImGui::EndPopup();
-		}
-
 #pragma endregion
 
 #pragma region Progress
@@ -475,6 +465,33 @@ namespace NxEn
 
 		ProgressBar::~ProgressBar()
 		{
+		}
+
+		void ProgressBar::Draw()
+		{
+			if (ImGui::Begin(Title.C(), nullptr, GuiFlags))
+			{
+				if (!Message.IsEmpty())
+				{
+					ImGui::Text(Message.C());
+				}
+
+				OnDraw();
+
+				float TimeStep = Application::GetInstance()->GetTime().GetDeltaTime();
+				float Percentag = ComputePercentage(TimeStep);
+				ImGui::ProgressBar(Percentag);
+			}
+			ImGui::End();
+
+			if (Progress >= 1.0f)
+			{
+				if (!Callback.IsNull())
+				{
+					Callback.Invoke();
+				}
+				Hide();
+			}
 		}
 
 		ProgressBar& ProgressBar::SetGuiFlag(ImGuiWindowFlags GuiFlags)
@@ -516,32 +533,6 @@ namespace NxEn
 			SetTitle(GetObjectType().C());
 		}
 
-		void ProgressBar::OnTick(float TimeStep)
-		{
-			if (ImGui::Begin(Title.C(), nullptr, GuiFlags))
-			{
-				if (!Message.IsEmpty())
-				{
-					ImGui::Text(Message.C());
-				}
-
-				OnGui(TimeStep);
-
-				float Percentag = ComputePercentage(TimeStep);
-				ImGui::ProgressBar(Percentag);
-			}
-			ImGui::End();
-
-			if (Progress >= 1.0f)
-			{
-				if (!Callback.IsNull())
-				{
-					Callback.Invoke();
-				}
-				Hide();
-			}
-		}
-
 		float ProgressBar::ComputePercentage(float TimeStep)
 		{
 			if (Progress >= 0.0f)
@@ -567,6 +558,15 @@ namespace NxEn
 
 		Window::~Window()
 		{
+		}
+
+		void Window::Draw()
+		{
+			MainMenu.Draw();
+
+			ImGui::DockSpaceOverViewport(ImGui::GetID(GetImGuiId().C()));
+
+			OnDraw();
 		}
 
 		void Window::OnInitialize()
@@ -596,13 +596,6 @@ namespace NxEn
 		void Window::OnDisable()
 		{
 			MainMenu.SetEnabled(false);
-		}
-
-		void Window::OnGui(float TimeStep)
-		{
-			MainMenu.Tick(TimeStep);
-
-			ImGui::DockSpaceOverViewport(ImGui::GetID(GetImGuiId().C()));
 		}
 
 #pragma endregion

@@ -17,7 +17,7 @@ namespace NxEn
 	protected:
 		void OnInitialize() override;
 		void OnEnable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 	private:
 		GUI::Style Style;

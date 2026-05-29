@@ -15,7 +15,7 @@ namespace NxEn
 	protected:
 		void OnInitialize() override;
 
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 		void OnSave(YAML::Node& Node, NxFr::StringView Content) override;
 		void OnLoad(const YAML::Node& Node, NxFr::StringView Content) override;
 		void OnUnload() override;

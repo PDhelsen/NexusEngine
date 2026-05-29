@@ -31,7 +31,7 @@ namespace NxEn
 		void SetDirty() { Dirty = true; }
 
 	protected:
-		virtual void OnGui(float TimeStep) override;
+		virtual void OnDraw() override;
 		virtual void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		virtual void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		virtual void OnUnload() = 0;

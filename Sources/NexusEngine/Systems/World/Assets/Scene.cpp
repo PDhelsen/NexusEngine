@@ -28,9 +28,9 @@ namespace NxEn
 		Root->SetEnabled(true);
 	}
 
-	void Scene::OnGui(float TimeStep)
+	void Scene::OnDraw()
 	{
-		Asset::OnGui(TimeStep);
+		Asset::OnDraw();
 
 		GUI::Drawer<NxFr::StringView>::Property(Root->GetName(), "Root");
 	}

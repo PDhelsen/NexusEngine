@@ -21,7 +21,7 @@ namespace NxEd
 		void OnShutdown() override;
 		void OnEnable() override;
 		void OnDisable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 	private:
 		NxEn::GUI::Menu Menu;

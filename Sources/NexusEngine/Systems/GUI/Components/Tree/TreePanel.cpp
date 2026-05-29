@@ -90,10 +90,10 @@ namespace NxEn
 		Panel::OnDisable();
 	}
 
-	void TreePanel::OnGui(float TimeStep)
+	void TreePanel::OnDraw()
 	{
-		DrawHeader(TimeStep);
-		DrawItem(TimeStep, Root);
+		DrawHeader();
+		DrawItem(Root);
 
 		ProcessAction();
 	}
@@ -127,9 +127,9 @@ namespace NxEn
 	{
 	}
 
-	void TreePanel::DrawHeader(float TimeStep)
+	void TreePanel::DrawHeader()
 	{
-		Menu.Tick(TimeStep);
+		Menu.Draw();
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -145,14 +145,14 @@ namespace NxEn
 		ImGui::Separator();
 	}
 
-	void TreePanel::DrawItem(float TimeStep, TreeItem* Item)
+	void TreePanel::DrawItem(TreeItem* Item)
 	{
 		if (!Item)
 		{
 			return;
 		}
 
-		Item->Tick(TimeStep);
+		Item->Draw();
 
 		bool Browse = Filter.IsEmpty();
 		bool ExpandChanged = false;
@@ -200,7 +200,7 @@ namespace NxEn
 				ImGui::TreePush(Item->GetName().C());
 			}
 
-			DrawItem(TimeStep, Item->GetChild());
+			DrawItem(Item->GetChild());
 
 			if (Browse)
 			{
@@ -208,7 +208,7 @@ namespace NxEn
 			}
 		}
 
-		DrawItem(TimeStep, Item->GetNext());
+		DrawItem(Item->GetNext());
 	}
 
 	void TreePanel::DrawContext(TreeItem* Item)

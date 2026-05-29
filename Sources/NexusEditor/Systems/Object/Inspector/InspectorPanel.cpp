@@ -72,9 +72,9 @@ namespace NxEd
 		Mode = InspectorMode::None;
 	}
 
-	void InspectorPanel::OnGui(float TimeStep)
+	void InspectorPanel::OnDraw()
 	{
-		Menu.Tick(TimeStep);
+		Menu.Draw();
 
 		NxEn::Object* Instance = nullptr;
 		switch (Mode)
@@ -89,6 +89,6 @@ namespace NxEd
 			return;
 		}
 
-		Instance->DrawGui(TimeStep);
+		Instance->Draw();
 	}
 }

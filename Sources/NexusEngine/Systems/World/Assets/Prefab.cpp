@@ -23,9 +23,9 @@ namespace NxEn
 		SetDirty();
 	}
 
-	void Prefab::OnGui(float TimeStep)
+	void Prefab::OnDraw()
 	{
-		Asset::OnGui(TimeStep);
+		Asset::OnDraw();
 
 		GUI::Drawer<NxFr::StringView>::Property(Root->GetName(), "Root");
 	}

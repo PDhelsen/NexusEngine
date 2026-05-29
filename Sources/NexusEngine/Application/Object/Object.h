@@ -31,7 +31,7 @@ namespace NxEn
 		virtual void Initialize();
 		virtual void Shutdown();
 		virtual void Tick(float TimeStep = 0.0f);
-		virtual void DrawGui(float TimeStep = 0.0f);
+		virtual void Draw();
 
 		virtual Object* Clone() const;
 		virtual void Clone(Object* Other) const;
@@ -56,7 +56,7 @@ namespace NxEn
 		virtual void OnEnable() {};
 		virtual void OnDisable() {};
 		virtual void OnTick(float TimeStep = 0.0f) {};
-		virtual void OnGui(float TimeStep = 0.0f) {};
+		virtual void OnDraw() {};
 
 		virtual void OnClone(const Object& Other) {};
 		virtual void OnSave(YAML::Node& Node) {};

@@ -37,9 +37,9 @@ namespace NxEn
 		Panel::OnDisable();
 	}
 
-	void StylesPanel::OnGui(float TimeStep)
+	void StylesPanel::OnDraw()
 	{
-		Menu.Tick(TimeStep);
+		Menu.Draw();
 
 		Style.ColorText = NxFr::Colors::White;
 		GUI::Draw::Text("Vars", &GUI::Style::GetStyle(GUI::Style::IdText_Title));

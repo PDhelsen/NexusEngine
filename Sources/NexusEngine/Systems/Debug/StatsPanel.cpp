@@ -41,7 +41,7 @@ namespace NxEn
 		NxFr::ContainerUtility::Sort<NxFr::String>(Ids);
 	}
 
-	void StatsPanel::OnGui(float TimeStep)
+	void StatsPanel::OnDraw()
 	{
 		DrawButtons();
 		ImGui::SameLine();

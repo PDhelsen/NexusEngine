@@ -24,7 +24,7 @@ namespace NxEd
 		void OnInitialize() override;
 		void OnEnable() override;
 		void OnDisable() override;
-		void OnGui(float TimeStep) override;
+		void OnDraw() override;
 
 		void OnScenesChanged(NxFr::StringId, NxFr::GUID, NxFr::GUID);
 		void OnToggle(uint64 Index);
