@@ -11,7 +11,7 @@ namespace NxEd
 		friend class AssetsBrowserEditContext;
 
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserItem)
+		NX_OBJECT(AssetsBrowserItem)
 
 		NxFr::StringView GetName() const override { return ImGuiText; }
 		NxFr::StringView GetDescription() const { return GetItemName(); }
@@ -61,7 +61,7 @@ namespace NxEd
 	class AssetsBrowserItemDirectory : public AssetsBrowserItem
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserItemDirectory)
+		NX_OBJECT(AssetsBrowserItemDirectory)
 
 	protected:
 		void OnCreate(NxFr::StringView Target, NxFr::StringId Type) override;
@@ -75,7 +75,7 @@ namespace NxEd
 	class AssetsBrowserItemContent : public AssetsBrowserItem
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserItemDirectory)
+		NX_OBJECT(AssetsBrowserItemContent)
 
 	protected:
 		void OnCreate(NxFr::StringView Target, NxFr::StringId Type) override;
@@ -89,7 +89,7 @@ namespace NxEd
 	class AssetsBrowserItemAsset : public AssetsBrowserItem
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserItemDirectory)
+		NX_OBJECT(AssetsBrowserItemAsset)
 
 	protected:
 		void OnCreate(NxFr::StringView Target, NxFr::StringId Type) override;

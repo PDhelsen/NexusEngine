@@ -16,7 +16,7 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(ScenesPanel)
+		NX_OBJECT(ScenesPanel)
 
 		void Refresh();
 

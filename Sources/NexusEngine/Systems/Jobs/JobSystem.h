@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API JobSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(JobSystem)
+		NX_OBJECT(JobSystem)
 
 		JobHandle Dispatch(uint64 Count, uint64 Group, NxFr::Delegate<void(uint64)> Work);
 		JobHandle Dispatch(uint64 Count, NxFr::Delegate<void(uint64)> Work);

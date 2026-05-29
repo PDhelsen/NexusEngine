@@ -31,8 +31,6 @@ namespace NxEn
 		Application::GetSystem<CommandsSystem>()->File(Path);
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(CommandsSystem)
-
 	Command* CommandsSystem::GetCommand(NxFr::StringId Id)
 	{
 		return GetCommands()[Id];

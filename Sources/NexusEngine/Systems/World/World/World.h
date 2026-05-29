@@ -16,7 +16,7 @@ namespace NxEn
 		friend struct WorldObjectFactoryContext;
 
 	public:
-		NX_OBJECT_DECLARATION(World)
+		NX_OBJECT(World)
 
 		World(NxFr::StringId Name, bool References = false);
 		~World();

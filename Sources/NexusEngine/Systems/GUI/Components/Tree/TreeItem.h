@@ -9,7 +9,7 @@ namespace NxEn
 		friend class TreePanel;
 
 	public:
-		NX_OBJECT_DECLARATION(TreeItem)
+		NX_OBJECT(TreeItem)
 
 		TreeItem();
 		virtual ~TreeItem();

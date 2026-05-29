@@ -8,7 +8,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetImporterPopup : public NxEn::GUI::Popup
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetImporterPopup)
+		NX_OBJECT(AssetImporterPopup)
 
 		static void ShowWithPath(NxFr::StringView Path);
 

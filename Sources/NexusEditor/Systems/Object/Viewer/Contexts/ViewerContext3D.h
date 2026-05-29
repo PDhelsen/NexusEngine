@@ -12,7 +12,7 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(ViewerContext3D)
+		NX_OBJECT(ViewerContext3D)
 
 		ViewerContext3D();
 		virtual ~ViewerContext3D();

@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API System : public Object
 	{
 	public:
-		NX_OBJECT_DECLARATION(System)
+		NX_OBJECT(System)
 
 		System();
 		virtual ~System();

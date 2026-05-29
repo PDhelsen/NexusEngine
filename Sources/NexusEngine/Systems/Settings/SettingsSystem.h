@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API SettingsSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(SettingsSystem)
+		NX_OBJECT(SettingsSystem)
 
 		static Setting* GetSetting(NxFr::StringView Id);
 		static void RegisterSetting(Setting* Instance);

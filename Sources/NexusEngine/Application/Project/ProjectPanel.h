@@ -9,7 +9,7 @@ namespace NxEn
 	class NX_ENGINE_API ProjectPanel : public GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(ProjectPanel)
+		NX_OBJECT(ProjectPanel)
 
 		ProjectPanel();
 		~ProjectPanel();

@@ -39,8 +39,6 @@ namespace NxEn
 		Worlds->InstantiatePrefab(Instance);
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(WorldSystem)
-
 	WorldSystem::WorldSystem()
 		: OnWorldEvent(), OnGameObjectEvent(), Worlds()
 	{

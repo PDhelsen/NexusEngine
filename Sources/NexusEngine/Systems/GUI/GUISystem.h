@@ -10,7 +10,7 @@ namespace NxEn
 	class NX_ENGINE_API GUISystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(GUISystem)
+		NX_OBJECT(GUISystem)
 
 		static GUI::Window* GetWindow();
 		static GUI::Menu* GetMenu();

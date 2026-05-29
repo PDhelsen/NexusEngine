@@ -7,7 +7,7 @@ namespace NxEn
 	class NX_ENGINE_API StatsPanel : public GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(StatsPanel)
+		NX_OBJECT(StatsPanel)
 
 		StatsPanel();
 		~StatsPanel();

@@ -3,11 +3,6 @@
 
 namespace NxEd
 {
-	NX_OBJECT_IMPLEMENTATION(AssetsBrowserItem)
-	NX_OBJECT_IMPLEMENTATION(AssetsBrowserItemDirectory)
-	NX_OBJECT_IMPLEMENTATION(AssetsBrowserItemContent)
-	NX_OBJECT_IMPLEMENTATION(AssetsBrowserItemAsset)
-
 	AssetsBrowserItem::AssetsBrowserItem()
 		: TreeItem(), Id(0), Path(""), Type(0),
 		Parent(nullptr), Previous(nullptr), Next(nullptr), Child(nullptr)

@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API ResourcesSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(ResourcesSystem)
+		NX_OBJECT(ResourcesSystem)
 
 		template<typename T> T* Load(NxFr::StringView Path);
 		void Unload(NxFr::StringView Path);

@@ -69,8 +69,6 @@ namespace NxEn
 		return NxFr::StringUtility::Split(Id, "/");
 	}
 
-	NX_OBJECT_IMPLEMENTATION(GUISystem)
-
 	GUI::Window* GUISystem::GetWindow()
 	{
 		return &GetMainWindow();

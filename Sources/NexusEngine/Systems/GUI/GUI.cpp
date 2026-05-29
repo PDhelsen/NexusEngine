@@ -7,8 +7,6 @@ namespace NxEn
 	{
 #pragma region Element
 
-		NX_OBJECT_IMPLEMENTATION(Element)
-
 		Element::Element()
 			: Manual(false), WillClose(false)
 		{
@@ -89,8 +87,6 @@ namespace NxEn
 
 #pragma region Panel
 
-		NX_OBJECT_IMPLEMENTATION(Panel)
-
 		Panel::Panel()
 			: GuiFlags(0), Title("")
 		{
@@ -167,8 +163,6 @@ namespace NxEn
 		static const char* MenuPathWindow				= "Window/";
 		static const char* MenuPathEdit					= "Edit/";
 		static const char* MenuPathFile					= "File/";
-
-		NX_OBJECT_IMPLEMENTATION(Menu)
 
 		Menu::Item Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
@@ -381,8 +375,6 @@ namespace NxEn
 
 #pragma region Popup
 
-		NX_OBJECT_IMPLEMENTATION(Popup)
-
 		Popup::Popup()
 			: GuiFlags(0), Title(""), Message(""), Callbacks()
 		{
@@ -476,8 +468,6 @@ namespace NxEn
 
 #pragma region Progress
 
-		NX_OBJECT_IMPLEMENTATION(ProgressBar)
-
 		ProgressBar::ProgressBar()
 			: GuiFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
 		{
@@ -568,8 +558,6 @@ namespace NxEn
 #pragma endregion
 
 #pragma region Window
-
-		NX_OBJECT_IMPLEMENTATION(Window)
 
 		Window::Window()
 			: GuiFlags(0), MainMenu(true)

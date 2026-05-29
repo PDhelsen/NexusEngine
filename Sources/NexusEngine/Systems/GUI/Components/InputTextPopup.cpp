@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(InputTextPopup)
-
 	InputTextPopup* InputTextPopup::GetInstance()
 	{
 		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));

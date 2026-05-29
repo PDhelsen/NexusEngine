@@ -8,7 +8,7 @@ namespace NxEd
 	class NX_EDITOR_API EditSystem : public NxEn::System
 	{
 	public:
-		NX_OBJECT_DECLARATION(EditSystem)
+		NX_OBJECT(EditSystem)
 
 		void RegisterContext(NxFr::StringId Id, Edit::Context* Ctx);
 		Edit::Context* UnregisterContext(NxFr::StringId Id);

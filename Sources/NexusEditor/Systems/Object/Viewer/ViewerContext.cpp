@@ -2,5 +2,4 @@
 
 namespace NxEd
 {
-	NX_OBJECT_IMPLEMENTATION(ViewerContext)
 }

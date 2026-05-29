@@ -24,7 +24,7 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(ViewerContextText)
+		NX_OBJECT(ViewerContextText)
 
 		ViewerContextText();
 		virtual ~ViewerContextText();

@@ -14,8 +14,6 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel ScenesPanel");
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(ScenesPanel)
-
 	void ScenesPanel::Refresh()
 	{
 		NxFr::Array<NxFr::GUID> ScenesIds = Assets->Find("t:Scene");

@@ -12,8 +12,6 @@ namespace NxFr
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(ResourcesSystem)
-
 	void ResourcesSystem::Unload(NxFr::StringView Path)
 	{
 		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));

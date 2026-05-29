@@ -7,7 +7,7 @@ namespace NxEn
 	class NX_ENGINE_API SettingsPanel : public GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(SettingsPanel)
+		NX_OBJECT(SettingsPanel)
 
 		SettingsPanel();
 		~SettingsPanel();

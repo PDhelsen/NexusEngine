@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(System)
-
 	System::System()
 	{
 	}

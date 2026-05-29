@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(Behaviour)
-
 	Behaviour::Behaviour()
 		: BehaviourId(0), Target()
 	{

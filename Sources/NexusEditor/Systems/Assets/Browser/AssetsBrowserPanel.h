@@ -11,7 +11,7 @@ namespace NxEd
 		friend class AssetsBrowserEditContext;
 
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserPanel)
+		NX_OBJECT(AssetsBrowserPanel)
 
 		void Refresh() override;
 

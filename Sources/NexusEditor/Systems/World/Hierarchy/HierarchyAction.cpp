@@ -8,8 +8,6 @@
 
 namespace NxEd
 {
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionCreate)
-
 	void HierarchyActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
@@ -25,8 +23,6 @@ namespace NxEd
 		});
 	}
 
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionRename)
-
 	void HierarchyActionRename::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
@@ -41,8 +37,6 @@ namespace NxEd
 		});
 	}
 
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionDuplicate)
-
 	void HierarchyActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		for (auto& Item : Items)
@@ -53,8 +47,6 @@ namespace NxEd
 			World->DuplicateGameObject(Instance);
 		}
 	}
-
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionMove)
 
 	void HierarchyActionMove::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -74,8 +66,6 @@ namespace NxEd
 		}
 	}
 
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionDelete)
-
 	void HierarchyActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		for (auto& Item : Items)
@@ -86,8 +76,6 @@ namespace NxEd
 			World->DestroyGameObject(Instance);
 		}
 	}
-
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionPrefabCreate)
 
 	void HierarchyActionPrefabCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
@@ -105,8 +93,6 @@ namespace NxEd
 		});
 	}
 
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionPrefabSave)
-
 	void HierarchyActionPrefabSave::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
@@ -117,8 +103,6 @@ namespace NxEd
 		}
 	}
 
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionPrefabUnpack)
-
 	void HierarchyActionPrefabUnpack::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
@@ -128,8 +112,6 @@ namespace NxEd
 			System->UnpackPrefab(Instance);
 		}
 	}
-
-	NX_OBJECT_IMPLEMENTATION(HierarchyActionInspect)
 
 	void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{

@@ -8,8 +8,6 @@ namespace NxEn
 		return Application::GetSystem<AssetsSystem>()->GetMetadata(Id);
 	}
 
-	NX_OBJECT_IMPLEMENTATION(Asset)
-
 	Asset::Asset()
 		: Id(0), Dirty(false)
 	{

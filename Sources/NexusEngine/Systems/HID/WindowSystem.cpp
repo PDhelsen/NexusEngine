@@ -13,8 +13,6 @@ namespace NxEn
 	static SettingVar<NxFr::Vector2i>* SettingResolution = SettingVar<NxFr::Vector2i>::Create("Settings", "WindowResolution", NxFr::Vector2i(1920, 1080));
 	static SettingVar<bool>* SettingVSync = SettingVar<bool>::Create("Settings", "WindowVSync", true);
 
-	NX_OBJECT_IMPLEMENTATION(WindowSystem)
-
 	WindowSystem::WindowSystem()
 		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Pointer(), Focused(true)
 	{

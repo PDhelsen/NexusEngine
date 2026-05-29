@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API CommandsSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(CommandsSystem)
+		NX_OBJECT(CommandsSystem)
 
 		static Command* GetCommand(NxFr::StringId Id);
 		static void RegisterCommand(Command* Instance);

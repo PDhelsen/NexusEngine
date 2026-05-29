@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(TreeItem)
-
 	TreeItem::TreeItem()
 		: ImGuiText(), Expanded(false), Selected(false)
 	{

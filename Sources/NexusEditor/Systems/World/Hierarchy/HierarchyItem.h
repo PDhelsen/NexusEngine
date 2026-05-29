@@ -10,7 +10,7 @@ namespace NxEd
 		friend class HierarchyManager;
 
 	public:
-		NX_OBJECT_DECLARATION(HierarchyItem)
+		NX_OBJECT(HierarchyItem)
 
 		NxFr::StringView GetName() const override { return ImGuiText; }
 		NxFr::StringView GetDescription() const { return GetItemName(); }

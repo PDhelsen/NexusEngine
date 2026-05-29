@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(Component)
-
 	Component::Component()
 		: ComponentId(0), Target()
 	{

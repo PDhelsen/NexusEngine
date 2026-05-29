@@ -8,7 +8,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionCreate : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionCreate)
+		NX_OBJECT(AssetsBrowserActionCreate)
 
 		AssetsBrowserActionCreate() : TreeAction("Create", 1, false, false) { }
 		virtual ~AssetsBrowserActionCreate() = default;
@@ -19,7 +19,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionRename : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionRename)
+		NX_OBJECT(AssetsBrowserActionRename)
 
 		AssetsBrowserActionRename() : TreeAction("Rename", 2, false, false) {}
 		virtual ~AssetsBrowserActionRename() = default;
@@ -30,7 +30,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionDuplicate : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionDuplicate)
+		NX_OBJECT(AssetsBrowserActionDuplicate)
 
 		AssetsBrowserActionDuplicate() : TreeAction("Duplicate", 3, false, false) {}
 		virtual ~AssetsBrowserActionDuplicate() = default;
@@ -41,7 +41,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionMove : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionMove)
+		NX_OBJECT(AssetsBrowserActionMove)
 
 		AssetsBrowserActionMove() : TreeAction("Move", 4, false, true) {}
 		virtual ~AssetsBrowserActionMove() = default;
@@ -52,7 +52,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionDelete : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionDelete)
+		NX_OBJECT(AssetsBrowserActionDelete)
 
 		AssetsBrowserActionDelete() : TreeAction("Delete", 5, false, false) {}
 		virtual ~AssetsBrowserActionDelete() = default;
@@ -63,7 +63,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionImport : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionImport)
+		NX_OBJECT(AssetsBrowserActionImport)
 
 		AssetsBrowserActionImport() : TreeAction("Import", 6, true, false) {}
 		virtual ~AssetsBrowserActionImport() = default;
@@ -74,7 +74,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionReimport : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionReimport)
+		NX_OBJECT(AssetsBrowserActionReimport)
 
 		AssetsBrowserActionReimport() : TreeAction("Reimport", 7, true, false) {}
 		virtual ~AssetsBrowserActionReimport() = default;
@@ -85,7 +85,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionLoad : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionLoad)
+		NX_OBJECT(AssetsBrowserActionLoad)
 
 		AssetsBrowserActionLoad() : TreeAction("Load", 8, true, false) {}
 		virtual ~AssetsBrowserActionLoad() = default;
@@ -96,7 +96,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionReload : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionReload)
+		NX_OBJECT(AssetsBrowserActionReload)
 
 		AssetsBrowserActionReload() : TreeAction("Reload", 9, true, false) {}
 		virtual ~AssetsBrowserActionReload() = default;
@@ -107,7 +107,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionInstantiate : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionReload)
+		NX_OBJECT(AssetsBrowserActionReload)
 
 		AssetsBrowserActionInstantiate() : TreeAction("Instantiate", 10, false, false) {}
 		virtual ~AssetsBrowserActionInstantiate() = default;
@@ -118,7 +118,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionView : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionView)
+		NX_OBJECT(AssetsBrowserActionView)
 
 		AssetsBrowserActionView() : TreeAction("View", 11, false, false) {}
 		virtual ~AssetsBrowserActionView() = default;
@@ -129,7 +129,7 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserActionReferences : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT_DECLARATION(AssetsBrowserActionReferences)
+		NX_OBJECT(AssetsBrowserActionReferences)
 
 		AssetsBrowserActionReferences() : TreeAction("References", 12, false, false) {}
 		virtual ~AssetsBrowserActionReferences() = default;

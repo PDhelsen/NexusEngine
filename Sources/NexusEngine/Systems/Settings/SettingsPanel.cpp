@@ -10,8 +10,6 @@ namespace NxEn
 		Application::GetSystem<CommandsSystem>()->Execute("GUI.Panel SettingsPanel");
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(SettingsPanel)
-
 	SettingsPanel::SettingsPanel()
 		: Menu(), Style(), Settings(), Page(0)
 	{

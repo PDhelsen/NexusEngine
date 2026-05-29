@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(InputSystem)
-
 	InputSystem::InputSystem()
 		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Window(nullptr), Schemas(), Buttons(), Axises(), Modifiers(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{

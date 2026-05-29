@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API InputSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(InputSystem)
+		NX_OBJECT(InputSystem)
 
 		InputSystem();
 		~InputSystem();

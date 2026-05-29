@@ -21,8 +21,6 @@ namespace NxEd
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Select(Item);
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(AssetsBrowserPanel)
-
 	void AssetsBrowserPanel::Refresh()
 	{
 		Browser->Refresh();

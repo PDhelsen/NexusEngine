@@ -18,7 +18,7 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(InspectorPanel)
+		NX_OBJECT(InspectorPanel)
 
 		InspectorPanel();
 		virtual ~InspectorPanel();

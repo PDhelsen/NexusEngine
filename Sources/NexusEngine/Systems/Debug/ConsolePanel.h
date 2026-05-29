@@ -18,7 +18,7 @@ namespace NxEn
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(ConsolePanel)
+		NX_OBJECT(ConsolePanel)
 
 		static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity);
 

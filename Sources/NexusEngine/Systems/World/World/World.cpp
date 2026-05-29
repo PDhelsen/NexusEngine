@@ -3,8 +3,6 @@
 
 namespace NxEn
 {
-	NX_OBJECT_IMPLEMENTATION(World)
-
 	World::World(NxFr::StringId Name, bool Reference)
 		: WorldId(Name), Factory(WorldId, Reference), Root()
 	{

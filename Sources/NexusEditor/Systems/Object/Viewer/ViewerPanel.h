@@ -9,7 +9,7 @@ namespace NxEd
 	class NX_EDITOR_API ViewerPanel : public NxEn::GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(ViewerPanel)
+		NX_OBJECT(ViewerPanel)
 
 		void Clear();
 		void Show(NxEn::Object* Instance);

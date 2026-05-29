@@ -4,10 +4,9 @@
 #include "NexusEngine/Systems/Assets/AssetsFactory.h"
 
 #define NX_ASSET_DECLARATION(Type) \
-NX_OBJECT_DECLARATION(Type)
+NX_OBJECT(Type)
 
 #define NX_ASSET_IMPLEMENTATION(Type) \
-NX_OBJECT_IMPLEMENTATION(Type)\
 NxEn::AssetsFactory::Factory* Factory##Type = NxEn::AssetsFactory::Register<Type>();
 
 namespace NxEn
@@ -18,7 +17,7 @@ namespace NxEn
 		friend class AssetsManager;
 
 	public:
-		NX_OBJECT_DECLARATION(Asset)
+		NX_OBJECT(Asset)
 
 		Asset();
 		virtual ~Asset();

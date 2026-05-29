@@ -7,7 +7,7 @@ namespace NxEn
 	class NX_ENGINE_API InputTextPopup : public GUI::Popup
 	{
 	public:
-		NX_OBJECT_DECLARATION(InputTextPopup)
+		NX_OBJECT(InputTextPopup)
 
 		static InputTextPopup* GetInstance();
 

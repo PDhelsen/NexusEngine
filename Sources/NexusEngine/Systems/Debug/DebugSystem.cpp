@@ -44,8 +44,6 @@ namespace NxEn
 		if (Enabled == "true") Stats->StartRecording(); else Stats->StopRecording();
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(DebugSystem)
-
 	DebugSystem::DebugSystem()
 		: Logger(NxFr::Globals::Debug::Logs), Stats(nullptr), Instrumentor(nullptr), Memory(nullptr), Time(0.0)
 	{

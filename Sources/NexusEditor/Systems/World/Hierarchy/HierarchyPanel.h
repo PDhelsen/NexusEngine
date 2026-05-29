@@ -11,7 +11,7 @@ namespace NxEd
 		friend class HierarchyEditContext;
 
 	public:
-		NX_OBJECT_DECLARATION(HierarchyPanel)
+		NX_OBJECT(HierarchyPanel)
 
 		void Refresh() override;
 

@@ -3,10 +3,9 @@
 #include "NexusEngine/Application/Object.h"
 
 #define NX_COMPONENT_DECLARATION(Type) \
-NX_OBJECT_DECLARATION(Type)
+NX_OBJECT(Type)
 
 #define NX_COMPONENT_IMPLEMENTATION(Type) \
-NX_OBJECT_IMPLEMENTATION(Type)\
 NxEn::WorldObjectStorage* Storage##Type = NxEn::WorldObjectStorage::Register<Type>();
 
 namespace NxEn
@@ -19,7 +18,7 @@ namespace NxEn
 		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
 
 	public:
-		NX_OBJECT_DECLARATION(Component)
+		NX_OBJECT(Component)
 
 		Component();
 		virtual ~Component();

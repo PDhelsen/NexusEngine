@@ -9,7 +9,7 @@ namespace NxEn
 		friend class NexusEngineApplication;
 
 	public:
-		NX_OBJECT_DECLARATION(DebugSystem)
+		NX_OBJECT(DebugSystem)
 
 		DebugSystem();
 		~DebugSystem();

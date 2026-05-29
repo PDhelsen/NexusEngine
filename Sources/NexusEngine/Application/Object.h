@@ -2,20 +2,17 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 
-#define NX_OBJECT_DECLARATION(Type)\
-virtual NxFr::StringId GetObjectType() const;\
-static NxFr::StringId GetClassType();
-
-#define NX_OBJECT_IMPLEMENTATION(Type) \
-NxFr::StringId Type::GetObjectType() const \
-{\
-	return Type::GetClassType();\
-}\
-NxFr::StringId Type::GetClassType()\
-{\
-	static NxFr::StringId T = #Type##_Sid; \
-	return T; \
-}
+#define NX_OBJECT(Type)                          \
+    virtual NxFr::StringId GetObjectType() const \
+    {                                            \
+        return GetClassType();                   \
+    }                                            \
+                                                 \
+    static NxFr::StringId GetClassType()         \
+    {                                            \
+        static NxFr::StringId T = #Type##_Sid;   \
+        return T;                                \
+    }
 
 namespace NxEn
 {
@@ -42,7 +39,7 @@ namespace NxEn
 	class NX_ENGINE_API Object
 	{
 	public:
-		NX_OBJECT_DECLARATION(Object)
+		NX_OBJECT(Object)
 
 		Object();
 		virtual ~Object();

@@ -31,8 +31,6 @@ namespace NxEn
 	static Allocator& GetSmallAllocator() { static Allocator Instance(AllocatorType::Small); return Instance; }
 	static Allocator& GetManagedAllocator() { static Allocator Instance(AllocatorType::Managed); return Instance; }
 
-	NX_OBJECT_IMPLEMENTATION(MemorySystem)
-
 	NxEn::HandleManager* MemorySystem::GetHandleManager()
 	{
 		return &GetHandles();

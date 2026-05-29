@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API TreeAction : public Object
 	{
 	public:
-		NX_OBJECT_DECLARATION(TreeAction)
+		NX_OBJECT(TreeAction)
 
 		TreeAction(NxFr::StringView Label, int64 Priority, bool Recursive, bool LastSelectedFirst);
 		virtual ~TreeAction();

@@ -10,8 +10,6 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel ReferencesPanel");
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(ReferencesPanel)
-
 	void ReferencesPanel::Clear()
 	{
 		Nodes.Clear();

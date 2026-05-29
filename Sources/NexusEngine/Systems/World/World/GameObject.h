@@ -17,7 +17,7 @@ namespace NxEn
 		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
 
 	public:
-		NX_OBJECT_DECLARATION(GameObject)
+		NX_OBJECT(GameObject)
 
 		GameObject();
 		~GameObject();

@@ -18,7 +18,7 @@ namespace NxEn
 		const NxFr::StringId EventUnloadedId = "Unloaded"_Sid;
 		const NxFr::StringId EventImportedId = "Imported"_Sid;
 
-		NX_OBJECT_DECLARATION(AssetsSystem)
+		NX_OBJECT(AssetsSystem)
 
 		template<typename T>
 		T* Create(NxFr::StringView Path = "", NxFr::StringView Extension = "");

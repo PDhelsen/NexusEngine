@@ -14,7 +14,7 @@ namespace NxEd
 		friend class StageManager;
 
 	public:
-		NX_OBJECT_DECLARATION(Stage)
+		NX_OBJECT(Stage)
 
 		Stage(NxEn::Object* Target);
 		~Stage();

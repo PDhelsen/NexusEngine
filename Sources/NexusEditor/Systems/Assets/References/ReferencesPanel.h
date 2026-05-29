@@ -19,7 +19,7 @@ namespace NxEd
 		};
 
 	public:
-		NX_OBJECT_DECLARATION(ReferencesPanel)
+		NX_OBJECT(ReferencesPanel)
 
 		void Clear();
 		void Select(NxFr::GUID Id, bool Keep = false, bool Force = false);

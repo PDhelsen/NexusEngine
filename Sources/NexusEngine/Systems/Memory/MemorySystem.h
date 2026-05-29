@@ -9,7 +9,7 @@ namespace NxEn
 	class NX_ENGINE_API MemorySystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(MemorySystem)
+		NX_OBJECT(MemorySystem)
 
 		static NxEn::HandleManager* GetHandleManager();
 		static NxEn::Allocator* GetAllocator(AllocatorType Type);

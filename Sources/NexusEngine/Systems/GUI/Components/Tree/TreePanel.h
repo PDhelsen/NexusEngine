@@ -9,7 +9,7 @@ namespace NxEn
 	class NX_ENGINE_API TreePanel : public GUI::Panel
 	{
 	public:
-		NX_OBJECT_DECLARATION(TreePanel)
+		NX_OBJECT(TreePanel)
 
 		TreePanel();
 		virtual ~TreePanel();

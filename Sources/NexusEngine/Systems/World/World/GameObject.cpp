@@ -9,8 +9,6 @@ namespace NxEn
 	static const NxFr::String YamlId = "Id";
 	static const NxFr::String YamlReference = "Reference";
 
-	NX_OBJECT_IMPLEMENTATION(GameObject)
-
 	GameObject::GameObject()
 		: WorldId(0), GameObjectId(0), ReferenceId(0),
 		Name(""),

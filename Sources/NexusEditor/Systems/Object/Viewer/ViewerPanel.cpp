@@ -4,8 +4,6 @@
 
 namespace NxEd
 {
-	NX_OBJECT_IMPLEMENTATION(ViewerPanel)
-
 	void ViewerPanel::Clear()
 	{
 		if (!Context)

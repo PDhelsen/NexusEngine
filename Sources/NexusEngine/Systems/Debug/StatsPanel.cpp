@@ -7,8 +7,6 @@ namespace NxEn
 
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
 
-	NX_OBJECT_IMPLEMENTATION(StatsPanel)
-
 	StatsPanel::StatsPanel()
 		: Style(), Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filters(), Filter()
 	{

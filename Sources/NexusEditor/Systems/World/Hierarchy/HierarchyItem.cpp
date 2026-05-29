@@ -3,8 +3,6 @@
 
 namespace NxEd
 {
-	NX_OBJECT_IMPLEMENTATION(HierarchyItem)
-
 	HierarchyItem::HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target)
 		: Manager(Manager), Target(Target), Name(""), ReferenceId(0)
 	{

@@ -11,7 +11,7 @@ namespace NxEn
 			friend class GUISystem;
 
 		public:
-			NX_OBJECT_DECLARATION(Element)
+			NX_OBJECT(Element)
 
 			Element();
 			~Element();
@@ -42,7 +42,7 @@ namespace NxEn
 		class NX_ENGINE_API Panel : public Element
 		{
 		public:
-			NX_OBJECT_DECLARATION(Panel)
+			NX_OBJECT(Panel)
 
 			template<typename T>
 			static T* Create()
@@ -114,7 +114,7 @@ namespace NxEn
 				void* Data;
 			};
 
-			NX_OBJECT_DECLARATION(Menu)
+			NX_OBJECT(Menu)
 
 			Menu(bool Main = false);
 			virtual ~Menu();
@@ -153,7 +153,7 @@ namespace NxEn
 			};
 
 		public:
-			NX_OBJECT_DECLARATION(Popup)
+			NX_OBJECT(Popup)
 
 			Popup();
 			virtual ~Popup();
@@ -186,7 +186,7 @@ namespace NxEn
 		class NX_ENGINE_API ProgressBar : public Element
 		{
 		public:
-			NX_OBJECT_DECLARATION(ProgressBar)
+			NX_OBJECT(ProgressBar)
 
 			ProgressBar();
 			virtual ~ProgressBar();
@@ -220,7 +220,7 @@ namespace NxEn
 		class NX_ENGINE_API Window : public NxEn::GUI::Element
 		{
 		public:
-			NX_OBJECT_DECLARATION(Window)
+			NX_OBJECT(Window)
 
 			Window();
 			~Window();

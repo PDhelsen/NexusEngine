@@ -5,8 +5,6 @@ namespace NxEd
 	static ViewerFactory::Factory* FactoryWorld = ViewerFactory::Register<NxEn::World, ViewerContext3D>();
 	static ViewerFactory::Factory* FactoryPrefab = ViewerFactory::Register<NxEn::Prefab, ViewerContext3D>();
 
-	NX_OBJECT_IMPLEMENTATION(ViewerContext3D)
-
 	ViewerContext3D::ViewerContext3D()
 		: Mode(), World(nullptr), Target()
 	{

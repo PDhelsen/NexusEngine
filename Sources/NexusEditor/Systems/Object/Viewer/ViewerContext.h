@@ -10,7 +10,7 @@ namespace NxEd
 		friend class ViewerPanel;
 
 	public:
-		NX_OBJECT_DECLARATION(ViewerContext)
+		NX_OBJECT(ViewerContext)
 
 		ViewerContext() = default;
 		virtual ~ViewerContext() = default;

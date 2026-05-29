@@ -14,7 +14,7 @@ namespace NxEn
 	class NX_ENGINE_API WorldSystem : public System
 	{
 	public:
-		NX_OBJECT_DECLARATION(WorldSystem)
+		NX_OBJECT(WorldSystem)
 
 		inline static const NxFr::StringId DummyId = "Dummy"_Sid;
 		inline static const NxFr::StringId WorldId = "World"_Sid;

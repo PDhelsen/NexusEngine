@@ -21,8 +21,6 @@ namespace NxEn
 		Application::GetSystem<AssetsSystem>()->Purge(NxFr::StringUtility::FromString<bool>(Save));
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(AssetsSystem)
-
 	Asset* AssetsSystem::Create(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NxEn::Asset* Instance = AssetsFactory::Create(Type);

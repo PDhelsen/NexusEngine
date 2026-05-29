@@ -12,7 +12,7 @@ namespace NxEn
 		friend class GUISystem;
 
 	public:
-		NX_OBJECT_DECLARATION(WindowSystem)
+		NX_OBJECT(WindowSystem)
 
 		WindowSystem();
 		~WindowSystem();

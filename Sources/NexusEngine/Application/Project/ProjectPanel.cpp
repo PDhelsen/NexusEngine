@@ -10,8 +10,6 @@ namespace NxEn
 		Application::GetSystem<CommandsSystem>()->Execute("GUI.Panel ProjectPanel");
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(ProjectPanel)
-
 	ProjectPanel::ProjectPanel()
 		: Style(), Infos(nullptr)
 	{

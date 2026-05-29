@@ -8,8 +8,6 @@
 
 namespace NxEd
 {
-	NX_OBJECT_IMPLEMENTATION(HierarchyPanel)
-
 	void HierarchyPanel::Refresh()
 	{
 		NxEn::TreeItem* Target = Root;

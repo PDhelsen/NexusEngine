@@ -77,8 +77,6 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Paste");
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(EditSystem)
-
 	void EditSystem::RegisterContext(NxFr::StringId Id, Edit::Context* Ctx)
 	{
 		if (Contexts.TryGet(Id))

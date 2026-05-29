@@ -31,8 +31,6 @@ namespace NxEn
 		Application::GetSystem<SettingsSystem>()->ApplySettings();
 	}));
 
-	NX_OBJECT_IMPLEMENTATION(SettingsSystem)
-
 	Setting* SettingsSystem::GetSetting(NxFr::StringView Id)
 	{
 		return GetSettings()[Id];
