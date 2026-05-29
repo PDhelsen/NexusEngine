@@ -47,7 +47,7 @@ namespace NxEn
 
 			WillClose = true;
 			Hide();
-			Application::GetInstance()->GetTicker().AppendTick(Ticker::TickBucket::Cleanup, "Destroy Gui element", [=]() { Object::Destroy(this); }, true);
+			Application::GetInstance()->GetTicker().AppendTick(Ticker::TickBucket::Cleanup, "Destroy Gui element", [=]() { SetEnabled(false); Shutdown(); delete this; }, true);
 		}
 
 		void Element::OnInitialize()

@@ -49,7 +49,8 @@ namespace NxEn
 			{
 				//NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-				T* Instance = Object::Create<T>(false);
+				T* Instance = new T();
+				Instance->Initialize();
 				GUISystem::RegisterPanel(Instance);
 				return Instance;
 			}

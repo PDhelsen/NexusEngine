@@ -8,12 +8,14 @@ namespace NxEn
 	InputTextPopup* InputTextPopup::GetInstance()
 	{
 		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-		static InputTextPopup* Instance = Object::Create<InputTextPopup>();
 
-		Instance->UnregisterCallback();
-		Instance->Input.Clear();
-		Instance->Show();
-		return Instance;
+		static InputTextPopup Instance;
+		Instance.Initialize();
+
+		Instance.UnregisterCallback();
+		Instance.Input.Clear();
+		Instance.Show();
+		return &Instance;
 	}
 
 	void InputTextPopup::RegisterCallback(const NxFr::Delegate<void(NxFr::StringView)>& Callback)

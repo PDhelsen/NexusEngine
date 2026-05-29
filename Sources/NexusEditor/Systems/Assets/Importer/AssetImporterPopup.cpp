@@ -4,11 +4,9 @@
 
 namespace NxEd
 {
-	AssetImporterPopup* PopupInstance = NxEn::Object::Create<AssetImporterPopup>(false);
-
 	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Assets/Importer", NxFr::Delegate<void()>([]()
 	{
-		PopupInstance->Show();
+		AssetImporterPopup::ShowWithPath("");
 	}));
 
 	const static float ButtonWidth = 100.0f;
@@ -17,8 +15,11 @@ namespace NxEd
 
 	void AssetImporterPopup::ShowWithPath(NxFr::StringView Path)
 	{
-		PopupInstance->Show();
-		PopupInstance->SetPath(Path);
+		static AssetImporterPopup Instance;
+		Instance.Initialize();
+
+		Instance.Show();
+		Instance.SetPath(Path);
 	}
 
 	AssetImporterPopup::AssetImporterPopup()
