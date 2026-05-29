@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Application/Object/Object.h"
 
 #define NX_BEHAVIOUR_DECLARATION(Type) \
 NX_OBJECT(Type)

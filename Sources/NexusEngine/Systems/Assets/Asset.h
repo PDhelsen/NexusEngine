@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Application/Object/Object.h"
 #include "NexusEngine/Systems/Assets/AssetsFactory.h"
 
 #define NX_ASSET_DECLARATION(Type) \

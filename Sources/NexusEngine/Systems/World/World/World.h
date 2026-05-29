@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Application/Object/Object.h"
 #include "NexusEngine/Systems/World/World/GameObject.h"
 #include "NexusEngine/Systems/World/Behaviours/Behaviour.h"
 #include "NexusEngine/Systems/World/Components/Component.h"

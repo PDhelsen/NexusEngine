@@ -2,7 +2,7 @@
 
 #include "NexusEngine/External/ImGui/API.h"
 
-#include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Application/Object/Object.h"
 #include "NexusEngine/Application/Application.h"
 #include "NexusEngine/Application/Systems/SystemManager.h"
 

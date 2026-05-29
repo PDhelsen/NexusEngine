@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Application/Object.h"
+#include "NexusEngine/Application/Object/Object.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectInfo.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectIterator.h"
 
