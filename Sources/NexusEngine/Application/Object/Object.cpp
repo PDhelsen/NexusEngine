@@ -22,6 +22,16 @@ namespace NxEn
 		return !(*this == Other);
 	}
 
+	NxFr::GUID Object::GetId() const
+	{
+		return reinterpret_cast<NxFr::GUID>(this);
+	}
+
+	NxFr::StringView Object::GetName() const
+	{
+		return GetObjectType().GetString();
+	}
+
 	void Object::Initialize()
 	{
 		if (IsInitialized())
@@ -46,6 +56,35 @@ namespace NxEn
 		SetFlag(ObjectFlags::Initialized, false);
 	}
 
+	bool Object::IsInitialized() const
+	{
+		return GetFlag(ObjectFlags::Initialized);
+	}
+
+	bool Object::IsEnabled() const
+	{
+		return GetFlag(ObjectFlags::Enabled);
+	}
+
+	void Object::SetEnabled(bool Enabled)
+	{
+		if (IsEnabled() == Enabled)
+		{
+			return;
+		}
+
+		SetFlag(ObjectFlags::Enabled, Enabled);
+
+		if (IsEnabled())
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
+	}
+
 	void Object::Tick(float TimeStep)
 	{
 		if (!IsTicking())
@@ -54,6 +93,21 @@ namespace NxEn
 		}
 
 		OnTick(TimeStep);
+	}
+
+	bool Object::IsTickable() const
+	{
+		return GetFlag(ObjectFlags::Tickable);
+	}
+
+	void Object::SetTickable(bool Tickable)
+	{
+		SetFlag(ObjectFlags::Tickable, Tickable);
+	}
+
+	bool Object::IsTicking() const
+	{
+		return IsEnabled() && IsTickable();
 	}
 
 	void Object::Draw()
@@ -101,58 +155,58 @@ namespace NxEn
 		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Ids);
 	}
 
-	NxFr::GUID Object::GetId() const
+	void Object::OnInitialize()
 	{
-		return reinterpret_cast<NxFr::GUID>(this);
+
 	}
 
-	NxFr::StringView Object::GetName() const
+	void Object::OnShutdown()
 	{
-		return GetObjectType().GetString();
+
 	}
 
-	bool Object::IsInitialized() const
+	void Object::OnEnable()
 	{
-		return GetFlag(ObjectFlags::Initialized);
+
 	}
 
-	bool Object::IsEnabled() const
+	void Object::OnDisable()
 	{
-		return GetFlag(ObjectFlags::Enabled);
+
 	}
 
-	void Object::SetEnabled(bool Enabled)
+	void Object::OnTick(float TimeStep)
 	{
-		if (IsEnabled() == Enabled)
-		{
-			return;
-		}
 
-		SetFlag(ObjectFlags::Enabled, Enabled);
-
-		if (IsEnabled())
-		{
-			OnEnable();
-		}
-		else
-		{
-			OnDisable();
-		}
 	}
 
-	bool Object::IsTickable() const
+	void Object::OnDraw()
 	{
-		return GetFlag(ObjectFlags::Tickable);
 	}
 
-	void Object::SetTickable(bool Tickable)
+	void Object::OnClone(const Object& Other)
 	{
-		SetFlag(ObjectFlags::Tickable, Tickable);
+
 	}
 
-	bool Object::IsTicking() const
+	void Object::OnSave(YAML::Node& Node)
 	{
-		return IsEnabled() && IsTickable();
+
+	}
+
+	void Object::OnLoad(const YAML::Node& Node)
+	{
+
+	}
+
+	void Object::OnUnload()
+	{
+
+	}
+
+	void Object::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
+	{
+
 	}
 
 	bool Object::GetFlag(ObjectFlags Flag) const
