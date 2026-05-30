@@ -74,7 +74,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	void Behaviour::OnSave(YAML::Node& Node)
+	void Behaviour::OnSerialize(YAML::Node& Node)
 	{
 		Node["Type"] = GetObjectType();
 		Node["Id"] = BehaviourId;
@@ -82,7 +82,7 @@ namespace NxEn
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 	}
 
-	void Behaviour::OnLoad(const YAML::Node& Node)
+	void Behaviour::OnDeserialize(const YAML::Node& Node)
 	{
 		NX_ASSERT(BehaviourId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		NX_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");

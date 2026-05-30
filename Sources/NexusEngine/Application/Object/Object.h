@@ -51,8 +51,10 @@ namespace NxEn
 		virtual void Clone(Object* Other) const;
 		virtual void Clone(const Object* Other);
 
-		virtual YAML::Node Save();
-		virtual void Load(const YAML::Node& Node);
+		virtual YAML::Node Serialize();
+		virtual void Deserialize(const YAML::Node& Node);
+		virtual void Save(NxFr::StringView Path);
+		virtual void Load(NxFr::StringView Path);
 		virtual void Unload();
 
 		virtual void PatchReferences();
@@ -67,8 +69,10 @@ namespace NxEn
 		virtual void OnTick(float TimeStep = 0.0f);
 		virtual void OnDraw();
 		virtual void OnClone(const Object& Other);
-		virtual void OnSave(YAML::Node& Node);
-		virtual void OnLoad(const YAML::Node& Node);
+		virtual void OnSerialize(YAML::Node& Node);
+		virtual void OnDeserialize(const YAML::Node& Node);
+		virtual void OnSave(NxFr::StringView Path);
+		virtual void OnLoad(NxFr::StringView Path);
 		virtual void OnUnload();
 		virtual void OnPatchReferences();
 		virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);

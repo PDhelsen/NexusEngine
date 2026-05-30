@@ -29,13 +29,10 @@ namespace NxEn
 		ImGui::Separator();
 	}
 
-	YAML::Node Asset::Save(NxFr::StringView ContentFsPath)
+	void Asset::Save(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
-		YAML::Node Node;
 		OnSave(Node, ContentFsPath);
-
 		Dirty = false;
-		return Node;
 	}
 
 	void Asset::Load(const YAML::Node& Node, NxFr::StringView ContentFsPath)

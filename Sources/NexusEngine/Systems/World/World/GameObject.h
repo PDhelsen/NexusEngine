@@ -26,8 +26,8 @@ namespace NxEn
 		void Tick(float TimeStep = 0.0f) override;
 		void Draw() override;
 
-		YAML::Node Save() override;
-		void Load(const YAML::Node& Node) override;
+		YAML::Node Serialize() override;
+		void Deserialize(const YAML::Node& Node) override;
 		void Unload() override;
 		void PatchReferences() override;
 		NxFr::Array<NxFr::GUID> GetDependencies() override;
@@ -78,8 +78,8 @@ namespace NxEn
 		void OnUpdateHierarchy() override;
 		void OnDraw() override;
 		void OnClone(const Object& Other) override;
-		void OnSave(YAML::Node& Node) override;
-		void OnLoad(const YAML::Node& Node) override;
+		void OnSerialize(YAML::Node& Node) override;
+		void OnDeserialize(const YAML::Node& Node) override;
 		void OnUnload() override;
 		void OnPatchReferences() override;
 		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) override;

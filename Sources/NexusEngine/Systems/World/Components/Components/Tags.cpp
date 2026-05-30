@@ -78,16 +78,16 @@ namespace NxEn
 		Items = Instance.Items;
 	}
 
-	void Tags::OnSave(YAML::Node& Node)
+	void Tags::OnSerialize(YAML::Node& Node)
 	{
-		Component::OnSave(Node);
+		Component::OnSerialize(Node);
 
 		Node["Items"] = Items;
 	}
 
-	void Tags::OnLoad(const YAML::Node& Node)
+	void Tags::OnDeserialize(const YAML::Node& Node)
 	{
-		Component::OnLoad(Node);
+		Component::OnDeserialize(Node);
 
 		Items = Node["Items"].as<NxFr::Set<NxFr::String>>();
 	}

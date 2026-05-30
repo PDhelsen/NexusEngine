@@ -29,9 +29,9 @@ namespace NxEn
 		return Assets[Id];
 	}
 
-	YAML::Node AssetsManager::Save(NxFr::GUID Id, NxFr::StringView ContentFsPath)
+	void AssetsManager::Save(NxFr::GUID Id, YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
-		return Assets[Id].GetInstance()->Save(ContentFsPath);
+		return Assets[Id].GetInstance()->Save(Node, ContentFsPath);
 	}
 
 	void AssetsManager::Load(NxFr::GUID Id, const YAML::Node& Node, NxFr::StringView ContentFsPath)

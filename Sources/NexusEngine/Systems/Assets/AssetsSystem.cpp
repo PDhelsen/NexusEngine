@@ -122,7 +122,8 @@ namespace NxEn
 		OnSave.Invoke(Instance);
 		Metadata.Dependencies = Instance->GetDependencies();
 
-		YAML::Node Node = Manager->Save(Id, Registry->IdToContentFsPath(Id));
+		YAML::Node Node;
+		Manager->Save(Id, Node, Registry->IdToContentFsPath(Id));
 		Registry->Serialize(Id, Node);
 
 		OnEvent.Invoke(EventSavedId, Id);

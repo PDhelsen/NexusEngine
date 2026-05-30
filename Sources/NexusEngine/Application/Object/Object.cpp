@@ -133,16 +133,26 @@ namespace NxEn
 		OnClone(*Other);
 	}
 
-	YAML::Node Object::Save()
+	YAML::Node Object::Serialize()
 	{
 		YAML::Node Node;
-		OnSave(Node);
+		OnSerialize(Node);
 		return Node;
 	}
 
-	void Object::Load(const YAML::Node& Node)
+	void Object::Deserialize(const YAML::Node& Node)
 	{
-		OnLoad(Node);
+		OnDeserialize(Node);
+	}
+
+	void Object::Save(NxFr::StringView Path)
+	{
+		OnSave(Path);
+	}
+
+	void Object::Load(NxFr::StringView Path)
+	{
+		OnLoad(Path);
 	}
 
 	void Object::Unload()
@@ -216,12 +226,22 @@ namespace NxEn
 
 	}
 
-	void Object::OnSave(YAML::Node& Node)
+	void Object::OnSerialize(YAML::Node& Node)
 	{
 
 	}
 
-	void Object::OnLoad(const YAML::Node& Node)
+	void Object::OnDeserialize(const YAML::Node& Node)
+	{
+
+	}
+
+	void Object::OnSave(NxFr::StringView Path)
+	{
+
+	}
+
+	void Object::OnLoad(NxFr::StringView Path)
 	{
 
 	}

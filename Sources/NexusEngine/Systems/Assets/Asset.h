@@ -22,7 +22,7 @@ namespace NxEn
 		Asset();
 		virtual ~Asset();
 
-		YAML::Node Save(NxFr::StringView Content);
+		void Save(YAML::Node& Node, NxFr::StringView Content);
 		void Load(const YAML::Node& Node, NxFr::StringView Content);
 		void Unload() override;
 
@@ -35,12 +35,6 @@ namespace NxEn
 		virtual void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		virtual void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		virtual void OnUnload() = 0;
-
-	private:
-		YAML::Node Save() override { NX_ASSERT(false, System, "Use the version with the Content arg !"); return YAML::Node(); }
-		void Load(const YAML::Node& Node) override { NX_ASSERT(false, System, "Use the version with the Content arg !"); }
-		void OnSave(YAML::Node& Node) override { NX_ASSERT(false, System, "Use the version with the Content arg !"); }
-		void OnLoad(const YAML::Node& Node) override { NX_ASSERT(false, System, "Use the version with the Content arg !"); }
 
 	private:
 		NxFr::GUID Id;

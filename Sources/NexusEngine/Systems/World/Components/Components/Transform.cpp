@@ -250,18 +250,18 @@ namespace NxEn
 		Scaling = Instance.Scaling;
 	}
 
-	void Transform::OnSave(YAML::Node& Node)
+	void Transform::OnSerialize(YAML::Node& Node)
 	{
-		Component::OnSave(Node);
+		Component::OnSerialize(Node);
 
 		Node["Position"] = Position;
 		Node["Rotation"] = Rotation;
 		Node["Scaling"] = Scaling;
 	}
 
-	void Transform::OnLoad(const YAML::Node& Node)
+	void Transform::OnDeserialize(const YAML::Node& Node)
 	{
-		Component::OnLoad(Node);
+		Component::OnDeserialize(Node);
 
 		Position = Node["Position"].as<NxFr::Vector3f>();
 		Rotation = Node["Rotation"].as<NxFr::Quaternion>();

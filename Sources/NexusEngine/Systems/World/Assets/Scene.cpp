@@ -37,7 +37,7 @@ namespace NxEn
 
 	void Scene::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
-		NxFr::Yaml::SerializeFile(Root->Save(), Content);
+		NxFr::Yaml::SerializeFile(Root->Serialize(), Content);
 	}
 
 	void Scene::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
@@ -46,7 +46,7 @@ namespace NxEn
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
 
 		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
-		Root->Load(Data);
+		Root->Deserialize(Data);
 		Root->PatchReferences();
 		Root->Initialize();
 		Root->SetEnabled(true);

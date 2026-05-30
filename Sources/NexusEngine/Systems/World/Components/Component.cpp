@@ -73,7 +73,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	void Component::OnSave(YAML::Node& Node)
+	void Component::OnSerialize(YAML::Node& Node)
 	{
 		Node["Type"] = GetObjectType();
 		Node["Id"] = ComponentId;
@@ -81,7 +81,7 @@ namespace NxEn
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 	}
 
-	void Component::OnLoad(const YAML::Node& Node)
+	void Component::OnDeserialize(const YAML::Node& Node)
 	{
 		NX_ASSERT(ComponentId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		NX_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");

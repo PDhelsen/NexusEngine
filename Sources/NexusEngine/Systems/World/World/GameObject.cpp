@@ -205,24 +205,24 @@ namespace NxEn
 		}
 	}
 
-	YAML::Node GameObject::Save()
+	YAML::Node GameObject::Serialize()
 	{
 		YAML::Node Node;
 
 		YAML::Node Instance;
-		OnSave(Instance);
+		OnSerialize(Instance);
 
 		YAML::Node NodeBehaviours;
 		for (auto& B : Behaviours)
 		{
-			NodeBehaviours.push_back(B->Save());
+			NodeBehaviours.push_back(B->Serialize());
 		}
 		Instance["Behaviours"] = NodeBehaviours;
 
 		YAML::Node NodeComponents;
 		for (auto& C : Components)
 		{
-			NodeComponents.push_back(C->Save());
+			NodeComponents.push_back(C->Serialize());
 		}
 		Instance["Components"] = NodeComponents;
 
@@ -237,7 +237,7 @@ namespace NxEn
 				YAML::Node ChildNode;
 
 				YAML::Node ChildInstance;
-				Iterator->OnSave(ChildInstance);
+				Iterator->OnSerialize(ChildInstance);
 				ChildNode[YamlRoot] = ChildInstance;
 				ChildNode[YamlChildren] = YAML::Node();
 
@@ -246,7 +246,7 @@ namespace NxEn
 			}
 			else
 			{
-				Children.push_back(Iterator->Save());
+				Children.push_back(Iterator->Serialize());
 			}
 
 			Iterator = Iterator->GetNext();
@@ -256,7 +256,7 @@ namespace NxEn
 		return Node;
 	}
 
-	void GameObject::Load(const YAML::Node& Node)
+	void GameObject::Deserialize(const YAML::Node& Node)
 	{
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
@@ -275,13 +275,13 @@ namespace NxEn
 			else
 			{
 				ChildInstance = Factory->CreateGameObject("", This, ChildNode[YamlRoot][YamlId].as<NxFr::GUID>());
-				ChildInstance->Load(ChildNode);
+				ChildInstance->Deserialize(ChildNode);
 			}
 
 			return ChildInstance;
 		};
 
-		OnLoad(Instance);
+		OnDeserialize(Instance);
 
 		YAML::Node NodeBehaviours = Instance["Behaviours"];
 		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
@@ -291,7 +291,7 @@ namespace NxEn
 			NxFr::GUID Id = NodeBehaviour["Id"].as<NxFr::GUID>();
 
 			NxFr::Handle<Behaviour> B = Factory->CreateBehaviour(Type, This, Id);
-			B->Load(NodeBehaviour);
+			B->Deserialize(NodeBehaviour);
 		}
 
 		YAML::Node NodeComponents = Instance["Components"];
@@ -302,7 +302,7 @@ namespace NxEn
 			NxFr::GUID Id = NodeComponent["Id"].as<NxFr::GUID>();
 
 			NxFr::Handle<Behaviour> B = Factory->CreateComponent(Type, This, Id);
-			B->Load(NodeComponent);
+			B->Deserialize(NodeComponent);
 		}
 
 		YAML::Node Children = Node[YamlChildren];
@@ -726,7 +726,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::EnabledInHierarchy, false);
 	}
 
-	void GameObject::OnSave(YAML::Node& Node)
+	void GameObject::OnSerialize(YAML::Node& Node)
 	{
 		Node["Name"] = Name;
 		Node["Id"] = GameObjectId;
@@ -735,7 +735,7 @@ namespace NxEn
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
 	}
 
-	void GameObject::OnLoad(const YAML::Node& Node)
+	void GameObject::OnDeserialize(const YAML::Node& Node)
 	{
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
