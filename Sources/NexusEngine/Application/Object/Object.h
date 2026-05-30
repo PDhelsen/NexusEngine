@@ -34,7 +34,9 @@ namespace NxEn
 		virtual void Shutdown();
 		virtual bool IsInitialized() const;
 
+		virtual void UpdateHierarchy();
 		virtual bool IsEnabled() const;
+		virtual bool IsEnabledInHierarchy() const;
 		virtual void SetEnabled(bool Enabled);
 
 		virtual void Tick(float TimeStep = 0.0f);
@@ -58,6 +60,7 @@ namespace NxEn
 	protected:
 		virtual void OnInitialize();
 		virtual void OnShutdown();
+		virtual void OnUpdateHierarchy();
 		virtual void OnEnable();
 		virtual void OnDisable();
 		virtual void OnTick(float TimeStep = 0.0f);

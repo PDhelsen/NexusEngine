@@ -15,32 +15,25 @@ namespace NxEn
 		friend class WorldObjectFactory;
 		friend class GameObject;
 
-		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
-
 	public:
 		NX_OBJECT(Behaviour)
 
 		Behaviour();
 		virtual ~Behaviour();
 
-		void SetEnabled(bool Enabled) override;
-		bool IsEnabledInHierarchy() const;
 		bool IsTicking() const override;
-
-		void UpdateHierarchy();
 
 		NxFr::StringView GetName() const override;
 		NxFr::GUID GetId() const override;
 		NxFr::Handle<GameObject> GetGameObject() const;
 
 	protected:
+		void OnUpdateHierarchy() override;
 		void OnDraw() override;
 		void OnClone(const Object& Other) override;
 		void OnSave(YAML::Node& Node) override;
-		void OnLoad(const YAML::Node& Node) override;
+		void OnLoad(const YAML::Node& Node);
 		void OnPatchReferences() override;
-
-		virtual void OnUpdateHierarchy();
 
 	private:
 		NxFr::GUID BehaviourId;

@@ -14,8 +14,6 @@ namespace NxEn
 		friend class Scene;
 		friend class Prefab;
 
-		const static inline uint8 ObjectFlag_EnabledInHierarchy = (uint8)ObjectFlags::Flag_1;
-
 	public:
 		NX_OBJECT(GameObject)
 
@@ -24,20 +22,15 @@ namespace NxEn
 
 		void Initialize() override;
 		void Shutdown() override;
+		void UpdateHierarchy() override;
 		void Tick(float TimeStep = 0.0f) override;
-		void DrawGui(float TimeStep = 0.0f);
-
-		void SetEnabled(bool Enabled) override;
-		bool IsEnabledInHierarchy() const;
-		bool IsTicking() const override;
+		void Draw() override;
 
 		YAML::Node Save() override;
 		void Load(const YAML::Node& Node) override;
 		void Unload() override;
 		void PatchReferences() override;
 		NxFr::Array<NxFr::GUID> GetDependencies() override;
-
-		void UpdateHierarchy();
 
 		World* GetWorld() const;
 		NxFr::Handle<GameObject> GetParent() const;
@@ -82,6 +75,7 @@ namespace NxEn
 		bool IsRoot() const { return !Parent && !Prev && !Next; };
 
 	protected:
+		void OnUpdateHierarchy() override;
 		void OnDraw() override;
 		void OnClone(const Object& Other) override;
 		void OnSave(YAML::Node& Node) override;
@@ -89,8 +83,6 @@ namespace NxEn
 		void OnUnload() override;
 		void OnPatchReferences() override;
 		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) override;
-
-		virtual void OnUpdateHierarchy();
 
 		static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
 		static NxFr::Handle<GameObject> GetThis(GameObject* Instance);

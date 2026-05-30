@@ -10,13 +10,8 @@ namespace NxEn
 
 		Initialized = 1 << 0,
 		Enabled = 1 << 1,
-		Tickable = 1 << 2,
-
-		Flag_1 = 1 << 3,
-		Flag_2 = 1 << 4,
-		Flag_3 = 1 << 5,
-		Flag_4 = 1 << 6,
-		Flag_5 = 1 << 7,
+		EnabledInHierarchy = 1 << 2,
+		Tickable = 1 << 3,
 	};
 }
 

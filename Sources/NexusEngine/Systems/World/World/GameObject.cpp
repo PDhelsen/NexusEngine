@@ -74,6 +74,28 @@ namespace NxEn
 		}
 	}
 
+	void GameObject::UpdateHierarchy()
+	{
+		OnUpdateHierarchy();
+
+		for (auto& B : Behaviours)
+		{
+			B->UpdateHierarchy();
+		}
+
+		for (auto& C : Components)
+		{
+			C->UpdateHierarchy();
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->UpdateHierarchy();
+			Iterator = Iterator->GetNext();
+		}
+	}
+
 	void GameObject::Tick(float TimeStep)
 	{
 		if (IsTicking())
@@ -96,7 +118,7 @@ namespace NxEn
 		}
 	}
 
-	void GameObject::DrawGui(float TimeStep)
+	void GameObject::Draw()
 	{
 		float HalfWindowSize = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * (1.0f / 2.0f);
 		float ThirdWindowSize = (ImGui::GetContentRegionAvail().x - 2.0f * ImGui::GetStyle().ItemSpacing.x) * (1.0f / 3.0f);
@@ -181,26 +203,6 @@ namespace NxEn
 				GetWorld()->CreateComponent(Input, GetThis(this));
 			});
 		}
-	}
-
-	void GameObject::SetEnabled(bool Enabled)
-	{
-		if (IsEnabled() != Enabled)
-		{
-			SetFlag(ObjectFlags::Enabled, Enabled);
-		}
-
-		UpdateHierarchy();
-	}
-
-	bool GameObject::IsEnabledInHierarchy() const
-	{
-		return GetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy);
-	}
-
-	bool GameObject::IsTicking() const
-	{
-		return IsEnabledInHierarchy() && IsTickable();
 	}
 
 	YAML::Node GameObject::Save()
@@ -401,28 +403,6 @@ namespace NxEn
 		}
 
 		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Ids);
-	}
-
-	void GameObject::UpdateHierarchy()
-	{
-		OnUpdateHierarchy();
-
-		for (auto& B : Behaviours)
-		{
-			B->UpdateHierarchy();
-		}
-
-		for (auto& C : Components)
-		{
-			C->UpdateHierarchy();
-		}
-
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->UpdateHierarchy();
-			Iterator = Iterator->GetNext();
-		}
 	}
 
 	World* GameObject::GetWorld() const
@@ -692,6 +672,26 @@ namespace NxEn
 		}
 	}
 
+	void GameObject::OnUpdateHierarchy()
+	{
+		bool Enabled = IsEnabled() && (Parent ? Parent->IsEnabledInHierarchy() : true);
+		if (Enabled == IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		SetFlag(ObjectFlags::EnabledInHierarchy, Enabled);
+
+		if (Enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
+	}
+
 	void GameObject::OnDraw()
 	{
 		GUI::Drawer<NxFr::String>::Field(Name, "Name");
@@ -723,7 +723,7 @@ namespace NxEn
 
 		SetFlag(ObjectFlags::Enabled, Instance.IsEnabled());
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
-		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
+		SetFlag(ObjectFlags::EnabledInHierarchy, false);
 	}
 
 	void GameObject::OnSave(YAML::Node& Node)
@@ -745,7 +745,7 @@ namespace NxEn
 		ReferenceId = Node["Reference"].as<NxFr::GUID>();
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
-		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, false);
+		SetFlag(ObjectFlags::EnabledInHierarchy, false);
 	}
 
 	void GameObject::OnUnload()
@@ -758,26 +758,6 @@ namespace NxEn
 
 	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
 	{
-	}
-
-	void GameObject::OnUpdateHierarchy()
-	{
-		bool Enabled = IsEnabled() && (Parent ? Parent->IsEnabledInHierarchy() : true);
-		if (Enabled == IsEnabledInHierarchy())
-		{
-			return;
-		}
-
-		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, Enabled);
-
-		if (Enabled)
-		{
-			OnEnable();
-		}
-		else
-		{
-			OnDisable();
-		}
 	}
 
 	NxFr::GUID GameObject::ReadIdFromYaml(const YAML::Node& Node)

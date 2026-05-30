@@ -61,28 +61,25 @@ namespace NxEn
 		return GetFlag(ObjectFlags::Initialized);
 	}
 
+	void Object::UpdateHierarchy()
+	{
+		OnUpdateHierarchy();
+	}
+
 	bool Object::IsEnabled() const
 	{
 		return GetFlag(ObjectFlags::Enabled);
 	}
 
+	bool Object::IsEnabledInHierarchy() const
+	{
+		return GetFlag(ObjectFlags::EnabledInHierarchy);
+	}
+
 	void Object::SetEnabled(bool Enabled)
 	{
-		if (IsEnabled() == Enabled)
-		{
-			return;
-		}
-
 		SetFlag(ObjectFlags::Enabled, Enabled);
-
-		if (IsEnabled())
-		{
-			OnEnable();
-		}
-		else
-		{
-			OnDisable();
-		}
+		UpdateHierarchy();
 	}
 
 	void Object::Tick(float TimeStep)
@@ -107,7 +104,7 @@ namespace NxEn
 
 	bool Object::IsTicking() const
 	{
-		return IsEnabled() && IsTickable();
+		return IsTickable() && IsEnabledInHierarchy();
 	}
 
 	void Object::Draw()
@@ -168,6 +165,26 @@ namespace NxEn
 	void Object::OnShutdown()
 	{
 
+	}
+
+	void Object::OnUpdateHierarchy()
+	{
+		bool Enabled = IsEnabled();
+		if (Enabled == IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		SetFlag(ObjectFlags::EnabledInHierarchy, Enabled);
+
+		if (Enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
 	}
 
 	void Object::OnEnable()

@@ -13,26 +13,9 @@ namespace NxEn
 	{
 	}
 
-	void Behaviour::SetEnabled(bool Enabled)
-	{
-		SetFlag(ObjectFlags::Enabled, Enabled);
-
-		UpdateHierarchy();
-	}
-
-	bool Behaviour::IsEnabledInHierarchy() const
-	{
-		return GetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy);
-	}
-
 	bool Behaviour::IsTicking() const
 	{
-		return IsEnabledInHierarchy() && IsTickable() && GetGameObject()->IsTickable();
-	}
-
-	void Behaviour::UpdateHierarchy()
-	{
-		OnUpdateHierarchy();
+		return Object::IsTicking() && GetGameObject()->IsTicking();
 	}
 
 	NxFr::StringView Behaviour::GetName() const
@@ -48,6 +31,26 @@ namespace NxEn
 	NxFr::Handle<GameObject> Behaviour::GetGameObject() const
 	{
 		return Target;
+	}
+
+	void Behaviour::OnUpdateHierarchy()
+	{
+		bool Enabled = IsEnabled() && GetGameObject()->IsEnabledInHierarchy();
+		if (Enabled == IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		SetFlag(ObjectFlags::EnabledInHierarchy, Enabled);
+
+		if (Enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
 	}
 
 	void Behaviour::OnDraw()
@@ -88,25 +91,5 @@ namespace NxEn
 
 	void Behaviour::OnPatchReferences()
 	{
-	}
-
-	void Behaviour::OnUpdateHierarchy()
-	{
-		bool Enabled = IsEnabled() && GetGameObject()->IsEnabledInHierarchy();
-		if (Enabled == IsEnabledInHierarchy())
-		{
-			return;
-		}
-
-		SetFlag((ObjectFlags)ObjectFlag_EnabledInHierarchy, Enabled);
-
-		if (Enabled)
-		{
-			OnEnable();
-		}
-		else
-		{
-			OnDisable();
-		}
 	}
 }
