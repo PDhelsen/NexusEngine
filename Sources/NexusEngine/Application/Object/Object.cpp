@@ -14,12 +14,17 @@ namespace NxEn
 
 	bool Object::operator==(const Object& Other) const
 	{
-		return GetId() == Other.GetId();
+		return Equals(Other.GetId());
 	}
 
 	bool Object::operator!=(const Object& Other) const
 	{
-		return !(*this == Other);
+		return !Equals(Other.GetId());
+	}
+
+	bool Object::Equals(NxFr::GUID Id) const
+	{
+		return GetId() == Id;
 	}
 
 	NxFr::GUID Object::GetId() const

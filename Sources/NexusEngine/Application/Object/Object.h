@@ -25,6 +25,7 @@ namespace NxEn
 
 		bool operator==(const Object& Other) const;
 		bool operator!=(const Object& Other) const;
+		bool Equals(NxFr::GUID Id) const;
 
 		NX_OBJECT(Object)
 		virtual NxFr::GUID GetId() const;
