@@ -29,11 +29,6 @@ namespace NxEn
 		return false;
 	}
 
-	void Component::PatchReferences()
-	{
-		OnPatchReferences();
-	}
-
 	void Component::UpdateHierarchy()
 	{
 		OnUpdateHierarchy();

@@ -52,6 +52,7 @@ namespace NxEn
 		virtual void Load(const YAML::Node& Node);
 		virtual void Unload();
 
+		virtual void PatchReferences();
 		virtual NxFr::Array<NxFr::GUID> GetDependencies();
 
 	protected:
@@ -65,6 +66,7 @@ namespace NxEn
 		virtual void OnSave(YAML::Node& Node);
 		virtual void OnLoad(const YAML::Node& Node);
 		virtual void OnUnload();
+		virtual void OnPatchReferences();
 		virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);
 
 		NX_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;

@@ -347,6 +347,28 @@ namespace NxEn
 		}
 	}
 
+	void GameObject::PatchReferences()
+	{
+		OnPatchReferences();
+
+		for (auto& B : Behaviours)
+		{
+			B->PatchReferences();
+		}
+
+		for (auto& C : Components)
+		{
+			C->PatchReferences();
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->PatchReferences();
+			Iterator = Iterator->GetNext();
+		}
+	}
+
 	NxFr::Array<NxFr::GUID> GameObject::GetDependencies()
 	{
 		NxFr::Set<NxFr::GUID> Ids;
@@ -379,28 +401,6 @@ namespace NxEn
 		}
 
 		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Ids);
-	}
-
-	void GameObject::PatchReferences()
-	{
-		OnPatchReferences();
-
-		for (auto& B : Behaviours)
-		{
-			B->PatchReferences();
-		}
-
-		for (auto& C : Components)
-		{
-			C->PatchReferences();
-		}
-
-		NxFr::Handle<GameObject> Iterator = GetChild();
-		while (Iterator)
-		{
-			Iterator->PatchReferences();
-			Iterator = Iterator->GetNext();
-		}
 	}
 
 	void GameObject::UpdateHierarchy()
@@ -750,15 +750,13 @@ namespace NxEn
 
 	void GameObject::OnUnload()
 	{
-		
-	}
-
-	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
-	{
-		
 	}
 
 	void GameObject::OnPatchReferences()
+	{
+	}
+
+	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
 	{
 	}
 

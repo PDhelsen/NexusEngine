@@ -27,7 +27,6 @@ namespace NxEn
 		bool IsEnabledInHierarchy() const;
 		bool IsTicking() const override;
 
-		void PatchReferences();
 		void UpdateHierarchy();
 
 		NxFr::StringView GetName() const override;
@@ -39,8 +38,8 @@ namespace NxEn
 		void OnClone(const Object& Other) override;
 		void OnSave(YAML::Node& Node) override;
 		void OnLoad(const YAML::Node& Node) override;
+		void OnPatchReferences() override;
 
-		virtual void OnPatchReferences();
 		virtual void OnUpdateHierarchy();
 
 	private:

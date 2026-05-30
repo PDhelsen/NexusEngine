@@ -30,11 +30,6 @@ namespace NxEn
 		return IsEnabledInHierarchy() && IsTickable() && GetGameObject()->IsTickable();
 	}
 
-	void Behaviour::PatchReferences()
-	{
-		OnPatchReferences();
-	}
-
 	void Behaviour::UpdateHierarchy()
 	{
 		OnUpdateHierarchy();

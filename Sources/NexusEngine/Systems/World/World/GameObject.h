@@ -34,9 +34,9 @@ namespace NxEn
 		YAML::Node Save() override;
 		void Load(const YAML::Node& Node) override;
 		void Unload() override;
+		void PatchReferences() override;
 		NxFr::Array<NxFr::GUID> GetDependencies() override;
 
-		void PatchReferences();
 		void UpdateHierarchy();
 
 		World* GetWorld() const;
@@ -87,9 +87,9 @@ namespace NxEn
 		void OnSave(YAML::Node& Node) override;
 		void OnLoad(const YAML::Node& Node) override;
 		void OnUnload() override;
+		void OnPatchReferences() override;
 		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) override;
 
-		virtual void OnPatchReferences();
 		virtual void OnUpdateHierarchy();
 
 		static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
