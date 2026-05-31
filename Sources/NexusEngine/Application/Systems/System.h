@@ -10,6 +10,7 @@ namespace NxEn
 	public:
 		NX_OBJECT(System)
 
+		NX_NOCOPY_NOMOVE(System);
 		System();
 		virtual ~System();
 
