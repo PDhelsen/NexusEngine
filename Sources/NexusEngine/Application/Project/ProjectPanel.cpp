@@ -3,12 +3,12 @@
 
 namespace NxEn
 {
-	static ProjectPanel* Panel = GUI::Panel::Create<ProjectPanel>();
-
-	const static GUI::Menu::Item MenuItemProject = GUI::Menu::Item::Create("File/Project", NxFr::Delegate<void()>([]()
+	static GUI::Menu::Item MenuItemProject = GUI::Menu::Item::Create("File/Project", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Execute("GUI.Panel ProjectPanel");
 	}));
+
+	static ProjectPanel* PanelProject = GUI::Panel::Create<ProjectPanel>();
 
 	ProjectPanel::ProjectPanel()
 		: Style(), Infos(nullptr)
