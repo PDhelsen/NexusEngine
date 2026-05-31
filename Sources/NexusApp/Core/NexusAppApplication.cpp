@@ -20,7 +20,7 @@ namespace NxAp
 		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - App", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event HID - App", [&]()
 		{
 			Inputs = new NxEn::Input::Schema();
 			Inputs->GetMapping().Append("Window"_Sid,
@@ -43,7 +43,7 @@ namespace NxAp
 	{
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - App", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event HID - App", [&]()
 		{
 			GetSystem<NxEn::InputSystem>()->RemoveSchema("App"_Sid);
 			delete Inputs;

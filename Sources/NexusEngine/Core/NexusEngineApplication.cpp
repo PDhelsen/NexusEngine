@@ -53,7 +53,7 @@ namespace NxEn
 		Application::OnInitialize();
 		Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Connect event HID - Engine", [&]()
 		{
 			Inputs = new Input::Schema();
 			GetSystem<InputSystem>()->AddSchema("Engine"_Sid, Inputs);
@@ -89,7 +89,7 @@ namespace NxEn
 	{
 		Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
+		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Disconnect event HID - Engine", [&]()
 		{
 			GetSystem<InputSystem>()->RemoveSchema("Engine"_Sid);
 			delete Inputs;

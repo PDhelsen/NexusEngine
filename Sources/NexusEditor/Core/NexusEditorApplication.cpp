@@ -47,7 +47,7 @@ namespace NxEd
 		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event HID - Editor", [&]()
 		{
 			Inputs = new NxEn::Input::Schema();
 			GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, Inputs);
@@ -56,11 +56,11 @@ namespace NxEd
 			Window->SetWindowMode(NxEn::Window::Mode::Windowed);
 			Window->SetCursorMode(NxEn::Cursor::Mode::Default);
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Settings", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event Shortcuts", [&]()
 		{
 			GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, & NexusEditorApplication::ApplySettings };
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Save", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event Save", [&]()
 		{
 			OnSave += []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
 			OnSave += []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
@@ -70,7 +70,7 @@ namespace NxEd
 
 		Bootstrap.AppendSystem<EditSystem>();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Assets & Worlds", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Create Assets & Worlds Managers", [&]()
 		{
 			Browser = new AssetsBrowser();
 			Hierarchy = new HierarchyManager();
@@ -108,7 +108,7 @@ namespace NxEd
 			GetSystem<NxEn::WindowSystem>()->SetWindowIcon(nullptr);
 			GetSystem<NxEn::ResourcesSystem>()->Unload("Logo_Small.png");
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Assets & Worlds", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Destroy Assets & Worlds Managers", [&]()
 		{
 			delete Stages;
 			delete Hierarchy;
@@ -117,16 +117,16 @@ namespace NxEd
 
 		Unbootstrap.AppendSystem<EditSystem>();
 
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event HID - Editor", [&]()
 		{
 			GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
 			delete Inputs;
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Settings", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event Shortcuts", [&]()
 		{
 			GetSystem<NxEn::SettingsSystem>()->GetOnChange() -= { this, & NexusEditorApplication::ApplySettings };
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Save", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event Save", [&]()
 		{
 			OnSave -= []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
 			OnSave -= []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
