@@ -1,10 +1,15 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Memory/Allocator.h"
 
+#include "NexusEngine/Core/NexusConfig.h"
+#include "NexusEngine/Systems/Settings/SettingTemplate.h"
+
 namespace NxEn
 {
+	static SettingSeq<uint64>* SettingSizes = SettingSeq<uint64>::Create("Settings", "MemoryAllocatorsSize", { 0, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, });
+
 	Allocator::Allocator(AllocatorType Type)
-		: NxFr::Allocator(0), Allocators(11, nullptr), Type(Type)
+		: NxFr::Allocator(0), Allocators(8, nullptr), Type(Type)
 	{
 	}
 
@@ -31,7 +36,7 @@ namespace NxEn
 
 	void* Allocator::Allocate(uint64 Size, uint64 Alignement)
 	{
-		NX_ASSERT(Size < MemorySystem::GetAllocatorSize(Type) || Type == AllocatorType::Raw, Default, "Allocation size requested overflow allocator size");
+		NX_ASSERT(Size < GetAllocatorSize(), Default, "Allocation size requested overflow allocator size");
 
 		NxFr::Allocator* Alloc = GetAllocator(Size, Alignement);
 
@@ -42,7 +47,6 @@ namespace NxEn
 		uint64 Delta = Alloc->UsedAmount() - Marker;
 		IncreaseAmount(Delta);
 
-		Allocators.TryAppend(Alloc);
 		return Pointer;
 	}
 
@@ -53,7 +57,7 @@ namespace NxEn
 			return nullptr;
 		}
 
-		NX_ASSERT(Size < MemorySystem::GetAllocatorSize(Type), Default, "Allocation size requested overflow allocator size");
+		NX_ASSERT(Size < GetAllocatorSize(), Default, "Allocation size requested overflow allocator size");
 
 		NxFr::Allocator* Alloc = GetAllocator(Pointer);
 		NX_ASSERT(Alloc, System, "Memory was not allocated from this allocator");
@@ -115,20 +119,23 @@ namespace NxEn
 		return nullptr;
 	}
 
-	NxFr::Allocator* Allocator::GetAllocator(uint64 Size, uint64 Alignement) const
+	NxFr::Allocator* Allocator::GetAllocator(uint64 Size, uint64 Alignement)
 	{
-		Size = Type == AllocatorType::Small ? MemorySystem::GetSmallAllocationSize(Size) : Size;
+		if (Type == AllocatorType::Small)
+		{
+			Size = !NxFr::Math::IsPowerOfTwo(Size) ? NxFr::Math::NextPowerOfTwo(Size) : Size;
+		}
 
 		NxFr::Allocator* Result = FindAllocator(Size, Alignement);
 		if (Result == nullptr)
 		{
-			Result = CreateAllocator(MemorySystem::GetAllocatorSize(Type), Size);
+			Result = CreateAllocator(GetAllocatorSize(), Size);
 		}
 
 		return Result;
 	}
 
-	NxFr::Allocator* Allocator::FindAllocator(uint64 Size, uint64 Alignement) const
+	NxFr::Allocator* Allocator::FindAllocator(uint64 Size, uint64 Alignement)
 	{
 		for (NxFr::Allocator* Alloc : Allocators)
 		{
@@ -141,7 +148,7 @@ namespace NxEn
 		return nullptr;
 	}
 
-	NxFr::Allocator* Allocator::CreateAllocator(uint64 Size, uint64 Stride) const
+	NxFr::Allocator* Allocator::CreateAllocator(uint64 Size, uint64 Stride)
 	{
 		NxFr::Allocator::Scope Context(nullptr);
 		NxFr::Allocator* Alloc = nullptr;
@@ -165,28 +172,44 @@ namespace NxEn
 			break;
 		}
 
+		Allocators.Append(Alloc);
 		return Alloc;
 	}
 
 	void Allocator::ClearAllocators(bool Delete)
 	{
 		NxFr::Allocator::Scope Context(nullptr);
-		NxFr::List<NxFr::Allocator*> ToDelete(Allocators.GetCount());
 
-		for (NxFr::Allocator* Alloc : Allocators)
+		for (uint64 Index = 0; Index < Allocators.GetCount(); Index++)
 		{
+			NxFr::Allocator* Alloc = Allocators[Index];
 			Alloc->Clear();
 
 			if (Delete)
 			{
-				ToDelete.Append(Alloc);
 				delete Alloc;
 			}
 		}
 
-		for (NxFr::Allocator* Alloc : ToDelete)
+		if (Delete)
 		{
-			Allocators.Remove(Alloc);
+			Allocators.Clear();
 		}
+	}
+
+	uint64 Allocator::GetAllocatorSize()
+	{
+		if (Type == NxEn::AllocatorType::Raw)
+		{
+			return NxFr::Integer::MaxUI64;
+		}
+
+		uint64 Size = NX_MEMORY_ALLOCATOR_SIZE;
+		if (SettingSizes != nullptr && SettingSizes->GetValue().IsValidIndex((uint64)Type))
+		{
+			Size = SettingSizes->GetValue()[(uint64)Type];
+		}
+
+		return Size;
 	}
 }

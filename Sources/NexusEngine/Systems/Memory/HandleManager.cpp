@@ -1,15 +1,20 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Memory/HandleManager.h"
 
+#include "NexusEngine/Systems/Settings/SettingTemplate.h"
+
 namespace NxEn
 {
-	HandleManager::HandleManager(uint64 HandlesPerManager)
-		: Managers(4, nullptr), HandlesPerManager(HandlesPerManager)
+	static SettingVar<uint64>* SettingHandlesPerManager = SettingVar<uint64>::Create("Settings", "MemoryHandlesPerManager", 1024);
+
+	HandleManager::HandleManager()
+		: Managers(4, nullptr)
 	{
 	}
 
 	HandleManager::~HandleManager()
 	{
+		ClearHandleManager();
 	}
 
 	NxFr::Handle<void*> HandleManager::GetHandle(void* Pointer) const
@@ -67,28 +72,20 @@ namespace NxEn
 	{
 		NxFr::Allocator::Scope Context(nullptr);
 
-		NxFr::HandleManager* Manager = new NxFr::HandleManager(HandlesPerManager);
+		NxFr::HandleManager* Manager = new NxFr::HandleManager(SettingHandlesPerManager->GetValue());
 		Managers.Append(Manager);
 		return Manager;
 	}
 
-	void HandleManager::ClearHandleManager(bool Force)
+	void HandleManager::ClearHandleManager()
 	{
 		NxFr::Allocator::Scope Context(nullptr);
-		NxFr::List<NxFr::HandleManager*> ToDelete(Managers.GetCount());
 
 		for (NxFr::HandleManager* Manager : Managers)
 		{
-			if (Force || Manager->IsEmpty())
-			{
-				ToDelete.Append(Manager);
-				delete Manager;
-			}
+			delete Manager;
 		}
 
-		for (NxFr::HandleManager* Manager : ToDelete)
-		{
-			Managers.Remove(Manager);
-		}
+		Managers.Clear();
 	}
 }

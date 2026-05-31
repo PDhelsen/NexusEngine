@@ -9,13 +9,9 @@ namespace NxEn
 		friend class MemorySystem;
 
 	public:
-		HandleManager(uint64 HandlesPerManager);
-		HandleManager(const HandleManager& Other) = delete;
-		HandleManager(HandleManager&& Other) noexcept = delete;
+		NX_NOCOPY_NOMOVE(HandleManager);
+		HandleManager();
 		~HandleManager();
-
-		HandleManager& operator=(const HandleManager& Other) = delete;
-		HandleManager& operator=(HandleManager&& Other) noexcept = delete;
 
 		template<typename T>
 		NxFr::Handle<T> AcquireHandle(T* Pointer)
@@ -44,11 +40,9 @@ namespace NxEn
 		NxFr::HandleManager* GetHandlesManager();
 		NxFr::HandleManager* FindHandleManager();
 		NxFr::HandleManager* CreateHandleManager();
-		void ClearHandleManager(bool Force);
+		void ClearHandleManager();
 
-	private:
-		NxFr::Set<NxFr::HandleManager*> Managers;
-		uint64 HandlesPerManager;
+		NxFr::List<NxFr::HandleManager*> Managers;
 	};
 }
 

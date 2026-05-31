@@ -21,13 +21,9 @@ namespace NxEn
 		friend class MemorySystem;
 
 	public:
+		NX_NOCOPY_NOMOVE(Allocator);
 		Allocator(AllocatorType Type);
-		Allocator(const Allocator& Other) = delete;
-		Allocator(Allocator&& Other) noexcept = delete;
 		virtual ~Allocator();
-
-		Allocator& operator=(const Allocator& Other) = delete;
-		Allocator& operator=(Allocator&& Other) noexcept = delete;
 
 		virtual void Clear();
 		virtual bool CanAllocate(uint64 Size, uint64 Alignement) const;
@@ -36,18 +32,19 @@ namespace NxEn
 		AllocatorType GetType() const { return Type; }
 
 	protected:
-		virtual void* Allocate(uint64 Size, uint64 Alignement);
-		virtual void* Reallocate(void* Pointer, uint64 Size, uint64 Alignement);
-		virtual void Free(void* Pointer);
-
-		NxFr::Allocator* GetAllocator(void* Pointer) const;
-		NxFr::Allocator* GetAllocator(uint64 Size, uint64 Alignement) const;
-		NxFr::Allocator* FindAllocator(uint64 Size, uint64 Alignement) const;
-		NxFr::Allocator* CreateAllocator(uint64 Size, uint64 Stride) const;
-		void ClearAllocators(bool Delete);
+		void* Allocate(uint64 Size, uint64 Alignement) override;
+		void* Reallocate(void* Pointer, uint64 Size, uint64 Alignement) override;
+		void Free(void* Pointer) override;
 
 	private:
-		NxFr::Set<NxFr::Allocator*> Allocators;
+		NxFr::Allocator* GetAllocator(void* Pointer) const;
+		NxFr::Allocator* GetAllocator(uint64 Size, uint64 Alignement);
+		NxFr::Allocator* FindAllocator(uint64 Size, uint64 Alignement);
+		NxFr::Allocator* CreateAllocator(uint64 Size, uint64 Stride);
+		void ClearAllocators(bool Delete);
+		uint64 GetAllocatorSize();
+
+		NxFr::List<NxFr::Allocator*> Allocators;
 		AllocatorType Type;
 	};
 }

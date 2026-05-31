@@ -6,7 +6,7 @@
 namespace NxEn
 {
 	WorldObjectFactory::WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
-		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(1024),
+		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(),
 		GameObjects(), Behaviours(), Components(),
 		InfosGameObjects(), InfosBehaviours(), InfosComponents()
 	{
