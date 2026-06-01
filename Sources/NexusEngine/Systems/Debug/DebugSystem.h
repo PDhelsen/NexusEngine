@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 
 namespace NxEn
@@ -14,10 +15,10 @@ namespace NxEn
 		DebugSystem();
 		~DebugSystem();
 
-		NxFr::Logger* GetLogger() const { return Logger; }
-		NxFr::Stats* GetStats() const { return Stats; };
-		NxFr::Instruments* GetInstrumentor() const { return Instrumentor; }
-		NxFr::MemoryTracker* GetMemory() const { return Memory; }
+		NxFr::Logger* GetLogger() const { return Logs; }
+		NxFr::Stats* GetStats() const { return Statistiques; };
+		NxFr::Instruments* GetInstruments() const { return Instrumentor; }
+		NxFr::MemoryTracker* GetMemoryTracker() const { return Memory; }
 
 	protected:
 		void OnInitialize() override;
@@ -26,15 +27,12 @@ namespace NxEn
 
 	private:
 		void AutoStart();
-		void RecordStats();
-		void TickProfiler();
 		void ApplySettings();
 
-	private:
-		NxFr::Logger* Logger;
-		NxFr::Stats* Stats;
+		TimeManager* Time;
+		NxFr::Logger* Logs;
+		NxFr::Stats* Statistiques;
 		NxFr::Instruments* Instrumentor;
 		NxFr::MemoryTracker* Memory;
-		double Time;
 	};
 }

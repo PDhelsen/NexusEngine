@@ -1,26 +1,15 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
 #include "NexusEngine/Systems/GUI/Styles.h"
 
 namespace NxEn
 {
-	class CommandsSystem;
-
 	class NX_ENGINE_API ConsolePanel : public GUI::Panel
 	{
-		struct Log
-		{
-			NxFr::String Text;
-			NxFr::StringId Style;
-			bool& Verbosity;
-			bool& Channel;
-		};
-
 	public:
 		NX_OBJECT(ConsolePanel)
-
-		static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity);
 
 		ConsolePanel();
 		~ConsolePanel();
@@ -32,11 +21,19 @@ namespace NxEn
 		void OnDisable() override;
 		void OnDraw() override;
 
-		void ExecuteCommand();
+	private:
+		struct Log
+		{
+			NxFr::String Text;
+			NxFr::StringId Style;
+			bool& Verbosity;
+			bool& Channel;
+		};
+
 		void AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message);
 		void ClearLogs();
+		void ExecuteCommand();
 
-	private:
 		GUI::Menu Menu;
 		GUI::Style Style;
 

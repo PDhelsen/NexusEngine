@@ -8,7 +8,7 @@ namespace NxEn
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
 
 	StatsPanel::StatsPanel()
-		: Style(), Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filters(), Filter()
+		: Style(), Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filter()
 	{
 	}
 
@@ -29,7 +29,7 @@ namespace NxEn
 		Style.Reset();
 
 		DebugSystem* Debug = Application::GetSystem<DebugSystem>();
-		Instruments = Debug->GetInstrumentor();
+		Instruments = Debug->GetInstruments();
 		Stats = Debug->GetStats();
 
 		Values = Stats->GetStats();
@@ -99,15 +99,15 @@ namespace NxEn
 		Style.Width = -1.0f;
 		Style.WidthLabel = 0.0f;
 
-		if (GUI::Drawer<NxFr::String>::Field(Filter, "Filter:", "", &Style))
+		if (GUI::Drawer<NxFr::String>::Field(Filter.GetQuery(), "Filter:", "", &Style))
 		{
-			Filters = NxFr::StringUtility::SplitAll(Filter, ",");
+			Filter.Configure();
 		}
 
 		ImGui::Separator();
 	}
 
-	void StatsPanel::DrawStats(const NxFr::String& Label)
+	void StatsPanel::DrawStats(NxFr::StringView Label)
 	{
 		Style.Width = 0.0f;
 		Style.WidthLabel = -1.0f;
@@ -124,7 +124,7 @@ namespace NxEn
 		}
 	}
 
-	bool StatsPanel::FilterStats(const NxFr::String& Label)
+	bool StatsPanel::FilterStats(NxFr::StringView Label)
 	{
 		for (uint64 Index = 0; Index < FilterExclude.GetCount(); ++Index)
 		{
@@ -134,19 +134,11 @@ namespace NxEn
 			}
 		}
 
-		if (Filters.IsEmpty())
+		if (Filter.IsEmpty())
 		{
 			return true;
 		}
 		
-		for (uint64 Index = 0; Index < Filters.GetCount(); ++Index)
-		{
-			if (NxFr::StringUtility::Contains(Label, Filters[Index]))
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return Filter.FilterInstance(Label, 0, 0);
 	}
 }

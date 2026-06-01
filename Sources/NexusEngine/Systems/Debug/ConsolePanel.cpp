@@ -5,11 +5,7 @@
 
 namespace NxEn
 {
-	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
-
-	static SettingVar<bool>* SettingConsoleAutoScroll = SettingVar<bool>::Create("Settings", "ConsoleAutoScroll", true);
-
-	NxFr::StringId ConsolePanel::GetStyle(NxFr::LoggerVerbosity Verbosity)
+	static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity)
 	{
 		NxFr::StringId Id = 0;
 
@@ -28,6 +24,10 @@ namespace NxEn
 
 		return Id;
 	}
+
+	static SettingVar<bool>* SettingConsoleAutoScroll = SettingVar<bool>::Create("Settings", "ConsoleAutoScroll", true);
+
+	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
 	ConsolePanel::ConsolePanel()
 		: Menu(), Style(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128), Scroll(false)
@@ -166,15 +166,6 @@ namespace NxEn
 		}
 	}
 
-	void ConsolePanel::ExecuteCommand()
-	{
-		Command.Validate();
-
-		Application::GetSystem<CommandsSystem>()->Run(Command);
-
-		Command.Clear();
-	}
-
 	void ConsolePanel::AddLogs(NxFr::LoggerVerbosity Verbosity, NxFr::StringId Channel, NxFr::StringView Message)
 	{
 		Logs.AppendConstruct(Message, GetStyle(Verbosity), FlagsVerbosity[Verbosity], FlagsChannels[Channel]);
@@ -184,5 +175,14 @@ namespace NxEn
 	void ConsolePanel::ClearLogs()
 	{
 		Logs.Clear();
+	}
+
+	void ConsolePanel::ExecuteCommand()
+	{
+		Command.Validate();
+
+		Application::GetSystem<CommandsSystem>()->Run(Command);
+
+		Command.Clear();
 	}
 }

@@ -8,6 +8,15 @@ namespace NxEn
 		Filter::Filter(NxFr::StringView Query)
 			: Query(Query), Filters(), Types(), Ids(), Names(), TypeAndString(), All()
 		{
+			Configure();
+		}
+
+		Filter::~Filter()
+		{
+		}
+
+		void Filter::Configure()
+		{
 			Filters = NxFr::StringUtility::SplitAll(Query, " ");
 
 			Types = Filters.GetCount();
@@ -40,10 +49,6 @@ namespace NxEn
 			}
 
 			TypeAndString &= Filters.GetCount() > 1;
-		}
-
-		Filter::~Filter()
-		{
 		}
 
 		NxFr::Set<Object*> Filter::FilterObjects(const NxFr::Collection<Object*> Instances)
