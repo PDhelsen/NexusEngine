@@ -1,15 +1,15 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Systems/Jobs/JobCompletion.h"
 
 namespace NxEn
 {
 	struct NX_ENGINE_API JobHandle
 	{
-		friend class JobSystem;
-
 	public:
-		JobHandle(const JobHandle& Other) = delete;
+		NX_NOCOPY(JobHandle);
+		JobHandle(JobCompletion* Completion);
 		JobHandle(JobHandle&& Other) noexcept;
 		~JobHandle();
 
@@ -17,9 +17,6 @@ namespace NxEn
 		bool IsDone() const;
 
 	private:
-		JobHandle(struct JobCompletion* Completion);
-
-	private:
-		struct JobCompletion* Completion;
+		JobCompletion* Completion;
 	};
 }

@@ -1,8 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Jobs/JobSystem.h"
-#include "NexusEngine/Systems/Jobs/Job.h"
-#include "NexusEngine/Systems/Jobs/JobCompletion.h"
-#include "NexusEngine/Systems/Jobs/JobHandle.h"
 
 #include "NexusEngine/Systems/Settings/SettingTemplate.h"
 
@@ -46,7 +43,7 @@ namespace NxEn
 		return Completion;
 	}
 
-	JobHandle JobSystem::Submit(NxFr::Delegate<void()> Work)
+	JobHandle JobSystem::Submit(const NxFr::Delegate<void()>& Work)
 	{
 		JobCompletion* Completion = new JobCompletion(1);
 
@@ -58,7 +55,7 @@ namespace NxEn
 	bool JobSystem::IsWorking() const
 	{
 		NxFr::Lock GuardLock(Guard);
-		return Working.Load() || !Jobs.IsEmpty();
+		return Working > 0 || !Jobs.IsEmpty();
 	}
 
 	void JobSystem::OnInitialize()
@@ -67,7 +64,7 @@ namespace NxEn
 		uint64 Reservered = SettingThreadCounts->GetValue();
 		uint64 ThreadsCount = MaxThreads > Reservered ? MaxThreads - Reservered : 1llu;
 
-		Running.Store(1);
+		Running = true;
 		Threads = ThreadsCount;
 
 		for (uint64 Index = 0; Index < Threads.GetCount(); ++Index)
@@ -81,7 +78,7 @@ namespace NxEn
 	{
 		{
 			NxFr::Lock GuardLock(Guard);
-			Running.Store(0);
+			Running = false;
 		}
 
 		Notification.Broadcast();
@@ -112,8 +109,8 @@ namespace NxEn
 			{
 				NxFr::Lock GuardLock(Guard);
 
-				Notification.Wait(Guard, [&]() { return !Running.Load() || !Jobs.IsEmpty(); });
-				if (!Running.Load() && Jobs.IsEmpty())
+				Notification.Wait(Guard, [&]() { return !Running || !Jobs.IsEmpty(); });
+				if (!Running && Jobs.IsEmpty())
 				{
 					return;
 				}
@@ -121,7 +118,7 @@ namespace NxEn
 				Instance = Jobs.Get();
 				Jobs.Remove();
 
-				Working.Increment();
+				Working++;
 			}
 
 			// Execute
@@ -131,12 +128,7 @@ namespace NxEn
 			// Notify
 			{
 				NxFr::Lock GuardLock(Guard);
-
-				Working.Decrement();
-				if (Jobs.IsEmpty() && !Working.Load())
-				{
-					Notification.Broadcast();
-				}
+				Working--;
 			}
 		}
 	}

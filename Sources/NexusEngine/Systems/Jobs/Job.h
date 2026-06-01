@@ -1,19 +1,21 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Systems/Jobs/JobCompletion.h"
 
 namespace NxEn
 {
 	struct NX_ENGINE_API Job
 	{
 	public:
-		Job(struct JobCompletion* Completion, const NxFr::Delegate<void()>& Work);
+		NX_NOCOPY_NOMOVE(Job);
+		Job(JobCompletion* Completion, const NxFr::Delegate<void()>& Work);
 		~Job();
 
 		void Execute();
 
 	private:
-		struct JobCompletion* Completion;
+		JobCompletion* Completion;
 		NxFr::Delegate<void()> Work;
 	};
 }

@@ -1,6 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Jobs/JobHandle.h"
-#include "NexusEngine/Systems/Jobs/JobCompletion.h"
 
 namespace NxEn
 {
