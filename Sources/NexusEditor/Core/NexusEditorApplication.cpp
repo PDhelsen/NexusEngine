@@ -9,7 +9,7 @@ namespace NxEd
 {
 	static NxEn::SettingMap<NxFr::String>* SettingShortcuts = NxEn::SettingMap<NxFr::String>::Create("Editor", "Shortcuts", {});
 
-	static NxEn::Command CmdSave = NxEn::Command::Create("Editor.Save"_Sid, "Save project", NxFr::Delegate<void()>([]()
+	static NxEn::Command* CmdSave = NxEn::Command::Create("Editor.Save"_Sid, "Save project", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetInstance<NexusEditorApplication>()->SaveAll();
 	}));

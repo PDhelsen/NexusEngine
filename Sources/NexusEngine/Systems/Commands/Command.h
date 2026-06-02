@@ -10,14 +10,12 @@ namespace NxEn
 	{
 	public:
 		template<typename... Args>
-		static Command Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback)
+		static Command* Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback)
 		{
-			Command Instance = Command(Id, Tooltip, [=](const NxFr::List<NxFr::StringView>& Arguments)
+			return CommandsSystem::Commands.Register(Id, Command(Id, Tooltip, [=](const NxFr::List<NxFr::StringView>& Arguments)
 			{
 				InvokeWithArguments(Callback, Arguments, NxFr::MakeIndexSequence<sizeof...(Args)>{});
-			});
-			CommandsSystem::RegisterCommand(&Instance);
-			return Instance;
+			}));
 		}
 
 		Command(NxFr::StringId Id, NxFr::StringView Tooltip, const NxFr::Delegate<void(const NxFr::List<NxFr::StringView>&)>& Callback);

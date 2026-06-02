@@ -16,7 +16,7 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel AssetsBrowserPanel");
 	}));
 
-	const static NxEn::Command CmdAssetBrowserSelect = NxEn::Command::Create("Assets.Browser.Select"_Sid, "Select path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Item)
+	static NxEn::Command* CmdAssetBrowserSelect = NxEn::Command::Create("Assets.Browser.Select"_Sid, "Select path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Item)
 	{
 		NxEn::GUISystem::GetPanel<AssetsBrowserPanel>()->Select(Item);
 	}));

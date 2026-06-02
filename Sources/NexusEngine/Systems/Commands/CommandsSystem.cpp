@@ -15,41 +15,17 @@ namespace NxEn
 	static NxFr::String SplitArgs = " ";
 	static NxFr::String SplitOptions = "-";
 
-	static NxFr::Dictionary<NxFr::StringId, Command*>& GetCommands()
-	{
-		static NxFr::Dictionary<NxFr::StringId, Command*> Commands;
-		return Commands;
-	}
+	NxFr::Registry<Command> CommandsSystem::Commands;
 
-	const static Command CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
+	static Command* CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Help();
 	}));
 
-	const static Command CmdFile = Command::Create("Commands.File"_Sid, "Run all commands in the file", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	static Command* CmdFile = Command::Create("Commands.File"_Sid, "Run all commands in the file", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
 		Application::GetSystem<CommandsSystem>()->File(Path);
 	}));
-
-	const static Command CmdDummy = Command::Create("Commands.Dummy"_Sid, "Dummy command", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView First, NxFr::StringView Second)
-	{
-		NX_LOG(Info, Command, "First: %s \nSecond: %s", NxFr::String(First).C(), NxFr::String(Second).C());
-	}));
-
-	Command* CommandsSystem::GetCommand(NxFr::StringId Id)
-	{
-		return GetCommands()[Id];
-	}
-
-	void CommandsSystem::RegisterCommand(Command* Instance)
-	{
-		GetCommands().Append(Instance->GetId(), Instance);
-	}
-
-	void CommandsSystem::UnregisterCommand(Command* Instance)
-	{
-		GetCommands().Remove(Instance->GetId());
-	}
 
 	CommandsSystem::CommandsSystem()
 		: Queue(), Current(nullptr)
@@ -92,12 +68,17 @@ namespace NxEn
 
 	void CommandsSystem::Help()
 	{
-		NxFr::Array<Command*> Commands = NxFr::ContainerUtility::ToArrayValues(GetCommands());
-		NxFr::ContainerUtility::Sort<Command*>(Commands, [](const Command* A, const Command* B)
+		uint64 Index = 0;
+		NxFr::Array<Command*> Cmds = Commands.GetCount();
+		for (auto It = Commands.Begin(); It != Commands.End(); ++It)
+		{
+			Cmds[Index++] = &It->Value;
+		}
+		NxFr::ContainerUtility::Sort<Command*>(Cmds, [](const Command* A, const Command* B)
 		{
 			return A->GetId().GetString() < B->GetId().GetString();
 		});
-		for (auto& Cmd : Commands)
+		for (auto& Cmd : Cmds)
 		{
 			NX_LOG(Info, Default, "Command: %s - %s", Cmd->GetId().C(), Cmd->GetTooltip().C());
 		}
@@ -116,6 +97,12 @@ namespace NxEn
 				Run(Cmd);
 			}
 		}
+	}
+
+	void CommandsSystem::OnShutdown()
+	{
+		Commands.Clear();
+		System::OnShutdown();
 	}
 
 	void CommandsSystem::OnTick(float TimeStep)
@@ -226,7 +213,7 @@ namespace NxEn
 	{
 		NX_INSTUMENT_SCOPE(Info.Id.C());
 
-		Command** Instance = GetCommands().TryGet(Info.Id);
+		Command* Instance = Commands.TryGet(Info.Id);
 		if (!Instance)
 		{
 			NX_LOG(Warning, System, "Invalid command: %s", Info.Id.C());
@@ -236,7 +223,7 @@ namespace NxEn
 		Current = &Info;
 
 		NX_LOG(Info, Command, "%s %s", Info.Id.C(), Info.Args.C());
-		(*Instance)->Invoke(ParseArguments(Info.Args));
+		Instance->Invoke(ParseArguments(Info.Args));
 
 		Current = nullptr;
 	}

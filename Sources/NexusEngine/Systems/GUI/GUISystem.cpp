@@ -48,17 +48,17 @@ namespace NxEn
 		return Panels;
 	}
 
-	const static Command CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	static Command* CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
 	{
 		GUISystem::GetPanel(NxFr::StringId(Id))->Show();
 	}));
 
-	const static Command CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
+	static Command* CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
 	{
 		Application::GetSystem<GUISystem>()->SaveLayout(Name);
 	}));
 
-	const static Command CmdGuiLayoutLoad = Command::Create("GUI.Layout.Load"_Sid, "Load gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
+	static Command* CmdGuiLayoutLoad = Command::Create("GUI.Layout.Load"_Sid, "Load gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
 	{
 		Application::GetSystem<GUISystem>()->LoadLayout(Name);
 	}));

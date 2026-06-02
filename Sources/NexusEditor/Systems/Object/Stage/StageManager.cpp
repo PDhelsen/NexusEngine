@@ -16,7 +16,7 @@ namespace NxEd
 		Stages->ShowStage(World);
 	}));
 
-	const static NxEn::Command CmdStageShowAsset = NxEn::Command::Create("Stage.Show.Asset"_Sid, "Show asset on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	static NxEn::Command* CmdStageShowAsset = NxEn::Command::Create("Stage.Show.Asset"_Sid, "Show asset on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxFr::GUID Id = Assets->PathToId(Path);
@@ -31,7 +31,7 @@ namespace NxEd
 		Stages->ShowStage(Target);
 	}));
 
-	const static NxEn::Command CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Query)
+	static NxEn::Command* CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Query)
 	{
 		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
 		Stage* Instance = Stages->GetFocusedStage();

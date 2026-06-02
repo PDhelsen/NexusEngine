@@ -16,7 +16,7 @@ namespace NxFr
 
 namespace NxEn
 {
-	const static Command CmdAssetPurge = Command::Create("Assets.Purge"_Sid, "Unload all unreferenced assets", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Save)
+	static Command* CmdAssetPurge = Command::Create("Assets.Purge"_Sid, "Unload all unreferenced assets", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Save)
 	{
 		Application::GetSystem<AssetsSystem>()->Purge(NxFr::StringUtility::FromString<bool>(Save));
 	}));

@@ -11,9 +11,7 @@ namespace NxEn
 	public:
 		NX_OBJECT(CommandsSystem)
 
-		static Command* GetCommand(NxFr::StringId Id);
-		static void RegisterCommand(Command* Instance);
-		static void UnregisterCommand(Command* Instance);
+		static NxFr::Registry<Command> Commands;
 
 		CommandsSystem();
 		~CommandsSystem();
@@ -29,6 +27,7 @@ namespace NxEn
 
 	protected:
 		void OnInitialize() override;
+		void OnShutdown() override;
 		void OnTick(float TimeStep = 0.0f) override;
 
 	private:

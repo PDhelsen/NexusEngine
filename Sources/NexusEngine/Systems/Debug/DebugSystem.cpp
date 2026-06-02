@@ -20,22 +20,22 @@ namespace NxEn
 	static SettingMap<bool>* SettingChannels = SettingMap<bool>::Create("Settings", "LoggerChannel", { {"Default", true}, { "Verbose", true }});
 	static SettingVar<bool>* SettingAutoFlush = SettingVar<bool>::Create("Settings", "LoggerAutoFlush", false);
 
-	static Command CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
+	static Command* CmdDebugLoggerChannel = Command::Create("Debug.Logger.Channel"_Sid, "Enable/Disable logger channel", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Channel, NxFr::StringView Enabled)
 	{
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->SetChannel(NxFr::StringId(Channel), NxFr::StringUtility::FromString<bool>(Enabled));
 	}));
-	static Command CmdDebugLoggerAllChannels = Command::Create("Debug.Logger.AllChannels"_Sid, "Enable/Disable all logger channel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	static Command* CmdDebugLoggerAllChannels = Command::Create("Debug.Logger.AllChannels"_Sid, "Enable/Disable all logger channel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
 	{
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->SetAllChannels(NxFr::StringUtility::FromString<bool>(Enabled));
 	}));
-	static Command CmdDebugProfiler = Command::Create("Debug.Profiler"_Sid, "Enable/Disable profiler", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	static Command* CmdDebugProfiler = Command::Create("Debug.Profiler"_Sid, "Enable/Disable profiler", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
 	{
 		NxFr::Instruments* Instrumentor = Application::GetSystem<DebugSystem>()->GetInstruments();
 		if (NxFr::StringUtility::FromString<bool>(Enabled)) Instrumentor->StartRecording(); else Instrumentor->StopRecording();
 	}));
-	static Command CmdDebugStats = Command::Create("Debug.Stats"_Sid, "Enable/Disable stats", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	static Command* CmdDebugStats = Command::Create("Debug.Stats"_Sid, "Enable/Disable stats", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
 	{
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		if (NxFr::StringUtility::FromString<bool>(Enabled)) Stats->StartRecording(); else Stats->StopRecording();
