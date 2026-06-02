@@ -5,7 +5,7 @@ namespace NxFr
 {
 	namespace LoggerChannel
 	{
-		const NxFr::StringId Command = "Command"_Sid;
+		const static NxFr::StringId Command = "Command"_Sid;
 	}
 }
 
