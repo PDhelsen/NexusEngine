@@ -23,8 +23,6 @@ namespace NxEn
 		virtual void OnRun() override;
 
 	private:
-		void ParseCommands();
-
 		GUI::Window* Window;
 		Input::Schema* Inputs;
 		bool Headless;

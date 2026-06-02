@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Commands/Command.h"
 
@@ -14,33 +15,39 @@ namespace NxEn
 		static void RegisterCommand(Command* Instance);
 		static void UnregisterCommand(Command* Instance);
 
-		static CommandInfo ParseCommand(NxFr::StringView Cmd);
-		static NxFr::List<CommandInfo> ParseCommands(NxFr::StringView Cmds);
-		static NxFr::List<NxFr::StringView> ParseArguments(NxFr::StringView Args);
-
 		CommandsSystem();
 		~CommandsSystem();
 
 		void Run(NxFr::StringView Cmd);
-		void Run(const CommandInfo& Info);
 		void Execute(NxFr::StringView Cmd);
-		void Execute(const CommandInfo& Info);
-		void File(NxFr::String Path);
+		void File(NxFr::StringView Path);
 		void Help();
 
-		bool IsExecutingCommand() const { return Current != nullptr; }
 		uint64 GetQueuedCommandCount() const { return Queue.GetCount(); }
-		const CommandInfo& GetCurrentCommand() const { return IsExecutingCommand() ? *Current : CommandInfo::Dummy; };
+		bool IsExecutingCommand() const { return Current != nullptr; }
+		NxFr::StringId GetCurrentCommand() const { return IsExecutingCommand() ? Current->Id : NxFr::StringUtility::Id; };
 
 	protected:
 		void OnInitialize() override;
 		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
+		struct CommandInfo
+		{
+			NxFr::StringId Id;
+			NxFr::String Args;
+			float Delay;
+		};
+
+		static CommandInfo ParseCommand(NxFr::StringView Cmd);
+		static NxFr::List<NxFr::StringView> ParseCommands(NxFr::StringView Cmds);
+		static NxFr::List<NxFr::StringView> ParseArguments(NxFr::StringView Args);
+
 		void PollTerminal();
 		void FlushCommands(float TimeStep);
+		void Run(const CommandInfo& Info);
+		void Execute(const CommandInfo& Info);
 
-	private:
 		NxFr::Queue<CommandInfo> Queue;
 		const CommandInfo* Current;
 	};

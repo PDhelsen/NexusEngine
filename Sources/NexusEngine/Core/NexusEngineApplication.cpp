@@ -118,8 +118,6 @@ namespace NxEn
 		Application::OnRun();
 		Ticker& Ticks = GetTicker();
 
-		Ticks.AppendTick(NxEn::Ticker::TickBucket::Input, "Parse Commands", { this, &NexusEngineApplication::ParseCommands }, true);
-
 		Ticks.AppendSystem<InputSystem>(Ticker::TickBucket::Input);
 		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, Ticker::LowFrequency).AppendDependency<CommandsSystem, InputSystem>();
 		Ticks.AppendSystem<ResourcesSystem>(Ticker::TickBucket::Engine);
@@ -129,22 +127,5 @@ namespace NxEn
 		Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output).AppendDependency<WindowSystem, GUISystem>();
 		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);
 		Ticks.AppendSystem<DebugSystem>(Ticker::TickBucket::Cleanup).AppendDependency<DebugSystem, MemorySystem>();
-	}
-
-	void NexusEngineApplication::ParseCommands()
-	{
-		NxFr::StringView CommandsList = NxFr::Globals::Args->Get("Commands");
-		if (CommandsList.IsEmpty())
-		{
-			return;
-		}
-
-		CommandsSystem* CmdSystem = GetSystem<CommandsSystem>();
-		NxFr::List<CommandInfo> Commands = CommandsSystem::ParseCommands(CommandsList);
-
-		for (auto Cmd : Commands)
-		{
-			CmdSystem->Run(Cmd);
-		}
 	}
 }
