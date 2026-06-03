@@ -11,10 +11,6 @@ namespace NxFr
 
 namespace NxEn
 {
-	static NxFr::String SplitCommands = ";";
-	static NxFr::String SplitArgs = " ";
-	static NxFr::String SplitOptions = "-";
-
 	NxFr::Registry<Command> CommandsSystem::Commands;
 
 	static Command* CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
@@ -91,7 +87,7 @@ namespace NxEn
 		NxFr::StringView Commands = NxFr::Globals::Args->Get("Commands");
 		if (!Commands.IsEmpty())
 		{
-			NxFr::List<NxFr::StringView> Cmds = ParseCommands(Commands);
+			NxFr::List<NxFr::StringView> Cmds = NxFr::StringUtility::SplitAll(Commands, SeparatorCommands);
 			for (auto Cmd : Cmds)
 			{
 				Run(Cmd);
@@ -111,69 +107,6 @@ namespace NxEn
 
 		PollTerminal();
 		FlushCommands(TimeStep);
-	}
-
-	CommandsSystem::CommandInfo CommandsSystem::ParseCommand(NxFr::StringView Cmd)
-	{
-		Cmd = NxFr::StringUtility::TrimLeading(Cmd);
-		Cmd = NxFr::StringUtility::TrimTrailing(Cmd);
-		NxFr::List<NxFr::StringView> Parts = NxFr::StringUtility::SplitAll(Cmd, SplitArgs);
-
-		bool Options = false;
-		uint64 Index = 0;
-
-		NxFr::StringView Id = Parts[Index++];
-
-		NxFr::String Args;
-		while (Index < Parts.GetCount())
-		{
-			NxFr::StringView Arg = Parts[Index];
-			if (NxFr::StringUtility::Start(Arg, SplitOptions))
-			{
-				Options = true;
-				break;
-			}
-
-			if (Index > 1)
-			{
-				Args += " ";
-			}
-			Args += Arg;
-
-
-			Index++;
-		}
-
-		NxFr::StringView Delay = "0";
-		while (Index < Parts.GetCount())
-		{
-			if (Parts[Index] == "-Delay" && (Index + 1) < Parts.GetCount())
-			{
-				Delay = Parts[Index + 1];
-				Index += 2;
-			}
-			else
-			{
-				Index++;
-			}
-		}
-
-		return CommandInfo
-		{
-			.Id = NxFr::StringId(Id),
-			.Args = NxFr::Move(Args),
-			.Delay = NxFr::StringUtility::FromString<float>(Delay)
-		};
-	}
-
-	NxFr::List<NxFr::StringView> CommandsSystem::ParseCommands(NxFr::StringView Cmds)
-	{
-		return NxFr::StringUtility::SplitAll(Cmds, SplitCommands);
-	}
-
-	NxFr::List<NxFr::StringView> CommandsSystem::ParseArguments(NxFr::StringView Args)
-	{
-		return NxFr::StringUtility::SplitAll(Args, SplitArgs);
 	}
 
 	void CommandsSystem::PollTerminal()
@@ -222,9 +155,47 @@ namespace NxEn
 
 		Current = &Info;
 
-		NX_LOG(Info, Command, "%s %s", Info.Id.C(), Info.Args.C());
-		Instance->Invoke(ParseArguments(Info.Args));
+		NX_LOG(Info, Command, "%s", Info.Request.C());
+		Instance->Invoke(Info.Args);
 
 		Current = nullptr;
+	}
+
+	CommandsSystem::CommandInfo CommandsSystem::ParseCommand(NxFr::StringView Cmd)
+	{
+		Cmd = NxFr::StringUtility::TrimLeading(Cmd);
+		Cmd = NxFr::StringUtility::TrimTrailing(Cmd);
+		NxFr::List<NxFr::StringView> Tokens = NxFr::StringUtility::Tokenize(Cmd, SeparatorArgs);
+
+		NxFr::StringView Id = "";
+		NxFr::List<NxFr::StringView> Args;
+		NxFr::StringView Delay = "0";
+
+		for (uint64 Index = 0; Index < Tokens.GetCount(); ++Index)
+		{
+			NxFr::StringView Token = Tokens[Index];
+			if (Index == 0)
+			{
+				Id = Token;
+			}
+			else if (Token == "-Delay")
+			{
+				NX_ASSERT(Tokens.IsValidIndex(Index + 1), Default, "Missing delay value");
+				Delay = Tokens[Index + 1];
+				Index++;
+			}
+			else
+			{
+				Args.Append(Token);
+			}
+		}
+
+		return CommandInfo
+		{
+			.Request = Cmd,
+			.Id = NxFr::StringId(Id),
+			.Args = NxFr::Move(Args),
+			.Delay = NxFr::StringUtility::FromString<float>(Delay)
+		};
 	}
 }

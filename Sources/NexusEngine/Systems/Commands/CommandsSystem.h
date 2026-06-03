@@ -11,6 +11,9 @@ namespace NxEn
 	public:
 		NX_OBJECT(CommandsSystem)
 
+		inline static const NxFr::String SeparatorCommands = ";";
+		inline static const NxFr::String SeparatorArgs = " ";
+
 		static NxFr::Registry<Command> Commands;
 
 		CommandsSystem();
@@ -33,19 +36,18 @@ namespace NxEn
 	private:
 		struct CommandInfo
 		{
+			NxFr::String Request;
+
 			NxFr::StringId Id;
-			NxFr::String Args;
+			NxFr::List<NxFr::StringView> Args;
 			float Delay;
 		};
-
-		static CommandInfo ParseCommand(NxFr::StringView Cmd);
-		static NxFr::List<NxFr::StringView> ParseCommands(NxFr::StringView Cmds);
-		static NxFr::List<NxFr::StringView> ParseArguments(NxFr::StringView Args);
 
 		void PollTerminal();
 		void FlushCommands(float TimeStep);
 		void Run(const CommandInfo& Info);
 		void Execute(const CommandInfo& Info);
+		CommandInfo ParseCommand(NxFr::StringView Cmd);
 
 		NxFr::Queue<CommandInfo> Queue;
 		const CommandInfo* Current;
