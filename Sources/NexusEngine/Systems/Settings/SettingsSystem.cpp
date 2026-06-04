@@ -84,7 +84,7 @@ namespace NxEn
 		NX_LOG(Info, System, "Settings saved to : %s", FolderPath.C());
 	}
 
-	void SettingsSystem::ApplySettings()
+	void SettingsSystem::ApplySettings() const
 	{
 		OnChange.Invoke();
 		NX_LOG(Info, System, "Settings applied");

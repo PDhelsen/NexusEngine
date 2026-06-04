@@ -21,7 +21,7 @@ namespace NxEn
 
 		void LoadSettings() const;
 		void SaveSettings() const;
-		void ApplySettings();
+		void ApplySettings() const;
 
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> GetAllSettings() const;
 		NxFr::Array<NxFr::Array<Setting*>> GetAllSettingsSorted() const;
