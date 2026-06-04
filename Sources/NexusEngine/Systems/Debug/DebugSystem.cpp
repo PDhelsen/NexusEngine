@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Debug/DebugSystem.h"
 
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
-
 #include "NexusFramework/Debug/Profiler/Instruments/ChromeTracing.h"
 
 namespace NxFr

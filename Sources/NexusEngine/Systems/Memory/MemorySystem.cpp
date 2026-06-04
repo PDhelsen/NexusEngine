@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Memory/MemorySystem.h"
 
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
-
 namespace NxFr
 {
 	namespace StatsHeader

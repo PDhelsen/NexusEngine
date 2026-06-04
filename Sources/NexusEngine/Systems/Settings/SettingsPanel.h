@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
+#include "NexusEngine/Systems/Settings/Setting.h"
 
 namespace NxEn
 {

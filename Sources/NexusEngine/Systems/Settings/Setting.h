@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Systems/GUI/Styles.h"
+#include "NexusEngine/Application/Object/Object.h"
 
 namespace NxEn
 {

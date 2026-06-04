@@ -2,7 +2,6 @@
 #include "NexusEngine/Systems/Memory/Allocator.h"
 
 #include "NexusEngine/Core/NexusConfig.h"
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
 
 namespace NxEn
 {

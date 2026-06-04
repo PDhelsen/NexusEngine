@@ -1,7 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/HID/WindowSystem.h"
 
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
 #include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 #include "NexusEngine/External/Glfw/Glfw.h"

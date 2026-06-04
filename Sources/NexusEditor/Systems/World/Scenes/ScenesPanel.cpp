@@ -1,7 +1,6 @@
 #include "NexusEditor/Systems/World/Scenes/ScenesPanel.h"
 
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
 
 namespace NxEd
 {

@@ -3,6 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Settings/Setting.h"
+#include "NexusEngine/Systems/Settings/SettingTemplate.h"
 
 namespace NxEn
 {

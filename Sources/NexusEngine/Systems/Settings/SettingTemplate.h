@@ -2,11 +2,12 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/Settings/Setting.h"
-#include "NexusEngine/Systems/Settings/SettingsSystem.h"
-#include "NexusEngine/Systems/Memory/MemorySystem.h"
+#include "NexusEngine/Systems/GUI/Utils.h"
 
 namespace NxEn
 {
+	class SettingsSystem;
+
 	template<typename T>
 	class SettingBase : public Setting
 	{

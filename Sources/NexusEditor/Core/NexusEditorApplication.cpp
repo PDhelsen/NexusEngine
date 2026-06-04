@@ -1,6 +1,5 @@
 #include "NexusEditor/Core/NexusEditorApplication.h"
 
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
 #include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 #include "NexusEditor/Systems/Edit/EditSystem.h"

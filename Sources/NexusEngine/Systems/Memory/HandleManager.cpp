@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Memory/HandleManager.h"
 
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
-
 namespace NxEn
 {
 	static SettingVar<uint64>* SettingHandlesPerManager = SettingVar<uint64>::Create("Settings", "MemoryHandlesPerManager", 1024);

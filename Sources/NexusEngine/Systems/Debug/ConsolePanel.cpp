@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Debug/ConsolePanel.h"
 
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
-
 namespace NxEn
 {
 	static NxFr::StringId GetStyle(NxFr::LoggerVerbosity Verbosity)

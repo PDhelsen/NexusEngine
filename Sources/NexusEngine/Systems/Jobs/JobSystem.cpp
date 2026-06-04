@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Jobs/JobSystem.h"
 
-#include "NexusEngine/Systems/Settings/SettingTemplate.h"
-
 namespace NxEn
 {
 	static NxEn::SettingVar<uint64>* SettingThreadCounts = NxEn::SettingVar<uint64>::Create("Settings", "JobReservedThread", 4);
