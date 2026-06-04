@@ -1,4 +1,6 @@
 ConsoleAutoScroll: true
+JobReservedThread: 4
+LoggerAutoFlush: false
 LoggerChannel: {Application: true, Command: true, Default: true, System: true, Verbose: true}
 LoggerVerbosity: [true, true, true, true]
 MemoryAllocatorsSize: [0, 1048576, 1048576, 1048576, 1048576, 1048576, 1048576]
@@ -8,5 +10,3 @@ WindowMode: 1
 WindowMonitor: 1
 WindowResolution: [1920, 1080]
 WindowVSync: true
-JobReservedThread: 4
-LoggerAutoFlush: false

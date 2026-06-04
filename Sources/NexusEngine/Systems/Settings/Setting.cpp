@@ -3,6 +3,15 @@
 
 namespace NxEn
 {
+	Setting::Setting(NxFr::StringView Page, NxFr::StringView Name, SettingMode Mode)
+		: Id(SettingsSystem::Key(Page, Name)), Mode(Mode)
+	{
+	}
+
+	Setting::~Setting()
+	{
+	}
+
 	void Setting::Set(NxFr::StringView Value)
 	{
 		NX_ASSERT(false, Default, "Not implemented");
@@ -34,14 +43,5 @@ namespace NxEn
 	{
 		NX_ASSERT(false, Default, "Not implemented");
 		return NxFr::StringUtility::Empty;
-	}
-
-	Setting::Setting(NxFr::StringView Page, NxFr::StringView Name, SettingMode Mode)
-		: Id(Key(Page, Name)), Mode(Mode)
-	{
-	}
-
-	Setting::~Setting()
-	{
 	}
 }

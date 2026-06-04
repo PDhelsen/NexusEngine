@@ -3,9 +3,6 @@
 
 namespace NxEn
 {
-	const NxFr::StringView Folder = "Settings";
-	const NxFr::StringView Extension = "settings";
-
 	static NxFr::Dictionary<NxFr::StringView, Setting*>& GetSettings()
 	{
 		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
@@ -31,6 +28,11 @@ namespace NxEn
 		Application::GetSystem<SettingsSystem>()->ApplySettings();
 	}));
 
+	NxFr::String SettingsSystem::Key(NxFr::StringView Page, NxFr::StringView Name)
+	{
+		return Page + "." + Name;
+	}
+
 	Setting* SettingsSystem::GetSetting(NxFr::StringView Id)
 	{
 		return GetSettings()[Id];
@@ -48,12 +50,12 @@ namespace NxEn
 
 	void SettingsSystem::LoadSettings() const
 	{
-		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
+		NxFr::String FolderPath = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
 
 		for (auto& [Page, Instances] : Settings)
 		{
-			NxFr::String PagePath = NxFr::Path::Combine(Path, (Page + NxFr::Path::SeparatorExtension + Extension));
+			NxFr::String PagePath = NxFr::Path::Combine(FolderPath, Page + NxFr::Path::SeparatorExtension + Extension);
 			if (!NxFr::Path::Exist(PagePath))
 			{
 				continue;
@@ -66,7 +68,7 @@ namespace NxEn
 				YAML::Node& Value = It->second;
 
 				NxFr::String SettingName = Key.as<NxFr::String>();
-				if (Instances.TryGet((NxFr::StringView)SettingName))
+				if (Instances.TryGet(SettingName))
 				{
 					Setting* Instance = Instances[SettingName];
 					Instance->OnDeserialize(Value);
@@ -74,28 +76,27 @@ namespace NxEn
 			}
 		}
 
-		NX_LOG(Info, System, "Settings loaded from: %s", Path.C());
+		NX_LOG(Info, System, "Settings loaded from: %s", FolderPath.C());
 	}
 
 	void SettingsSystem::SaveSettings() const
 	{
-		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
+		NxFr::String FolderPath = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
 		NxFr::Array<NxFr::Array<Setting*>> Settings = GetAllSettingsSorted();
 
 		for (NxFr::Array<Setting*>& Page : Settings)
 		{
-			NxFr::String PagePath = NxFr::Path::Combine(Path, Page[0]->GetPage() + NxFr::Path::SeparatorExtension + Extension);
-			YAML::Node Root = NxFr::Path::Exist(PagePath) ? NxFr::Yaml::DeserializeFile(PagePath) : YAML::Node();
+			NxFr::String PagePath = NxFr::Path::Combine(FolderPath, Page[0]->GetPage() + NxFr::Path::SeparatorExtension + Extension);
 
-			for (Setting* Instance: Page)
+			YAML::Node Root;
+			for (Setting* Instance : Page)
 			{
 				Instance->OnSerialize(Root);
 			}
-
 			NxFr::Yaml::SerializeFile(Root, PagePath);
 		}
 
-		NX_LOG(Info, System, "Settings saved to : %s", Path.C());
+		NX_LOG(Info, System, "Settings saved to : %s", FolderPath.C());
 	}
 
 	void SettingsSystem::ApplySettings()
@@ -128,20 +129,10 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
 		NxFr::Array<NxFr::Array<Setting*>> Result = NxFr::Array<NxFr::Array<Setting*>>(Settings.GetCount());
 
-		uint64 PageIndex = 0;
-		for (auto [PageName, Page] : Settings)
+		uint64 Index = 0;
+		for (auto [Page, Instances] : Settings)
 		{
-			Result[PageIndex] = NxFr::Array<Setting*>(Page.GetCount());
-
-			uint64 InstanceIndex = 0;
-			for (auto [InstanceName, Instance] : Page)
-			{
-				Result[PageIndex][InstanceIndex] = Instance;
-
-				InstanceIndex++;
-			}
-
-			PageIndex++;
+			Result[Index++] = NxFr::ContainerUtility::ToArrayValues(Instances);
 		}
 
 		NxFr::ContainerUtility::Sort<NxFr::Array<Setting*>>(Result, [](const NxFr::Array<Setting*>& A, const NxFr::Array<Setting*>& B) { return A[0]->GetPage() <= B[0]->GetPage(); });
@@ -155,16 +146,11 @@ namespace NxEn
 
 	void SettingsSystem::OnInitialize()
 	{
-		System::OnInitialize();
-
-		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder)).Create();
 		LoadSettings();
 	}
 
 	void SettingsSystem::OnShutdown()
 	{
 		SaveSettings();
-
-		System::OnShutdown();
 	}
 }

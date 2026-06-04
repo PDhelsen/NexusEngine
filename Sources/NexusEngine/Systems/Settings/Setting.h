@@ -13,11 +13,8 @@ namespace NxEn
 	class NX_ENGINE_API Setting
 	{
 	public:
-
-		static NxFr::String Key(NxFr::StringView Page, NxFr::StringView Name)
-		{
-			return Page + "." + Name;
-		}
+		Setting(NxFr::StringView Page, NxFr::StringView Name, SettingMode Mode);
+		virtual ~Setting();
 
 		virtual void OnGui(const GUI::Style* Visual = nullptr) = 0;
 		virtual void OnDeserialize(const YAML::Node & Node) = 0;
@@ -34,10 +31,6 @@ namespace NxEn
 		NxFr::StringView GetPage() const { return NxFr::StringUtility::Split(Id, ".", 0); }
 		NxFr::StringView GetName() const { return NxFr::StringUtility::Split(Id, ".", 1); }
 		SettingMode GetMode() const { return Mode; }
-
-	protected:
-		Setting(NxFr::StringView Page, NxFr::StringView Name, SettingMode Mode);
-		virtual ~Setting();
 
 	private:
 		const NxFr::String Id;

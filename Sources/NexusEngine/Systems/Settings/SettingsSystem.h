@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Settings/Setting.h"
 
@@ -10,6 +11,10 @@ namespace NxEn
 	public:
 		NX_OBJECT(SettingsSystem)
 
+		inline static const NxFr::String Folder = "Settings";
+		inline static const NxFr::String Extension = "settings";
+
+		static NxFr::String Key(NxFr::StringView Page, NxFr::StringView Name);
 		static Setting* GetSetting(NxFr::StringView Id);
 		static void RegisterSetting(Setting* Instance);
 		static void UnregisterSetting(Setting* Instance);

@@ -1,3 +1,4 @@
+Scene - Load scene in single mode: false
 Shortcuts:
   Edit.Copy: Ctrl+C
   Edit.Cut: Ctrl+X
@@ -9,4 +10,3 @@ Shortcuts:
   Edit.SelectAll: Ctrl+A
   Edit.UnselectAll: Ctrl+Shift+A
   Editor.Save: Ctrl+S
-Scene - Load scene in single mode: false
