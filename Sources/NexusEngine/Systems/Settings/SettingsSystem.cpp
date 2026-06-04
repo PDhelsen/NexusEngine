@@ -22,9 +22,15 @@ namespace NxEn
 
 	NxFr::Registry<Setting*> SettingsSystem::Settings;
 
-	NxFr::String SettingsSystem::Key(NxFr::StringView Page, NxFr::StringView Name)
+	NxFr::String SettingsSystem::GetKey(NxFr::StringView Page, NxFr::StringView Name)
 	{
 		return Page + "." + Name;
+	}
+
+	void SettingsSystem::GetPageAndName(NxFr::StringView Key, NxFr::StringView& Page, NxFr::StringView& Name)
+	{
+		Page = NxFr::StringUtility::Split(Key, ".", 0);
+		Name = NxFr::StringUtility::Split(Key, ".", 1);
 	}
 
 	void SettingsSystem::LoadSettings() const

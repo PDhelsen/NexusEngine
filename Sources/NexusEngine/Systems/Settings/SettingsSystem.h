@@ -15,7 +15,9 @@ namespace NxEn
 		inline static const NxFr::String Extension = "settings";
 
 		static NxFr::Registry<Setting*> Settings;
-		static NxFr::String Key(NxFr::StringView Page, NxFr::StringView Name);
+
+		static NxFr::String GetKey(NxFr::StringView Page, NxFr::StringView Name);
+		static void GetPageAndName(NxFr::StringView Key, NxFr::StringView& Page, NxFr::StringView& Name);
 
 		void LoadSettings() const;
 		void SaveSettings() const;

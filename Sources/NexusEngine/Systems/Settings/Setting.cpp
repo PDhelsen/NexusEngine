@@ -3,9 +3,11 @@
 
 namespace NxEn
 {
-	Setting::Setting(NxFr::StringView Page, NxFr::StringView Name, SettingMode Mode)
-		: Id(SettingsSystem::Key(Page, Name)), Mode(Mode)
+	Setting::Setting(NxFr::StringView Page, NxFr::StringView Name)
 	{
+		Key = SettingsSystem::GetKey(Page, Name);
+		SettingsSystem::GetPageAndName(Key, this->Page, this->Name);
+		Id = NxFr::StringId(Key);
 	}
 
 	Setting::~Setting()

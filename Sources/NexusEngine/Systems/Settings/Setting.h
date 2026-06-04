@@ -5,20 +5,15 @@
 
 namespace NxEn
 {
-	enum class SettingMode
-	{
-		Var, Seq, Map
-	};
-
-	class NX_ENGINE_API Setting
+	class NX_ENGINE_API Setting : public Object
 	{
 	public:
-		Setting(NxFr::StringView Page, NxFr::StringView Name, SettingMode Mode);
+		Setting(NxFr::StringView Page, NxFr::StringView Name);
 		virtual ~Setting();
 
-		virtual void OnGui(const GUI::Style* Visual = nullptr) = 0;
-		virtual void OnDeserialize(const YAML::Node & Node) = 0;
-		virtual void OnSerialize(YAML::Node& Node) const = 0;
+		virtual void OnDraw() = 0;
+		virtual void OnSerialize(YAML::Node& Node) = 0;
+		virtual void OnDeserialize(const YAML::Node& Node) = 0;
 
 		virtual void Set(NxFr::StringView Value);
 		virtual void Set(uint64 Index, NxFr::StringView Value);
@@ -27,13 +22,15 @@ namespace NxEn
 		virtual NxFr::String Get(uint64 Index);
 		virtual NxFr::String Get(NxFr::StringView Key);
 
-		NxFr::StringView GetId() const { return Id; }
-		NxFr::StringView GetPage() const { return NxFr::StringUtility::Split(Id, ".", 0); }
-		NxFr::StringView GetName() const { return NxFr::StringUtility::Split(Id, ".", 1); }
-		SettingMode GetMode() const { return Mode; }
+		NxFr::GUID GetId() const override { return Id.GetId(); }
+		NxFr::StringView GetKey() const { return Key; }
+		NxFr::StringView GetPage() const { return Page; }
+		NxFr::StringView GetName() const override { return Name; }
 
 	private:
-		const NxFr::String Id;
-		const SettingMode Mode;
+		NxFr::StringId Id;
+		NxFr::String Key;
+		NxFr::StringView Page;
+		NxFr::StringView Name;
 	};
 }

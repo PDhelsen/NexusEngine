@@ -73,7 +73,7 @@ namespace NxEn
 		ImGui::BeginChild("Settings", { 0.0f, 0.0f }, false);
 		for (uint64 Index = 0; Index < Settings[Page].GetCount(); ++Index)
 		{
-			Settings[Page][Index]->OnGui(&Style);
+			Settings[Page][Index]->OnDraw();
 		}
 		ImGui::EndChild();
 	}
