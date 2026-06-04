@@ -3,49 +3,28 @@
 
 namespace NxEn
 {
-	static NxFr::Dictionary<NxFr::StringView, Setting*>& GetSettings()
-	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		static NxFr::Dictionary<NxFr::StringView, Setting*> Settings;
-		return Settings;
-	}
-
 	static Command* CmdSettingsVar = Command::Create("Settings.Var"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Value)
 	{
-		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(Value);
+		SettingsSystem::Settings.TryGet(NxFr::StringView(Id))->Set(Value);
 	}));
 	static Command* CmdSettingsSeq = Command::Create("Settings.Seq"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Index, NxFr::StringView Value)
 	{
-		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(NxFr::StringUtility::FromString<uint64>(Index), Value);
+		SettingsSystem::Settings.TryGet(NxFr::StringView(Id))->Set(NxFr::StringUtility::FromString<uint64>(Index), Value);
 	}));
 	static Command* CmdSettingsMap = Command::Create("Settings.Map"_Sid, "Set setting value", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Id, NxFr::StringView Key, NxFr::StringView Value)
 	{
-		SettingsSystem::GetSetting(NxFr::StringView(Id))->Set(Key, Value);
+		SettingsSystem::Settings.TryGet(NxFr::StringView(Id))->Set(Key, Value);
 	}));
 	static Command* CmdSettingsApply = Command::Create("Settings.Apply"_Sid, "Apply settings", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<SettingsSystem>()->ApplySettings();
 	}));
 
+	NxFr::Registry<Setting*> SettingsSystem::Settings;
+
 	NxFr::String SettingsSystem::Key(NxFr::StringView Page, NxFr::StringView Name)
 	{
 		return Page + "." + Name;
-	}
-
-	Setting* SettingsSystem::GetSetting(NxFr::StringView Id)
-	{
-		return GetSettings()[Id];
-	}
-
-	void SettingsSystem::RegisterSetting(Setting* Instance)
-	{
-		GetSettings().Append(Instance->GetId(), Instance);
-	}
-
-	void SettingsSystem::UnregisterSetting(Setting* Instance)
-	{
-		GetSettings().Remove(Instance->GetId());
 	}
 
 	void SettingsSystem::LoadSettings() const
@@ -107,11 +86,12 @@ namespace NxEn
 
 	NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> SettingsSystem::GetAllSettings() const
 	{
-		NxFr::Dictionary<NxFr::StringView, Setting*>& Settings = GetSettings();
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Result;
 
-		for (auto& [Id, Instance] : Settings)
+		for (auto It = Settings.Begin(); It != Settings.End(); ++It)
 		{
+			Setting* Instance = It->Value;
+
 			NxFr::Dictionary<NxFr::StringView, Setting*>* Page = Result.TryGet(Instance->GetPage());
 			if (!Page)
 			{

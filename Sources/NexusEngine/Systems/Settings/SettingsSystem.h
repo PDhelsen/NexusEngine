@@ -14,10 +14,8 @@ namespace NxEn
 		inline static const NxFr::String Folder = "Settings";
 		inline static const NxFr::String Extension = "settings";
 
+		static NxFr::Registry<Setting*> Settings;
 		static NxFr::String Key(NxFr::StringView Page, NxFr::StringView Name);
-		static Setting* GetSetting(NxFr::StringView Id);
-		static void RegisterSetting(Setting* Instance);
-		static void UnregisterSetting(Setting* Instance);
 
 		void LoadSettings() const;
 		void SaveSettings() const;
