@@ -20,6 +20,9 @@ namespace NxEn
 		static NxFr::String GetKey(NxFr::StringView Page, NxFr::StringView Name);
 		static void GetPageAndName(NxFr::StringView Key, NxFr::StringView& Page, NxFr::StringView& Name);
 
+		SettingsSystem();
+		~SettingsSystem();
+
 		void LoadSettings() const;
 		void SaveSettings() const;
 		void ApplySettings() const;

@@ -13,6 +13,9 @@ namespace NxEn
 	public:
 		NX_OBJECT(JobSystem)
 
+		JobSystem();
+		~JobSystem();
+
 		JobHandle Dispatch(uint64 Count, uint64 Group, NxFr::Delegate<void(uint64)> Work);
 		JobHandle Dispatch(uint64 Count, NxFr::Delegate<void(uint64)> Work);
 		JobHandle Submit(const NxFr::Delegate<void()>& Work);

@@ -33,6 +33,15 @@ namespace NxEn
 		Name = NxFr::StringUtility::Split(Key, ".", 1);
 	}
 
+	SettingsSystem::SettingsSystem()
+		: OnChange()
+	{
+	}
+
+	SettingsSystem::~SettingsSystem()
+	{
+	}
+
 	void SettingsSystem::LoadSettings() const
 	{
 		NxFr::String FolderPath = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);

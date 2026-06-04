@@ -5,6 +5,15 @@ namespace NxEn
 {
 	static NxEn::SettingVar<uint64>* SettingThreadCounts = NxEn::SettingVar<uint64>::Create("Settings", "JobReservedThread", 4);
 
+	JobSystem::JobSystem()
+		: Threads(), Jobs(), Working(0), Running(false), Guard(), Notification()
+	{
+	}
+
+	JobSystem::~JobSystem()
+	{
+	}
+
 	JobHandle JobSystem::Dispatch(uint64 Count, uint64 Group, NxFr::Delegate<void(uint64)> Work)
 	{
 		uint64 Batch = (Count + Group - 1) / Group;
