@@ -73,7 +73,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	void Component::OnSerialize(YAML::Node& Node)
+	void Component::OnSerialize(YAML::Node& Node) const
 	{
 		Node["Type"] = GetObjectType();
 		Node["Id"] = ComponentId;

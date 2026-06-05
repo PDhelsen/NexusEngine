@@ -205,7 +205,7 @@ namespace NxEn
 		}
 	}
 
-	YAML::Node GameObject::Serialize()
+	YAML::Node GameObject::Serialize() const
 	{
 		YAML::Node Node;
 
@@ -371,7 +371,7 @@ namespace NxEn
 		}
 	}
 
-	NxFr::Array<NxFr::GUID> GameObject::GetDependencies()
+	NxFr::Array<NxFr::GUID> GameObject::GetDependencies() const
 	{
 		NxFr::Set<NxFr::GUID> Ids;
 
@@ -726,7 +726,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::EnabledInHierarchy, false);
 	}
 
-	void GameObject::OnSerialize(YAML::Node& Node)
+	void GameObject::OnSerialize(YAML::Node& Node) const
 	{
 		Node["Name"] = Name;
 		Node["Id"] = GameObjectId;
@@ -756,7 +756,7 @@ namespace NxEn
 	{
 	}
 
-	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
+	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
 	}
 

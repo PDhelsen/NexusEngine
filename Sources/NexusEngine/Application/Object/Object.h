@@ -51,14 +51,14 @@ namespace NxEn
 		virtual void Clone(Object* Other) const;
 		virtual void Clone(const Object* Other);
 
-		virtual YAML::Node Serialize();
+		virtual YAML::Node Serialize() const;
 		virtual void Deserialize(const YAML::Node& Node);
-		virtual void Save(NxFr::StringView Path);
+		virtual void Save(NxFr::StringView Path) const;
 		virtual void Load(NxFr::StringView Path);
 		virtual void Unload();
 
 		virtual void PatchReferences();
-		virtual NxFr::Array<NxFr::GUID> GetDependencies();
+		virtual NxFr::Array<NxFr::GUID> GetDependencies() const;
 
 	protected:
 		virtual void OnInitialize();
@@ -69,13 +69,13 @@ namespace NxEn
 		virtual void OnTick(float TimeStep = 0.0f);
 		virtual void OnDraw();
 		virtual void OnClone(const Object& Other);
-		virtual void OnSerialize(YAML::Node& Node);
+		virtual void OnSerialize(YAML::Node& Node) const;
 		virtual void OnDeserialize(const YAML::Node& Node);
-		virtual void OnSave(NxFr::StringView Path);
+		virtual void OnSave(NxFr::StringView Path) const;
 		virtual void OnLoad(NxFr::StringView Path);
 		virtual void OnUnload();
 		virtual void OnPatchReferences();
-		virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids);
+		virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const;
 
 		NX_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;
 		NX_FORCE_INLINE void SetFlag(ObjectFlags Flag, bool Value);

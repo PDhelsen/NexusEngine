@@ -78,7 +78,7 @@ namespace NxEn
 		Items = Instance.Items;
 	}
 
-	void Tags::OnSerialize(YAML::Node& Node)
+	void Tags::OnSerialize(YAML::Node& Node) const
 	{
 		Component::OnSerialize(Node);
 

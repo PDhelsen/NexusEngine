@@ -25,7 +25,7 @@ namespace NxEn
 		Data = YAML::Node();
 	}
 
-	void Table::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
+	void Table::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
 	}
 }

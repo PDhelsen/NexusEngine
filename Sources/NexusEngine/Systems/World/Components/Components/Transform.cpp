@@ -250,7 +250,7 @@ namespace NxEn
 		Scaling = Instance.Scaling;
 	}
 
-	void Transform::OnSerialize(YAML::Node& Node)
+	void Transform::OnSerialize(YAML::Node& Node) const
 	{
 		Component::OnSerialize(Node);
 

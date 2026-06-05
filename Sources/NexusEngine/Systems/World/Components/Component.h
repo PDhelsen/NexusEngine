@@ -31,7 +31,7 @@ namespace NxEn
 		void OnUpdateHierarchy() override;
 		void OnDraw() override;
 		void OnClone(const Object& Other) override;
-		void OnSerialize(YAML::Node& Node) override;
+		void OnSerialize(YAML::Node& Node) const override;
 		void OnDeserialize(const YAML::Node& Node) override;
 		void OnPatchReferences() override;
 

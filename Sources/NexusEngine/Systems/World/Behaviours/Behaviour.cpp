@@ -74,7 +74,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	void Behaviour::OnSerialize(YAML::Node& Node)
+	void Behaviour::OnSerialize(YAML::Node& Node) const
 	{
 		Node["Type"] = GetObjectType();
 		Node["Id"] = BehaviourId;

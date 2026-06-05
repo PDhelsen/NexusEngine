@@ -133,7 +133,7 @@ namespace NxEn
 		OnClone(*Other);
 	}
 
-	YAML::Node Object::Serialize()
+	YAML::Node Object::Serialize() const
 	{
 		YAML::Node Node;
 		OnSerialize(Node);
@@ -145,7 +145,7 @@ namespace NxEn
 		OnDeserialize(Node);
 	}
 
-	void Object::Save(NxFr::StringView Path)
+	void Object::Save(NxFr::StringView Path) const
 	{
 		OnSave(Path);
 	}
@@ -165,7 +165,7 @@ namespace NxEn
 		OnPatchReferences();
 	}
 
-	NxFr::Array<NxFr::GUID> Object::GetDependencies()
+	NxFr::Array<NxFr::GUID> Object::GetDependencies() const
 	{
 		NxFr::Set<NxFr::GUID> Ids;
 		OnGetDependencies(Ids);
@@ -226,7 +226,7 @@ namespace NxEn
 
 	}
 
-	void Object::OnSerialize(YAML::Node& Node)
+	void Object::OnSerialize(YAML::Node& Node) const
 	{
 
 	}
@@ -236,7 +236,7 @@ namespace NxEn
 
 	}
 
-	void Object::OnSave(NxFr::StringView Path)
+	void Object::OnSave(NxFr::StringView Path) const
 	{
 
 	}
@@ -256,7 +256,7 @@ namespace NxEn
 
 	}
 
-	void Object::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
+	void Object::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
 
 	}

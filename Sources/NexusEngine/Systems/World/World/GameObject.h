@@ -26,11 +26,11 @@ namespace NxEn
 		void Tick(float TimeStep = 0.0f) override;
 		void Draw() override;
 
-		YAML::Node Serialize() override;
+		YAML::Node Serialize() const override;
 		void Deserialize(const YAML::Node& Node) override;
 		void Unload() override;
 		void PatchReferences() override;
-		NxFr::Array<NxFr::GUID> GetDependencies() override;
+		NxFr::Array<NxFr::GUID> GetDependencies() const override;
 
 		World* GetWorld() const;
 		NxFr::Handle<GameObject> GetParent() const;
@@ -78,11 +78,11 @@ namespace NxEn
 		void OnUpdateHierarchy() override;
 		void OnDraw() override;
 		void OnClone(const Object& Other) override;
-		void OnSerialize(YAML::Node& Node) override;
+		void OnSerialize(YAML::Node& Node) const override;
 		void OnDeserialize(const YAML::Node& Node) override;
 		void OnUnload() override;
 		void OnPatchReferences() override;
-		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) override;
+		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const override;
 
 		static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
 		static NxFr::Handle<GameObject> GetThis(GameObject* Instance);

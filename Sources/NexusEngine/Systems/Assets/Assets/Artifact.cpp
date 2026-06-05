@@ -33,7 +33,7 @@ namespace NxEn
 		Data = NxFr::Buffer();
 	}
 
-	void Artifact::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids)
+	void Artifact::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
 	}
 }
