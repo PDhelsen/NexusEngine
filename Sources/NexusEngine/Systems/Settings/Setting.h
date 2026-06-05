@@ -1,11 +1,10 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Application/Object/Object.h"
 
 namespace NxEn
 {
-	class NX_ENGINE_API Setting : public Object
+	class NX_ENGINE_API Setting
 	{
 	public:
 		Setting(NxFr::StringView Page, NxFr::StringView Name);
@@ -22,14 +21,13 @@ namespace NxEn
 		virtual NxFr::String Get(uint64 Index);
 		virtual NxFr::String Get(NxFr::StringView Key);
 
-		NxFr::GUID GetId() const override { return Id.GetId(); }
-		NxFr::StringView GetKey() const { return Key; }
+		NxFr::GUID GetId() const { return Id.GetId(); }
+		NxFr::StringView GetKey() const { return Id.GetString(); }
 		NxFr::StringView GetPage() const { return Page; }
-		NxFr::StringView GetName() const override { return Name; }
+		NxFr::StringView GetName() const { return Name; }
 
 	private:
 		NxFr::StringId Id;
-		NxFr::String Key;
 		NxFr::StringView Page;
 		NxFr::StringView Name;
 	};

@@ -5,9 +5,8 @@ namespace NxEn
 {
 	Setting::Setting(NxFr::StringView Page, NxFr::StringView Name)
 	{
-		Key = SettingsSystem::GetKey(Page, Name);
-		SettingsSystem::GetPageAndName(Key, this->Page, this->Name);
-		Id = NxFr::StringId(Key);
+		Id = NxFr::StringId(SettingsSystem::GetKey(Page, Name));
+		SettingsSystem::GetPageAndName(GetKey(), this->Page, this->Name);
 	}
 
 	Setting::~Setting()
