@@ -14,7 +14,7 @@ namespace NxEn
 		inline static const NxFr::String SeparatorCommands = ";";
 		inline static const NxFr::String SeparatorArgs = " ";
 
-		static NxFr::Registry<Command> Commands;
+		static NxFr::Registry<Command>& GetCommands();
 
 		CommandsSystem();
 		~CommandsSystem();

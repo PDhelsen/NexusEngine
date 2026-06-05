@@ -12,7 +12,7 @@ namespace NxEn
 		template<typename... Args>
 		static Command* Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback)
 		{
-			return CommandsSystem::Commands.Register(Id, Command(Id, Tooltip, [=](const NxFr::List<NxFr::StringView>& Arguments)
+			return CommandsSystem::GetCommands().Register(Id, Command(Id, Tooltip, [=](const NxFr::List<NxFr::StringView>& Arguments)
 			{
 				InvokeWithArguments(Callback, Arguments, NxFr::MakeIndexSequence<sizeof...(Args)>{});
 			}));

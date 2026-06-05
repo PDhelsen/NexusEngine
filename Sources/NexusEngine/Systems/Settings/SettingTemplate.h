@@ -57,7 +57,7 @@ namespace NxEn
 		static SettingVar<T>* Create(NxFr::StringView Page, NxFr::StringView Name, const T& Data)
 		{
 			SettingVar<T>* Instance = new SettingVar<T>(Page, Name, Data);
-			SettingsSystem::Settings.Register(Instance->GetId(), Instance);
+			SettingsSystem::GetSettings().Register(Instance->GetId(), Instance);
 			return Instance;
 		}
 
@@ -85,7 +85,7 @@ namespace NxEn
 		static SettingSeq<T>* Create(NxFr::StringView Page, NxFr::StringView Name, const NxFr::List<T>& Data)
 		{
 			SettingSeq<T>* Instance = new SettingSeq<T>(Page, Name, Data);
-			SettingsSystem::Settings.Register(Instance->GetId(), Instance);
+			SettingsSystem::GetSettings().Register(Instance->GetId(), Instance);
 			return Instance;
 		}
 
@@ -113,7 +113,7 @@ namespace NxEn
 		static SettingMap<T>* Create(NxFr::StringView Page, NxFr::StringView Name, const NxFr::Dictionary<NxFr::String, T>& Data)
 		{
 			SettingMap<T>* Instance = new SettingMap<T>(Page, Name, Data);
-			SettingsSystem::Settings.Register(Instance->GetId(), Instance);
+			SettingsSystem::GetSettings().Register(Instance->GetId(), Instance);
 			return Instance;
 		}
 

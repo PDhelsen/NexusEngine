@@ -11,8 +11,6 @@ namespace NxFr
 
 namespace NxEn
 {
-	NxFr::Registry<Command> CommandsSystem::Commands;
-
 	static Command* CmdHelp = Command::Create("Help"_Sid, "Display avalaible commands", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Help();
@@ -22,6 +20,12 @@ namespace NxEn
 	{
 		Application::GetSystem<CommandsSystem>()->File(Path);
 	}));
+
+	NxFr::Registry<Command>& CommandsSystem::GetCommands()
+	{
+		static NxFr::Registry<Command> Commands;
+		return Commands;
+	}
 
 	CommandsSystem::CommandsSystem()
 		: Queue(), Current(nullptr)
@@ -64,6 +68,8 @@ namespace NxEn
 
 	void CommandsSystem::Help()
 	{
+		NxFr::Registry<Command>& Commands = GetCommands();
+
 		uint64 Index = 0;
 		NxFr::Array<Command*> Cmds = Commands.GetCount();
 		for (auto It = Commands.Begin(); It != Commands.End(); ++It)
@@ -97,7 +103,7 @@ namespace NxEn
 
 	void CommandsSystem::OnShutdown()
 	{
-		Commands.Clear();
+		GetCommands().Clear();
 		System::OnShutdown();
 	}
 
@@ -146,6 +152,7 @@ namespace NxEn
 	{
 		NX_INSTUMENT_SCOPE(Info.Id.C());
 
+		NxFr::Registry<Command>& Commands = GetCommands();
 		Command* Instance = Commands.TryGet(Info.Id);
 		if (!Instance)
 		{
