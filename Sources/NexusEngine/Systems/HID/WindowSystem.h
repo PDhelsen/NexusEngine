@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/HID/Screen.h"
 
@@ -27,27 +28,29 @@ namespace NxEn
 
 		WindowSystem& SetWindowVSync(bool VSync);
 		WindowSystem& SetWindowMode(Window::Mode Mode);
-		WindowSystem& SetWindowMonitor(uint8 MonitorIndex);
+		WindowSystem& SetWindowMonitor(uint8 Index);
 		WindowSystem& SetWindowPosition(NxFr::Vector2i Position);
 		WindowSystem& SetWindowResolution(NxFr::Vector2i Resolution);
 		WindowSystem& SetWindowTitle(NxFr::StringView Title);
 		WindowSystem& SetWindowIcon(Image* Icon);
 		WindowSystem& SetCursorMode(Cursor::Mode Mode);
-		WindowSystem& SetCursorIcon(Cursor::Icon Icon, void* IconCustom = nullptr);
+		WindowSystem& SetCursorIcon(Cursor::Icon Icon, const Image* IconCustom = nullptr);
 
 		NxFr::Event<>& GetOnClose() { return OnClose; }
 		NxFr::Event<bool>& GetOnFocus() { return OnFocus; }
 		NxFr::Event<NxFr::Vector2i>& GetOnMove() { return OnMove; }
 		NxFr::Event<NxFr::Vector2i>& GetOnResize() { return OnResize; }
 
+		const NxFr::Array<Monitor>& GetMonitors() const { return Monitors; }
 		const Window& GetWindow() const { return Target; }
-		const Monitor& GetMonitor(uint8 Index = 0) const { return Monitors[Index]; }
+		const Cursor& GetCursor() const { return Pointer; }
 		bool IsFocused() const { return Focused; }
 
 	protected:
 		void OnInitialize() override;
 		void OnShutdown() override;
 		void OnTick(float TimeStep = 0.0f) override;
+
 		void OnFocused(bool Focus);
 		void OnMoved(NxFr::Vector2i Position);
 		void OnResized(NxFr::Vector2i Size);
@@ -58,9 +61,9 @@ namespace NxEn
 		void DestroyWindow();
 		void TickWindow();
 		void UpdateCursor();
+
 		void ApplySettings();
 
-	private:
 		NxFr::Event<> OnClose;
 		NxFr::Event<bool> OnFocus;
 		NxFr::Event<NxFr::Vector2i> OnMove;

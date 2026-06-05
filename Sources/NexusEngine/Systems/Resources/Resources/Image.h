@@ -10,9 +10,9 @@ namespace NxEn
 		Image(NxFr::StringView Path);
 		~Image();
 
-		NxFr::Vector2i GetResolution() { return Resolution; }
-		int32 GetChannels() { return Channels; }
-		void* GetPixels() { return Data; }
+		NxFr::Vector2i GetResolution() const { return Resolution; }
+		int32 GetChannels() const { return Channels; }
+		void* GetPixels() const { return Data; }
 
 	protected:
 		void Save(NxFr::StringView FilePath) override;

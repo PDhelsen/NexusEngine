@@ -76,7 +76,7 @@ namespace NxEn
 	NxFr::Vector2f InputSystem::GetMousePosition(bool Absolute) const
 	{
 		return Absolute ?
-			MousePosition + (NxFr::Vector2f)Window->GetWindow().GetPosition() :
+			MousePosition + (NxFr::Vector2f)Window->GetWindow().Position :
 			MousePosition;
 	}
 

@@ -1,140 +1,143 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/HID/WindowSystem.h"
 
-#include "NexusEngine/Systems/Resources/Resources/Image.h"
-
 #include "NexusEngine/External/Glfw/Glfw.h"
+#include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 namespace NxEn
 {
+	static SettingVar<NxFr::Vector2i>* SettingResolution = SettingVar<NxFr::Vector2i>::Create("Settings", "WindowResolution", NxFr::Vector2i(1920, 1080));
 	static SettingVar<float>* SettingMode = SettingVar<float>::Create("Settings", "WindowMode", 1);
 	static SettingVar<float>* SettingMonitor = SettingVar<float>::Create("Settings", "WindowMonitor", 1);
-	static SettingVar<NxFr::Vector2i>* SettingResolution = SettingVar<NxFr::Vector2i>::Create("Settings", "WindowResolution", NxFr::Vector2i(1920, 1080));
 	static SettingVar<bool>* SettingVSync = SettingVar<bool>::Create("Settings", "WindowVSync", true);
 
 	WindowSystem::WindowSystem()
 		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Pointer(), Focused(true)
 	{
-		Target = Window(Window::Mode::Windowed, 0, NxFr::Vector2i(50), NxFr::Vector2i(1920, 1080), "Nexus", nullptr, true);
-		OnFocus += NxFr::Delegate<void(bool)>(this, &WindowSystem::OnFocused);
-		OnMove += NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnMoved);
-		OnResize += NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnResized);
+		Target.WindowMode = Window::Mode::Windowed;
+		Target.Position = NxFr::Vector2i(50);
+		Target.Resolution = NxFr::Vector2i(1920, 1080);
+		Target.Title = "Nexus";
+		Target.VSync = true;
+
+		OnFocus += { this, & WindowSystem::OnFocused };
+		OnMove += { this, & WindowSystem::OnMoved };
+		OnResize += { this, & WindowSystem::OnResized };
 	}
 
 	WindowSystem::~WindowSystem()
 	{
-		OnFocus -= NxFr::Delegate<void(bool)>(this, &WindowSystem::OnFocused);
-		OnMove -= NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnMoved);
-		OnResize -= NxFr::Delegate<void(NxFr::Vector2i)>(this, &WindowSystem::OnResized);
+		OnFocus.Clear();
+		OnMove.Clear();
+		OnResize.Clear();
 	}
 
 	void WindowSystem::Close()
 	{
-		if (!Target.IsValid())
+		if (Target.Instance)
 		{
-			return;
+			Glfw::CloseWindow(Target.Instance);
 		}
-
-		Glfw::CloseWindow(Target.Instance);
 	}
 
 	void WindowSystem::Minimize()
 	{
-		if (!Target.IsValid())
+		if (Target.Instance)
 		{
-			return;
+			Glfw::MinimizeWindow(Target.Instance);
 		}
-
-		Glfw::MinimizeWindow(Target.Instance);
 	}
 
 	void WindowSystem::Maximize()
 	{
-		if (!Target.IsValid())
+		if (Target.Instance)
 		{
-			return;
+			Glfw::MaximizeWindow(Target.Instance);
 		}
-
-		Glfw::MaximizeWindow(Target.Instance);
 	}
 
 	void WindowSystem::Restore()
 	{
-		if (!Target.IsValid())
+		if (Target.Instance)
 		{
-			return;
+			Glfw::RestoreWindow(Target.Instance);
 		}
-
-		Glfw::RestoreWindow(Target.Instance);
 	}
 
 	void WindowSystem::Show()
 	{
-		if (!Target.IsValid())
+		if (Target.Instance)
 		{
-			return;
+			Glfw::ShowWindow(Target.Instance);
 		}
-
-		Glfw::ShowWindow(Target.Instance);
 	}
 
 	void WindowSystem::Hide()
 	{
-		if (!Target.IsValid())
+		if (Target.Instance)
 		{
-			return;
+			Glfw::HideWindow(Target.Instance);
 		}
-
-		Glfw::HideWindow(Target.Instance);
 	}
 
 	void WindowSystem::Focus()
 	{
-		if (!Target.IsValid())
+		if (Target.Instance)
 		{
-			return;
+			Glfw::FocusWindow(Target.Instance);
 		}
-
-		Glfw::FocusWindow(Target.Instance);
 	}
 
 	WindowSystem& WindowSystem::SetWindowVSync(bool VSync)
 	{
-		if (!Target.IsValid())
+		Target.VSync = VSync;
+		if (Target.Instance)
 		{
-			return *this;
+			Glfw::SetSwapInterval(VSync);
 		}
 
-		Target.VSync = VSync;
-		Glfw::SetSwapInterval(VSync);
 		return *this;
 	}
 
 	// TODO: Window switch mode at runtime
 	WindowSystem& WindowSystem::SetWindowMode(Window::Mode Mode)
 	{
-		NX_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMode has to be called before the window creation and can't be called afterward");
+		if (Target.Instance)
+		{
+			NX_LOG(Error, System, "Window is already created. SetWindowMode has to be called before the window creation and can't be called afterward");
+		}
+		else
+		{
+			Target.WindowMode = Mode;
+		}
 
-		Target.WindowMode = Mode;
 		return *this;
 	}
 
-	WindowSystem& WindowSystem::SetWindowMonitor(uint8 MonitorIndex)
+	WindowSystem& WindowSystem::SetWindowMonitor(uint8 Index)
 	{
-		NX_ASSERT(!Target.Instance, System, "Window is already created. SetWindowMonitor has to be called before the window creation and can't be called afterward");
+		if (Target.Instance)
+		{
+			NX_LOG(Error, System, "Window is already created. SetWindowMonitor has to be called before the window creation and can't be called afterward");
+		}
+		else
+		{
+			Target.Monitor = Index;
+		}
 
-		Target.Monitor = MonitorIndex;
 		return *this;
 	}
+
 	WindowSystem& WindowSystem::SetWindowPosition(NxFr::Vector2i Position)
 	{
 		if (Target.WindowMode != Window::Mode::Windowed)
 		{
+			NX_LOG(Warning, System, "Window is not in window mode editor, SetWindowPosition won't have an impact");
 			return *this;
 		}
 
 		Target.Position = Position;
-		if (Target.IsValid())
+		if (Target.Instance)
 		{
 			Glfw::SetWindowPosition(Target.Instance, Position);
 		}
@@ -150,7 +153,7 @@ namespace NxEn
 		}
 
 		Target.Resolution = Resolution;
-		if (Target.IsValid())
+		if (Target.Instance)
 		{
 			Glfw::SetWindowSize(Target.Instance, Resolution);
 		}
@@ -161,7 +164,7 @@ namespace NxEn
 	WindowSystem& WindowSystem::SetWindowTitle(NxFr::StringView Title)
 	{
 		Target.Title = Title;
-		if (Target.IsValid())
+		if (Target.Instance)
 		{
 			Glfw::SetWindowTitle(Target.Instance, Title);
 		}
@@ -172,10 +175,11 @@ namespace NxEn
 	WindowSystem& WindowSystem::SetWindowIcon(Image* Icon)
 	{
 		Target.Icon = Icon;
-		if (Target.IsValid())
+		if (Target.Instance)
 		{
 			Glfw::SetWindowIcon(Target.Instance,
-				Icon ? Icon->GetResolution() : NxFr::Vector2i::Zero, Icon ? static_cast<uint8*>(Icon->GetPixels()) : nullptr);
+				Icon ? Icon->GetResolution() : NxFr::Vector2i::Zero,
+				Icon ? static_cast<uint8*>(Icon->GetPixels()) : nullptr);
 		}
 
 		return *this;
@@ -189,7 +193,7 @@ namespace NxEn
 		}
 
 		Pointer.CursorMode = Mode;
-		if (Target.IsValid() && Pointer.IsValid())
+		if (Target.Instance && Pointer.Instance)
 		{
 			UpdateCursor();
 		}
@@ -197,7 +201,7 @@ namespace NxEn
 		return *this;
 	}
 
-	WindowSystem& WindowSystem::SetCursorIcon(Cursor::Icon Icon, void* IconCustom)
+	WindowSystem& WindowSystem::SetCursorIcon(Cursor::Icon Icon, const Image* IconCustom)
 	{
 		if (Pointer.CursorIcon == Icon && Pointer.IconCustom == IconCustom)
 		{
@@ -206,7 +210,7 @@ namespace NxEn
 
 		Pointer.CursorIcon = Icon;
 		Pointer.IconCustom = IconCustom;
-		if (Target.IsValid() && Pointer.IsValid())
+		if (Target.Instance && Pointer.Instance)
 		{
 			UpdateCursor();
 		}
@@ -220,10 +224,8 @@ namespace NxEn
 
 		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
 		Application::GetSystem<InputSystem>()->GetOnPoll() += Glfw::PollInput;
-#if !NX_EDITOR
-		SetWindowMode((Window::Mode)((uint8)SettingMode->GetValue()));
-		SetWindowMonitor((uint8)SettingMonitor->GetValue());
-#endif
+
+		ApplySettings();
 
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
@@ -240,6 +242,7 @@ namespace NxEn
 	{
 		System::OnShutdown();
 
+		Application::GetSystem<SettingsSystem>()->GetOnChange() -= { this, &WindowSystem::ApplySettings };
 		Application::GetSystem<InputSystem>()->GetOnPoll() -= Glfw::PollInput;
 
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
@@ -328,7 +331,10 @@ namespace NxEn
 	{
 		NX_INSTUMENT_FUNCTION();
 
-		Pointer.Instance = Glfw::UpdateCursorIcon(Target.Instance, Pointer.Instance, (uint8)Pointer.CursorIcon, Pointer.IconCustom);
+		Pointer.Instance = Glfw::UpdateCursorIcon(Target.Instance, Pointer.Instance,
+			(uint8)Pointer.CursorIcon,
+			Pointer.IconCustom ? Pointer.IconCustom->GetResolution() : NxFr::Vector2i::Zero,
+			Pointer.IconCustom ? static_cast<uint8*>(Pointer.IconCustom->GetPixels()) : nullptr);
 		Glfw::SetCursorMode(Target.Instance, (uint32)Pointer.CursorMode);
 	}
 
@@ -336,5 +342,13 @@ namespace NxEn
 	{
 		SetWindowResolution(SettingResolution->GetValue());
 		SetWindowVSync(SettingVSync->GetValue());
+
+#if !NX_EDITOR
+		if (Target.Instance)
+		{
+			SetWindowMode((Window::Mode)((uint8)SettingMode->GetValue()));
+			SetWindowMonitor((uint8)SettingMonitor->GetValue());
+		}
+#endif
 	}
 }

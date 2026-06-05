@@ -32,7 +32,7 @@ namespace NxEn
 		NxFr::Array<void*> GetMonitors();
 		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate);
 
-		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom);
+		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, NxFr::Vector2i IconResolution = NxFr::Vector2i::Zero, uint8* IconPixels = nullptr);
 		void SetCursorMode(void* Window, uint32 Mode);
 	}
 }

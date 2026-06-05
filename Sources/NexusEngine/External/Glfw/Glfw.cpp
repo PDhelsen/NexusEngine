@@ -430,10 +430,7 @@ namespace NxEn
 
 		void SetWindowIcon(void* Window, NxFr::Vector2i Resolution, uint8* Pixels)
 		{
-			GLFWimage Image;
-			Image.width = Resolution.x;
-			Image.height = Resolution.y;
-			Image.pixels = Pixels;
+			GLFWimage Image = { .width = Resolution.x, .height = Resolution.y, .pixels = Pixels };
 			glfwSetWindowIcon(NX_WINDOW(Window), Pixels ? 1 : 0, Pixels ? &Image : nullptr);
 		}
 
@@ -466,17 +463,19 @@ namespace NxEn
 
 #pragma region Icon
 
-		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, void* IconCustom)
+		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, NxFr::Vector2i IconResolution, uint8* IconPixels)
 		{
 			if (Cursor != nullptr)
 			{
 				glfwDestroyCursor(NX_CURSOR(Cursor));
 			}
 
+			GLFWimage Image = { .width = IconResolution.x, .height = IconResolution.y, .pixels = IconPixels };
+
 			switch (Icon)
 			{
 			case 0: Cursor = nullptr; break;
-			case 1: Cursor = glfwCreateCursor(nullptr, 0, 0); break;
+			case 1: Cursor = glfwCreateCursor(&Image, 0, 0); break;
 			case 2: Cursor = glfwCreateStandardCursor(GLFW_ARROW_CURSOR); break;
 			case 3: Cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR); break;
 			case 4: Cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR); break;
