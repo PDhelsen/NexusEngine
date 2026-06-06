@@ -5,22 +5,21 @@
 
 namespace NxEn
 {
-	Window::Window()
-		: WindowMode(Window::Mode::FullScreen), Monitor(-1), Position(0), Resolution(0), Title(), Icon(nullptr), VSync(false), Instance(nullptr)
-	{
-	}
-
-	Window::~Window()
-	{
-	}
-
-
 	Monitor::Monitor()
 		: Resolution(0), RefreshRate(0), Instance(nullptr)
 	{
 	}
 
 	Monitor::~Monitor()
+	{
+	}
+
+	Window::Window()
+		: WindowMode(Window::Mode::Windowed), Monitor(-1), RefreshRate(0), VSync(false), Position(0), Resolution(0), Title(), Icon(nullptr), Instance(nullptr)
+	{
+	}
+
+	Window::~Window()
 	{
 	}
 

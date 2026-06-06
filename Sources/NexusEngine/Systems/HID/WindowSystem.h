@@ -26,13 +26,14 @@ namespace NxEn
 		void Hide();
 		void Focus();
 
-		WindowSystem& SetWindowVSync(bool VSync);
 		WindowSystem& SetWindowMode(Window::Mode Mode);
-		WindowSystem& SetWindowMonitor(uint8 Index);
+		WindowSystem& SetWindowMonitor(int8 Index);
+		WindowSystem& SetWindowVSync(bool VSync);
+		WindowSystem& SetWindowRefreshRate(uint64 RefreshRate);
 		WindowSystem& SetWindowPosition(NxFr::Vector2i Position);
 		WindowSystem& SetWindowResolution(NxFr::Vector2i Resolution);
 		WindowSystem& SetWindowTitle(NxFr::StringView Title);
-		WindowSystem& SetWindowIcon(Image* Icon);
+		WindowSystem& SetWindowIcon(const Image* Icon);
 		WindowSystem& SetCursorMode(Cursor::Mode Mode);
 		WindowSystem& SetCursorIcon(Cursor::Icon Icon, const Image* IconCustom = nullptr);
 
@@ -60,7 +61,8 @@ namespace NxEn
 		void CreateWindow();
 		void DestroyWindow();
 		void TickWindow();
-		void UpdateCursor();
+		void CreateCursor();
+		void DestroyCursor();
 
 		void ApplySettings();
 

@@ -291,41 +291,36 @@ namespace NxEn
 
 #pragma endregion
 
+#pragma region Monitors
+
+		NxFr::Array<void*> GetMonitors()
+		{
+			int Count;
+			GLFWmonitor** Instances = glfwGetMonitors(&Count);
+
+			NxFr::Array<void*> Monitors(Count);
+			for (uint8 Index = 0; Index < Count; ++Index)
+			{
+				Monitors[Index] = Instances[Index];
+			}
+			return Monitors;
+		}
+
+		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate)
+		{
+			const GLFWvidmode* Mode = glfwGetVideoMode(NX_MONITOR(Monitor));
+			Width = Mode->width;
+			Height = Mode->height;
+			RefreshRate = Mode->refreshRate;
+		}
+
+#pragma endregion
+
 #pragma region Window
 
-		void* CreateWindow(uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Size, NxFr::StringView Title, NxFr::Vector2i IconResolution, uint8* IconPixels, uint8 Interval)
+		void* CreateWindow()
 		{
-			GLFWwindow* Instance = nullptr;
-			switch (Mode)
-			{
-				// Windowed
-				case 0:
-				{
-					Instance = glfwCreateWindow(Size.x, Size.y, Title.C(), nullptr, nullptr);
-					SetWindowPosition(Instance, Position);
-				}
-				break;
-				// Borderless
-				case 1:
-				{
-					GLFWmonitor* Target = NX_MONITOR(Monitor);
-					const GLFWvidmode* VideoMode = glfwGetVideoMode(Target);
-					glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
-					Instance = glfwCreateWindow(VideoMode->width, VideoMode->height, Title.C(), nullptr, nullptr);
-					glfwSetWindowMonitor(Instance, Target, 0, 0, VideoMode->width, VideoMode->height, VideoMode->refreshRate);
-				}
-				break;
-				// FullScreen
-				case 2:
-				{
-					GLFWmonitor* Target = NX_MONITOR(Monitor);
-					const GLFWvidmode* VideoMode = glfwGetVideoMode(Target);
-					glfwWindowHint(GLFW_REFRESH_RATE, VideoMode->refreshRate);
-					Instance = glfwCreateWindow(VideoMode->width, VideoMode->height, Title.C(), Target, nullptr);
-				}
-				break;
-			}
-
+			GLFWwindow* Instance = glfwCreateWindow(1920, 1080, "Nexus", nullptr, nullptr);
 			if (!Instance)
 			{
 				NX_LOG(Error, Default, "Failed to create window");
@@ -333,11 +328,6 @@ namespace NxEn
 			}
 
 			glfwMakeContextCurrent(Instance);
-			SetSwapInterval(Interval);
-			if (IconPixels)
-			{
-				SetWindowIcon(Instance, IconResolution, IconPixels);
-			}
 
 			glfwSetWindowCloseCallback(Instance, CloseCallback);
 			glfwSetWindowPosCallback(Instance, MoveCallback);
@@ -413,6 +403,33 @@ namespace NxEn
 			glfwFocusWindow(NX_WINDOW(Window));
 		}
 
+		void SetWindowMode(void* Window, uint8 Mode, void* Monitor, NxFr::Vector2i Position, NxFr::Vector2i Resolution, uint64 RefreshRate)
+		{
+			switch (Mode)
+			{
+				case 0: // Windowed
+				{
+					glfwSetWindowAttrib(NX_WINDOW(Window), GLFW_DECORATED, GLFW_TRUE);
+					glfwSetWindowMonitor(NX_WINDOW(Window), nullptr, Position.x, Position.y, Resolution.x, Resolution.y, 0);
+				}
+				break;
+				case 1: // Borderless
+				{
+					const GLFWvidmode* Video = glfwGetVideoMode(NX_MONITOR(Monitor));
+					glfwGetMonitorPos(NX_MONITOR(Monitor), &Position.x, &Position.y);
+					glfwSetWindowAttrib(NX_WINDOW(Window), GLFW_DECORATED, GLFW_FALSE);
+					glfwSetWindowMonitor(NX_WINDOW(Window), nullptr, Position.x, Position.y, Video->width, Video->height, 0);
+				}
+				break;
+				case 2: // FullScreen
+				{
+					const GLFWvidmode* Video = glfwGetVideoMode(NX_MONITOR(Monitor));
+					glfwSetWindowMonitor(NX_WINDOW(Window), NX_MONITOR(Monitor), 0, 0, Video->width, Video->height, RefreshRate == 0 ? Video->refreshRate : RefreshRate);
+				}
+				break;
+			}
+		}
+
 		void SetWindowPosition(void* Window, NxFr::Vector2i Position)
 		{
 			glfwSetWindowPos(NX_WINDOW(Window), Position.x, Position.y);
@@ -436,40 +453,11 @@ namespace NxEn
 
 #pragma endregion
 
-#pragma region Monitors
-
-		NxFr::Array<void*> GetMonitors()
-		{
-			int Count;
-			GLFWmonitor** Instances = glfwGetMonitors(&Count);
-
-			NxFr::Array<void*> Monitors(Count);
-			for (uint8 Index = 0; Index < Count; ++Index)
-			{
-				Monitors[Index] = Instances[Index];
-			}
-			return Monitors;
-		}
-
-		void GetMonitorSettings(void* Monitor, int32& Width, int32& Height, int32& RefreshRate)
-		{
-			const GLFWvidmode* Mode = glfwGetVideoMode(NX_MONITOR(Monitor));
-			Width = Mode->width;
-			Height = Mode->height;
-			RefreshRate = Mode->refreshRate;
-		}
-
-#pragma endregion
-
 #pragma region Icon
 
-		void* UpdateCursorIcon(void* Window, void* Cursor, uint8 Icon, NxFr::Vector2i IconResolution, uint8* IconPixels)
+		void* CreateCursor(void* Window, uint8 Icon, NxFr::Vector2i IconResolution, uint8* IconPixels)
 		{
-			if (Cursor != nullptr)
-			{
-				glfwDestroyCursor(NX_CURSOR(Cursor));
-			}
-
+			void* Cursor = nullptr;
 			GLFWimage Image = { .width = IconResolution.x, .height = IconResolution.y, .pixels = IconPixels };
 
 			switch (Icon)
@@ -486,6 +474,11 @@ namespace NxEn
 
 			glfwSetCursor(NX_WINDOW(Window), NX_CURSOR(Cursor));
 			return Cursor;
+		}
+
+		void DestroyCursor(void* Cursor)
+		{
+			glfwDestroyCursor(NX_CURSOR(Cursor));
 		}
 
 		void SetCursorMode(void* Window, uint32 Mode)

@@ -36,11 +36,12 @@ namespace NxEn
 
 		Mode WindowMode;
 		int8 Monitor;
+		uint64 RefreshRate;
+		bool VSync;
 		NxFr::Vector2i Position;
 		NxFr::Vector2i Resolution;
 		NxFr::String Title;
 		const Image* Icon;
-		bool VSync;
 
 	private:
 		void* Instance;
