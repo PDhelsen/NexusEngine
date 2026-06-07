@@ -143,7 +143,6 @@ namespace NxEd
 	void NexusEditorApplication::ApplySettings()
 	{
 		auto& Shortcuts = SettingShortcuts->GetValue();
-		auto& Mapping = Inputs->GetMapping();
 
 		for (auto& [Command, Shortcut] : Shortcuts)
 		{
@@ -166,7 +165,7 @@ namespace NxEd
 			}
 
 			NxEn::Input::Action Action(Button, State, Modifiers, [=]() { NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute(Command); });
-			Mapping.AppendOrAssign(NxFr::StringId(Command), Action);
+			Inputs->Mapping.AppendOrAssign(NxFr::StringId(Command), Action);
 		}
 	}
 }

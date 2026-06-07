@@ -214,25 +214,24 @@ namespace NxEn
 
 		for (auto& [Id, Schema] : Schemas)
 		{
-			for (auto& [Tag, Action] : Schema->GetMapping())
+			for (auto& [Tag, Action] : Schema->Mapping)
 			{
-				const Input::Trigger& Trigger = Action.GetTrigger();
-				if (Trigger.GetModifiers() != Input::Modifier::Ignore && Trigger.GetModifiers() != Modifiers)
+				if (Action.Input.Modifiers != Input::Modifier::Ignore && Action.Input.Modifiers != Modifiers)
 				{
 					continue;
 				}
 
 				bool Invoke = false;
-				switch (Trigger.GetMode())
+				switch (Action.Input.Bindings.GetMode())
 				{
-				case Input::Mode::Button: Invoke = GetButton(Trigger.GetInputButton()) == Trigger.GetInputButtonState(); break;
-				case Input::Mode::Axis: Invoke = GetAxis(Trigger.GetInputAxis()) != 0.0f; break;
-				case Input::Mode::Mouse: Invoke = NxFr::ShapeUtility::Contains(Trigger.GetInputMouse(), MousePosition); break;
+				case Input::Mode::Button: Invoke = GetButton(Action.Input.Bindings.GetButton().Key) == Action.Input.Bindings.GetButton().Target; break;
+				case Input::Mode::Axis: Invoke = GetAxis(Action.Input.Bindings.GetAxis()) != 0.0f; break;
+				case Input::Mode::Mouse: Invoke = NxFr::ShapeUtility::Contains(Action.Input.Bindings.GetMouse(), MousePosition); break;
 				}
 
 				if (Invoke)
 				{
-					Action.GetCallback().Invoke();
+					Action.Callback.Invoke();
 				}
 			}
 		}

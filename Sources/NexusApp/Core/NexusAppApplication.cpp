@@ -23,13 +23,10 @@ namespace NxAp
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event HID - App", [&]()
 		{
 			Inputs = new NxEn::Input::Schema();
-			Inputs->GetMapping().Append("Window"_Sid,
+			Inputs->Mapping.Append("Window"_Sid,
 				NxEn::Input::Action(
-					NxEn::Input::Button::Equal,
-					NxEn::Input::State::Released,
-					NxEn::Input::Modifier::None,
-					{ this, &NexusAppApplication::ShowWindow }
-				)
+					{ NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None },
+					{ this, &NexusAppApplication::ShowWindow })
 			);
 			GetSystem<NxEn::InputSystem>()->AddSchema("App"_Sid, Inputs);
 		});

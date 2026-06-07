@@ -173,13 +173,15 @@ namespace NxEn
 	}
 }
 
+#pragma region Enum Utils
+
 NX_FLAG(NxEn::Input::Modifier, uint8);
 
 NX_FLAG_STRING(NxEn::Input::Modifier	, 4										, "Ignore", "Ctrl", "Shift", "Alt");
-NX_ENUM_STRING(NxEn::Input::State	, (uint64)NxEn::Input::State::COUNT		, "Up", "Pressed", "Down", "Released");
+NX_ENUM_STRING(NxEn::Input::State		, (uint64)NxEn::Input::State::COUNT		, "Up", "Pressed", "Down", "Released");
 NX_ENUM_STRING(NxEn::Input::Mode		, (uint64)NxEn::Input::Mode::COUNT		, "Button", "Axis", "Mouse");
 NX_ENUM_STRING(NxEn::Input::Axis		, (uint64)NxEn::Input::Axis::COUNT		, "MouseX", "MouseY", "ScrollX", "ScrollY");
-NX_ENUM_STRING(NxEn::Input::Button	, (uint64)NxEn::Input::Button::COUNT	,
+NX_ENUM_STRING(NxEn::Input::Button		, (uint64)NxEn::Input::Button::COUNT	,
 	"Invalid",
 	"CapsLock",
 	"ScrollLock",
@@ -293,90 +295,82 @@ NX_ENUM_STRING(NxEn::Input::Button	, (uint64)NxEn::Input::Button::COUNT	,
 	"Mouse5",
 	);
 
+#pragma endregion
+
 namespace NxEn
 {
 	namespace Input
 	{
-		union NX_ENGINE_API Binding
+		struct NX_ENGINE_API ButtonState
 		{
-			struct BindingButton
-			{
-				BindingButton(Button ButtonInput, State ButtonState);
+			ButtonState(Button Key, State Target);
 
-				Button ButtonInput;
-				State ButtonState;
-			};
+			Button Key;
+			State Target;
+		};
 
-			Binding(Button ButtonInput, State ButtonState);
-			Binding(Axis InputAxis);
-			Binding(NxFr::Rectangle InputMouse);
+		struct NX_ENGINE_API Binding
+		{
+		public:
+			Binding(Button ButtonKey, State ButtonTarget);
+			Binding(Axis AxisValue);
+			Binding(NxFr::Rectangle MouseValue);
+			Binding(const Binding& Other);
 			~Binding();
 
-			Binding& operator=(BindingButton Other);
-			Binding& operator=(Axis Other);
-			Binding& operator=(NxFr::Rectangle Other);
+			Binding& operator=(const Binding& Other);
 
-			BindingButton InputButton;
-			Axis InputAxis;
-			NxFr::Rectangle InputMouse;
+			ButtonState& GetButton();
+			const ButtonState& GetButton() const;
+			void SetButton(ButtonState ButtonValue);
+			Axis& GetAxis();
+			const Axis& GetAxis() const;
+			void SetAxis(Axis AxisValue);
+			NxFr::Rectangle& GetMouse();
+			const NxFr::Rectangle& GetMouse() const;
+			void SetMouse(NxFr::Rectangle MouseValue);
+
+			Mode GetMode() const { return Mode; }
+
+		private:
+			Mode Mode;
+			union 
+			{
+				ButtonState Btn;
+				Axis Axs;
+				NxFr::Rectangle Mse;
+			} Value;
 		};
 
 		struct NX_ENGINE_API Trigger
 		{
-		public:
-			Trigger(Button ButtonInput, State ButtonTarget, Modifier Modifiers = Modifier::Ignore);
-			Trigger(Axis AxisInput, Modifier Modifiers = Modifier::Ignore);
-			Trigger(NxFr::Rectangle MouseInput, Modifier Modifiers = Modifier::Ignore);
-			Trigger(const Trigger& Other);
+			Trigger(Button ButtonKey, State ButtonTarget, Modifier Modifiers = Modifier::Ignore);
+			Trigger(Axis AxisValue, Modifier Modifiers = Modifier::Ignore);
+			Trigger(NxFr::Rectangle MouseValue, Modifier Modifiers = Modifier::Ignore);
 			~Trigger();
 
-			Trigger& operator=(const Trigger& Other);
-
-			Mode GetMode() const;
-			Modifier GetModifiers() const;
-
-			Button GetInputButton() const;
-			State GetInputButtonState() const;
-			Axis GetInputAxis() const;
-			NxFr::Rectangle GetInputMouse() const;
-
-
-		private:
-			Mode Mode;
+			Binding Bindings;
 			Modifier Modifiers;
-			Binding Input;
 		};
 
 		struct NX_ENGINE_API Action
 		{
-		public:
+			Action(Button ButtonKey, State ButtonTarget, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
+			Action(Axis AxisValue, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
+			Action(NxFr::Rectangle MouseValue, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
 			Action(const Trigger& Input, const NxFr::Delegate<void()>& Callback);
-			Action(Button ButtonInput, State ButtonTarget, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
-			Action(Axis AxisInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
-			Action(NxFr::Rectangle MouseInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback);
-			Action(const Action& Other);
 			~Action();
 
-			Action& operator=(const Action& Other);
-
-			const Trigger& GetTrigger() const;
-			const NxFr::Delegate<void()>& GetCallback() const;
-
-		private:
 			Trigger Input;
 			NxFr::Delegate<void()> Callback;
 		};
 
 		struct NX_ENGINE_API Schema
 		{
-		public:
 			Schema();
 			~Schema();
 
-			NxFr::Dictionary<NxFr::StringId, Action>& GetMapping();
-
-		private:
-			NxFr::Dictionary<NxFr::StringId, Action> Actions;
+			NxFr::Dictionary<NxFr::StringId, Action> Mapping;
 		};
 	}
 }

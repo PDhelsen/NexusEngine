@@ -5,124 +5,143 @@ namespace NxEn
 {
 	namespace Input
 	{
-		Binding::BindingButton::BindingButton(Button ButtonInput, State ButtonState)
-			: ButtonInput(ButtonInput), ButtonState(ButtonState)
+		ButtonState::ButtonState(Button Key, State Target)
+			: Key(Key), Target(Target)
 		{
 		}
 
-		Binding::Binding(Button ButtonInput, State ButtonState)
-			: InputButton(ButtonInput, ButtonState)
+		Binding::Binding(Button ButtonKey, State ButtonTarget)
+			: Mode(Mode::Button), Value({ Button::Invalid, State::COUNT })
 		{
+			Value.Btn = { ButtonKey, ButtonTarget };
 		}
 
-		Binding::Binding(Axis InputAxis)
-			: InputAxis(InputAxis)
+		Binding::Binding(Axis AxisValue)
+			: Mode(Mode::Axis), Value({ Button::Invalid, State::COUNT })
 		{
+			Value.Axs = AxisValue;
 		}
 
-		Binding::Binding(NxFr::Rectangle InputMouse)
-			: InputMouse(InputMouse)
+		Binding::Binding(NxFr::Rectangle MouseValue)
+			: Mode(Mode::Mouse), Value({ Button::Invalid, State::COUNT })
 		{
+			Value.Mse = MouseValue;
+		}
+
+		Binding::Binding(const Binding& Other)
+			: Mode(Other.Mode), Value({ Button::Invalid, State::COUNT })
+		{
+			switch (Mode)
+			{
+			case NxEn::Input::Mode::Button: Value.Btn = Other.Value.Btn; break;
+			case NxEn::Input::Mode::Axis: Value.Axs = Other.Value.Axs; break;
+			case NxEn::Input::Mode::Mouse:Value.Mse = Other.Value.Mse; break;
+			}
 		}
 
 		Binding::~Binding()
 		{
 		}
 
-		Binding& Binding::operator=(BindingButton Other)
+		Binding& Binding::operator=(const Binding& Other)
 		{
-			InputButton = Other;
-			return *this;
-		}
-
-		Binding& Binding::operator=(Axis Other)
-		{
-			InputAxis = Other;
-			return *this;
-		}
-
-		Binding& Binding::operator=(NxFr::Rectangle Other)
-		{
-			InputMouse = Other;
-			return *this;
-		}
-
-		Trigger::Trigger(Button ButtonInput, State ButtonTarget, Modifier Modifiers)
-			: Mode(Mode::Button), Modifiers(Modifiers), Input(ButtonInput, ButtonTarget)
-		{
-		}
-
-		Trigger::Trigger(Axis AxisInput, Modifier Modifiers)
-			: Mode(Mode::Axis), Modifiers(Modifiers), Input(AxisInput)
-		{
-		}
-
-		Trigger::Trigger(NxFr::Rectangle MouseInput, Modifier Modifiers)
-			: Mode(Mode::Mouse), Modifiers(Modifiers), Input(MouseInput)
-		{
-		}
-
-		Trigger::Trigger(const Trigger& Other)
-			: Mode(Other.Mode), Modifiers(Other.Modifiers), Input((Axis)0)
-		{
+			Mode = Other.Mode;
 			switch (Mode)
 			{
-			case NxEn::Input::Mode::Button: Input.InputButton = Other.Input.InputButton; break;
-			case NxEn::Input::Mode::Axis: Input.InputAxis = Other.Input.InputAxis; break;
-			case NxEn::Input::Mode::Mouse: Input.InputMouse = Other.Input.InputMouse; break;
+			case NxEn::Input::Mode::Button: Value.Btn = Other.Value.Btn; break;
+			case NxEn::Input::Mode::Axis: Value.Axs = Other.Value.Axs; break;
+			case NxEn::Input::Mode::Mouse:Value.Mse = Other.Value.Mse; break;
 			}
+
+			return *this;
+		}
+
+		ButtonState& Binding::GetButton()
+		{
+			NX_ASSERT(Mode == Mode::Button, Default, "Binding is not in Button mode");
+			return Value.Btn;
+		}
+
+		const ButtonState& Binding::GetButton() const
+		{
+			NX_ASSERT(Mode == Mode::Button, Default, "Binding is not in Button mode");
+			return Value.Btn;
+		}
+
+		void Binding::SetButton(ButtonState ButtonValue)
+		{
+			Mode = Mode::Button;
+			Value.Btn = ButtonValue;
+		}
+
+		Axis& Binding::GetAxis()
+		{
+			NX_ASSERT(Mode == Mode::Axis, Default, "Binding is not in Axis mode");
+			return Value.Axs;
+		}
+
+		const Axis& Binding::GetAxis() const
+		{
+			NX_ASSERT(Mode == Mode::Axis, Default, "Binding is not in Axis mode");
+			return Value.Axs;
+		}
+
+		void Binding::SetAxis(Axis AxisValue)
+		{
+			Mode = Mode::Axis;
+			Value.Axs = AxisValue;
+		}
+
+		NxFr::Rectangle& Binding::GetMouse()
+		{
+			NX_ASSERT(Mode == Mode::Mouse, Default, "Binding is not in Mouse mode");
+			return Value.Mse;
+		}
+
+		const NxFr::Rectangle& Binding::GetMouse() const
+		{
+			NX_ASSERT(Mode == Mode::Mouse, Default, "Binding is not in Mouse mode");
+			return Value.Mse;
+		}
+
+		void Binding::SetMouse(NxFr::Rectangle MouseValue)
+		{
+			Mode = Mode::Mouse;
+			Value.Mse = MouseValue;
+		}
+
+		Trigger::Trigger(Button ButtonKey, State ButtonTarget, Modifier Modifiers)
+			: Bindings(ButtonKey, ButtonTarget), Modifiers(Modifiers)
+		{
+		}
+
+		Trigger::Trigger(Axis AxisValue, Modifier Modifiers)
+			: Bindings(AxisValue), Modifiers(Modifiers)
+		{
+		}
+
+		Trigger::Trigger(NxFr::Rectangle MouseValue, Modifier Modifiers)
+			: Bindings(MouseValue), Modifiers(Modifiers)
+		{
 		}
 
 		Trigger::~Trigger()
 		{
 		}
 
-		Trigger& Trigger::operator=(const Trigger& Other)
+		Action::Action(Button ButtonKey, State ButtonTarget, Modifier Modifiers, const NxFr::Delegate<void()>& Callback)
+			: Input(ButtonKey, ButtonTarget, Modifiers), Callback(Callback)
 		{
-			Mode = Other.Mode;
-			Modifiers = Other.Modifiers;
-			switch (Mode)
-			{
-			case NxEn::Input::Mode::Button: Input.InputButton = Other.Input.InputButton; break;
-			case NxEn::Input::Mode::Axis: Input.InputAxis = Other.Input.InputAxis; break;
-			case NxEn::Input::Mode::Mouse: Input.InputMouse = Other.Input.InputMouse; break;
-			}
-
-			return *this;
 		}
 
-		Mode Trigger::GetMode() const
+		Action::Action(Axis AxisValue, Modifier Modifiers, const NxFr::Delegate<void()>& Callback)
+			: Input(AxisValue, Modifiers), Callback(Callback)
 		{
-			return Mode;
 		}
 
-		Modifier Trigger::GetModifiers() const
+		Action::Action(NxFr::Rectangle MouseValue, Modifier Modifiers, const NxFr::Delegate<void()>& Callback)
+			: Input(MouseValue, Modifiers), Callback(Callback)
 		{
-			return Modifiers;
-		}
-
-		Button Trigger::GetInputButton() const
-		{
-			NX_ASSERT(Mode == Mode::Button, Default, "Input mode is not set to button");
-			return Input.InputButton.ButtonInput;
-		}
-
-		State Trigger::GetInputButtonState() const
-		{
-			NX_ASSERT(Mode == Mode::Button, Default, "Input mode is not set to button");
-			return Input.InputButton.ButtonState;
-		}
-
-		Axis Trigger::GetInputAxis() const
-		{
-			NX_ASSERT(Mode == Mode::Axis, Default, "Input mode is not set to axis");
-			return Input.InputAxis;
-		}
-
-		NxFr::Rectangle Trigger::GetInputMouse() const
-		{
-			NX_ASSERT(Mode == Mode::Mouse, Default, "Input mode is not set to mouse");
-			return Input.InputMouse;
 		}
 
 		Action::Action(const Trigger& Input, const NxFr::Delegate<void()>& Callback)
@@ -130,59 +149,17 @@ namespace NxEn
 		{
 		}
 
-		Action::Action(Button ButtonInput, State ButtonTarget, Modifier Modifiers, const NxFr::Delegate<void()>& Callback)
-			: Input(ButtonInput, ButtonTarget, Modifiers), Callback(Callback)
-		{
-		}
-
-		Action::Action(Axis AxisInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback)
-			: Input(AxisInput, Modifiers), Callback(Callback)
-		{
-		}
-
-		Action::Action(NxFr::Rectangle MouseInput, Modifier Modifiers, const NxFr::Delegate<void()>& Callback)
-			: Input(MouseInput, Modifiers), Callback(Callback)
-		{
-		}
-
-		Action::Action(const Action& Other)
-			: Input(Other.Input), Callback(Other.Callback)
-		{
-		}
-
 		Action::~Action()
 		{
 		}
 
-		Action& Action::operator=(const Action& Other)
-		{
-			Input = Other.Input;
-			Callback = Other.Callback;
-			return *this;
-		}
-
-		const Trigger& Action::GetTrigger() const
-		{
-			return Input;
-		}
-
-		const NxFr::Delegate<void()>& Action::GetCallback() const
-		{
-			return Callback;
-		}
-
 		Schema::Schema()
-			: Actions()
+			: Mapping()
 		{
 		}
 
 		Schema::~Schema()
 		{
-		}
-
-		NxFr::Dictionary<NxFr::StringId, Action>& Schema::GetMapping()
-		{
-			return Actions;
-		}
+		}	
 	}
 }
