@@ -59,7 +59,7 @@ namespace NxEn
 			GetSystem<InputSystem>()->AddSchema("Engine"_Sid, Inputs);
 
 			WindowSystem* Window = GetSystem<WindowSystem>();
-			Window->GetOnClose() += { (Application*)this, & Application::Quit };
+			Window->GetOnClose() += { (Application*)this, &Application::Quit };
 			Window->SetWindowTitle(GetProject().GetName());
 		});
 

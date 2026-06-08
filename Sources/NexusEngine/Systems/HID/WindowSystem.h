@@ -38,9 +38,9 @@ namespace NxEn
 		WindowSystem& SetCursorIcon(Cursor::Icon Icon, const Image* IconCustom = nullptr);
 
 		NxFr::Event<>& GetOnClose() { return OnClose; }
-		NxFr::Event<bool>& GetOnFocus() { return OnFocus; }
 		NxFr::Event<NxFr::Vector2i>& GetOnMove() { return OnMove; }
 		NxFr::Event<NxFr::Vector2i>& GetOnResize() { return OnResize; }
+		NxFr::Event<bool>& GetOnFocus() { return OnFocus; }
 
 		const NxFr::Array<Monitor>& GetMonitors() const { return Monitors; }
 		const Window& GetWindow() const { return Target; }
@@ -52,9 +52,9 @@ namespace NxEn
 		void OnShutdown() override;
 		void OnTick(float TimeStep = 0.0f) override;
 
-		void OnFocused(bool Focus);
 		void OnMoved(NxFr::Vector2i Position);
 		void OnResized(NxFr::Vector2i Size);
+		void OnFocused(bool Focus);
 
 	private:
 		void FetchMonitors();
@@ -67,9 +67,9 @@ namespace NxEn
 		void ApplySettings();
 
 		NxFr::Event<> OnClose;
-		NxFr::Event<bool> OnFocus;
 		NxFr::Event<NxFr::Vector2i> OnMove;
 		NxFr::Event<NxFr::Vector2i> OnResize;
+		NxFr::Event<bool> OnFocus;
 
 		NxFr::Array<Monitor> Monitors;
 		Window Target;

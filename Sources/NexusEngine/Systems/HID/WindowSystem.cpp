@@ -12,7 +12,7 @@ namespace NxEn
 	static SettingVar<bool>* SettingVSync = SettingVar<bool>::Create("Settings", "WindowVSync", true);
 
 	WindowSystem::WindowSystem()
-		: OnClose(), OnFocus(), OnMove(), OnResize(), Monitors(), Target(), Pointer(), Focused(true)
+		: OnClose(), OnMove(), OnResize(), OnFocus(), Monitors(), Target(), Pointer(), Focused(true)
 	{
 		Target.WindowMode = Window::Mode::Windowed;
 		Target.Monitor = -1;
@@ -322,11 +322,6 @@ namespace NxEn
 		TickWindow();
 	}
 
-	void WindowSystem::OnFocused(bool Focus)
-	{
-		Focused = Focus;
-	}
-
 	void WindowSystem::OnMoved(NxFr::Vector2i Position)
 	{
 		Target.Position = Position;
@@ -335,6 +330,11 @@ namespace NxEn
 	void WindowSystem::OnResized(NxFr::Vector2i Size)
 	{
 		Target.Resolution = Size;
+	}
+
+	void WindowSystem::OnFocused(bool Focus)
+	{
+		Focused = Focus;
 	}
 
 	void WindowSystem::FetchMonitors()
