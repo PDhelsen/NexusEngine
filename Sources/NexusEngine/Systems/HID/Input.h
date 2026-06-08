@@ -309,6 +309,14 @@ namespace NxEn
 			State Target;
 		};
 
+		struct NX_ENGINE_API MouseState
+		{
+			MouseState(NxFr::Vector2i Position, NxFr::Vector2i Delta);
+
+			NxFr::Vector2i Position;
+			NxFr::Vector2i Delta;
+		};
+
 		struct NX_ENGINE_API Binding
 		{
 		public:

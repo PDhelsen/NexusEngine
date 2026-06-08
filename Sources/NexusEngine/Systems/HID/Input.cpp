@@ -10,6 +10,11 @@ namespace NxEn
 		{
 		}
 
+		MouseState::MouseState(NxFr::Vector2i Position, NxFr::Vector2i Delta)
+			: Position(Position), Delta(Delta)
+		{
+		}
+
 		Binding::Binding(Button ButtonKey, State ButtonTarget)
 			: Mode(Mode::Button), Value({ Button::Invalid, State::COUNT })
 		{
@@ -160,6 +165,6 @@ namespace NxEn
 
 		Schema::~Schema()
 		{
-		}	
+		}
 	}
 }

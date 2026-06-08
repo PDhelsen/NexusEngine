@@ -62,8 +62,7 @@ namespace NxEn
 
 		NxFr::Array<Input::State, (uint64)Input::Button::COUNT> Buttons;
 		NxFr::Array<float, (uint64)Input::Axis::COUNT> Axises;
-		NxFr::Vector2i MousePosition;
-		NxFr::Vector2i MouseDelta;
+		Input::MouseState Mouse;
 		NxEn::Input::Modifier Modifiers;
 
 		NxFr::Dictionary<NxFr::StringId, Input::Schema*> Schemas;
