@@ -179,7 +179,7 @@ namespace NxEn
 
 		static void KeyButtonCallback(GLFWwindow* Window, int KeyCode, int ScanCode, int Action, int Mods)
 		{
-			if (!Windows->IsFocused())
+			if (!Windows->IsFocused() || ImGui::GetIO().WantTextInput)
 			{
 				return;
 			}
@@ -213,7 +213,7 @@ namespace NxEn
 
 		static void MouseCallback(GLFWwindow* Window, double X, double Y)
 		{
-			if (!Windows->IsFocused())
+			if (!Windows->IsFocused() || !Inputs->IsFocused())
 			{
 				return;
 			}
@@ -223,7 +223,7 @@ namespace NxEn
 
 		static void ScrollCallback(GLFWwindow* Window, double X, double Y)
 		{
-			if (!Windows->IsFocused())
+			if (!Windows->IsFocused() || !Inputs->IsFocused())
 			{
 				return;
 			}
@@ -234,12 +234,12 @@ namespace NxEn
 
 		static void WindowFocusCallback(GLFWwindow* Window, int Focused)
 		{
-			Windows->GetOnFocus().Invoke(Focused > 0);
+			Windows->GetOnFocus().Invoke(Focused == GLFW_TRUE);
 		}
 
-		static void MouseFocusCallback(GLFWwindow* Window, int Entered)
+		static void MouseFocusCallback(GLFWwindow* Window, int Focused)
 		{
-			Inputs->GetOnFocusChange().Invoke(Entered);
+			Inputs->GetOnFocusChange().Invoke(Focused == GLFW_TRUE);
 		}
 
 #pragma endregion

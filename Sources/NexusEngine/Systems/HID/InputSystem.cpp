@@ -136,38 +136,22 @@ namespace NxEn
 
 	void InputSystem::OnButtonChanged(Input::Button Button, Input::State State)
 	{
-		if (IsWriting())
-		{
-			return;
-		}
-
 		Buttons[(uint64)Button] = State;
 		DirtyFlagButtons = true;
 	}
 
 	void InputSystem::OnAxisChanged(Input::Axis Axis, float Delta)
 	{
-		if (!IsFocused())
-		{
-			return;
-		}
-
 		Axises[(uint64)Axis] = Delta;
 		DirtyFlagAxises = true;
 	}
 
 	void InputSystem::OnMouseChanged(NxFr::Vector2i Position)
 	{
-		if (!IsFocused())
-		{
-			return;
-		}
-
 		MouseDelta = Position - MousePosition;
 		Axises[(uint64)Input::Axis::MouseX] = MouseDelta.x;
 		Axises[(uint64)Input::Axis::MouseY] = MouseDelta.y;
 		MousePosition = Position;
-
 		DirtyFlagAxises = true;
 	}
 
@@ -187,15 +171,10 @@ namespace NxEn
 		{
 			switch (Buttons[Index])
 			{
-				case Input::State::Up:
-				case Input::State::Released:
-					Buttons[Index] = Input::State::Up;
-				break;
-				case Input::State::Down:
-				case Input::State::Pressed:
-					Buttons[Index] = Input::State::Down;
-					Buttons[Index] = Input::State::Down;
-				break;
+				case Input::State::Up: break;
+				case Input::State::Down: break;
+				case Input::State::Released: Buttons[Index] = Input::State::Up; break;
+				case Input::State::Pressed: Buttons[Index] = Input::State::Down; break;
 			}
 		}
 	}
