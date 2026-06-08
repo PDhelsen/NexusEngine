@@ -20,6 +20,7 @@ namespace NxEn
 
 		bool CheckTrigger(const Input::Trigger& Trigger) const;
 		bool CheckButton(Input::Button Button, Input::State State = Input::State::Released) const;
+		bool CheckDoubleClick(Input::Button Button) const;
 		bool CheckAxis(Input::Axis Axis) const;
 		bool CheckMouse() const;
 		bool CheckModifier(Input::Modifier Modifier) const;
@@ -63,6 +64,7 @@ namespace NxEn
 		NxFr::Array<Input::State, (uint64)Input::Button::COUNT> Buttons;
 		NxFr::Array<float, (uint64)Input::Axis::COUNT> Axises;
 		Input::MouseState Mouse;
+		Input::ClickState Click;
 		NxEn::Input::Modifier Modifiers;
 
 		NxFr::Dictionary<NxFr::StringId, Input::Schema*> Schemas;

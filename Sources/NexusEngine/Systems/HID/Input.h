@@ -317,6 +317,15 @@ namespace NxEn
 			NxFr::Vector2i Delta;
 		};
 
+		struct NX_ENGINE_API ClickState
+		{
+			ClickState(Button Key, double Time, NxFr::Vector2i Position);
+
+			Button Key;
+			double Time;
+			NxFr::Vector2i Position;
+		};
+
 		struct NX_ENGINE_API Binding
 		{
 		public:

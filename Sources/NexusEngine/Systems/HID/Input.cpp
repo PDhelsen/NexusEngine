@@ -15,6 +15,11 @@ namespace NxEn
 		{
 		}
 
+		ClickState::ClickState(Button Key, double Time, NxFr::Vector2i Position)
+			: Key(Key), Time(Time), Position(Position)
+		{
+		}
+
 		Binding::Binding(Button ButtonKey, State ButtonTarget)
 			: Mode(Mode::Button), Value({ Button::Invalid, State::COUNT })
 		{

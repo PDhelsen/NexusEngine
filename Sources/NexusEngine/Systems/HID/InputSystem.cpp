@@ -3,9 +3,12 @@
 
 namespace NxEn
 {
+	static SettingVar<uint64>* SettingDoubleClickDistance = SettingVar<uint64>::Create("Settings", "DoubleClickDistance", 5);
+	static SettingVar<double>* SettingDoubleClickTiming = SettingVar<double>::Create("Settings", "DoubleClickTiming", 0.25f);
+
 	InputSystem::InputSystem()
 		: OnButtonChange(), OnAxisChange(), OnMouseChange(), OnFocusChange(), OnPoll(),
-		Buttons(), Axises(), Mouse(-NxFr::Vector2i::One, -NxFr::Vector2i::One), Modifiers(),
+		Buttons(), Axises(), Mouse(-NxFr::Vector2i::One, -NxFr::Vector2i::One), Click(Input::Button::Invalid, 0.0, NxFr::Vector2i::Zero), Modifiers(),
 		Schemas(), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{
 		OnButtonChange += { this, &InputSystem::OnButtonChanged };
@@ -67,6 +70,11 @@ namespace NxEn
 	bool InputSystem::CheckButton(Input::Button Button, Input::State State) const
 	{
 		return GetButton(Button) == State;
+	}
+
+	bool InputSystem::CheckDoubleClick(Input::Button Button) const
+	{
+		return Click.Key == Button && Click.Time == 0.0 && Click.Position == NxFr::Vector2i::Zero;
 	}
 
 	bool InputSystem::CheckAxis(Input::Axis Axis) const
@@ -138,6 +146,18 @@ namespace NxEn
 	{
 		Buttons[(uint64)Button] = State;
 		DirtyFlagButtons = true;
+
+		if (State == Input::State::Pressed)
+		{
+			double Now = NxFr::Time::ProcessorTick();
+			bool DoubleClick =
+				Click.Key == Button &&
+				Now - Click.Time < SettingDoubleClickTiming->GetValue() &&
+				NxFr::VectorUtility::Distance(Click.Position, Mouse.Position) < SettingDoubleClickDistance->GetValue();
+			Click = DoubleClick ?
+				Input::ClickState(Button, 0.0, NxFr::Vector2i::Zero) :
+				Input::ClickState(Button, Now, Mouse.Position);
+		}
 	}
 
 	void InputSystem::OnAxisChanged(Input::Axis Axis, float Delta)
@@ -176,6 +196,11 @@ namespace NxEn
 				case Input::State::Released: Buttons[Index] = Input::State::Up; break;
 				case Input::State::Pressed: Buttons[Index] = Input::State::Down; break;
 			}
+		}
+
+		if (Click.Key != Input::Button::Invalid && Click.Time == 0.0 && Click.Position == NxFr::Vector2i::Zero)
+		{
+			Click = Input::ClickState(Input::Button::Invalid, 0.0, NxFr::Vector2i::Zero);
 		}
 	}
 

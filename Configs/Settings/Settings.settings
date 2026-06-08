@@ -1,4 +1,6 @@
 ConsoleAutoScroll: true
+DoubleClickDistance: 5
+DoubleClickTiming: 0.25
 JobReservedThread: 4
 LoggerAutoFlush: false
 LoggerChannel: {Application: true, Command: true, Default: true, System: true, Verbose: true}
