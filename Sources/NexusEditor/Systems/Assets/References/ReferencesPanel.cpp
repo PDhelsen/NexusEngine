@@ -84,6 +84,7 @@ namespace NxEd
 		Menu.SetEnabled(true);
 		Style.Reset();
 
+		Window = NxEn::Application::GetSystem<NxEn::WindowSystem>();
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
@@ -245,7 +246,7 @@ namespace NxEd
 			if (Inputs->CheckButton(NxEn::Input::Button::MouseRight))
 			{
 				Inspect = true;
-				Mouse = Inputs->GetMousePosition(true);
+				Mouse = (NxFr::Vector2f)Window->GetWindow().Position + Inputs->GetMousePosition();
 			}
 		}
 	}

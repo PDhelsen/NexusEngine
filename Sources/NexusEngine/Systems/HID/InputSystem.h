@@ -26,7 +26,7 @@ namespace NxEn
 
 		Input::State GetButton(Input::Button Button) const;
 		float GetAxis(Input::Axis Axis) const;
-		NxFr::Vector2f GetMousePosition(bool Absolute = false) const;
+		NxFr::Vector2f GetMousePosition() const;
 		NxFr::Vector2f GetMouseDelta() const;
 		Input::Modifier GetModifiers() const;
 
@@ -61,8 +61,6 @@ namespace NxEn
 		NxFr::Event<NxFr::Vector2f> OnMouseChange;
 		NxFr::Event<bool> OnFocusChange;
 		NxFr::Event<> OnPoll;
-
-		class WindowSystem* Window;
 
 		NxFr::Dictionary<NxFr::StringId, Input::Schema*> Schemas;
 

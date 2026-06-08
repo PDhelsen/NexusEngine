@@ -70,6 +70,7 @@ namespace NxEd
 		bool Recenter;
 		bool Inspect;
 
+		NxEn::WindowSystem* Window;
 		NxEn::InputSystem* Inputs;
 		NxEn::AssetsSystem* Assets;
 		EditSystem* Edit;

@@ -4,7 +4,7 @@
 namespace NxEn
 {
 	InputSystem::InputSystem()
-		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Window(nullptr), Schemas(), Buttons(), Axises(), Modifiers(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
+		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Schemas(), Buttons(), Axises(), Modifiers(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{
 		OnButtonChange += NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
 		OnAxisChange += NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);
@@ -73,11 +73,9 @@ namespace NxEn
 		return Axises[(uint64)Axis];
 	}
 
-	NxFr::Vector2f InputSystem::GetMousePosition(bool Absolute) const
+	NxFr::Vector2f InputSystem::GetMousePosition() const
 	{
-		return Absolute ?
-			MousePosition + (NxFr::Vector2f)Window->GetWindow().Position :
-			MousePosition;
+		return MousePosition;
 	}
 
 	NxFr::Vector2f InputSystem::GetMouseDelta() const
@@ -93,8 +91,6 @@ namespace NxEn
 	void InputSystem::OnInitialize()
 	{
 		System::OnInitialize();
-
-		Window = NxEn::Application::GetSystem<NxEn::WindowSystem>();
 	}
 
 	void InputSystem::OnShutdown()
