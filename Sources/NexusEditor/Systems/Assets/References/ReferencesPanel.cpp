@@ -246,7 +246,7 @@ namespace NxEd
 			if (Inputs->CheckButton(NxEn::Input::Button::MouseRight))
 			{
 				Inspect = true;
-				Mouse = (NxFr::Vector2f)Window->GetWindow().Position + Inputs->GetMousePosition();
+				Mouse = Window->GetWindow().Position + Inputs->GetMousePosition();
 			}
 		}
 	}

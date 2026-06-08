@@ -4,26 +4,25 @@
 namespace NxEn
 {
 	InputSystem::InputSystem()
-		: OnButtonChange(), OnAxisChange(), OnMouseChange(), Schemas(), Buttons(), Axises(), Modifiers(), MousePosition(-NxFr::Vector2f::One), MouseDelta(-NxFr::Vector2f::One), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
+		: OnButtonChange(), OnAxisChange(), OnMouseChange(), OnFocusChange(), OnPoll(),
+		Buttons(), Axises(), MousePosition(-NxFr::Vector2i::One), MouseDelta(-NxFr::Vector2i::One), Modifiers(),
+		Schemas(), Focused(false), DirtyFlagButtons(true), DirtyFlagAxises(true)
 	{
-		OnButtonChange += NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
-		OnAxisChange += NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);
-		OnMouseChange += NxFr::Delegate<void(NxFr::Vector2f)>(this, &InputSystem::OnMouseChanged);
+		OnButtonChange += { this, &InputSystem::OnButtonChanged };
+		OnAxisChange += { this, & InputSystem::OnAxisChanged };
+		OnMouseChange += { this, & InputSystem::OnMouseChanged };
+		OnFocusChange += { this, & InputSystem::OnFocusChanged };
 
-		Reset();
+		NxFr::ContainerUtility::Fill(Buttons, Input::State::Up);
+		NxFr::ContainerUtility::Fill(Axises, 0.0f);
 	}
 
 	InputSystem::~InputSystem()
 	{
-		OnButtonChange -= NxFr::Delegate<void(Input::Button, Input::State)>(this, &InputSystem::OnButtonChanged);
-		OnAxisChange -= NxFr::Delegate<void(Input::Axis, float)>(this, &InputSystem::OnAxisChanged);
-		OnMouseChange -= NxFr::Delegate<void(NxFr::Vector2f)>(this, &InputSystem::OnMouseChanged);
-	}
-
-	void InputSystem::Reset()
-	{
-		NxFr::ContainerUtility::Fill(Buttons, Input::State::Up);
-		NxFr::ContainerUtility::Fill(Axises, 0.0f);
+		OnButtonChange -= { this, & InputSystem::OnButtonChanged };
+		OnAxisChange -= { this, & InputSystem::OnAxisChanged };
+		OnMouseChange -= { this, & InputSystem::OnMouseChanged };
+		OnFocusChange -= { this, & InputSystem::OnFocusChanged };
 	}
 
 	void InputSystem::AddSchema(NxFr::StringId Id, Input::Schema* Schema)
@@ -38,9 +37,31 @@ namespace NxEn
 		NX_LOG(Info, System, "Unregister Input schema: %s", Id.C());
 	}
 
-	Input::Schema* InputSystem::GetSchema(NxFr::StringId Id)
+	void InputSystem::ExecuteAction(const Input::Action& Action) const
 	{
-		return Schemas[Id];
+		if (CheckTrigger(Action.Input))
+		{
+			Action.Callback.Invoke();
+		}
+	}
+
+	bool InputSystem::CheckTrigger(const Input::Trigger& Trigger) const
+	{
+		bool IsTriggered = false;
+
+		if (Trigger.Modifiers != Input::Modifier::Ignore && Trigger.Modifiers != Modifiers)
+		{
+			return IsTriggered;
+		}
+
+		switch (Trigger.Bindings.GetMode())
+		{
+		case Input::Mode::Button: IsTriggered = GetButton(Trigger.Bindings.GetButton().Key) == Trigger.Bindings.GetButton().Target; break;
+		case Input::Mode::Axis: IsTriggered = GetAxis(Trigger.Bindings.GetAxis()) != 0.0f; break;
+		case Input::Mode::Mouse: IsTriggered = NxFr::ShapeUtility::Contains(Trigger.Bindings.GetMouse(), MousePosition); break;
+		}
+
+		return IsTriggered;
 	}
 
 	bool InputSystem::CheckButton(Input::Button Button, Input::State State) const
@@ -55,7 +76,7 @@ namespace NxEn
 
 	bool InputSystem::CheckMouse() const
 	{
-		return IsFocused() && GetMouseDelta() != NxFr::Vector2f::Zero;
+		return GetMouseDelta() != NxFr::Vector2i::Zero;
 	}
 
 	bool InputSystem::CheckModifier(Input::Modifier Modifier) const
@@ -73,12 +94,12 @@ namespace NxEn
 		return Axises[(uint64)Axis];
 	}
 
-	NxFr::Vector2f InputSystem::GetMousePosition() const
+	NxFr::Vector2i InputSystem::GetMousePosition() const
 	{
 		return MousePosition;
 	}
 
-	NxFr::Vector2f InputSystem::GetMouseDelta() const
+	NxFr::Vector2i InputSystem::GetMouseDelta() const
 	{
 		return MouseDelta;
 	}
@@ -88,14 +109,14 @@ namespace NxEn
 		return Modifiers;
 	}
 
-	void InputSystem::OnInitialize()
+	bool InputSystem::IsFocused() const
 	{
-		System::OnInitialize();
+		return Focused;
 	}
 
-	void InputSystem::OnShutdown()
+	bool InputSystem::IsWriting() const
 	{
-		System::OnShutdown();
+		return ImGui::GetIO().WantTextInput;
 	}
 
 	void InputSystem::OnTick(float TimeStep)
@@ -115,7 +136,7 @@ namespace NxEn
 
 	void InputSystem::OnButtonChanged(Input::Button Button, Input::State State)
 	{
-		if (ImGui::GetIO().WantTextInput)
+		if (IsWriting())
 		{
 			return;
 		}
@@ -126,17 +147,27 @@ namespace NxEn
 
 	void InputSystem::OnAxisChanged(Input::Axis Axis, float Delta)
 	{
+		if (!IsFocused())
+		{
+			return;
+		}
+
 		Axises[(uint64)Axis] = Delta;
 		DirtyFlagAxises = true;
 	}
 
-	void InputSystem::OnMouseChanged(NxFr::Vector2f Position)
+	void InputSystem::OnMouseChanged(NxFr::Vector2i Position)
 	{
+		if (!IsFocused())
+		{
+			return;
+		}
+
 		MouseDelta = Position - MousePosition;
 		Axises[(uint64)Input::Axis::MouseX] = MouseDelta.x;
 		Axises[(uint64)Input::Axis::MouseY] = MouseDelta.y;
-
 		MousePosition = Position;
+
 		DirtyFlagAxises = true;
 	}
 
@@ -181,7 +212,7 @@ namespace NxEn
 			Axises[Index] = 0.0f;
 		}
 
-		MouseDelta = NxFr::Vector2f::Zero;
+		MouseDelta = NxFr::Vector2i::Zero;
 	}
 
 	void InputSystem::UpdateModifiers()
@@ -212,23 +243,7 @@ namespace NxEn
 		{
 			for (auto& [Tag, Action] : Schema->Mapping)
 			{
-				if (Action.Input.Modifiers != Input::Modifier::Ignore && Action.Input.Modifiers != Modifiers)
-				{
-					continue;
-				}
-
-				bool Invoke = false;
-				switch (Action.Input.Bindings.GetMode())
-				{
-				case Input::Mode::Button: Invoke = GetButton(Action.Input.Bindings.GetButton().Key) == Action.Input.Bindings.GetButton().Target; break;
-				case Input::Mode::Axis: Invoke = GetAxis(Action.Input.Bindings.GetAxis()) != 0.0f; break;
-				case Input::Mode::Mouse: Invoke = NxFr::ShapeUtility::Contains(Action.Input.Bindings.GetMouse(), MousePosition); break;
-				}
-
-				if (Invoke)
-				{
-					Action.Callback.Invoke();
-				}
+				ExecuteAction(Action);
 			}
 		}
 	}

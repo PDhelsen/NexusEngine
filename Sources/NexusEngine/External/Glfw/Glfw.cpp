@@ -218,7 +218,7 @@ namespace NxEn
 				return;
 			}
 
-			Inputs->GetOnMouseChange().Invoke(NxFr::Vector2f(X, Y));
+			Inputs->GetOnMouseChange().Invoke(NxFr::Vector2i(X, Y));
 		}
 
 		static void ScrollCallback(GLFWwindow* Window, double X, double Y)
