@@ -12,24 +12,18 @@ namespace NxEn
 	{
 	}
 
-	void Yaml::Save(NxFr::StringView FilePath)
+	void Yaml::OnSave(NxFr::StringView FilePath) const
 	{
-		Resource::Save(FilePath);
-
 		NxFr::Yaml::SerializeFile(Data, FilePath);
 	}
 
-	void Yaml::Load(NxFr::StringView FilePath)
+	void Yaml::OnLoad(NxFr::StringView FilePath)
 	{
-		Resource::Load(FilePath);
-
 		Data = NxFr::Yaml::DeserializeFile(FilePath);
 	}
 
-	void Yaml::Unload()
+	void Yaml::OnUnload()
 	{
 		Data = YAML::Node();
-
-		Resource::Unload();
 	}
 }

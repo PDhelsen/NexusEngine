@@ -14,22 +14,18 @@ namespace NxEn
 	{
 	}
 
-	void Image::Save(NxFr::StringView FilePath)
+	void Image::OnSave(NxFr::StringView FilePath) const
 	{
-		Resource::Save(FilePath);
+
 	}
 
-	void Image::Load(NxFr::StringView FilePath)
+	void Image::OnLoad(NxFr::StringView FilePath)
 	{
-		Resource::Load(FilePath);
-
 		Data = StbImage::Load(FilePath, Resolution, Channels);
 	}
 
-	void Image::Unload()
+	void Image::OnUnload()
 	{
 		StbImage::Free(Data);
-
-		Resource::Unload();
 	}
 }

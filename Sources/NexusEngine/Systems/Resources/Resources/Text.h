@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/Resources/Resource.h"
 
 namespace NxEn
@@ -13,9 +14,9 @@ namespace NxEn
 		NxFr::String& GetText() { return Data; }
 
 	protected:
-		void Save(NxFr::StringView FilePath) override;
-		void Load(NxFr::StringView FilePath) override;
-		void Unload() override;
+		void OnSave(NxFr::StringView Path) const override;
+		void OnLoad(NxFr::StringView Path) override;
+		void OnUnload() override;
 
 	private:
 		NxFr::String Data;

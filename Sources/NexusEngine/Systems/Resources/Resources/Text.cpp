@@ -12,30 +12,24 @@ namespace NxEn
 	{
 	}
 
-	void Text::Save(NxFr::StringView FilePath)
+	void Text::OnSave(NxFr::StringView FilePath) const
 	{
-		Resource::Save(FilePath);
-
 		NxFr::File File(FilePath);
 		File.Open(NxFr::File::Mode::Write, false);
 		File.WriteText(Data);
 		File.Close();
 	}
 
-	void Text::Load(NxFr::StringView FilePath)
+	void Text::OnLoad(NxFr::StringView FilePath)
 	{
-		Resource::Load(FilePath);
-
 		NxFr::File File(FilePath);
 		File.Open(NxFr::File::Mode::Read, false);
 		Data = File.ReadText();
 		File.Close();
 	}
 
-	void Text::Unload()
+	void Text::OnUnload()
 	{
 		Data = NxFr::String();
-
-		Resource::Unload();
 	}
 }
