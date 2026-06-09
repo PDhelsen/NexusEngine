@@ -539,3 +539,9 @@ project (StbImage)
     {
         PostBuild
     }
+
+	filter "toolset:msc"
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS"
+		}

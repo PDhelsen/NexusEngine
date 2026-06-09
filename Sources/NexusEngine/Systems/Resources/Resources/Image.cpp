@@ -26,6 +26,6 @@ namespace NxEn
 
 	void Image::OnUnload()
 	{
-		StbImage::Free(Data);
+		StbImage::Unload(Data);
 	}
 }
