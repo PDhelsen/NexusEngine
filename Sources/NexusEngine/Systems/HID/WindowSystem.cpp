@@ -224,7 +224,7 @@ namespace NxEn
 		{
 			Glfw::SetWindowIcon(Target.Instance,
 				Icon ? Icon->GetResolution() : NxFr::Vector2i::Zero,
-				Icon ? static_cast<uint8*>(Icon->GetPixels()) : nullptr);
+				Icon ? const_cast<uint8*>(static_cast<const uint8*>(Target.Icon->GetPixels())) : nullptr);
 		}
 
 		return *this;
@@ -381,7 +381,7 @@ namespace NxEn
 		Glfw::CreateCursor(Target.Instance,
 			(uint8)Pointer.CursorIcon,
 			Pointer.IconCustom ? Pointer.IconCustom->GetResolution() : NxFr::Vector2i::Zero,
-			Pointer.IconCustom ? static_cast<uint8*>(Pointer.IconCustom->GetPixels()) : nullptr);
+			Pointer.IconCustom ? const_cast<uint8*>(static_cast<const uint8*>(Pointer.IconCustom->GetPixels())) : nullptr);
 	}
 
 	void WindowSystem::DestroyCursor()
