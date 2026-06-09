@@ -12,6 +12,7 @@ namespace NxEn
 		~Text();
 
 		NxFr::String& GetText() { return Data; }
+		const NxFr::String& GetText() const { return Data; }
 
 	protected:
 		void OnSave(NxFr::StringView Path) const override;

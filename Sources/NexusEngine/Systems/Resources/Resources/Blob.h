@@ -12,6 +12,7 @@ namespace NxEn
 		~Blob();
 
 		NxFr::Buffer& GetBytes() { return Data; }
+		const NxFr::Buffer& GetBytes() const { return Data; }
 
 	protected:
 		void OnSave(NxFr::StringView Path) const override;

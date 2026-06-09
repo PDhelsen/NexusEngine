@@ -13,7 +13,8 @@ namespace NxEn
 
 		NxFr::Vector2i GetResolution() const { return Resolution; }
 		int32 GetChannels() const { return Channels; }
-		void* GetPixels() const { return Data; }
+		void* GetPixels() { return Data; }
+		const void* GetPixels() const { return Data; }
 
 	protected:
 		void OnSave(NxFr::StringView Path) const override;
