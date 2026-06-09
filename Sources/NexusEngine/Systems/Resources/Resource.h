@@ -14,16 +14,14 @@ namespace NxEn
 
 		NxFr::StringView GetPath() const { return Path; }
 		NxFr::StringView GetName() const { return NxFr::Path::GetName(Path); }
-		bool IsLoaded() const { return Loaded; };
 
 	protected:
-		virtual void Save(NxFr::StringView FilePath);
-		virtual void Load(NxFr::StringView FilePath);
-		virtual void Unload();
+		virtual void Save(NxFr::StringView FilePath) {};
+		virtual void Load(NxFr::StringView FilePath) {};
+		virtual void Unload() {};
 
 	private:
 		NxFr::String Path;
-		bool Loaded;
 	};
 }
 

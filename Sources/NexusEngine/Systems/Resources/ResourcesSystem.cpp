@@ -5,103 +5,82 @@ namespace NxFr
 {
 	namespace StatsHeader
 	{
-		const NxFr::StringId ResourcesTrackedId = "Resources - Tracked"_Sid;
-		const NxFr::StringId ResourcesLoadedId = "Resources - Loaded"_Sid;
+		const NxFr::StringId ResourcesId = "Resources"_Sid;
 	}
 }
 
 namespace NxEn
 {
-	void ResourcesSystem::Unload(NxFr::StringView Path)
-	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		Resource* Instance = GetResource(Path);
-
-		if (Instance == nullptr)
-		{
-			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
-			return;
-		}
-
-		if (Instance->IsLoaded())
-		{
-			Instance->Unload();
-		}
-	}
-
-	void ResourcesSystem::UnloadAll()
-	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		for (auto& [Path, Instance] : Resources)
-		{
-			if (Instance->IsLoaded())
-			{
-				Instance->Unload();
-			}
-		}
-	}
-
-	void ResourcesSystem::Save(NxFr::StringView Path)
-	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		Resource* Instance = GetResource(Path);
-
-		if (Instance == nullptr)
-		{
-			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
-			return;
-		}
-
-		if (Instance->IsLoaded())
-		{
-			Instance->Save(GetResourceFilePath(Path));
-		}
-	}
-
-	void ResourcesSystem::SaveAll()
-	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		for (auto& [Path, Instance] : Resources)
-		{
-			if (Instance->IsLoaded())
-			{
-				Instance->Save(GetResourceFilePath(Path));
-			}
-		}
-	}
-
 	void ResourcesSystem::Move(NxFr::StringView Path, NxFr::StringView Target)
 	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
 		Resource* Instance = GetResource(Path);
-
-		if (Instance != nullptr)
+		if (Instance == nullptr)
 		{
-			Resources.Remove(Path);
-			Resources.Append(Target, Instance);
-			Instance->Path = Target;
+			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			return;
 		}
 
-		NxFr::File(GetResourceFilePath(Path)).Move(GetResourceFilePath(Target), true);
+		Instance->Path = Path;
+		Resources.Remove(Path);
+		Resources.Append(Target, Instance);
+		NxFr::File(GetResourceFsPath(Path)).Move(GetResourceFsPath(Target), true);
 	}
 
 	void ResourcesSystem::Delete(NxFr::StringView Path)
 	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
 		Resource* Instance = GetResource(Path);
-
-		if (Instance != nullptr && Instance->IsLoaded())
+		if (Instance == nullptr)
 		{
-			Unload(Path);
+			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			return;
 		}
 
-		NxFr::File(GetResourceFilePath(Path)).Delete();
+		Instance->Unload();
+		Resources.Remove(Path);
+		NxFr::File(GetResourceFsPath(Path)).Delete();
+	}
+
+	void ResourcesSystem::Unload(NxFr::StringView Path)
+	{
+		Resource* Instance = GetResource(Path);
+		if (Instance == nullptr)
+		{
+			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			return;
+		}
+
+		Instance->Unload();
+		Resources.Remove(Path);
+	}
+
+	void ResourcesSystem::Save(NxFr::StringView Path)
+	{
+		Resource* Instance = GetResource(Path);
+		if (Instance == nullptr)
+		{
+			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			return;
+		}
+
+		Instance->Save(GetResourceFsPath(Path));
+	}
+
+	void ResourcesSystem::UnloadAll()
+	{
+		for (auto& [Path, Instance] : Resources)
+		{
+			Instance->Unload();
+		}
+
+		Resources.Clear();
+	}
+
+	void ResourcesSystem::SaveAll()
+	{
+		for (auto& [Path, Instance] : Resources)
+		{
+			Instance->Save(GetResourceFsPath(Path));
+		}
 	}
 
 	void ResourcesSystem::OnInitialize()
@@ -109,35 +88,24 @@ namespace NxEn
 		System::OnInitialize();
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesTrackedId, Integer, Set);
-		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesLoadedId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::ResourcesId, Integer, Set);
 	}
 
 	void ResourcesSystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);
 
-		uint64 Loaded = 0;
-		for (auto& [Path, Instance] : Resources)
-		{
-			if (Instance->IsLoaded())
-			{
-				Loaded++;
-			}
-		}
-
-		NX_STAT_INTEGER(NxFr::StatsHeader::ResourcesTrackedId, Resources.GetCount());
-		NX_STAT_INTEGER(NxFr::StatsHeader::ResourcesLoadedId, Loaded);
-	}
-
-	NxFr::String ResourcesSystem::GetResourceFilePath(NxFr::StringView Path)
-	{
-		return NxFr::Path::Combine(NxFr::Globals::Paths::Resources, Path);
+		NX_STAT_INTEGER(NxFr::StatsHeader::ResourcesId, Resources.GetCount());
 	}
 
 	Resource* ResourcesSystem::GetResource(NxFr::StringView Path)
 	{
 		Resource** Instance = Resources.TryGet(Path);
 		return Instance ? *Instance : nullptr;
+	}
+
+	NxFr::String ResourcesSystem::GetResourceFsPath(NxFr::StringView Path)
+	{
+		return NxFr::Path::Combine(NxFr::Globals::Paths::Resources, Path);
 	}
 }

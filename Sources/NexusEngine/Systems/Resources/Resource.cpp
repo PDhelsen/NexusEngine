@@ -4,26 +4,11 @@
 namespace NxEn
 {
 	Resource::Resource(NxFr::StringView Path)
-		: Path(Path), Loaded(true)
+		: Path(Path)
 	{
 	}
 
 	Resource::~Resource()
 	{
-		NX_ASSERT(!IsLoaded(), Default, "Resource %s was not unloaded", Path.C());
-	}
-
-	void Resource::Save(NxFr::StringView FilePath)
-	{
-	}
-
-	void Resource::Load(NxFr::StringView FilePath)
-	{
-		Loaded = true;
-	}
-
-	void Resource::Unload()
-	{
-		Loaded = false;
 	}
 }
