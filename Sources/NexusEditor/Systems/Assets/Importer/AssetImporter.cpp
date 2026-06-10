@@ -2,7 +2,7 @@
 
 namespace NxEd
 {
-	static NxEn::Command* CmdAssetImport = NxEn::Command::Create("Assets.Import"_Sid, "Import asset at path", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView ContentPath)
+	static NxEn::Command* CmdAssetImport = NxEn::Command::Create("Assets.Importer.Import"_Sid, "Import asset at path", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView ContentPath)
 	{
 		AssetImporter::Run(ContentPath);
 	}));

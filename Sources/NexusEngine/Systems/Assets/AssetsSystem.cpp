@@ -15,9 +15,78 @@ namespace NxFr
 
 namespace NxEn
 {
+	static Command* CmdAssetCreate = Command::Create("Assets.Create"_Sid, "Create asset", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Type, NxFr::StringView Path, NxFr::StringView Extension)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Create(NxFr::StringId(Type), Path, Extension);
+	}));
+	static Command* CmdAssetMove = Command::Create("Assets.Move"_Sid, "Move asset", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Path, NxFr::StringView Target)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Move(Assets->PathToId(Path), Target);
+	}));
+	static Command* CmdAssetCopy = Command::Create("Assets.Copy"_Sid, "Copy asset", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Path, NxFr::StringView Target)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Copy(Assets->PathToId(Path), Target);
+	}));
+	static Command* CmdAssetDelete = Command::Create("Assets.Delete"_Sid, "Delete asset", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Delete(Assets->PathToId(Path));
+	}));
+	static Command* CmdAssetSave = Command::Create("Assets.Save"_Sid, "Save asset", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Save(Assets->PathToId(Path));
+	}));
+	static Command* CmdAssetSaveDirty = Command::Create("Assets.SaveDirty"_Sid, "Save all dirty assets", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->SaveDirty();
+	}));
+	static Command* CmdAssetLoad = Command::Create("Assets.Load"_Sid, "Load asset", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Load(Assets->PathToId(Path));
+	}));
+	static Command* CmdAssetReload = Command::Create("Assets.Reload"_Sid, "Reload asset", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Reload(Assets->PathToId(Path));
+	}));
+	static Command* CmdAssetUnload = Command::Create("Assets.Unload"_Sid, "Unload asset", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Unload(Assets->PathToId(Path));
+	}));
 	static Command* CmdAssetPurge = Command::Create("Assets.Purge"_Sid, "Unload all unreferenced assets", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Save)
 	{
-		Application::GetSystem<AssetsSystem>()->Purge(NxFr::StringUtility::FromString<bool>(Save));
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Purge(NxFr::StringUtility::FromString<bool>(Save));
+	}));
+	static Command* CmdAssetImport = Command::Create("Assets.Import"_Sid, "Import asset", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Type, NxFr::StringView Node, NxFr::StringView Path, NxFr::StringView Extension)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Import(NxFr::StringId(Type), NxFr::Yaml::Deserialize(Node), Path, Extension);
+	}));
+	static Command* CmdAssetReimport = Command::Create("Assets.Reimport"_Sid, "Reimport asset", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Path, NxFr::StringView Node)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		Assets->Reimport(Assets->PathToId(Path), NxFr::Yaml::Deserialize(Node));
+	}));
+	static Command* CmdAssetIdToPath = Command::Create("Assets.IdToPath"_Sid, "Print the path of the asset", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::GUID AssetId = NxFr::StringUtility::FromString<NxFr::GUID>(Id);
+		NxFr::StringView Path = Assets->IdToPath(AssetId);
+		NX_LOG(Info, System, "Asset (%llu) has path %s", Id, Path.C());
+	}));
+	static Command* CmdAssetPathToId = Command::Create("Assets.PathToId"_Sid, "Print the id of the asset", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::GUID Id = Assets->PathToId(Path);
+		NX_LOG(Info, System, "Asset (%s) has Id %llu", Path.C(), Id);
 	}));
 
 	Asset* AssetsSystem::Create(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
