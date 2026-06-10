@@ -11,7 +11,7 @@ namespace NxEn
 		AssetsManager();
 		~AssetsManager();
 
-		void Append(NxFr::GUID Id, const AssetHandle& Handle);
+		AssetHandle& Append(NxFr::GUID Id, Asset* Instance);
 		void Remove(NxFr::GUID Id);
 		AssetHandle& Get(NxFr::GUID Id);
 

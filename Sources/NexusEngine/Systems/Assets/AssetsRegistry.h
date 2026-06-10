@@ -11,9 +11,9 @@ namespace NxEn
 		AssetsRegistry(NxFr::String Root);
 		~AssetsRegistry();
 
-		void Append(NxFr::GUID Id, const AssetMetadata& Metadata);
-		void Move(NxFr::GUID Id, NxFr::StringView Path);
-		void Copy(NxFr::GUID Id, const AssetMetadata& Metadata);
+		AssetMetadata& Append(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension);
+		AssetMetadata& Move(NxFr::GUID Id, NxFr::StringView Path);
+		AssetMetadata& Copy(NxFr::GUID Id, NxFr::StringView Path);
 		void Remove(NxFr::GUID Id);
 		AssetMetadata& Get(NxFr::GUID Id);
 

@@ -30,9 +30,10 @@ namespace NxEn
 	{
 	}
 
-	void AssetsRegistry::Append(NxFr::GUID Id, const AssetMetadata& Metadata)
+	AssetMetadata& AssetsRegistry::Append(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-		Assets.Append(Id, Metadata);
+		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
+		AssetMetadata& Metadata = Assets.AppendConstruct(Id, Id, Type, Path, Extension);
 
 		if (!Metadata.GetPath().IsEmpty())
 		{
@@ -43,9 +44,11 @@ namespace NxEn
 				NxFr::File(PathToFsPath(Metadata.GetContentPath())).Create();
 			}
 		}
+
+		return Metadata;
 	}
 
-	void AssetsRegistry::Move(NxFr::GUID Id, NxFr::StringView Path)
+	AssetMetadata& AssetsRegistry::Move(NxFr::GUID Id, NxFr::StringView Path)
 	{
 		AssetMetadata& Metadata = Assets[Id];
 
@@ -63,11 +66,18 @@ namespace NxEn
 		Paths.Remove(Metadata.GetPath());
 		Metadata.Path = Path;
 		Paths.Append(Metadata.GetPath(), Id);
+
+		return Metadata;
 	}
 
-	void AssetsRegistry::Copy(NxFr::GUID Id, const AssetMetadata& Metadata)
+	AssetMetadata& AssetsRegistry::Copy(NxFr::GUID Id, NxFr::StringView Path)
 	{
+		NxFr::GUID CopyId = NxFr::Integer::GenerateGuid();
 		AssetMetadata& Reference = Assets[Id];
+		AssetMetadata& Metadata = Assets.Append(CopyId, Reference);
+		Metadata.Id = CopyId;
+		Metadata.Path = Path;
+		Metadata.Data.Clear();
 
 		NxFr::String Before = PathToFsPath(Reference.GetAssetPath());
 		NxFr::String After = PathToFsPath(Metadata.GetAssetPath());
@@ -80,8 +90,8 @@ namespace NxEn
 			NxFr::File(Before).Copy(After);
 		}
 
-		Assets.Append(Metadata.Id, Metadata);
-		Paths.Append(Metadata.GetPath(), Metadata.Id);
+		Paths.Append(Metadata.GetPath(), CopyId);
+		return Metadata;
 	}
 
 	void AssetsRegistry::Remove(NxFr::GUID Id)

@@ -31,13 +31,10 @@ namespace NxEn
 	{
 	}
 
-	AssetMetadata::AssetMetadata(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
-		: Id(Instance->GetId()), Type(Instance->GetObjectType()), Path(Path), Extension(Extension), Data(3)
+	AssetMetadata::AssetMetadata(NxFr::GUID Id, NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
+		: Id(Id), Type(Type), Path(Path), Extension(Extension), Data(3)
 	{
-		if (this->Path.IsEmpty())
-		{
-			this->Extension = "";
-		}
+
 	}
 
 	AssetMetadata::~AssetMetadata()

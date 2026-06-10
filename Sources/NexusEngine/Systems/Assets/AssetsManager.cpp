@@ -12,9 +12,9 @@ namespace NxEn
 	{
 	}
 
-	void AssetsManager::Append(NxFr::GUID Id, const AssetHandle& Handle)
+	AssetHandle& AssetsManager::Append(NxFr::GUID Id, Asset* Instance)
 	{
-		Assets.Append(Id, Handle);
+		return Assets.AppendConstruct(Id, Instance);
 	}
 
 	void AssetsManager::Remove(NxFr::GUID Id)

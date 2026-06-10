@@ -92,8 +92,10 @@ namespace NxEn
 	Asset* AssetsSystem::Create(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NxEn::Asset* Instance = AssetsFactory::Create(Type);
+
 		Track(Instance, Path, Extension);
 		Instance->Initialize();
+
 		return Instance;
 	}
 
@@ -141,12 +143,7 @@ namespace NxEn
 			return;
 		}
 
-		AssetMetadata Metadata = GetMetadata(Id);
-		Metadata.Id = NxFr::Integer::GenerateGuid();
-		Metadata.Path = Path;
-		Metadata.Data.Clear();
-
-		Registry->Copy(Id, Metadata);
+		AssetMetadata& Metadata = Registry->Copy(Id, Path);
 		Registry->SerializeMetadata(Metadata.Id);
 
 		OnEvent.Invoke(EventCopiedId, Id);
@@ -181,8 +178,7 @@ namespace NxEn
 		AssetMetadata& Metadata = Registry->Get(Id);
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
-
-		if (!Instance->IsDirty() && !Force)
+		if (!Instance->Dirty && !Force)
 		{
 			return;
 		}
@@ -193,6 +189,8 @@ namespace NxEn
 		Metadata.Dependencies = Instance->GetDependencies();
 		Manager->Save(Id, Node, Registry->IdToContentFsPath(Id));
 		Registry->Serialize(Id, Node);
+
+		Instance->Dirty = false;
 
 		OnEvent.Invoke(EventSavedId, Id);
 	}
@@ -213,16 +211,14 @@ namespace NxEn
 	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NX_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %llu", Instance->GetId());
+		
+		AssetMetadata& Metadata = Registry->Append(Instance->GetObjectType(), Path, Extension);
+		AssetHandle& Handle = Manager->Append(Metadata.Id, Instance);
 
-		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
-		Instance->Id = Id;
+		Instance->Id = Metadata.Id;
+		Instance->Dirty = true;
 
-		Registry->Append(Id, AssetMetadata(Instance, Path, Extension));
-		Manager->Append(Id, AssetHandle(Instance));
-
-		Instance->SetDirty();
-
-		OnEvent.Invoke(EventCreatedId, Id);
+		OnEvent.Invoke(EventCreatedId, Metadata.Id);
 	}
 
 	Asset* AssetsSystem::Acquire(NxFr::GUID Id)
@@ -256,11 +252,13 @@ namespace NxEn
 
 		NX_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%llu)", Id);
 
-		Asset* Instance = AssetsFactory::Create(Registry->Get(Id).GetType());
+		AssetMetadata& Metadata = Registry->Get(Id);
+		Asset* Instance = AssetsFactory::Create(Metadata.GetType());
+		AssetHandle& Handle = Manager->Append(Id, Instance);
+
 		Instance->Id = Id;
 
 		YAML::Node Node = Registry->Deserialize(Id);
-		Manager->Append(Id, AssetHandle(Instance));
 		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
 		Instance->Initialize();
 
@@ -281,8 +279,10 @@ namespace NxEn
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
 
-		Manager->Unload(Id);
 		Instance->Shutdown();
+		Manager->Unload(Id);
+
+		Instance->Dirty = false;
 
 		YAML::Node Node = Registry->Deserialize(Id);
 		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
@@ -303,10 +303,10 @@ namespace NxEn
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
 
+		Instance->Shutdown();
 		Manager->Unload(Id);
 		Manager->Remove(Id);
 
-		Instance->Shutdown();
 		delete Instance;
 
 		OnEvent.Invoke(EventUnloadedId, Id);
@@ -330,8 +330,11 @@ namespace NxEn
 
 	Asset* AssetsSystem::Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-		NxEn::Asset* Instance = Create(Type, Path, Extension);
+		NxEn::Asset* Instance = AssetsFactory::Create(Type);
+
+		Track(Instance, Path, Extension);
 		Manager->Load(Instance->GetId(), Node, Registry->IdToContentFsPath(Instance->GetId()));
+		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
 		return Instance;
@@ -350,11 +353,12 @@ namespace NxEn
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
 
-		Manager->Unload(Id);
 		Instance->Shutdown();
+		Manager->Unload(Id);
+
+		Instance->Dirty = true;
 
 		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
-		Instance->SetDirty();
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
@@ -410,11 +414,11 @@ namespace NxEn
 		NxFr::List<NxFr::GUID> Dependencies;
 		if (Instance && Instance->IsDirty())
 		{
-			Dependencies.AppendRange(GetHandle(Id).GetInstance()->GetDependencies());
+			Dependencies.AppendRange(Manager->Get(Id).GetInstance()->GetDependencies());
 		}
 		else
 		{
-			Dependencies.AppendRange(GetMetadata(Id).GetDependencies());
+			Dependencies.AppendRange(Registry->Get(Id).GetDependencies());
 		}
 
 		for (auto& Dependency : Dependencies)

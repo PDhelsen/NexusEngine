@@ -32,7 +32,6 @@ namespace NxEn
 	void Asset::Save(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
 		OnSave(Node, ContentFsPath);
-		Dirty = false;
 	}
 
 	void Asset::Load(const YAML::Node& Node, NxFr::StringView ContentFsPath)
