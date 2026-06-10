@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Object/Object.h"
 #include "NexusEngine/Systems/Assets/AssetsFactory.h"
 

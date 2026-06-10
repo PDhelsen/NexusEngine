@@ -1,6 +1,7 @@
 #pragma once
 
-#include "NexusEngine/Systems/Assets/AssetMetadata.h"
+#include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Systems/Assets/AssetInfo.h"
 
 namespace NxEn
 {

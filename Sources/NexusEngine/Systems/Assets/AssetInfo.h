@@ -1,9 +1,11 @@
 #pragma once
 
-#include "NexusEngine/Systems/Assets/Asset.h"
+#include "NexusEngine/Core/NexusEngineCore.h"
 
 namespace NxEn
 {
+	class Asset;
+
 	struct NX_ENGINE_API AssetHandle
 	{
 		friend class AssetsSystem;

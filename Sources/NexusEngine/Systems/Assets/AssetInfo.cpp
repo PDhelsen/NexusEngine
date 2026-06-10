@@ -1,5 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/Assets/AssetMetadata.h"
+#include "NexusEngine/Systems/Assets/AssetInfo.h"
+#include "NexusEngine/Systems/Assets/Asset.h"
 
 namespace NxEn
 {
@@ -35,7 +36,7 @@ namespace NxEn
 	{
 		if (this->Path.IsEmpty())
 		{
-			Extension = "";
+			this->Extension = "";
 		}
 	}
 

@@ -3,7 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/Assets/Asset.h"
-#include "NexusEngine/Systems/Assets/AssetMetadata.h"
+#include "NexusEngine/Systems/Assets/AssetInfo.h"
 
 namespace NxEn
 {

@@ -199,6 +199,8 @@ namespace NxEn
 
 	void AssetsSystem::SaveDirty()
 	{
+		OnEvent.Invoke(EventSaveId, 0);
+
 		NxFr::List<NxFr::GUID> Ids = Manager->GetDirty();
 		for (auto& Id : Ids)
 		{
