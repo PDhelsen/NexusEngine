@@ -21,7 +21,6 @@ namespace NxEn
 		void Acquire();
 		void Release();
 
-	private:
 		Asset* Instance;
 		uint64 Count;
 	};
@@ -56,7 +55,6 @@ namespace NxEn
 		YAML::Node Serialize();
 		void Deserialize(const YAML::Node& Node);
 
-	private:
 		NxFr::GUID Id;
 		NxFr::StringId Type;
 		NxFr::String Path;

@@ -75,9 +75,9 @@ namespace NxEn
 	{
 		NxFr::List<NxFr::GUID> Ids;
 
-		for (auto& [Id, I] : Assets)
+		for (auto& [Id, Handle] : Assets)
 		{
-			if (I.GetCount() == 0)
+			if (Handle.GetCount() == 0)
 			{
 				Ids.Append(Id);
 			}
@@ -90,9 +90,9 @@ namespace NxEn
 	{
 		NxFr::List<NxFr::GUID> Ids;
 
-		for (auto& [Id, I] : Assets)
+		for (auto& [Id, Handle] : Assets)
 		{
-			if (I.GetInstance()->IsDirty())
+			if (Handle.GetInstance()->IsDirty())
 			{
 				Ids.Append(Id);
 			}

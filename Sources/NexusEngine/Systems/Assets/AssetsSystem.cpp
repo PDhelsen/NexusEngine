@@ -3,7 +3,6 @@
 
 #include "NexusEngine/Systems/Assets/AssetsRegistry.h"
 #include "NexusEngine/Systems/Assets/AssetsManager.h"
-#include "NexusEngine/Systems/Assets/AssetMetadata.h"
 
 namespace NxFr
 {
@@ -119,10 +118,10 @@ namespace NxEn
 			return;
 		}
 
-		OnSave.Invoke(Instance);
-		Metadata.Dependencies = Instance->GetDependencies();
+		OnEvent.Invoke(EventSaveId, Id);
 
 		YAML::Node Node;
+		Metadata.Dependencies = Instance->GetDependencies();
 		Manager->Save(Id, Node, Registry->IdToContentFsPath(Id));
 		Registry->Serialize(Id, Node);
 
@@ -179,25 +178,20 @@ namespace NxEn
 	{
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
 
-		Asset* Instance = nullptr;
-
 		if (IsLoaded(Id))
 		{
-			Instance = Manager->Get(Id).GetInstance();
+			return Manager->Get(Id).GetInstance();
 		}
-		else
-		{
-			NX_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%llu)", Id);
 
-			Instance = AssetsFactory::Create(Registry->Get(Id).GetType());
-			Instance->Id = Id;
+		NX_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%llu)", Id);
 
-			YAML::Node Node = Registry->Deserialize(Id);
-			Manager->Append(Id, AssetHandle(Instance));
-			Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
+		Asset* Instance = AssetsFactory::Create(Registry->Get(Id).GetType());
+		Instance->Id = Id;
 
-			Instance->Initialize();
-		}
+		YAML::Node Node = Registry->Deserialize(Id);
+		Manager->Append(Id, AssetHandle(Instance));
+		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
+		Instance->Initialize();
 
 		OnEvent.Invoke(EventLoadedId, Id);
 		return Instance;
@@ -207,11 +201,20 @@ namespace NxEn
 	{
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
 
-		Asset* Instance = Reset(Id);
+		if (!IsLoaded(Id))
+		{
+			Load(Id);
+			return;
+		}
+
+		AssetHandle& Handle = Manager->Get(Id);
+		Asset* Instance = Handle.GetInstance();
+
+		Manager->Unload(Id);
+		Instance->Shutdown();
 
 		YAML::Node Node = Registry->Deserialize(Id);
 		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
-
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventLoadedId, Id);
@@ -256,9 +259,6 @@ namespace NxEn
 
 	Asset* AssetsSystem::Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-#if !NX_EDITOR
-		return nullptr;
-#endif
 		NxEn::Asset* Instance = Create(Type, Path, Extension);
 		Manager->Load(Instance->GetId(), Node, Registry->IdToContentFsPath(Instance->GetId()));
 
@@ -268,36 +268,26 @@ namespace NxEn
 
 	Asset* AssetsSystem::Reimport(NxFr::GUID Id, const YAML::Node& Node)
 	{
-#if !NX_EDITOR
-		return nullptr;
-#endif
-
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
 		NX_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%llu)", Id);
 
-		Asset* Instance = Reset(Id);
-		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
+		if (!IsLoaded(Id))
+		{
+			return Load(Id);
+		}
 
+		AssetHandle& Handle = Manager->Get(Id);
+		Asset* Instance = Handle.GetInstance();
+
+		Manager->Unload(Id);
+		Instance->Shutdown();
+
+		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
 		Instance->SetDirty();
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
 		return Instance;
-	}
-
-	NxFr::Array<NxFr::GUID> AssetsSystem::Find(NxFr::StringView Filter) const
-	{
-		return Registry->Find(Filter);
-	}
-
-	NxFr::GUID AssetsSystem::PathToId(NxFr::StringView Path) const
-	{
-		return Registry->PathToId(Path);
-	}
-
-	NxFr::String AssetsSystem::IdToPath(NxFr::GUID Id) const
-	{
-		return Registry->IdToPath(Id);
 	}
 
 	Asset* AssetsSystem::GetAsset(NxFr::GUID Id)
@@ -333,13 +323,57 @@ namespace NxEn
 		return Registry->DeserializeData(Id);
 	}
 
-	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recusive)
+	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recursive)
+	{
+		NxFr::Set<NxFr::GUID> Dependencies;
+		GetDependencies(Id, Recursive, Dependencies);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Dependencies);
+	}
+
+	void AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recursive, NxFr::Set<NxFr::GUID>& Result)
 	{
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
 
-		NxFr::Set<NxFr::GUID> Dependencies;
-		FetchDependencies(Id, Recusive, Dependencies);
-		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Dependencies);
+		NxEn::Asset* Instance = GetAsset(Id);
+
+		NxFr::List<NxFr::GUID> Dependencies;
+		if (Instance && Instance->IsDirty())
+		{
+			Dependencies.AppendRange(GetHandle(Id).GetInstance()->GetDependencies());
+		}
+		else
+		{
+			Dependencies.AppendRange(GetMetadata(Id).GetDependencies());
+		}
+
+		for (auto& Dependency : Dependencies)
+		{
+			if (Dependency == 0 || Result.TryGet(Dependency))
+			{
+				continue;
+			}
+
+			Result.Append(Dependency);
+			if (Recursive)
+			{
+				GetDependencies(Dependency, Recursive, Result);
+			}
+		}
+	}
+
+	NxFr::Array<NxFr::GUID> AssetsSystem::Find(NxFr::StringView Filter) const
+	{
+		return Registry->Find(Filter);
+	}
+
+	NxFr::GUID AssetsSystem::PathToId(NxFr::StringView Path) const
+	{
+		return Registry->PathToId(Path);
+	}
+
+	NxFr::String AssetsSystem::IdToPath(NxFr::GUID Id) const
+	{
+		return Registry->IdToPath(Id);
 	}
 
 	bool AssetsSystem::IsTracked(NxFr::GUID Id) const
@@ -356,10 +390,12 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		RecordStats();
-
 		Registry = new AssetsRegistry(NxFr::Globals::Paths::Assets);
 		Manager = new AssetsManager();
+
+		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsTrackedId, Integer, Set);
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsLoadedId, Integer, Set);
 	}
 
 	void AssetsSystem::OnShutdown()
@@ -374,70 +410,7 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		UpdateStats();
-	}
-
-	void AssetsSystem::RecordStats() const
-	{
-		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsTrackedId, Integer, Set);
-		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::AssetsLoadedId, Integer, Set);
-	}
-
-	void AssetsSystem::UpdateStats() const
-	{
 		NX_STAT_INTEGER(NxFr::StatsHeader::AssetsTrackedId, Registry->GetCount());
 		NX_STAT_INTEGER(NxFr::StatsHeader::AssetsLoadedId, Manager->GetCount());
-	}
-
-	Asset* AssetsSystem::Reset(NxFr::GUID Id)
-	{
-		Asset* Instance = nullptr;
-
-		if (IsLoaded(Id))
-		{
-			Instance = Manager->Get(Id).GetInstance();
-
-			Manager->Unload(Id);
-			Instance->Shutdown();
-		}
-		else
-		{
-			Instance = AssetsFactory::Create(Registry->Get(Id).GetType());
-			Instance->Id = Id;
-
-			Manager->Append(Id, AssetHandle(Instance));
-		}
-
-		return Instance;
-	}
-
-	void AssetsSystem::FetchDependencies(NxFr::GUID Id, bool Recusive, NxFr::Set<NxFr::GUID>& Result)
-	{
-		NxEn::Asset* Instance = GetAsset(Id);
-
-		NxFr::List<NxFr::GUID> Dependencies;
-		if (Instance && Instance->IsDirty())
-		{
-			Dependencies.AppendRange(GetHandle(Id).GetInstance()->GetDependencies());
-		}
-		else
-		{
-			Dependencies.AppendRange(GetMetadata(Id).GetDependencies());
-		}
-
-		for (auto& Dependency : Dependencies)
-		{
-			if (Result.TryGet(Dependency) || Dependency == 0)
-			{
-				continue;
-			}
-
-			Result.Append(Dependency);
-			if (Recusive)
-			{
-				FetchDependencies(Dependency, true, Result);
-			}
-		}
 	}
 }

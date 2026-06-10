@@ -34,7 +34,6 @@ namespace NxEn
 	private:
 		NxFr::String PathToFsPath(NxFr::StringView Path) const;
 
-	private:
 		NxFr::String Root;
 		NxFr::Dictionary<NxFr::GUID, AssetMetadata> Assets;
 		NxFr::Dictionary<NxFr::String, NxFr::GUID> Paths;
