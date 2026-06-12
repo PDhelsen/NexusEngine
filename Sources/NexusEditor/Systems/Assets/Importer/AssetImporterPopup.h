@@ -20,11 +20,11 @@ namespace NxEd
 		void OnEnable() override;
 		void OnDraw() override;
 
+	private:
 		void Pick();
 		void SetPath(NxFr::StringView FilePath);
 		void Import();
 
-	private:
 		NxEn::GUI::Style Style;
 
 		NxFr::String Path;

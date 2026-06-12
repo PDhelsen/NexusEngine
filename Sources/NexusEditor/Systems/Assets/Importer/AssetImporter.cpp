@@ -2,43 +2,25 @@
 
 namespace NxEd
 {
-	static NxEn::Command* CmdAssetImport = NxEn::Command::Create("Assets.Importer.Import"_Sid, "Import asset at path", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView ContentPath)
+	static NxEn::Command* CmdAssetImportPath = NxEn::Command::Create("Assets.Importer.Path"_Sid, "Import asset at path", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView ContentPath)
 	{
 		AssetImporter::Run(ContentPath);
 	}));
-
-	static NxFr::Dictionary<NxFr::StringId, AssetImporter*>& GetImporters()
+	static NxEn::Command* CmdAssetImportId = NxEn::Command::Create("Assets.Importer.Id"_Sid, "Reimport asset with id", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
 	{
-		static NxFr::Dictionary<NxFr::StringId, AssetImporter*> Importers;
+		AssetImporter::Run(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+	}));
+
+	NxFr::Registry<AssetImporter*>& AssetImporter::GetImporters()
+	{
+		static NxFr::Registry<AssetImporter*> Importers;
 		return Importers;
 	}
 
-	static NxFr::Dictionary<NxFr::String, NxFr::StringId>& GetExtensions()
+	NxFr::Registry<NxFr::StringId>& AssetImporter::GetTypes()
 	{
-		static NxFr::Dictionary<NxFr::String, NxFr::StringId> Extensions;
-		return Extensions;
-	}
-
-	AssetImporter* AssetImporter::GetImporter(NxFr::StringId Type)
-	{
-		AssetImporter** Importer = GetImporters().TryGet(Type);
-		return Type && Importer ? *Importer : nullptr;
-	}
-
-	void AssetImporter::SetImporter(NxFr::StringId Type, AssetImporter* Instance)
-	{
-		GetImporters().AppendOrAssign(Type, Instance);
-	}
-
-	NxFr::StringId AssetImporter::GetType(NxFr::StringView Extension)
-	{
-		NxFr::StringId* Type = GetExtensions().TryGet(Extension);
-		return !Extension.IsEmpty() && Type ? *Type : NxFr::StringId();
-	}
-
-	void AssetImporter::SetType(NxFr::StringView Extension, NxFr::StringId Type)
-	{
-		GetExtensions().AppendOrAssign(Extension, Type);
+		static NxFr::Registry<NxFr::StringId> Types;
+		return Types;
 	}
 
 	NxEn::Asset* AssetImporter::Run(NxFr::StringView ContentPath, NxFr::StringId Type)
@@ -56,27 +38,24 @@ namespace NxEd
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxEn::AssetMetadata* Metadata = nullptr;
 		NxEn::Asset* Instance = nullptr;
+		AssetImporter* Importer = nullptr;
 
 		NxFr::StringView Path = NxFr::Path::GetPathWithoutExtension(ContentPath);
 		NxFr::StringView Extension = NxFr::Path::GetExtension(ContentPath);
 		Id = Id != 0 ? Id : Assets->PathToId(Path);
 		bool Exist = Assets->IsTracked(Id);
 		Metadata = Exist ? &Assets->GetMetadata(Id) : nullptr;
-		Type = Exist ? Metadata->GetType() : Type.GetId() != 0 ? Type : GetType(Extension);
+		Type = Exist ? Metadata->GetType() : Type.GetId() != 0 ? Type : GetTypes().TryGet(Extension) != nullptr ? *GetTypes().TryGet(Extension) : NxFr::StringUtility::Id;
 
-		NX_ASSERT(!(!Exist && Type.GetId() == 0), Default, "AssetImporter needs a Type to import a file");
-		NX_ASSERT(!(!Exist && (ContentPath.IsEmpty() || !NxFr::Path::HasExtension(ContentPath) || NxFr::Path::GetExtension(ContentPath) == NxEn::AssetMetadata::AssetExtension)), Default, "AssetImporter needs a file path with an extension different to the asset extension to import a file");
-		NX_ASSERT(!(Exist && Id == 0), Default, "AssetImporter needs an Id to reimport an asset");
+		NX_ASSERT(Type != NxFr::StringUtility::Id, Default, "AssetImporter needs a Type to import a file");
+		NX_ASSERT(Exist || (!Path.IsEmpty() && !Extension.IsEmpty() && Extension != NxEn::AssetMetadata::AssetExtension), Default, "AssetImporter needs a file path with an extension different from the asset extension to import a file");
+		NX_ASSERT(!Exist || Id != 0, Default, "AssetImporter needs an Id to reimport an asset");
 
-		AssetImporter* Importer = GetImporter(Type);
 		YAML::Node Node = Exist ? Assets->GetAssetdata(Id) : YAML::Node();
+		Importer = GetImporters().TryGet(Type);
 		if (Importer)
 		{
 			Importer->OnImport(Node, ContentPath, Exist);
-		}
-		else
-		{
-			NX_LOG(Warning, System, "There is no importer linked to this type %s", Type.C());
 		}
 
 		Instance = Exist ? Assets->Reimport(Id, Node) : Assets->Import(Type, Node, Path, Extension);

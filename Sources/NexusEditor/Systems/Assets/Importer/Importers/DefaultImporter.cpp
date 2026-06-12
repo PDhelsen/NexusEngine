@@ -6,9 +6,9 @@
 
 namespace NxEd
 {
-	const static DefaultImporter* DocumentImporter = AssetImporter::Create<DefaultImporter, NxEn::Document>({ "txt" });
-	const static DefaultImporter* ArtifactImporter = AssetImporter::Create<DefaultImporter, NxEn::Artifact>({ "bin" });
-	const static DefaultImporter* TableImporter = AssetImporter::Create<DefaultImporter, NxEn::Table>({ "yaml" });
+	static AssetImporter* DocumentImporter = AssetImporter::Create<NxEn::Document, DefaultImporter>({ "txt" });
+	static AssetImporter* ArtifactImporter = AssetImporter::Create<NxEn::Artifact, DefaultImporter>({ "bin" });
+	static AssetImporter* TableImporter = AssetImporter::Create<NxEn::Table, DefaultImporter>({ "yaml" });
 
 	void DefaultImporter::OnImport(YAML::Node& Node, NxFr::StringView ContentPath, bool Reimport)
 	{

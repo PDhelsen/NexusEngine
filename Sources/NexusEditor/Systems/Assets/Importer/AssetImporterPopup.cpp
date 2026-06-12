@@ -4,7 +4,7 @@
 
 namespace NxEd
 {
-	const static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Assets/Importer", NxFr::Delegate<void()>([]()
+	static NxEn::GUI::Menu::Item MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Assets/Importer", NxFr::Delegate<void()>([]()
 	{
 		AssetImporterPopup::ShowWithPath("");
 	}));
@@ -88,7 +88,8 @@ namespace NxEd
 		Path = NxFr::Path::IsRelative(FilePath) ? (NxFr::String)FilePath : NxFr::Path::MakeRelative(FilePath, NxFr::Globals::Paths::Assets);
 		if (Type.IsEmpty())
 		{
-			Type = AssetImporter::GetType(NxFr::Path::GetExtension(Path)).GetString();
+			NxFr::StringId* TypeId = AssetImporter::GetTypes().TryGet(NxFr::Path::GetExtension(Path));
+			Type = TypeId ? (NxFr::String)TypeId->GetString() : NxFr::StringUtility::Empty;
 		}
 	}
 
