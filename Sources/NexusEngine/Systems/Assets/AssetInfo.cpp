@@ -27,14 +27,8 @@ namespace NxEn
 	}
 
 	AssetMetadata::AssetMetadata()
-		: Id(0), Type(0), Path(""), Extension(""), Data(3)
+		: Id(0), Type(0), Path(""), Extension(""), Dependencies(), Data(3)
 	{
-	}
-
-	AssetMetadata::AssetMetadata(NxFr::GUID Id, NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
-		: Id(Id), Type(Type), Name(NxFr::Path::GetName(Path)), Path(Path), Extension(Extension), Data(3)
-	{
-
 	}
 
 	AssetMetadata::~AssetMetadata()

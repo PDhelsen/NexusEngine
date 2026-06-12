@@ -36,7 +36,6 @@ namespace NxEn
 		static inline const NxFr::String AssetExtension = "asset";
 
 		AssetMetadata();
-		AssetMetadata(NxFr::GUID Id, NxFr::StringId Type, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		~AssetMetadata();
 
 		NxFr::GUID GetId() const { return Id; }

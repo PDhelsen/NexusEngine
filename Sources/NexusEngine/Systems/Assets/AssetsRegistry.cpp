@@ -35,7 +35,12 @@ namespace NxEn
 	AssetMetadata& AssetsRegistry::Append(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NxFr::GUID Id = NxFr::Integer::GenerateGuid();
-		AssetMetadata& Metadata = Assets.AppendConstruct(Id, Id, Type, Path, Extension);
+		AssetMetadata& Metadata = Assets.AppendConstruct(Id);
+		Metadata.Id = Id;
+		Metadata.Type = Type;
+		Metadata.Name = NxFr::Path::GetName(Path);
+		Metadata.Path = Path;
+		Metadata.Extension = Extension;
 
 		if (!Metadata.GetPath().IsEmpty())
 		{
