@@ -85,7 +85,7 @@ namespace NxEn
 
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Filter) const;
 		NxFr::GUID PathToId(NxFr::StringView Path) const;
-		NxFr::String IdToPath(NxFr::GUID Id) const;
+		NxFr::StringView IdToPath(NxFr::GUID Id) const;
 
 		bool IsTracked(NxFr::GUID Id) const;
 		bool IsLoaded(NxFr::GUID Id) const;

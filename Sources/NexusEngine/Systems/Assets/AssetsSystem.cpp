@@ -493,7 +493,7 @@ namespace NxEn
 		return Registry->PathToId(Path);
 	}
 
-	NxFr::String AssetsSystem::IdToPath(NxFr::GUID Id) const
+	NxFr::StringView AssetsSystem::IdToPath(NxFr::GUID Id) const
 	{
 		return Registry->IdToPath(Id);
 	}

@@ -43,14 +43,9 @@ namespace NxEn
 		NxFr::StringView GetName() const { return Name; }
 		bool HasFile() const { return !Path.IsEmpty(); }
 		NxFr::StringView GetPath() const { return Path; }
-		NxFr::String GetAssetPath() const { return ComputeAssetPath(Path); }
-		NxFr::String GetContentPath() const { return ComputeContentPath(Path, Extension); }
 		NxFr::StringView GetExtension() const { return Extension; }
 		const NxFr::Array<NxFr::GUID>& GetDependencies() const { return Dependencies; }
 		NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
-
-		static NxFr::String ComputeAssetPath(NxFr::StringView Path) { return NxFr::Path::ChangeExtension(Path, AssetExtension); }
-		static NxFr::String ComputeContentPath(NxFr::StringView Path, NxFr::StringView Extension) { return NxFr::Path::ChangeExtension(Path, Extension); }
 
 	private:
 		YAML::Node Serialize() const;

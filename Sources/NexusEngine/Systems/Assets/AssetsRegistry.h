@@ -22,7 +22,7 @@ namespace NxEn
 
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Query) const;
 		NxFr::GUID PathToId(NxFr::StringView Path) const;
-		NxFr::String IdToPath(NxFr::GUID Id) const;
+		NxFr::StringView IdToPath(NxFr::GUID Id) const;
 		NxFr::String IdToAssetFsPath(NxFr::GUID Id) const;
 		NxFr::String IdToContentFsPath(NxFr::GUID Id) const;
 
@@ -31,9 +31,9 @@ namespace NxEn
 		uint64 GetCount() const { return Assets.GetCount(); }
 
 	private:
-		NxFr::String PathToFsPath(NxFr::StringView Path) const;
-		void Write(NxFr::StringView Path, const YAML::Node& Metadata, const YAML::Node& Assetdata);
 		YAML::Node Read(NxFr::StringView Path, NxFr::StringView Key);
+		void Write(NxFr::StringView Path, const YAML::Node& Metadata, const YAML::Node& Assetdata);
+		NxFr::String PathToFsPath(NxFr::StringView Path, NxFr::StringView Extension) const;
 
 		NxFr::String Root;
 		NxFr::Dictionary<NxFr::GUID, AssetMetadata> Assets;
