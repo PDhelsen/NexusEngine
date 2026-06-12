@@ -64,6 +64,7 @@ namespace NxEn
 		void SaveDirty();
 
 		void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");
+		Asset* Clone(NxFr::GUID Id);
 		Asset* Acquire(NxFr::GUID Id);
 		void Release(NxFr::GUID Id, bool Keep = false);
 		Asset* Load(NxFr::GUID Id);

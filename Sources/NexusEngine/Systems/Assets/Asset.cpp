@@ -4,7 +4,7 @@
 namespace NxEn
 {
 	Asset::Asset()
-		: Id(0), Dirty(false)
+		: Id(0), Name(), Dirty(false)
 	{
 		SetTickable(false);
 	}
@@ -13,12 +13,11 @@ namespace NxEn
 	{
 	}
 
-	void Asset::OnDraw()
+	Asset* Asset::Clone() const
 	{
-		GUI::Drawer<NxFr::GUID>::Property(Id, "Id");
-		GUI::Drawer<NxFr::String>::Property(Name, "Name");
-
-		ImGui::Separator();
+		Asset* Instance = AssetsSystem::GetFactory().Create(GetObjectType());
+		Instance->Object::Clone(this);
+		return Instance;
 	}
 
 	void Asset::Save(YAML::Node& Node, NxFr::StringView ContentFsPath)
@@ -34,5 +33,13 @@ namespace NxEn
 	void Asset::Unload()
 	{
 		OnUnload();
+	}
+
+	void Asset::OnDraw()
+	{
+		GUI::Drawer<NxFr::GUID>::Property(Id, "Id");
+		GUI::Drawer<NxFr::String>::Property(Name, "Name");
+
+		ImGui::Separator();
 	}
 }

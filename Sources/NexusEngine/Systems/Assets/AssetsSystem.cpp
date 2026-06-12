@@ -232,6 +232,24 @@ namespace NxEn
 		OnEvent.Invoke(EventCreatedId, Metadata.GetId());
 	}
 
+	Asset* AssetsSystem::Clone(NxFr::GUID Id)
+	{
+		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
+		NX_ASSERT(IsLoaded(Id), System, "Asset %llu is not loaded", Id);
+
+		AssetMetadata& Metadata = Registry->Get(Id);
+		AssetHandle& Handle = Manager->Get(Id);
+		Asset* Instance = GetFactory().Create(Metadata.GetType());
+
+		Instance->Id = Metadata.GetId();
+		Instance->Name = Metadata.GetName();
+
+		Instance->Object::Clone((const Object*)Handle.GetInstance());
+		Instance->Initialize();
+
+		return Instance;
+	}
+
 	Asset* AssetsSystem::Acquire(NxFr::GUID Id)
 	{
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);

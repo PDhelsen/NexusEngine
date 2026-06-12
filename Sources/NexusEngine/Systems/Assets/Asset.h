@@ -18,6 +18,7 @@ namespace NxEn
 		Asset();
 		virtual ~Asset();
 
+		Asset* Clone() const override;
 		void Save(YAML::Node& Node, NxFr::StringView Content);
 		void Load(const YAML::Node& Node, NxFr::StringView Content);
 		void Unload() override;
@@ -29,6 +30,7 @@ namespace NxEn
 
 	protected:
 		virtual void OnDraw() override;
+		virtual void OnClone(const Object& Other) = 0;
 		virtual void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		virtual void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) = 0;
 		virtual void OnUnload() = 0;
