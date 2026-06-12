@@ -61,6 +61,7 @@ namespace NxEn
 		void Copy(NxFr::GUID Id, NxFr::StringView Path);
 		void Delete(NxFr::GUID Id);
 		void Save(NxFr::GUID Id, bool Force = false);
+		void SaveMetadata(NxFr::GUID Id);
 		void SaveDirty();
 
 		void Track(Asset* Instance, NxFr::StringView Path = "", NxFr::StringView Extension = "");

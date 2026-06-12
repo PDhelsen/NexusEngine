@@ -202,6 +202,23 @@ namespace NxEn
 		OnEvent.Invoke(EventSavedId, Id);
 	}
 
+	void AssetsSystem::SaveMetadata(NxFr::GUID Id)
+	{
+		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
+
+		if (!Registry->HasFile(Id))
+		{
+			NX_LOG(Warning, System, "Asset %d has no associated path");
+			return;
+		}
+
+		OnEvent.Invoke(EventSaveId, Id);
+
+		Registry->SerializeMetadata(Id);
+
+		OnEvent.Invoke(EventSavedId, Id);
+	}
+
 	void AssetsSystem::SaveDirty()
 	{
 		OnEvent.Invoke(EventSaveId, 0);
