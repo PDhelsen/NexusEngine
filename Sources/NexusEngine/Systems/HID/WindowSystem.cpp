@@ -281,7 +281,9 @@ namespace NxEn
 		FetchMonitors();
 		CreateWindow();
 		SetWindowVSync(Target.VSync);
+#if !NX_EDITOR
 		SetWindowMode(Target.WindowMode);
+#endif
 		SetWindowPosition(Target.Position);
 		SetWindowResolution(Target.Resolution);
 		SetWindowTitle(Target.Title);
