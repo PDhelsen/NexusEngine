@@ -1,11 +1,11 @@
-#include "NexusEditor/Systems/Assets/References/ReferencesPanel.h"
+#include "NexusEditor/Systems/Object/References/ReferencesPanel.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 namespace NxEd
 {
 	static ReferencesPanel* Panel = NxEn::GUI::Panel::Create<ReferencesPanel>();
 
-	const static NxEn::GUI::Menu::Item MenuItemReferences = NxEn::GUI::Menu::Item::Create("Object/Assets/References", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemReferences = NxEn::GUI::Menu::Item::Create("Object/Objects/References", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel ReferencesPanel");
 	}));

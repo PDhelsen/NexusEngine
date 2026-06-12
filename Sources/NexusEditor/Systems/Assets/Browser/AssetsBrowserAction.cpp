@@ -3,7 +3,6 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
-#include "NexusEditor/Systems/Assets/References/ReferencesPanel.h"
 #include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
 #include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
 #include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
@@ -268,14 +267,5 @@ namespace NxEd
 			StageView = Manager->CreateStage(Target);
 		}
 		Manager->ShowStage(Target);
-	}
-
-	void AssetsBrowserActionReferences::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
-		AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Items[0]);
-
-		ReferencesPanel* References = NxEn::GUISystem::GetPanel<ReferencesPanel>();
-		References->Show();
-		References->Select(Target->GetItemId(), false, true);
 	}
 }

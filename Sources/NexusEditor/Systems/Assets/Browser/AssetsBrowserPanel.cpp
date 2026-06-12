@@ -52,7 +52,6 @@ namespace NxEd
 		AppendAction<AssetsBrowserActionReload>();
 		AppendAction<AssetsBrowserActionInstantiate>();
 		AppendAction<AssetsBrowserActionView>();
-		AppendAction<AssetsBrowserActionReferences>();
 	}
 
 	void AssetsBrowserPanel::OnShutdown()

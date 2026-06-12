@@ -125,16 +125,5 @@ namespace NxEd
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
-
-	class NX_EDITOR_API AssetsBrowserActionReferences : public NxEn::TreeAction
-	{
-	public:
-		NX_OBJECT(AssetsBrowserActionReferences)
-
-		AssetsBrowserActionReferences() : TreeAction("References", 12, false, false) {}
-		virtual ~AssetsBrowserActionReferences() = default;
-
-		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
-	};
 }
 
