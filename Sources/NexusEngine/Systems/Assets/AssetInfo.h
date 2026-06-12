@@ -39,9 +39,9 @@ namespace NxEn
 		AssetMetadata(NxFr::GUID Id, NxFr::StringId Type, NxFr::StringView Path = "", NxFr::StringView Extension = "");
 		~AssetMetadata();
 
-		NxFr::StringView GetName() const { return NxFr::Path::GetName(Path); }
 		NxFr::GUID GetId() const { return Id; }
 		NxFr::StringId GetType() const { return Type; }
+		NxFr::StringView GetName() const { return Name; }
 		bool HasFile() const { return !Path.IsEmpty(); }
 		NxFr::StringView GetPath() const { return Path; }
 		NxFr::String GetAssetPath() const { return ComputeAssetPath(Path); }
@@ -59,6 +59,7 @@ namespace NxEn
 
 		NxFr::GUID Id;
 		NxFr::StringId Type;
+		NxFr::String Name;
 		NxFr::String Path;
 		NxFr::String Extension;
 		NxFr::Array<NxFr::GUID> Dependencies;

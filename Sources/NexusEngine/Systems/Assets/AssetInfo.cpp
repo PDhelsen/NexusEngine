@@ -32,7 +32,7 @@ namespace NxEn
 	}
 
 	AssetMetadata::AssetMetadata(NxFr::GUID Id, NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
-		: Id(Id), Type(Type), Path(Path), Extension(Extension), Data(3)
+		: Id(Id), Type(Type), Name(NxFr::Path::GetName(Path)), Path(Path), Extension(Extension), Data(3)
 	{
 
 	}
@@ -46,6 +46,7 @@ namespace NxEn
 		YAML::Node Node;
 		Node["Id"] = Id;
 		Node["Type"] = Type;
+		Node["Name"] = Name;
 		Node["Path"] = Path;
 		Node["Extension"] = Extension;
 		Node["Dependencies"] = Dependencies;
@@ -57,6 +58,7 @@ namespace NxEn
 	{
 		Id = Node["Id"].as<NxFr::GUID>();
 		Type = Node["Type"].as<NxFr::StringId>();
+		Name = Node["Name"].as<NxFr::String>();
 		Path = Node["Path"].as<NxFr::String>();
 		Extension = Node["Extension"].as<NxFr::String>();
 		Dependencies = Node["Dependencies"].as<NxFr::Array<NxFr::GUID>>();

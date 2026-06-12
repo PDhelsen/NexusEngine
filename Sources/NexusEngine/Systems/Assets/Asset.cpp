@@ -3,11 +3,6 @@
 
 namespace NxEn
 {
-	const AssetMetadata& GetMetadata(NxFr::GUID Id)
-	{
-		return Application::GetSystem<AssetsSystem>()->GetMetadata(Id);
-	}
-
 	Asset::Asset()
 		: Id(0), Dirty(false)
 	{
@@ -20,11 +15,8 @@ namespace NxEn
 
 	void Asset::OnDraw()
 	{
-		const AssetMetadata& Medata = GetMetadata(Id);
-
 		GUI::Drawer<NxFr::GUID>::Property(Id, "Id");
-		GUI::Drawer<NxFr::String>::Property(Medata.GetName(), "Name");
-		GUI::Drawer<NxFr::String>::Property(Medata.GetAssetPath(), "Path");
+		GUI::Drawer<NxFr::String>::Property(Name, "Name");
 
 		ImGui::Separator();
 	}

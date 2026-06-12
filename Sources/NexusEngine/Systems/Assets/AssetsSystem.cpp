@@ -144,7 +144,7 @@ namespace NxEn
 		}
 
 		AssetMetadata& Metadata = Registry->Copy(Id, Path);
-		Registry->SerializeMetadata(Metadata.Id);
+		Registry->SerializeMetadata(Metadata.GetId());
 
 		OnEvent.Invoke(EventCopiedId, Id);
 	}
@@ -178,7 +178,7 @@ namespace NxEn
 		AssetMetadata& Metadata = Registry->Get(Id);
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
-		if (!Instance->Dirty && !Force)
+		if (!Instance->IsDirty() && !Force)
 		{
 			return;
 		}
@@ -186,6 +186,7 @@ namespace NxEn
 		OnEvent.Invoke(EventSaveId, Id);
 
 		YAML::Node Node;
+		Metadata.Name = Instance->GetName();
 		Metadata.Dependencies = Instance->GetDependencies();
 		Manager->Save(Id, Node, Registry->IdToContentFsPath(Id));
 		Registry->Serialize(Id, Node);
@@ -202,7 +203,10 @@ namespace NxEn
 		NxFr::List<NxFr::GUID> Ids = Manager->GetDirty();
 		for (auto& Id : Ids)
 		{
-			Save(Id);
+			if (Registry->Get(Id).HasFile())
+			{
+				Save(Id);
+			}
 		}
 
 		OnEvent.Invoke(EventSavedId, 0);
@@ -213,12 +217,13 @@ namespace NxEn
 		NX_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %llu", Instance->GetId());
 		
 		AssetMetadata& Metadata = Registry->Append(Instance->GetObjectType(), Path, Extension);
-		AssetHandle& Handle = Manager->Append(Metadata.Id, Instance);
+		AssetHandle& Handle = Manager->Append(Metadata.GetId(), Instance);
 
-		Instance->Id = Metadata.Id;
+		Instance->Id = Metadata.GetId();
+		Instance->Name = Metadata.GetName();
 		Instance->Dirty = true;
 
-		OnEvent.Invoke(EventCreatedId, Metadata.Id);
+		OnEvent.Invoke(EventCreatedId, Metadata.GetId());
 	}
 
 	Asset* AssetsSystem::Acquire(NxFr::GUID Id)
@@ -257,6 +262,7 @@ namespace NxEn
 		AssetHandle& Handle = Manager->Append(Id, Instance);
 
 		Instance->Id = Id;
+		Instance->Name = Metadata.GetName();
 
 		YAML::Node Node = Registry->Deserialize(Id);
 		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));

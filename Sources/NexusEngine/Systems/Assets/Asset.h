@@ -28,6 +28,7 @@ namespace NxEn
 		void Unload() override;
 
 		NxFr::GUID GetId() const override { return Id; }
+		NxFr::StringView GetName() const override { return Name; }
 		bool IsDirty() const { return Dirty; }
 		void SetDirty() { Dirty = true; }
 
@@ -39,6 +40,7 @@ namespace NxEn
 
 	private:
 		NxFr::GUID Id;
+		NxFr::String Name;
 		bool Dirty;
 	};
 }
