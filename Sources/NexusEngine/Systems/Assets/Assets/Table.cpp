@@ -10,6 +10,13 @@ namespace NxEn
 		Asset::OnDraw();
 	}
 
+	void Table::OnClone(const Object& Other)
+	{
+		const Table& Instance = static_cast<const Table&>(Other);
+
+		Data = Instance.Data;
+	}
+
 	void Table::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
 		NxFr::Yaml::SerializeFile(Data, ContentFsPath);

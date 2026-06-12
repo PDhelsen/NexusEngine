@@ -13,6 +13,7 @@ namespace NxEn
 
 	protected:
 		void OnDraw() override;
+		void OnClone(const Object& Other) override;
 		void OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		void OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath) override;
 		void OnUnload() override;

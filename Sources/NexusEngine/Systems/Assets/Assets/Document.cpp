@@ -12,6 +12,13 @@ namespace NxEn
 		GUI::Drawer<uint64>::Property(Data.GetCount(), "Length");
 	}
 
+	void Document::OnClone(const Object& Other)
+	{
+		const Document& Instance = static_cast<const Document&>(Other);
+
+		Data = Instance.Data;
+	}
+
 	void Document::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
 		NxFr::File File = NxFr::File(ContentFsPath);

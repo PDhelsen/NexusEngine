@@ -30,6 +30,11 @@ namespace NxEn
 		GUI::Drawer<NxFr::StringView>::Property(Root->GetName(), "Root");
 	}
 
+	void Prefab::OnClone(const Object& Other)
+	{
+		NX_ASSERT(false, Default, "Prefab::Clone is not supported. Please use WorldSystem::InstantiatePrefab instead");
+	}
+
 	void Prefab::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
 		NxFr::Yaml::SerializeFile(Root->Serialize(), Content);

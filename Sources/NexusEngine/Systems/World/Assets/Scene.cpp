@@ -35,6 +35,11 @@ namespace NxEn
 		GUI::Drawer<NxFr::StringView>::Property(Root->GetName(), "Root");
 	}
 
+	void Scene::OnClone(const Object& Other)
+	{
+		NX_ASSERT(false, Default, "Scene::Clone is not supported");
+	}
+
 	void Scene::OnSave(YAML::Node& Node, NxFr::StringView Content)
 	{
 		NxFr::Yaml::SerializeFile(Root->Serialize(), Content);

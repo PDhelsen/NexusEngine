@@ -12,6 +12,13 @@ namespace NxEn
 		GUI::Drawer<uint64>::Property(Data.GetCount(), "Size");
 	}
 
+	void Artifact::OnClone(const Object& Other)
+	{
+		const Artifact& Instance = static_cast<const Artifact&>(Other);
+
+		Data = Instance.Data;
+	}
+
 	void Artifact::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
 	{
 		NxFr::File File = NxFr::File(ContentFsPath);
