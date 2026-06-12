@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API Scene : public Asset
 	{
 	public:
-		NX_ASSET_DECLARATION(Scene)
+		NX_OBJECT(Scene)
 
 		NxFr::Handle<GameObject> GetRoot() const;
 

@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NX_ASSET_IMPLEMENTATION(Artifact)
+	NX_ASSET(Artifact)
 
 	void Artifact::OnDraw()
 	{

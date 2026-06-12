@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NX_ASSET_IMPLEMENTATION(Document)
+	NX_ASSET(Document)
 
 	void Document::OnDraw()
 	{

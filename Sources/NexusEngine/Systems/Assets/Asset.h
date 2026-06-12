@@ -2,13 +2,8 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Object/Object.h"
-#include "NexusEngine/Systems/Assets/AssetsFactory.h"
 
-#define NX_ASSET_DECLARATION(Type) \
-NX_OBJECT(Type)
-
-#define NX_ASSET_IMPLEMENTATION(Type) \
-NxEn::AssetsFactory::Factory* Factory##Type = NxEn::AssetsFactory::Register<Type>();
+#define NX_ASSET(Type) NxFr::Factory<NxEn::Asset>::Creator* Factory##Type = NxEn::AssetsSystem::GetFactory().Register<Type>(Type::GetClassType());
 
 namespace NxEn
 {

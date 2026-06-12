@@ -8,7 +8,7 @@ namespace NxEn
 	class NX_ENGINE_API Prefab : public Asset
 	{
 	public:
-		NX_ASSET_DECLARATION(Prefab)
+		NX_OBJECT(Prefab)
 
 		NxFr::Handle<GameObject> GetRoot() const;
 		void SetRoot(NxFr::Handle<GameObject> Instance);

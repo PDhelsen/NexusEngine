@@ -7,7 +7,7 @@ namespace NxEn
 	class NX_ENGINE_API Table : public Asset
 	{
 	public:
-		NX_ASSET_DECLARATION(Table)
+		NX_OBJECT(Table)
 
 		YAML::Node& GetRoot() { return Data; }
 

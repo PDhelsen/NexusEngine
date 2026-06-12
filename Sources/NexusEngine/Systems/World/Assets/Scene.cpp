@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NX_ASSET_IMPLEMENTATION(Scene)
+	NX_ASSET(Scene)
 
 	NxFr::Handle<GameObject> Scene::GetRoot() const
 	{

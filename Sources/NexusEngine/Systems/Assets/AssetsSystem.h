@@ -20,6 +20,8 @@ namespace NxEn
 		inline static const NxFr::StringId EventUnloadedId = "Unloaded"_Sid;
 		inline static const NxFr::StringId EventImportedId = "Imported"_Sid;
 
+		static NxFr::Factory<Asset>& GetFactory();
+
 		NX_OBJECT(AssetsSystem)
 
 		template<typename T>

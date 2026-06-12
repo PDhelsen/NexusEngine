@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	NX_ASSET_IMPLEMENTATION(Table)
+	NX_ASSET(Table)
 
 	void Table::OnDraw()
 	{

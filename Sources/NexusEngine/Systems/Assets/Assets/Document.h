@@ -7,7 +7,7 @@ namespace NxEn
 	class NX_ENGINE_API Document : public Asset
 	{
 	public:
-		NX_ASSET_DECLARATION(Document)
+		NX_OBJECT(Document)
 
 		NxFr::String& GetText() { return Data; }
 		uint64 GetCount() { return Data.GetCount(); }

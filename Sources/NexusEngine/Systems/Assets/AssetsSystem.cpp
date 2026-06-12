@@ -89,9 +89,15 @@ namespace NxEn
 		NX_LOG(Info, System, "Asset (%s) has Id %llu", Path.C(), Id);
 	}));
 
+	NxFr::Factory<Asset>& AssetsSystem::GetFactory()
+	{
+		static NxFr::Factory<Asset> Factory;
+		return Factory;
+	}
+
 	Asset* AssetsSystem::Create(NxFr::StringId Type, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-		NxEn::Asset* Instance = AssetsFactory::Create(Type);
+		NxEn::Asset* Instance = GetFactory().Create(Type);
 
 		Track(Instance, Path, Extension);
 		Instance->Initialize();
@@ -258,7 +264,7 @@ namespace NxEn
 		NX_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%llu)", Id);
 
 		AssetMetadata& Metadata = Registry->Get(Id);
-		Asset* Instance = AssetsFactory::Create(Metadata.GetType());
+		Asset* Instance = GetFactory().Create(Metadata.GetType());
 		AssetHandle& Handle = Manager->Append(Id, Instance);
 
 		Instance->Id = Id;
@@ -336,7 +342,7 @@ namespace NxEn
 
 	Asset* AssetsSystem::Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-		NxEn::Asset* Instance = AssetsFactory::Create(Type);
+		NxEn::Asset* Instance = GetFactory().Create(Type);
 
 		Track(Instance, Path, Extension);
 		Manager->Load(Instance->GetId(), Node, Registry->IdToContentFsPath(Instance->GetId()));
