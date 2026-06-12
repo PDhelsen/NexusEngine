@@ -35,15 +35,15 @@ namespace NxEn
 		NX_ASSERT(false, Default, "Prefab::Clone is not supported. Please use WorldSystem::InstantiatePrefab instead");
 	}
 
-	void Prefab::OnSave(YAML::Node& Node, NxFr::StringView Content)
+	void Prefab::OnSave(NxFr::StringView Path) const
 	{
-		NxFr::Yaml::SerializeFile(Root->Serialize(), Content);
+		NxFr::Yaml::SerializeFile(Root->Serialize(), Path);
 	}
 
-	void Prefab::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
+	void Prefab::OnLoad(NxFr::StringView Path)
 	{
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
-		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
+		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
 
 		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
 		Root->Deserialize(Data);

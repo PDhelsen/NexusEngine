@@ -128,7 +128,7 @@ namespace NxEn
 		}
 
 		Registry->Move(Id, Path);
-		Registry->SerializeMetadata(Id);
+		Registry->SerializeAndSave(Id, YAML::Node());
 
 		OnEvent.Invoke(EventMovedId, Id);
 	}
@@ -150,7 +150,7 @@ namespace NxEn
 		}
 
 		AssetMetadata& Metadata = Registry->Copy(Id, Path);
-		Registry->SerializeMetadata(Metadata.GetId());
+		Registry->SerializeAndSave(Metadata.GetId(), YAML::Node());
 
 		OnEvent.Invoke(EventCopiedId, Id);
 	}
@@ -191,11 +191,11 @@ namespace NxEn
 
 		OnEvent.Invoke(EventSaveId, Id);
 
-		YAML::Node Node;
 		Metadata.Name = Instance->GetName();
 		Metadata.Dependencies = Instance->GetDependencies();
-		Manager->Save(Id, Node, Registry->IdToContentFsPath(Id));
-		Registry->Serialize(Id, Node);
+
+		YAML::Node Assetdata = Manager->SerializeAndSave(Id, Registry->IdToContentFsPath(Id));
+		Registry->SerializeAndSave(Id, Assetdata);
 
 		Instance->Dirty = false;
 
@@ -214,7 +214,7 @@ namespace NxEn
 
 		OnEvent.Invoke(EventSaveId, Id);
 
-		Registry->SerializeMetadata(Id);
+		Registry->SerializeAndSave(Id, YAML::Node());
 
 		OnEvent.Invoke(EventSavedId, Id);
 	}
@@ -305,8 +305,8 @@ namespace NxEn
 		Instance->Id = Id;
 		Instance->Name = Metadata.GetName();
 
-		YAML::Node Node = Registry->Deserialize(Id);
-		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
+		YAML::Node Assetdata = Registry->DeserializeAndLoad(Id);
+		Manager->DeserializeAndLoad(Id, Assetdata, Registry->IdToContentFsPath(Id));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventLoadedId, Id);
@@ -331,8 +331,8 @@ namespace NxEn
 
 		Instance->Dirty = false;
 
-		YAML::Node Node = Registry->Deserialize(Id);
-		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
+		YAML::Node Assetdata = Registry->DeserializeAndLoad(Id);
+		Manager->DeserializeAndLoad(Id, Assetdata, Registry->IdToContentFsPath(Id));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventLoadedId, Id);
@@ -375,19 +375,19 @@ namespace NxEn
 		OnEvent.Invoke(EventUnloadedId, 0);
 	}
 
-	Asset* AssetsSystem::Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
+	Asset* AssetsSystem::Import(NxFr::StringId Type, const YAML::Node& Assetdata, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NxEn::Asset* Instance = GetFactory().Create(Type);
 
 		Track(Instance, Path, Extension);
-		Manager->Load(Instance->GetId(), Node, Registry->IdToContentFsPath(Instance->GetId()));
+		Manager->DeserializeAndLoad(Instance->GetId(), Assetdata, Registry->IdToContentFsPath(Instance->GetId()));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
 		return Instance;
 	}
 
-	Asset* AssetsSystem::Reimport(NxFr::GUID Id, const YAML::Node& Node)
+	Asset* AssetsSystem::Reimport(NxFr::GUID Id, const YAML::Node& Assetdata)
 	{
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
 		NX_ASSERT(Registry->HasFile(Id), System, "Asset has no associated path(%llu)", Id);
@@ -405,7 +405,7 @@ namespace NxEn
 
 		Instance->Dirty = true;
 
-		Manager->Load(Id, Node, Registry->IdToContentFsPath(Id));
+		Manager->DeserializeAndLoad(Id, Assetdata, Registry->IdToContentFsPath(Id));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
@@ -438,11 +438,11 @@ namespace NxEn
 		return Registry->Get(Id);
 	}
 
-	YAML::Node AssetsSystem::GetImportData(NxFr::GUID Id)
+	YAML::Node AssetsSystem::GetAssetdata(NxFr::GUID Id)
 	{
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
 
-		return Registry->DeserializeData(Id);
+		return Registry->DeserializeAndLoad(Id);
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recursive)

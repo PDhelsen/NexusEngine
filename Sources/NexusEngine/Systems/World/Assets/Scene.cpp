@@ -40,15 +40,15 @@ namespace NxEn
 		NX_ASSERT(false, Default, "Scene::Clone is not supported");
 	}
 
-	void Scene::OnSave(YAML::Node& Node, NxFr::StringView Content)
+	void Scene::OnSave(NxFr::StringView Path) const
 	{
-		NxFr::Yaml::SerializeFile(Root->Serialize(), Content);
+		NxFr::Yaml::SerializeFile(Root->Serialize(), Path);
 	}
 
-	void Scene::OnLoad(const YAML::Node& Node, NxFr::StringView Content)
+	void Scene::OnLoad(NxFr::StringView Path)
 	{
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
-		YAML::Node Data = NxFr::Yaml::DeserializeFile(Content);
+		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
 
 		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
 		Root->Deserialize(Data);

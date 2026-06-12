@@ -19,17 +19,17 @@ namespace NxEn
 		Data = Instance.Data;
 	}
 
-	void Artifact::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
+	void Artifact::OnSave(NxFr::StringView Path) const
 	{
-		NxFr::File File = NxFr::File(ContentFsPath);
+		NxFr::File File = NxFr::File(Path);
 		File.Create(true);
 		File.WriteByte(Data);
 		File.Close();
 	}
 
-	void Artifact::OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath)
+	void Artifact::OnLoad(NxFr::StringView Path)
 	{
-		NxFr::File File = NxFr::File(ContentFsPath);
+		NxFr::File File = NxFr::File(Path);
 		File.Open(NxFr::File::Mode::Read);
 		Data = File.ReadByte();
 		File.Close();
@@ -38,9 +38,5 @@ namespace NxEn
 	void Artifact::OnUnload()
 	{
 		Data = NxFr::Buffer();
-	}
-
-	void Artifact::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
-	{
 	}
 }

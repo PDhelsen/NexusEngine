@@ -40,14 +40,14 @@ namespace NxEn
 			return static_cast<T*>(Load(Id));
 		}
 		template<typename T>
-		T* Import(const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension)
+		T* Import(const YAML::Node& Assetdata, NxFr::StringView Path, NxFr::StringView Extension)
 		{
-			return static_cast<T*>(Import(T::GetClassType(), Node, Path, Extension));
+			return static_cast<T*>(Import(T::GetClassType(), Assetdata, Path, Extension));
 		}
 		template<typename T>
-		T* Reimport(const YAML::Node& Node, NxFr::GUID Id)
+		T* Reimport(const YAML::Node& Assetdata, NxFr::GUID Id)
 		{
-			return static_cast<T*>(Reimport(Id, Node));
+			return static_cast<T*>(Reimport(Id, Assetdata));
 		}
 		template<typename T>
 		T* GetAsset(NxFr::GUID Id)
@@ -73,13 +73,13 @@ namespace NxEn
 		void Unload(NxFr::GUID Id);
 		void Purge(bool SaveIfDirty);
 
-		Asset* Import(NxFr::StringId Type, const YAML::Node& Node, NxFr::StringView Path, NxFr::StringView Extension);
-		Asset* Reimport(NxFr::GUID Id, const YAML::Node& Node);
+		Asset* Import(NxFr::StringId Type, const YAML::Node& Assetdata, NxFr::StringView Path, NxFr::StringView Extension);
+		Asset* Reimport(NxFr::GUID Id, const YAML::Node& Assetdata);
 
 		Asset* GetAsset(NxFr::GUID Id);
 		AssetHandle& GetHandle(NxFr::GUID Id);
 		AssetMetadata& GetMetadata(NxFr::GUID Id);
-		YAML::Node GetImportData(NxFr::GUID Id);
+		YAML::Node GetAssetdata(NxFr::GUID Id);
 		NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recursive = false);
 		void GetDependencies(NxFr::GUID Id, bool Recursive, NxFr::Set<NxFr::GUID>& Result);
 

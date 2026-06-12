@@ -69,7 +69,7 @@ namespace NxEd
 		NX_ASSERT(!(Exist && Id == 0), Default, "AssetImporter needs an Id to reimport an asset");
 
 		AssetImporter* Importer = GetImporter(Type);
-		YAML::Node Node = Exist ? Assets->GetImportData(Id) : YAML::Node();
+		YAML::Node Node = Exist ? Assets->GetAssetdata(Id) : YAML::Node();
 		if (Importer)
 		{
 			Importer->OnImport(Node, ContentPath, Exist);

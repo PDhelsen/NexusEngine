@@ -54,7 +54,7 @@ namespace NxEn
 		static NxFr::String ComputeContentPath(NxFr::StringView Path, NxFr::StringView Extension) { return NxFr::Path::ChangeExtension(Path, Extension); }
 
 	private:
-		YAML::Node Serialize();
+		YAML::Node Serialize() const;
 		void Deserialize(const YAML::Node& Node);
 
 		NxFr::GUID Id;

@@ -20,21 +20,6 @@ namespace NxEn
 		return Instance;
 	}
 
-	void Asset::Save(YAML::Node& Node, NxFr::StringView ContentFsPath)
-	{
-		OnSave(Node, ContentFsPath);
-	}
-
-	void Asset::Load(const YAML::Node& Node, NxFr::StringView ContentFsPath)
-	{
-		OnLoad(Node, ContentFsPath);
-	}
-
-	void Asset::Unload()
-	{
-		OnUnload();
-	}
-
 	void Asset::OnDraw()
 	{
 		GUI::Drawer<NxFr::GUID>::Property(Id, "Id");

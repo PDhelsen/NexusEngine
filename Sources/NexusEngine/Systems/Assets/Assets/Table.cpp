@@ -17,22 +17,18 @@ namespace NxEn
 		Data = Instance.Data;
 	}
 
-	void Table::OnSave(YAML::Node& Node, NxFr::StringView ContentFsPath)
+	void Table::OnSave(NxFr::StringView Path) const
 	{
-		NxFr::Yaml::SerializeFile(Data, ContentFsPath);
+		NxFr::Yaml::SerializeFile(Data, Path);
 	}
 
-	void Table::OnLoad(const YAML::Node& Node, NxFr::StringView ContentFsPath)
+	void Table::OnLoad(NxFr::StringView Path)
 	{
-		Data = NxFr::Yaml::DeserializeFile(ContentFsPath);
+		Data = NxFr::Yaml::DeserializeFile(Path);
 	}
 
 	void Table::OnUnload()
 	{
 		Data = YAML::Node();
-	}
-
-	void Table::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
-	{
 	}
 }

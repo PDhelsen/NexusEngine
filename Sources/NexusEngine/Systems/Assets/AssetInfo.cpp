@@ -41,7 +41,7 @@ namespace NxEn
 	{
 	}
 
-	YAML::Node AssetMetadata::Serialize()
+	YAML::Node AssetMetadata::Serialize() const
 	{
 		YAML::Node Node;
 		Node["Id"] = Id;
