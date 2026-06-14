@@ -65,6 +65,6 @@ namespace NxEd
 
 		NxFr::Dictionary<NxFr::GUID, AssetsBrowserItem*> Items;
 		AssetsBrowserItem* Root;
-		AssetsBrowserEditContext* Context;
+		AssetsBrowserEditContext Context;
 	};
 }

@@ -76,7 +76,7 @@ namespace NxEd
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
-			Edit::Context::SetCurrent(Browser->Context);
+			Edit::Context::SetCurrent(&Browser->Context);
 		}
 
 		TreePanel::OnDraw();

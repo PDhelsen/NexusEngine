@@ -26,39 +26,36 @@ namespace NxEd
 	}));
 
 	AssetsBrowser::AssetsBrowser()
-		: Assets(nullptr), Edit(nullptr), Items(), Root(nullptr), Context(nullptr)
+		: OnItemCreated(), OnItemDestroyed(), OnItemSelected(),
+		Assets(nullptr), Edit(nullptr),
+		Items(), Root(nullptr), Context(ContextId, this)
 	{
 		OnItemDestroyed += [&](AssetsBrowserItem* Item)
 		{
-			Edit->Unselect(Item->GetItemId(), Context->GetId());
+			Edit->Unselect(Item->GetItemId(), Context.GetId());
 		};
 		OnItemSelected += [&](AssetsBrowserItem* Item, bool State)
 		{
 			if (State)
 			{
-				Edit->Select(Item->GetItemId(), Context->GetId());
+				Edit->Select(Item->GetItemId(), Context.GetId());
 			}
 			else
 			{
-				Edit->Unselect(Item->GetItemId(), Context->GetId());
+				Edit->Unselect(Item->GetItemId(), Context.GetId());
 			}
 		};
 
-		Context = new AssetsBrowserEditContext(ContextId, this);
-		Context->GetOnSelectionChanged() += [&](NxFr::GUID Id, bool State)
+		Context.GetOnSelectionChanged() += [&](NxFr::GUID Id, bool State)
 		{
 			AssetsBrowserItem* Item = GetItem(Id);
 			OnItemSelected.Invoke(Item, State);
 		};
-
-		Refresh();
 	}
 
 	AssetsBrowser::~AssetsBrowser()
 	{
-		Clear();
 
-		delete Context;
 	}
 
 	void AssetsBrowser::Clear()
@@ -81,7 +78,7 @@ namespace NxEd
 		Root = FetchItems(NxFr::Globals::Paths::Assets, nullptr);
 		PurgeDuplicates(Root);
 
-		Edit->RegisterContext(ContextId, Context);
+		Edit->RegisterContext(ContextId, &Context);
 		Root->ImGuiText = RootFolderName;
 		Root->Open(true);
 	}
