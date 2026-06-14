@@ -23,8 +23,8 @@ namespace NxEd
 		void Refresh();
 
 		void Create(NxFr::StringView ItemPath, NxFr::StringId Type);
-		void Move(NxFr::StringView ItemPath, NxFr::StringView Target);
-		void Duplicate(NxFr::StringView ItemPath, NxFr::StringView Target);
+		void Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath);
+		void Duplicate(NxFr::StringView ItemPath, NxFr::StringView TargetPath);
 		void Delete(NxFr::StringView ItemPath);
 
 		bool Exist(NxFr::StringView ItemPath);
@@ -50,11 +50,10 @@ namespace NxEd
 		AssetsBrowserItem* GetParent(NxFr::StringView Path);
 
 		NxFr::GUID ItemPathToId(NxFr::StringView ItemPath);
-		NxFr::String IdToItemPath(NxFr::GUID Id);
-		NxFr::String ItemPathToAssetPath(NxFr::StringView ItemPath);
-		NxFr::String ItemPathToCallbackPath(NxFr::StringView ItemPath, AssetsBrowserItem* Item);
 		NxFr::String ItemPathToFsPath(NxFr::StringView ItemPath);
 		NxFr::String FsPathToItemPath(NxFr::StringView FsPath);
+		NxFr::String ItemPathToAssetPath(NxFr::StringView ItemPath);
+		NxFr::String ItemPathToCallbackPath(NxFr::StringView ItemPath, AssetsBrowserItem* Item);
 
 	private:
 		NxFr::Event<AssetsBrowserItem*> OnItemCreated;

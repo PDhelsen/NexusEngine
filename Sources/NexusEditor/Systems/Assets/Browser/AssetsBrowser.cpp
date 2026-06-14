@@ -95,28 +95,28 @@ namespace NxEd
 		OnCreate(Type, TargetPath);
 	}
 
-	void AssetsBrowser::Move(NxFr::StringView ItemPath, NxFr::StringView Target)
+	void AssetsBrowser::Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath)
 	{
 		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID Id = ItemPathToId(Validate(ItemPath));
-		NxFr::String TargetPath = MakeUniquePath(Validate(Target));
+		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
 		AssetsBrowserItem* Item = GetItem(Id);
 
 		DetachItem(Item);
-		OnMove(Item, TargetPath);
-		AttachItem(Item, GetParent(TargetPath));
+		OnMove(Item, Target);
+		AttachItem(Item, GetParent(Target));
 	}
 
-	void AssetsBrowser::Duplicate(NxFr::StringView ItemPath, NxFr::StringView Target)
+	void AssetsBrowser::Duplicate(NxFr::StringView ItemPath, NxFr::StringView TargetPath)
 	{
 		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID Id = ItemPathToId(Validate(ItemPath));
-		NxFr::String TargetPath = MakeUniquePath(Validate(Target));
+		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
 		AssetsBrowserItem* Item = GetItem(Id);
 
-		OnDuplicate(Item, TargetPath);
+		OnDuplicate(Item, Target);
 	}
 
 	void AssetsBrowser::Delete(NxFr::StringView ItemPath)
@@ -347,8 +347,8 @@ namespace NxEd
 	{
 		NxFr::String AssetPath = ItemPathToAssetPath(TargetPath);
 
-		AssetsBrowserItem* Item = AppendItem(AssetPath, GetParent(TargetPath));
-		Item->OnCreate(ItemPathToCallbackPath(TargetPath, Item), Type);
+		AssetsBrowserItem* Item = AppendItem(AssetPath, GetParent(AssetPath));
+		Item->OnCreate(Type, ItemPathToCallbackPath(TargetPath, Item));
 		UpdateItem(Item, AssetPath, true, false);
 	}
 
@@ -414,22 +414,6 @@ namespace NxEd
 			Assets->PathToId(NxFr::Path::GetPathWithoutExtension(ItemPath)) : NxFr::Hash<>::HashObject(ItemPath);
 	}
 
-	NxFr::String AssetsBrowser::IdToItemPath(NxFr::GUID Id)
-	{
-		AssetsBrowserItem** Item = Items.TryGet(Id);
-		return Item ? (*Item)->Path : NxFr::StringUtility::Empty;
-	}
-
-	NxFr::String AssetsBrowser::ItemPathToAssetPath(NxFr::StringView ItemPath)
-	{
-		return NxFr::Path::ChangeExtension(ItemPath, NxEn::AssetMetadata::AssetExtension);
-	}
-
-	NxFr::String AssetsBrowser::ItemPathToCallbackPath(NxFr::StringView ItemPath, AssetsBrowserItem* Item)
-	{
-		return Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? NxFr::String(ItemPath) : ItemPathToFsPath(ItemPath);
-	}
-
 	NxFr::String AssetsBrowser::ItemPathToFsPath(NxFr::StringView ItemPath)
 	{
 		if (ItemPath == NxFr::StringUtility::Empty)
@@ -448,5 +432,15 @@ namespace NxEd
 		}
 
 		return NxFr::Path::MakeRelative(FsPath, NxFr::Globals::Paths::Assets);
+	}
+
+	NxFr::String AssetsBrowser::ItemPathToAssetPath(NxFr::StringView ItemPath)
+	{
+		return NxFr::Path::ChangeExtension(ItemPath, NxEn::AssetMetadata::AssetExtension);
+	}
+
+	NxFr::String AssetsBrowser::ItemPathToCallbackPath(NxFr::StringView ItemPath, AssetsBrowserItem* Item)
+	{
+		return Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? NxFr::String(ItemPath) : ItemPathToFsPath(ItemPath);
 	}
 }

@@ -32,10 +32,10 @@ namespace NxEd
 		AssetsBrowserItem();
 		virtual ~AssetsBrowserItem();
 
-		virtual void OnCreate(NxFr::StringView Target, NxFr::StringId Type) = 0;
-		virtual void OnMove(NxFr::StringView Item, NxFr::StringView Target) = 0;
-		virtual void OnDuplicate(NxFr::StringView Item, NxFr::StringView Target) = 0;
-		virtual void OnDelete(NxFr::StringView Item) = 0;
+		virtual void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath) = 0;
+		virtual void OnMove(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) = 0;
+		virtual void OnDuplicate(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) = 0;
+		virtual void OnDelete(NxFr::StringView CurrentPath) = 0;
 
 		int8 Compare(const TreeItem& Other) const override;
 		void CacheImGuiText() override;
@@ -64,10 +64,10 @@ namespace NxEd
 		NX_OBJECT(AssetsBrowserItemDirectory)
 
 	protected:
-		void OnCreate(NxFr::StringView Target, NxFr::StringId Type) override;
-		void OnMove(NxFr::StringView Item, NxFr::StringView Target) override;
-		void OnDuplicate(NxFr::StringView Item, NxFr::StringView Target) override;
-		void OnDelete(NxFr::StringView Item) override;
+		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath) override;
+		void OnMove(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) override;
+		void OnDuplicate(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) override;
+		void OnDelete(NxFr::StringView CurrentPath) override;
 
 		NxFr::StringView GetPrefix() const override { return "D"; }
 	};
@@ -78,10 +78,10 @@ namespace NxEd
 		NX_OBJECT(AssetsBrowserItemContent)
 
 	protected:
-		void OnCreate(NxFr::StringView Target, NxFr::StringId Type) override;
-		void OnMove(NxFr::StringView Item, NxFr::StringView Target) override;
-		void OnDuplicate(NxFr::StringView Item, NxFr::StringView Target) override;
-		void OnDelete(NxFr::StringView Item) override;
+		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath) override;
+		void OnMove(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) override;
+		void OnDuplicate(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) override;
+		void OnDelete(NxFr::StringView CurrentPath) override;
 
 		NxFr::StringView GetPrefix() const override { return "C"; };
 	};
@@ -92,10 +92,10 @@ namespace NxEd
 		NX_OBJECT(AssetsBrowserItemAsset)
 
 	protected:
-		void OnCreate(NxFr::StringView Target, NxFr::StringId Type) override;
-		void OnMove(NxFr::StringView Item, NxFr::StringView Target) override;
-		void OnDuplicate(NxFr::StringView Item, NxFr::StringView Target) override;
-		void OnDelete(NxFr::StringView Item) override;
+		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath) override;
+		void OnMove(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) override;
+		void OnDuplicate(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) override;
+		void OnDelete(NxFr::StringView CurrentPath) override;
 
 		NxFr::StringView GetPrefix() const override { return "A"; };
 	};
