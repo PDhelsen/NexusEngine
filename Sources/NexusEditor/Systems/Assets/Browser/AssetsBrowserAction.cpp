@@ -35,7 +35,7 @@ namespace NxEd
 				NxFr::StringView Directory = Instance->IsDirectory() ? Instance->GetTargetPath() : Instance->GetDirectory();
 				NxFr::String Path = NxFr::Path::Combine(Directory, Name);
 
-				Browser->Create(Path, Type);
+				Browser->Create(Type, Path);
 			}
 		});
 	}

@@ -89,7 +89,7 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnCreateItem(AssetsBrowserItem* Item)
 	{
-		TreePanel::OnCreateItem(Item);
+		SelectItem(Item, true, false, false);
 	}
 
 	void AssetsBrowserPanel::OnDestroyItem(AssetsBrowserItem* Item)
@@ -99,6 +99,16 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnSelectItem(AssetsBrowserItem* Item, bool State)
 	{
-		TreePanel::OnSelectItem(Item, State);
+		if (Selection.TryGet(Item))
+		{
+			return;
+		}
+
+		SelectItem(Item, true, false, false);
+	}
+
+	void AssetsBrowserPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
+	{
+		Browser->OnItemSelected.Invoke(static_cast<AssetsBrowserItem*>(Item), State);
 	}
 }

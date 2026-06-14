@@ -25,11 +25,13 @@ namespace NxEd
 		void OnDraw() override;
 
 		NxEn::TreeItem* FetchRootItem() override;
+
+	private:
 		void OnCreateItem(AssetsBrowserItem* Item);
 		void OnDestroyItem(AssetsBrowserItem* Item);
 		void OnSelectItem(AssetsBrowserItem* Item, bool State);
+		void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
 
-	private:
 		AssetsBrowser* Browser;
 	};
 }

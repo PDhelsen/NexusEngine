@@ -25,8 +25,13 @@ namespace NxEd
 		void Copy() override;
 		void Paste() override;
 
-	private:
 		NxFr::Set<NxFr::GUID> FilterSelection();
+
+	private:
+		void OnCreateItem(AssetsBrowserItem* Item);
+		void OnDestroyItem(AssetsBrowserItem* Item);
+		void OnSelectItem(AssetsBrowserItem* Item, bool State);
+		void OnSelectItem(NxFr::GUID Id, bool State);
 
 		AssetsBrowser* Browser;
 		bool IsCutting;

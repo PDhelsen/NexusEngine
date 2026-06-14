@@ -22,7 +22,7 @@ namespace NxEd
 		void Clear();
 		void Refresh();
 
-		void Create(NxFr::StringView ItemPath, NxFr::StringId Type);
+		void Create(NxFr::StringId Type, NxFr::StringView TargetPath);
 		void Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath);
 		void Duplicate(NxFr::StringView ItemPath, NxFr::StringView TargetPath);
 		void Delete(NxFr::StringView ItemPath);
@@ -35,8 +35,8 @@ namespace NxEd
 		AssetsBrowserItem* FetchItems(NxFr::StringView FsPath, AssetsBrowserItem* Parent);
 		AssetsBrowserItem* PurgeDuplicates(AssetsBrowserItem* Item);
 
-		AssetsBrowserItem* AppendItem(NxFr::StringView ItemPath, AssetsBrowserItem* Parent);
-		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool Add, bool Remove);
+		AssetsBrowserItem* AppendItem(NxFr::StringView ItemPath);
+		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool UpdateId = false);
 		void RemoveItem(AssetsBrowserItem* Item);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent);
 		void DetachItem(AssetsBrowserItem* Item);
