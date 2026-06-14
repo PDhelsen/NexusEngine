@@ -1,14 +1,17 @@
 #pragma once
 
+#include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEditor/Systems/Edit/EditContext.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 namespace NxEd
 {
+	class AssetsBrowser;
+	class AssetsBrowserItem;
+
 	class NX_EDITOR_API AssetsBrowserEditContext : public Edit::Context
 	{
 	public:
-		AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowserPanel* Assets);
+		AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowser* Browser);
 		~AssetsBrowserEditContext();
 
 	protected:
@@ -24,13 +27,8 @@ namespace NxEd
 
 	private:
 		NxFr::Set<NxFr::GUID> FilterSelection();
-		void CopySelection();
-		void DestroyClipboard();
-		void PasteClipboard();
-		void ClearClipboard();
 
-	private:
-		AssetsBrowserPanel* Assets;
+		AssetsBrowser* Browser;
 		bool IsCutting;
 	};
 }

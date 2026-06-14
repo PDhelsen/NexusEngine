@@ -1,18 +1,21 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEditor/Systems/Edit/EditSystem.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 
 namespace NxEd
 {
-	class AssetsBrowserItem;
-	class AssetsBrowserPanel;
-
 	class NX_EDITOR_API AssetsBrowser
 	{
 		friend class AssetsBrowserPanel;
 		friend class AssetsBrowserEditContext;
 
 	public:
+		inline static const NxFr::String RootFolderName = "Assets";
+		inline static const NxFr::StringId ContextId = "AssetsBrowser"_Sid;
+
 		AssetsBrowser();
 		~AssetsBrowser();
 
@@ -31,20 +34,20 @@ namespace NxEd
 	private:
 		AssetsBrowserItem* FetchItems(NxFr::StringView FsPath, AssetsBrowserItem* Parent);
 		AssetsBrowserItem* PurgeDuplicates(AssetsBrowserItem* Item);
-		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool Add, bool Remove);
 
 		AssetsBrowserItem* AppendItem(NxFr::StringView ItemPath, AssetsBrowserItem* Parent);
+		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool Add, bool Remove);
 		void RemoveItem(AssetsBrowserItem* Item);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent);
 		void DetachItem(AssetsBrowserItem* Item);
 
+		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath);
+		void OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath);
+		void OnDuplicate(AssetsBrowserItem* Item, NxFr::StringView TargetPath);
+		void OnDelete(AssetsBrowserItem* Item);
+
 		AssetsBrowserItem* GetItem(NxFr::GUID Id);
 		AssetsBrowserItem* GetParent(NxFr::StringView Path);
-
-		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath);
-		void OnMove(AssetsBrowserItem* Item, NxFr::StringView ItemPath, NxFr::StringView TargetPath);
-		void OnDuplicate(AssetsBrowserItem* Item, AssetsBrowserItem* Parent, NxFr::StringView ItemPath, NxFr::StringView TargetPath);
-		void OnDelete(AssetsBrowserItem* Item, NxFr::StringView ItemPath);
 
 		NxFr::GUID ItemPathToId(NxFr::StringView ItemPath);
 		NxFr::String IdToItemPath(NxFr::GUID Id);
@@ -54,10 +57,15 @@ namespace NxEd
 		NxFr::String FsPathToItemPath(NxFr::StringView FsPath);
 
 	private:
+		NxFr::Event<AssetsBrowserItem*> OnItemCreated;
+		NxFr::Event<AssetsBrowserItem*> OnItemDestroyed;
+		NxFr::Event<AssetsBrowserItem*, bool> OnItemSelected;
+
 		NxEn::AssetsSystem* Assets;
+		EditSystem* Edit;
 
 		NxFr::Dictionary<NxFr::GUID, AssetsBrowserItem*> Items;
 		AssetsBrowserItem* Root;
-		AssetsBrowserPanel* Panel;
+		AssetsBrowserEditContext* Context;
 	};
 }

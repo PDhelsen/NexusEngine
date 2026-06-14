@@ -1,6 +1,4 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 
 #include "NexusEditor/Core/NexusEditorApplication.h"
 
@@ -28,33 +26,64 @@ namespace NxEd
 	}));
 
 	AssetsBrowser::AssetsBrowser()
-		: Assets(NxEn::Application::GetSystem<NxEn::AssetsSystem>()), Items(), Root(nullptr), Panel(NxEn::GUISystem::GetPanel<AssetsBrowserPanel>())
+		: Assets(nullptr), Edit(nullptr), Items(), Root(nullptr), Context(nullptr)
 	{
+		OnItemDestroyed += [&](AssetsBrowserItem* Item)
+		{
+			Edit->Unselect(Item->GetItemId(), Context->GetId());
+		};
+		OnItemSelected += [&](AssetsBrowserItem* Item, bool State)
+		{
+			if (State)
+			{
+				Edit->Select(Item->GetItemId(), Context->GetId());
+			}
+			else
+			{
+				Edit->Unselect(Item->GetItemId(), Context->GetId());
+			}
+		};
+
+		Context = new AssetsBrowserEditContext(ContextId, this);
+		Context->GetOnSelectionChanged() += [&](NxFr::GUID Id, bool State)
+		{
+			AssetsBrowserItem* Item = GetItem(Id);
+			OnItemSelected.Invoke(Item, State);
+		};
+
 		Refresh();
 	}
 
 	AssetsBrowser::~AssetsBrowser()
 	{
 		Clear();
+
+		delete Context;
 	}
 
 	void AssetsBrowser::Clear()
 	{
-		Panel->Clear();
 		RemoveItem(Root);
+
+		if (Edit && Edit->GetContext(ContextId))
+		{
+			Edit->UnregisterContext(ContextId);
+		}
 	}
 
 	void AssetsBrowser::Refresh()
 	{
 		Clear();
 
-		Root = FetchItems(NxFr::Globals::Paths::Assets, nullptr);
-		Root->ImGuiText = "Assets";
-		Root->Open(true);
+		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		Edit = NxEn::Application::GetSystem<EditSystem>();
 
+		Root = FetchItems(NxFr::Globals::Paths::Assets, nullptr);
 		PurgeDuplicates(Root);
 
-		Panel->Root = Root;
+		Edit->RegisterContext(ContextId, Context);
+		Root->ImGuiText = RootFolderName;
+		Root->Open(true);
 	}
 
 	void AssetsBrowser::Create(NxFr::StringView ItemPath, NxFr::StringId Type)
@@ -75,7 +104,7 @@ namespace NxEd
 		AssetsBrowserItem* Item = GetItem(Id);
 
 		DetachItem(Item);
-		OnMove(Item, Item->Path, TargetPath);
+		OnMove(Item, TargetPath);
 		AttachItem(Item, GetParent(TargetPath));
 	}
 
@@ -87,7 +116,7 @@ namespace NxEd
 		NxFr::String TargetPath = MakeUniquePath(Validate(Target));
 		AssetsBrowserItem* Item = GetItem(Id);
 
-		OnDuplicate(Item, GetParent(TargetPath), Item->Path, TargetPath);
+		OnDuplicate(Item, TargetPath);
 	}
 
 	void AssetsBrowser::Delete(NxFr::StringView ItemPath)
@@ -97,7 +126,7 @@ namespace NxEd
 		NxFr::GUID Id = ItemPathToId(Validate(ItemPath));
 		AssetsBrowserItem* Item = GetItem(Id);
 
-		OnDelete(Item, Item->Path);
+		OnDelete(Item);
 	}
 
 	bool AssetsBrowser::Exist(NxFr::StringView ItemPath)
@@ -189,26 +218,6 @@ namespace NxEd
 		return Item ? Item->Next : nullptr;
 	}
 
-	void AssetsBrowser::UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool Add, bool Remove)
-	{
-		if (Remove && Item->Id && Items.TryGet(Item->Id))
-		{
-			Items.Remove(Item->Id);
-		}
-
-		Panel->SelectItem(Item, false, false, false);
-
-		Item->Path = ItemPath;
-		Item->Id = ItemPathToId(ItemPath);
-		Item->Type = Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? Assets->GetMetadata(Item->Id).GetType() : Item->GetObjectType();
-		Item->CacheImGuiText();
-
-		if (Add && Item->Id && !Items.TryGet(Item->Id))
-		{
-			Items.Append(Item->Id, Item);
-		}
-	}
-
 	AssetsBrowserItem* AssetsBrowser::AppendItem(NxFr::StringView ItemPath, AssetsBrowserItem* Parent)
 	{
 		AssetsBrowserItem* Item = nullptr;
@@ -228,14 +237,31 @@ namespace NxEd
 			}
 		}
 
-		Item->Initialize();
-		Item->SetEnabled(true);
-
 		Item->Path = ItemPath;
 		AttachItem(Item, Parent);
+		OnItemCreated.Invoke(Item);
 
-		Panel->OnCreateItem(Item);
 		return Item;
+	}
+
+	void AssetsBrowser::UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool Add, bool Remove)
+	{
+		if (Remove && Item->Id)
+		{
+			Items.TryRemove(Item->Id);
+		}
+
+		Item->Path = ItemPath;
+		Item->Id = ItemPathToId(ItemPath);
+		Item->Type = Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? Assets->GetMetadata(Item->Id).GetType() : Item->GetObjectType();
+		Item->CacheImGuiText();
+
+		OnItemSelected.Invoke(Item, true);
+
+		if (Add && Item->Id)
+		{
+			Items.TryAppend(Item->Id, Item);
+		}
 	}
 
 	void AssetsBrowser::RemoveItem(AssetsBrowserItem* Item)
@@ -245,21 +271,14 @@ namespace NxEd
 			return;
 		}
 
-		if (Items.TryGet(Item->Id))
-		{
-			Items.Remove(Item->Id);
-		}
-
-		Item->SetEnabled(false);
-		Item->Shutdown();
-
 		DetachItem(Item);
 		while (Item->Child)
 		{
 			RemoveItem(Item->Child);
 		}
 
-		Panel->OnDestroyItem(Item);
+		OnItemDestroyed.Invoke(Item);
+		Items.TryRemove(Item->Id);
 		delete Item;
 	}
 
@@ -324,6 +343,54 @@ namespace NxEd
 		Item->Next = nullptr;
 	}
 
+	void AssetsBrowser::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath)
+	{
+		NxFr::String AssetPath = ItemPathToAssetPath(TargetPath);
+
+		AssetsBrowserItem* Item = AppendItem(AssetPath, GetParent(TargetPath));
+		Item->OnCreate(ItemPathToCallbackPath(TargetPath, Item), Type);
+		UpdateItem(Item, AssetPath, true, false);
+	}
+
+	void AssetsBrowser::OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath)
+	{
+		AssetsBrowserItem* Iterator = Item->Child;
+		while (Iterator)
+		{
+			OnMove(Iterator, NxFr::Path::Combine(TargetPath, Iterator->GetTargetName()));
+			Iterator = Iterator->Next;
+		}
+
+		Item->OnMove(ItemPathToCallbackPath(Item->Path, Item), ItemPathToCallbackPath(TargetPath, Item));
+		UpdateItem(Item, TargetPath, true, true);
+	}
+
+	void AssetsBrowser::OnDuplicate(AssetsBrowserItem* Item, NxFr::StringView TargetPath)
+	{
+		AssetsBrowserItem* Copy = AppendItem(TargetPath, GetParent(TargetPath));
+
+		AssetsBrowserItem* Iterator = Item->Child;
+		while (Iterator)
+		{
+			OnDuplicate(Iterator, NxFr::Path::Combine(TargetPath, Iterator->GetTargetName()));
+			Iterator = Iterator->Next;
+		}
+
+		Item->OnDuplicate(ItemPathToCallbackPath(Item->Path, Item), ItemPathToCallbackPath(TargetPath, Item));
+		UpdateItem(Copy, TargetPath, true, false);
+	}
+
+	void AssetsBrowser::OnDelete(AssetsBrowserItem* Item)
+	{
+		while (Item->Child)
+		{
+			OnDelete(Item->Child);
+		}
+
+		Item->OnDelete(ItemPathToCallbackPath(Item->Path, Item));
+		RemoveItem(Item);
+	}
+
 	AssetsBrowserItem* AssetsBrowser::GetItem(NxFr::GUID Id)
 	{
 		AssetsBrowserItem** Item = Items.TryGet(Id);
@@ -334,54 +401,6 @@ namespace NxEd
 	{
 		NxFr::StringView Directory = NxFr::Path::GetFolder(Path);
 		return GetItem(ItemPathToId(Directory));
-	}
-
-	void AssetsBrowser::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath)
-	{
-		NxFr::String AssetPath = ItemPathToAssetPath(TargetPath);
-
-		AssetsBrowserItem* Item = AppendItem(AssetPath, GetParent(TargetPath));
-		Item->OnCreate(ItemPathToCallbackPath(TargetPath, Item), Type);
-		UpdateItem(Item, AssetPath, true, false);
-	}
-
-	void AssetsBrowser::OnMove(AssetsBrowserItem* Item, NxFr::StringView ItemPath, NxFr::StringView TargetPath)
-	{
-		AssetsBrowserItem* Iterator = Item->Child;
-		while (Iterator)
-		{
-			OnMove(Iterator, Iterator->Path, NxFr::Path::Combine(TargetPath, Iterator->GetTargetName()));
-			Iterator = Iterator->Next;
-		}
-
-		Item->OnMove(ItemPathToCallbackPath(ItemPath, Item), ItemPathToCallbackPath(TargetPath, Item));
-		UpdateItem(Item, TargetPath, true, true);
-	}
-
-	void AssetsBrowser::OnDuplicate(AssetsBrowserItem* Item, AssetsBrowserItem* Parent, NxFr::StringView ItemPath, NxFr::StringView TargetPath)
-	{
-		AssetsBrowserItem* Copy = AppendItem(TargetPath, Parent);
-
-		AssetsBrowserItem* Iterator = Item->Child;
-		while (Iterator)
-		{
-			OnDuplicate(Iterator, Copy, Iterator->Path, NxFr::Path::Combine(TargetPath, Iterator->GetTargetName()));
-			Iterator = Iterator->Next;
-		}
-
-		Item->OnDuplicate(ItemPathToCallbackPath(ItemPath, Item), ItemPathToCallbackPath(TargetPath, Item));
-		UpdateItem(Copy, TargetPath, true, false);
-	}
-
-	void AssetsBrowser::OnDelete(AssetsBrowserItem* Item, NxFr::StringView ItemPath)
-	{
-		while (Item->Child)
-		{
-			OnDelete(Item->Child, Item->Child->Path);
-		}
-
-		Item->OnDelete(ItemPathToCallbackPath(ItemPath, Item));
-		RemoveItem(Item);
 	}
 
 	NxFr::GUID AssetsBrowser::ItemPathToId(NxFr::StringView ItemPath)

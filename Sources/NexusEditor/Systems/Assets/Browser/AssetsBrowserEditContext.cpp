@@ -1,12 +1,13 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserAction.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
+
+#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
 {
-	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowserPanel* Assets)
-		: Edit::Context(Id), Assets(Assets)
+	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowser* Browser)
+		: Edit::Context(Id), Browser(Browser), IsCutting(false)
 	{
 	}
 
@@ -16,49 +17,97 @@ namespace NxEd
 
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetAll()
 	{
-		return NxFr::ContainerUtility::ToArrayKeys(Assets->Browser->Items);
+		return NxFr::ContainerUtility::ToArrayKeys(Browser->Items);
 	}
 
 	uint64 AssetsBrowserEditContext::GetCount()
 	{
-		return Assets->Browser->Items.GetCount();
+		return Browser->Items.GetCount();
 	}
 
 	void AssetsBrowserEditContext::Rename()
 	{
-		Assets->RunAction<AssetsBrowserActionRename>();
+		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+		Popup->RegisterCallback([=](NxFr::StringView Input)
+		{
+			NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+			for (auto Id : Instances)
+			{
+				AssetsBrowserItem* Instance = Browser->Items[Id];
+				NxFr::String Path = Instance->GetTargetPath();
+				NxFr::String Parent = Instance->GetDirectory();
+
+				if (Instance->IsDirectory())
+				{
+					Path = NxFr::Path::Combine((NxFr::StringView)Parent, Input);
+				}
+				else
+				{
+					Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + NxFr::Path::SeparatorExtension + Instance->GetExtension()));
+				}
+
+				Browser->Move(Instance->GetTargetPath(), Path);
+			}
+		});
 	}
 
 	void AssetsBrowserEditContext::Duplicate()
 	{
-		Assets->RunAction<AssetsBrowserActionDuplicate>();
+		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+		for (auto Id : Instances)
+		{
+			AssetsBrowserItem* Instance = Browser->Items[Id];
+			Browser->Duplicate(Instance->GetTargetPath(), Instance->GetTargetPath());
+		}
 	}
 
 	void AssetsBrowserEditContext::Delete()
 	{
-		Assets->RunAction<AssetsBrowserActionDelete>();
+		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+		for (auto Id : Instances)
+		{
+			AssetsBrowserItem* Instance = Browser->Items[Id];
+			Browser->Delete(Instance->GetTargetPath());
+		}
 	}
 
 	void AssetsBrowserEditContext::Cut()
 	{
-		ClearClipboard();
-		CopySelection();
+		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+		Clipboard.Clear();
+		Clipboard.AppendRange(Instances);
 		IsCutting = true;
 	}
 
 	void AssetsBrowserEditContext::Copy()
 	{
-		ClearClipboard();
-		CopySelection();
+		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+		Clipboard.Clear();
+		Clipboard.AppendRange(Instances);
+		IsCutting = false;
 	}
 
 	void AssetsBrowserEditContext::Paste()
 	{
-		PasteClipboard();
+		AssetsBrowserItem* Parent = Browser->Items[Selected];
+		NxFr::String Root = Parent->IsDirectory() ? Parent->GetTargetPath() : Parent->GetDirectory();
+
+		for (auto Id : Clipboard)
+		{
+			AssetsBrowserItem* Instance = Browser->Items[Id];
+			Browser->Duplicate(Instance->GetTargetPath(), NxFr::Path::Combine(Root, Instance->GetTargetName()));
+		}
+
 		if (IsCutting)
 		{
-			DestroyClipboard();
-			ClearClipboard();
+			for (auto Id : Clipboard)
+			{
+				AssetsBrowserItem* Instance = Browser->Items[Id];
+				Browser->Delete(Instance->GetTargetPath());
+			}
+
+			Clipboard.Clear();
+			IsCutting = false;
 		}
 	}
 
@@ -68,8 +117,8 @@ namespace NxEd
 
 		for (auto Id : Selection)
 		{
-			AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Id]);
-			AssetsBrowserItem* Parent = Target->GetParent();
+			AssetsBrowserItem* Instance = Browser->Items[Id];
+			AssetsBrowserItem* Parent = Instance->GetParent();
 			bool Selected = false;
 
 			while (Parent)
@@ -89,38 +138,5 @@ namespace NxEd
 		}
 
 		return Result;
-	}
-
-	void AssetsBrowserEditContext::CopySelection()
-	{
-		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-		Clipboard.AppendRange(Instances);
-	}
-
-	void AssetsBrowserEditContext::DestroyClipboard()
-	{
-		for (auto Id : Clipboard)
-		{
-			AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Id]);
-			Assets->Browser->Delete(Target->GetTargetPath());
-		}
-	}
-
-	void AssetsBrowserEditContext::PasteClipboard()
-	{
-		AssetsBrowserItem* Parent = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Selected]);
-		NxFr::String Root = Parent->IsDirectory() ? Parent->GetTargetPath() : Parent->GetDirectory();
-
-		for (auto Id : Clipboard)
-		{
-			AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Assets->Browser->Items[Id]);
-			Assets->Browser->Duplicate(Target->GetTargetPath(), NxFr::Path::Combine(Root, Target->GetTargetName()));
-		}
-	}
-
-	void AssetsBrowserEditContext::ClearClipboard()
-	{
-		Clipboard.Clear();
-		IsCutting = false;
 	}
 }

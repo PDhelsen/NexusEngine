@@ -5,11 +5,11 @@
 
 namespace NxEd
 {
+	class AssetsBrowser;
+	class AssetsBrowserItem;
+
 	class NX_EDITOR_API AssetsBrowserPanel : public NxEn::TreePanel
 	{
-		friend class AssetsBrowser;
-		friend class AssetsBrowserEditContext;
-
 	public:
 		NX_OBJECT(AssetsBrowserPanel)
 
@@ -20,20 +20,17 @@ namespace NxEd
 
 	protected:
 		void OnInitialize() override;
-		void OnShutdown() override;
 		void OnEnable() override;
 		void OnDisable() override;
 		void OnDraw() override;
 
 		NxEn::TreeItem* FetchRootItem() override;
-		void OnDestroyItem(NxEn::TreeItem* Item) override;
-		void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
+		void OnCreateItem(AssetsBrowserItem* Item);
+		void OnDestroyItem(AssetsBrowserItem* Item);
+		void OnSelectItem(AssetsBrowserItem* Item, bool State);
 
 	private:
-		class EditSystem* Edit;
-
-		class AssetsBrowser* Browser;
-		class AssetsBrowserEditContext* Context;
+		AssetsBrowser* Browser;
 	};
 }
 

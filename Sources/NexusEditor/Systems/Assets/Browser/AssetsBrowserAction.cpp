@@ -120,9 +120,6 @@ namespace NxEd
 
 	void AssetsBrowserActionImport::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
-		bool Dirty = false;
-
 		for (auto& Item : Items)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
@@ -132,12 +129,6 @@ namespace NxEd
 			}
 
 			AssetImporter::Run(Instance->GetTargetPath());
-			Dirty = true;
-		}
-
-		if (Dirty)
-		{
-			Browser->Refresh();
 		}
 	}
 
@@ -145,12 +136,13 @@ namespace NxEd
 	{
 		for (auto& Item : Items)
 		{
-			if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
 			{
 				continue;
 			}
 
-			AssetImporter::Run(Item->GetItemId());
+			AssetImporter::Run(Instance->GetItemId());
 		}
 	}
 

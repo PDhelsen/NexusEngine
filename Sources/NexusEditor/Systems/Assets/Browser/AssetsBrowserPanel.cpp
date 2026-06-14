@@ -2,10 +2,8 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserAction.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 
 #include "NexusEditor/Core/NexusEditorApplication.h"
-#include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
 {
@@ -24,6 +22,7 @@ namespace NxEd
 	void AssetsBrowserPanel::Refresh()
 	{
 		Browser->Refresh();
+		TreePanel::Refresh();
 	}
 
 	void AssetsBrowserPanel::Select(NxFr::GUID Id)
@@ -54,41 +53,30 @@ namespace NxEd
 		AppendAction<AssetsBrowserActionView>();
 	}
 
-	void AssetsBrowserPanel::OnShutdown()
-	{
-		TreePanel::OnShutdown();
-	}
-
 	void AssetsBrowserPanel::OnEnable()
 	{
 		Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
-
-		Context = new AssetsBrowserEditContext(GetImGuiId(), this);
-		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
-		{
-			NxEn::TreeItem* Item = Browser->GetItem(Id);
-			SelectItem(Item, State, true, false);
-		};
-		Edit = NxEn::Application::GetSystem<EditSystem>();
-		Edit->RegisterContext(GetImGuiId(), Context);
+		Browser->OnItemCreated += { this, &AssetsBrowserPanel::OnCreateItem };
+		Browser->OnItemDestroyed += { this, &AssetsBrowserPanel::OnDestroyItem };
+		Browser->OnItemSelected += { this, &AssetsBrowserPanel::OnSelectItem };
 
 		TreePanel::OnEnable();
 	}
 
 	void AssetsBrowserPanel::OnDisable()
 	{
-		TreePanel::OnDisable();
+		Browser->OnItemCreated -= { this, &AssetsBrowserPanel::OnCreateItem };
+		Browser->OnItemDestroyed -= { this, &AssetsBrowserPanel::OnDestroyItem };
+		Browser->OnItemSelected -= { this, &AssetsBrowserPanel::OnSelectItem };
 
-		delete Edit->UnregisterContext(GetImGuiId());
-		Context = nullptr;
-		Edit = nullptr;
+		TreePanel::OnDisable();
 	}
 
 	void AssetsBrowserPanel::OnDraw()
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
-			Edit::Context::SetCurrent(Context);
+			Edit::Context::SetCurrent(Browser->Context);
 		}
 
 		TreePanel::OnDraw();
@@ -96,30 +84,21 @@ namespace NxEd
 
 	NxEn::TreeItem* AssetsBrowserPanel::FetchRootItem()
 	{
-		return Root;
+		return Browser->Root;
 	}
 
-	void AssetsBrowserPanel::OnDestroyItem(NxEn::TreeItem* Item)
+	void AssetsBrowserPanel::OnCreateItem(AssetsBrowserItem* Item)
 	{
-		if (Edit && Context)
-		{
-			Edit->Unselect(Item->GetItemId(), Context->GetId());
-		}
+		TreePanel::OnCreateItem(Item);
+	}
 
+	void AssetsBrowserPanel::OnDestroyItem(AssetsBrowserItem* Item)
+	{
 		TreePanel::OnDestroyItem(Item);
 	}
 
-	void AssetsBrowserPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
+	void AssetsBrowserPanel::OnSelectItem(AssetsBrowserItem* Item, bool State)
 	{
 		TreePanel::OnSelectItem(Item, State);
-
-		if (State)
-		{
-			Edit->Select(Item->GetItemId(), Context->GetId());
-		}
-		else
-		{
-			Edit->Unselect(Item->GetItemId(), Context->GetId());
-		}
 	}
 }
