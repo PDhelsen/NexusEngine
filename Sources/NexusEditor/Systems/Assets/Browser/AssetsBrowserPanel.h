@@ -17,9 +17,6 @@ namespace NxEd
 
 		void Refresh() override;
 
-		void Select(NxFr::GUID Id);
-		void Select(NxFr::StringView Path);
-
 	protected:
 		void OnInitialize() override;
 		void OnEnable() override;

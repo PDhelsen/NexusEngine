@@ -4,6 +4,8 @@
 
 namespace NxEd
 {
+	static const NxFr::StringId BrowserId = "AssetBrowser"_Sid;
+
 	static NxEn::Command* CmdAssetBrowserCreateDirectory = NxEn::Command::Create("Assets.Browser.Create.Directory"_Sid, "Create at path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Item)
 	{
 		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser()->Create(0, Item);
@@ -24,10 +26,14 @@ namespace NxEd
 	{
 		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser()->Delete(Item);
 	}));
+	static NxEn::Command* CmdAssetBrowserSelect = NxEn::Command::Create("Assets.Browser.Select"_Sid, "Select path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Item)
+	{
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser()->Select(Item);
+	}));
 
 	AssetsBrowser::AssetsBrowser()
 		: Assets(nullptr), Edit(nullptr),
-		Items(), Root(nullptr), Panel(nullptr), Context(ContextId)
+		Items(), Root(nullptr), Panel(nullptr), Context()
 	{
 		Panel = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
@@ -36,7 +42,7 @@ namespace NxEd
 		Panel->Browser = this;
 		Context.Browser = this;
 
-		Edit->RegisterContext(ContextId, &Context);
+		Edit->RegisterContext(Context.GetId(), &Context);
 
 		Refresh();
 	}
@@ -45,7 +51,7 @@ namespace NxEd
 	{
 		ClearItems();
 
-		Edit->UnregisterContext(ContextId);
+		Edit->UnregisterContext(Context.GetId());
 	}
 
 	void AssetsBrowser::Refresh()
@@ -54,10 +60,20 @@ namespace NxEd
 		Root = FetchItems(NxFr::Globals::Paths::Assets, nullptr);
 		PurgeItems(Root);
 
-		Root->ImGuiText = RootFolderName;
+		Root->ImGuiText = "Assets";
 		Root->Open(true);
 
 		Panel->Root = Panel->FetchRootItem();
+	}
+
+	void AssetsBrowser::Select(NxFr::GUID Id)
+	{
+		SelectItem(GetItem(Id), true, BrowserId);
+	}
+
+	void AssetsBrowser::Select(NxFr::StringView ItemPath)
+	{
+		SelectItem(GetItem(ItemPathToId(ItemPath)), true, BrowserId);
 	}
 
 	void AssetsBrowser::Create(NxFr::StringId Type, NxFr::StringView TargetPath)
@@ -204,7 +220,7 @@ namespace NxEd
 
 		Items.Clear();
 		Panel->Clear();
-		Edit->Unselect(ContextId);
+		Edit->Unselect(Context.GetId());
 	}
 
 	AssetsBrowserItem* AssetsBrowser::AppendItem(NxFr::StringView ItemPath)
@@ -243,7 +259,7 @@ namespace NxEd
 
 		Items.TryAppend(Item->Id, Item);
 		Panel->OnCreateItem(Item);
-		Edit->Select(Item->Id, ContextId);
+		Edit->Select(Item->Id, Context.GetId());
 	}
 
 	void AssetsBrowser::RemoveItem(AssetsBrowserItem* Item)
@@ -253,7 +269,7 @@ namespace NxEd
 			return;
 		}
 
-		Edit->Unselect(Item->Id, ContextId);
+		Edit->Unselect(Item->Id, Context.GetId());
 		Panel->OnDestroyItem(Item);
 		Items.TryRemove(Item->Id);
 		delete Item;
@@ -338,19 +354,19 @@ namespace NxEd
 
 		SelectionContextId = SelectionId;
 
-		if (SelectionContextId == ContextId)
+		if (SelectionContextId != Panel->GetId())
 		{
 			Panel->SelectItem(Item, State, true, false);
 		}
-		else if (SelectionContextId == Panel->GetId())
+		if (SelectionContextId != Context.GetId())
 		{
 			if (State)
 			{
-				Edit->Select(Item->GetItemId(), ContextId);
+				Edit->Select(Item->GetItemId(), Context.GetId());
 			}
 			else
 			{
-				Edit->Unselect(Item->GetItemId(), ContextId);
+				Edit->Unselect(Item->GetItemId(), Context.GetId());
 			}
 		}
 

@@ -6,8 +6,8 @@
 
 namespace NxEd
 {
-	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id)
-		: Edit::Context(Id), Browser(nullptr), IsCutting(false)
+	AssetsBrowserEditContext::AssetsBrowserEditContext()
+		: Edit::Context(ContextId), Browser(nullptr), IsCutting(false)
 	{
 		OnSelectionChanged += { this, &AssetsBrowserEditContext::OnSelectItem };
 	}

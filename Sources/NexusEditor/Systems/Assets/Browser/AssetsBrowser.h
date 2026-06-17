@@ -14,14 +14,13 @@ namespace NxEd
 		friend class AssetsBrowserEditContext;
 
 	public:
-		inline static const NxFr::String RootFolderName = "Assets";
-		inline static const NxFr::StringId ContextId = "AssetsBrowser"_Sid;
-
 		NX_NOCOPY_NOMOVE(AssetsBrowser)
 		AssetsBrowser();
 		~AssetsBrowser();
 
 		void Refresh();
+		void Select(NxFr::GUID Id);
+		void Select(NxFr::StringView ItemPath);
 
 		void Create(NxFr::StringId Type, NxFr::StringView TargetPath);
 		void Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath);

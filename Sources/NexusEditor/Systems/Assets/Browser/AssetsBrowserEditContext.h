@@ -13,7 +13,9 @@ namespace NxEd
 		friend class AssetsBrowser;
 
 	public:
-		AssetsBrowserEditContext(NxFr::StringId Id);
+		inline static const NxFr::StringId ContextId = "AssetsBrowserContext"_Sid;
+
+		AssetsBrowserEditContext();
 		~AssetsBrowserEditContext();
 
 	protected:
