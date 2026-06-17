@@ -42,6 +42,7 @@ namespace NxEd
 		void RemoveItem(AssetsBrowserItem* Item);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent);
 		void DetachItem(AssetsBrowserItem* Item);
+		void SelectItem(AssetsBrowserItem* Item, bool State, NxFr::StringId SelectionId);
 
 		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath);
 		void OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath);
@@ -65,5 +66,7 @@ namespace NxEd
 		AssetsBrowserItem* Root;
 		AssetsBrowserPanel* Panel;
 		AssetsBrowserEditContext Context;
+
+		NxFr::StringId SelectionContextId;
 	};
 }

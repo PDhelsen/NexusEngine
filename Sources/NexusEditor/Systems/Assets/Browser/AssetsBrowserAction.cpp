@@ -94,7 +94,7 @@ namespace NxEd
 		for (uint64 Index = 1; Index < Items.GetCount(); ++Index)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[Index]);
-			Browser->Move(Instance->GetTargetPath(), NxFr::Path::Combine(Target->GetTargetPath(), Instance->GetName()));
+			Browser->Move(Instance->GetTargetPath(), NxFr::Path::Combine(Target->GetTargetPath(), Instance->GetTargetName()));
 		}
 	}
 

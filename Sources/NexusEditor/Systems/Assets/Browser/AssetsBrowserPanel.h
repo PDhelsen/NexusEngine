@@ -29,6 +29,7 @@ namespace NxEd
 		NxEn::TreeItem* FetchRootItem() override;
 		void OnCreateItem(NxEn::TreeItem* Item) override;
 		void OnDestroyItem(NxEn::TreeItem* Item) override;
+		void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
 
 	private:
 		AssetsBrowser* Browser;

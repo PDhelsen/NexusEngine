@@ -89,4 +89,10 @@ namespace NxEd
 	{
 		TreePanel::OnDestroyItem(Item);
 	}
+
+	void AssetsBrowserPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
+	{
+		AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+		Browser->SelectItem(Instance, State, GetId());
+	}
 }

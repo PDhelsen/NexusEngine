@@ -329,6 +329,34 @@ namespace NxEd
 		Item->Next = nullptr;
 	}
 
+	void AssetsBrowser::SelectItem(AssetsBrowserItem* Item, bool State, NxFr::StringId SelectionId)
+	{
+		if (SelectionContextId.GetId() != 0)
+		{
+			return;
+		}
+
+		SelectionContextId = SelectionId;
+
+		if (SelectionContextId == ContextId)
+		{
+			Panel->SelectItem(Item, State, true, false);
+		}
+		else if (SelectionContextId == Panel->GetId())
+		{
+			if (State)
+			{
+				Edit->Select(Item->GetItemId(), ContextId);
+			}
+			else
+			{
+				Edit->Unselect(Item->GetItemId(), ContextId);
+			}
+		}
+
+		SelectionContextId = 0;
+	}
+
 	void AssetsBrowser::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath)
 	{
 		NxFr::String AssetPath = ItemPathToAssetPath(TargetPath);

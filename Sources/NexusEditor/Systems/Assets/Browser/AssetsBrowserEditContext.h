@@ -28,6 +28,7 @@ namespace NxEd
 		void Paste() override;
 
 		NxFr::Set<NxFr::GUID> FilterSelection();
+		void OnSelectItem(NxFr::GUID Id, bool State);
 
 	private:
 		AssetsBrowser* Browser;

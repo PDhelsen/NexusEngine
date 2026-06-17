@@ -9,12 +9,12 @@ namespace NxEd
 	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id)
 		: Edit::Context(Id), Browser(nullptr), IsCutting(false)
 	{
-
+		OnSelectionChanged += { this, &AssetsBrowserEditContext::OnSelectItem };
 	}
 
 	AssetsBrowserEditContext::~AssetsBrowserEditContext()
 	{
-
+		OnSelectionChanged -= { this, &AssetsBrowserEditContext::OnSelectItem };
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetAll()
@@ -140,5 +140,11 @@ namespace NxEd
 		}
 
 		return Result;
+	}
+
+	void AssetsBrowserEditContext::OnSelectItem(NxFr::GUID Id, bool State)
+	{
+		AssetsBrowserItem* Instance = Browser->GetItem(Id);
+		Browser->SelectItem(Instance, State, GetId());
 	}
 }
