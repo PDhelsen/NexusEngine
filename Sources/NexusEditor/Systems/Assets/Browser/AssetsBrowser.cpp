@@ -182,11 +182,15 @@ namespace NxEd
 		{
 			if (Item->Next && Item->GetPrettyName() == Item->Next->GetPrettyName())
 			{
-				RemoveItem(Item->Next);
+				AssetsBrowserItem* Next = Item->Next;
+				DetachItem(Next);
+				RemoveItem(Next);
 			}
 			else if (Item->Previous && Item->GetPrettyName() == Item->Previous->GetPrettyName())
 			{
-				RemoveItem(Item->Previous);
+				AssetsBrowserItem* Previous = Item->Previous;
+				DetachItem(Previous);
+				RemoveItem(Previous);
 			}
 		}
 
@@ -361,11 +365,11 @@ namespace NxEd
 			OnDelete(Item->Child);
 		}
 
+		OnItemDestroyed.Invoke(Item);
+
 		Item->OnDelete(ItemPathToCallbackPath(Item->Path, Item));
 		DetachItem(Item);
 		RemoveItem(Item);
-
-		OnItemDestroyed.Invoke(Item);
 	}
 
 	AssetsBrowserItem* AssetsBrowser::GetItem(NxFr::GUID Id)
