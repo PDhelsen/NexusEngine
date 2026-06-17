@@ -380,7 +380,7 @@ namespace NxEd
 
 	AssetsBrowserItem* AssetsBrowser::GetParent(NxFr::StringView Path)
 	{
-		NxFr::StringView Directory = NxFr::Path::GetFolder(Path);
+		NxFr::StringView Directory = NxFr::Path::GetFolder(Path, true);
 		return GetItem(ItemPathToId(Directory));
 	}
 
