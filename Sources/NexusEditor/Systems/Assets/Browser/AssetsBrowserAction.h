@@ -65,19 +65,8 @@ namespace NxEd
 	public:
 		NX_OBJECT(AssetsBrowserActionImport)
 
-		AssetsBrowserActionImport() : TreeAction("Import", 6, true, false) {}
+		AssetsBrowserActionImport() : TreeAction("Import / Reimport", 6, true, false) {}
 		virtual ~AssetsBrowserActionImport() = default;
-
-		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
-	};
-
-	class NX_EDITOR_API AssetsBrowserActionReimport : public NxEn::TreeAction
-	{
-	public:
-		NX_OBJECT(AssetsBrowserActionReimport)
-
-		AssetsBrowserActionReimport() : TreeAction("Reimport", 7, true, false) {}
-		virtual ~AssetsBrowserActionReimport() = default;
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};

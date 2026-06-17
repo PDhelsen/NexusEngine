@@ -17,6 +17,7 @@ namespace NxEn
 	protected:
 		void OnInitialize() override;
 		void OnEnable() override;
+		void OnDisable() override;
 		void OnDraw() override;
 
 	private:

@@ -42,6 +42,12 @@ namespace NxEn
 		Style.Reset();
 	}
 
+	void InputTextPopup::OnDisable()
+	{
+		Popup::OnDisable();
+		UnregisterCallback();
+	}
+
 	void InputTextPopup::OnDraw()
 	{
 		if (GUI::Draw::Input(Input, "##", &Style))

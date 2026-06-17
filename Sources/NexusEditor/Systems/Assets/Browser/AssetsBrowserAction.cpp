@@ -123,26 +123,14 @@ namespace NxEd
 		for (auto& Item : Items)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
-			if (Instance->GetObjectType() != AssetsBrowserItemContent::GetClassType())
+			if (Instance->GetObjectType() == AssetsBrowserItemContent::GetClassType())
 			{
-				continue;
+				AssetImporter::Run(Instance->GetTargetPath());
 			}
-
-			AssetImporter::Run(Instance->GetTargetPath());
-		}
-	}
-
-	void AssetsBrowserActionReimport::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
-		for (auto& Item : Items)
-		{
-			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
-			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+			else if (Instance->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
 			{
-				continue;
+				AssetImporter::Run(Instance->GetItemId());
 			}
-
-			AssetImporter::Run(Instance->GetItemId());
 		}
 	}
 
