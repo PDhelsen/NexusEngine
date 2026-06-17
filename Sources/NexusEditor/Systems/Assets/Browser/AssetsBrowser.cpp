@@ -417,6 +417,11 @@ namespace NxEd
 
 	NxFr::String AssetsBrowser::ItemPathToAssetPath(NxFr::StringView ItemPath)
 	{
+		if (NxFr::Path::IsDirectory(ItemPath))
+		{
+			return ItemPath;
+		}
+
 		return NxFr::Path::ChangeExtension(ItemPath, NxEn::AssetMetadata::AssetExtension);
 	}
 
