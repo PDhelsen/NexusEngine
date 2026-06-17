@@ -78,14 +78,10 @@ namespace NxEn
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 
 		Inputs = Application::GetSystem<InputSystem>();
-
-		Refresh();
 	}
 
 	void TreePanel::OnDisable()
 	{
-		Clear();
-
 		Menu.SetEnabled(false);
 		Panel::OnDisable();
 	}

@@ -59,6 +59,10 @@ namespace NxEd
 
 	void HierarchyPanel::OnEnable()
 	{
+		TreePanel::OnEnable();
+
+		Refresh();
+
 		Context = new HierarchyEditContext(GetImGuiId(), this);
 		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
 			{
@@ -67,17 +71,17 @@ namespace NxEd
 			};
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 		Edit->RegisterContext(GetImGuiId(), Context);
-
-		TreePanel::OnEnable();
 	}
 
 	void HierarchyPanel::OnDisable()
 	{
-		TreePanel::OnDisable();
-
 		delete Edit->UnregisterContext(GetImGuiId());
 		Context = nullptr;
 		Edit = nullptr;
+
+		Clear();
+
+		TreePanel::OnDisable();
 	}
 
 	void HierarchyPanel::OnDraw()

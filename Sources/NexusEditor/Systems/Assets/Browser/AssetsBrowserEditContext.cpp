@@ -6,21 +6,15 @@
 
 namespace NxEd
 {
-	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowser* Browser)
-		: Edit::Context(Id), Browser(Browser), IsCutting(false)
+	AssetsBrowserEditContext::AssetsBrowserEditContext(NxFr::StringId Id)
+		: Edit::Context(Id), Browser(nullptr), IsCutting(false)
 	{
-		Browser->OnItemCreated += { this, &AssetsBrowserEditContext::OnCreateItem };
-		Browser->OnItemDestroyed += { this, &AssetsBrowserEditContext::OnDestroyItem };
-		Browser->OnItemSelected += { this, &AssetsBrowserEditContext::OnSelectItem };
-		OnSelectionChanged += { this, &AssetsBrowserEditContext::OnSelectItem };
+
 	}
 
 	AssetsBrowserEditContext::~AssetsBrowserEditContext()
 	{
-		Browser->OnItemCreated -= { this, &AssetsBrowserEditContext::OnCreateItem };
-		Browser->OnItemDestroyed -= { this, &AssetsBrowserEditContext::OnDestroyItem };
-		Browser->OnItemSelected -= { this, &AssetsBrowserEditContext::OnSelectItem };
-		OnSelectionChanged -= { this, & AssetsBrowserEditContext::OnSelectItem };
+
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetAll()
@@ -146,38 +140,5 @@ namespace NxEd
 		}
 
 		return Result;
-	}
-
-	void AssetsBrowserEditContext::OnCreateItem(AssetsBrowserItem* Item)
-	{
-		Select(Item->GetItemId());
-	}
-
-	void AssetsBrowserEditContext::OnDestroyItem(AssetsBrowserItem* Item)
-	{
-		Unselect(Item->GetItemId());
-	}
-
-	void AssetsBrowserEditContext::OnSelectItem(AssetsBrowserItem* Item, bool State)
-	{
-		if (IsSelected(Item->GetItemId()) == State)
-		{
-			return;
-		}
-
-		if (State)
-		{
-			Select(Item->GetItemId());
-		}
-		else
-		{
-			Unselect(Item->GetItemId());
-		}
-	}
-
-	void AssetsBrowserEditContext::OnSelectItem(NxFr::GUID Id, bool State)
-	{
-		AssetsBrowserItem* Item = Browser->GetItem(Id);
-		Browser->OnItemSelected.Invoke(Item, State);
 	}
 }

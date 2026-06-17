@@ -10,6 +10,8 @@ namespace NxEd
 
 	class NX_EDITOR_API AssetsBrowserPanel : public NxEn::TreePanel
 	{
+		friend class AssetsBrowser;
+
 	public:
 		NX_OBJECT(AssetsBrowserPanel)
 
@@ -25,13 +27,10 @@ namespace NxEd
 		void OnDraw() override;
 
 		NxEn::TreeItem* FetchRootItem() override;
+		void OnCreateItem(NxEn::TreeItem* Item) override;
+		void OnDestroyItem(NxEn::TreeItem* Item) override;
 
 	private:
-		void OnCreateItem(AssetsBrowserItem* Item);
-		void OnDestroyItem(AssetsBrowserItem* Item);
-		void OnSelectItem(AssetsBrowserItem* Item, bool State);
-		void OnSelectItem(NxEn::TreeItem* Item, bool State) override;
-
 		AssetsBrowser* Browser;
 	};
 }

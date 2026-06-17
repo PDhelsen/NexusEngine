@@ -10,8 +10,10 @@ namespace NxEd
 
 	class NX_EDITOR_API AssetsBrowserEditContext : public Edit::Context
 	{
+		friend class AssetsBrowser;
+
 	public:
-		AssetsBrowserEditContext(NxFr::StringId Id, AssetsBrowser* Browser);
+		AssetsBrowserEditContext(NxFr::StringId Id);
 		~AssetsBrowserEditContext();
 
 	protected:
@@ -28,11 +30,6 @@ namespace NxEd
 		NxFr::Set<NxFr::GUID> FilterSelection();
 
 	private:
-		void OnCreateItem(AssetsBrowserItem* Item);
-		void OnDestroyItem(AssetsBrowserItem* Item);
-		void OnSelectItem(AssetsBrowserItem* Item, bool State);
-		void OnSelectItem(NxFr::GUID Id, bool State);
-
 		AssetsBrowser* Browser;
 		bool IsCutting;
 	};

@@ -22,7 +22,6 @@ namespace NxEd
 	void AssetsBrowserPanel::Refresh()
 	{
 		Browser->Refresh();
-		TreePanel::Refresh();
 	}
 
 	void AssetsBrowserPanel::Select(NxFr::GUID Id)
@@ -54,19 +53,14 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnEnable()
 	{
-		Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
-		Browser->OnItemCreated += { this, &AssetsBrowserPanel::OnCreateItem };
-		Browser->OnItemDestroyed += { this, &AssetsBrowserPanel::OnDestroyItem };
-		Browser->OnItemSelected += { this, &AssetsBrowserPanel::OnSelectItem };
-
 		TreePanel::OnEnable();
+
+		Root = FetchRootItem();
 	}
 
 	void AssetsBrowserPanel::OnDisable()
 	{
-		Browser->OnItemCreated -= { this, &AssetsBrowserPanel::OnCreateItem };
-		Browser->OnItemDestroyed -= { this, &AssetsBrowserPanel::OnDestroyItem };
-		Browser->OnItemSelected -= { this, &AssetsBrowserPanel::OnSelectItem };
+		Clear();
 
 		TreePanel::OnDisable();
 	}
@@ -86,28 +80,13 @@ namespace NxEd
 		return Browser->Root;
 	}
 
-	void AssetsBrowserPanel::OnCreateItem(AssetsBrowserItem* Item)
+	void AssetsBrowserPanel::OnCreateItem(NxEn::TreeItem* Item)
 	{
-		SelectItem(Item, true, false, false);
+		TreePanel::Select(Item);
 	}
 
-	void AssetsBrowserPanel::OnDestroyItem(AssetsBrowserItem* Item)
+	void AssetsBrowserPanel::OnDestroyItem(NxEn::TreeItem* Item)
 	{
 		TreePanel::OnDestroyItem(Item);
-	}
-
-	void AssetsBrowserPanel::OnSelectItem(AssetsBrowserItem* Item, bool State)
-	{
-		if (Selection.TryGet(Item))
-		{
-			return;
-		}
-
-		SelectItem(Item, true, false, false);
-	}
-
-	void AssetsBrowserPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
-	{
-		Browser->OnItemSelected.Invoke(static_cast<AssetsBrowserItem*>(Item), State);
 	}
 }

@@ -3,6 +3,7 @@
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEditor/Systems/Edit/EditSystem.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 
 namespace NxEd
@@ -16,10 +17,10 @@ namespace NxEd
 		inline static const NxFr::String RootFolderName = "Assets";
 		inline static const NxFr::StringId ContextId = "AssetsBrowser"_Sid;
 
+		NX_NOCOPY_NOMOVE(AssetsBrowser)
 		AssetsBrowser();
 		~AssetsBrowser();
 
-		void Clear();
 		void Refresh();
 
 		void Create(NxFr::StringId Type, NxFr::StringView TargetPath);
@@ -33,7 +34,8 @@ namespace NxEd
 
 	private:
 		AssetsBrowserItem* FetchItems(NxFr::StringView FsPath, AssetsBrowserItem* Parent);
-		AssetsBrowserItem* PurgeDuplicates(AssetsBrowserItem* Item);
+		AssetsBrowserItem* PurgeItems(AssetsBrowserItem* Item);
+		void ClearItems();
 
 		AssetsBrowserItem* AppendItem(NxFr::StringView ItemPath);
 		void UpdateItem(AssetsBrowserItem* Item, NxFr::StringView ItemPath, bool UpdateId = false);
@@ -56,15 +58,12 @@ namespace NxEd
 		NxFr::String ItemPathToCallbackPath(NxFr::StringView ItemPath, AssetsBrowserItem* Item);
 
 	private:
-		NxFr::Event<AssetsBrowserItem*> OnItemCreated;
-		NxFr::Event<AssetsBrowserItem*> OnItemDestroyed;
-		NxFr::Event<AssetsBrowserItem*, bool> OnItemSelected;
-
 		NxEn::AssetsSystem* Assets;
 		EditSystem* Edit;
 
 		NxFr::Dictionary<NxFr::GUID, AssetsBrowserItem*> Items;
 		AssetsBrowserItem* Root;
+		AssetsBrowserPanel* Panel;
 		AssetsBrowserEditContext Context;
 	};
 }
