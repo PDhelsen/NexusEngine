@@ -269,19 +269,28 @@ namespace NxEd
 		Item->Parent = Parent;
 		if (Parent->Child)
 		{
-			AssetsBrowserItem* Iterator = Parent->Child;
-			while (Iterator->Next && *Iterator->Next <= *Item)
+			if (*Item < *Parent->Child)
 			{
-				Iterator = Iterator->Next;
+				Item->Next = Parent->Child;
+				Parent->Child->Previous = Item;
+				Parent->Child = Item;
 			}
+			else
+			{
+				AssetsBrowserItem* Iterator = Parent->Child;
+				while (Iterator->Next && *Iterator->Next < *Item)
+				{
+					Iterator = Iterator->Next;
+				}
 
-			Item->Next = Iterator->Next;
-			Item->Previous = Iterator;
-			if (Iterator->Next)
-			{
-				Iterator->Next->Previous = Item;
+				Item->Next = Iterator->Next;
+				Item->Previous = Iterator;
+				if (Iterator->Next)
+				{
+					Iterator->Next->Previous = Item;
+				}
+				Iterator->Next = Item;
 			}
-			Iterator->Next = Item;
 		}
 		else
 		{
