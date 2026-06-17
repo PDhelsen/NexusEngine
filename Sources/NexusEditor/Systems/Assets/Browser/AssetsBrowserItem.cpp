@@ -69,25 +69,30 @@ namespace NxEd
 		NxFr::StringView AssetPath = NxFr::Path::GetPathWithoutExtension(TargetPath);
 		NxFr::StringView Extension = NxFr::Path::GetExtension(TargetPath);
 
-		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Create(Type, AssetPath, Extension);
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		NxEn::Asset* Instance = Assets->Create(Type, AssetPath, Extension);
+		Assets->Save(Instance->GetId());
 	}
 
 	void AssetsBrowserItemAsset::OnMove(NxFr::StringView CurrentPath, NxFr::StringView TargetPath)
 	{
 		NxFr::StringView AssetPath = NxFr::Path::GetPathWithoutExtension(TargetPath);
 
-		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Move(GetItemId(), AssetPath);
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		Assets->Move(GetItemId(), AssetPath);
 	}
 
 	void AssetsBrowserItemAsset::OnDuplicate(NxFr::StringView CurrentPath, NxFr::StringView TargetPath)
 	{
 		NxFr::StringView AssetPath = NxFr::Path::GetPathWithoutExtension(TargetPath);
 
-		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Copy(GetItemId(), AssetPath);
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		Assets->Copy(GetItemId(), AssetPath);
 	}
 
 	void AssetsBrowserItemAsset::OnDelete(NxFr::StringView CurrentPath)
 	{
-		NxEn::Application::GetSystem<NxEn::AssetsSystem>()->Delete(GetItemId());
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		Assets->Delete(GetItemId());
 	}
 }
