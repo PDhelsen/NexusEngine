@@ -35,7 +35,7 @@ namespace NxEd
 			NxFr::Set<NxFr::GUID> Instances = FilterSelection();
 			for (auto Id : Instances)
 			{
-				AssetsBrowserItem* Instance = Browser->Items[Id];
+				AssetsBrowserItem* Instance = Browser->GetItem(Id);
 				NxFr::String Path = Instance->GetTargetPath();
 				NxFr::String Parent = Instance->GetDirectory();
 
@@ -58,7 +58,7 @@ namespace NxEd
 		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
 		for (auto Id : Instances)
 		{
-			AssetsBrowserItem* Instance = Browser->Items[Id];
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
 			Browser->Duplicate(Instance->GetTargetPath(), Instance->GetTargetPath());
 		}
 	}
@@ -68,7 +68,7 @@ namespace NxEd
 		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
 		for (auto Id : Instances)
 		{
-			AssetsBrowserItem* Instance = Browser->Items[Id];
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
 			Browser->Delete(Instance->GetTargetPath());
 		}
 	}
@@ -91,12 +91,12 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Paste()
 	{
-		AssetsBrowserItem* Parent = Browser->Items[Selected];
+		AssetsBrowserItem* Parent = Browser->GetItem(Selected);
 		NxFr::String Root = Parent->IsDirectory() ? Parent->GetTargetPath() : Parent->GetDirectory();
 
 		for (auto Id : Clipboard)
 		{
-			AssetsBrowserItem* Instance = Browser->Items[Id];
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
 			Browser->Duplicate(Instance->GetTargetPath(), NxFr::Path::Combine(Root, Instance->GetTargetName()));
 		}
 
@@ -104,7 +104,7 @@ namespace NxEd
 		{
 			for (auto Id : Clipboard)
 			{
-				AssetsBrowserItem* Instance = Browser->Items[Id];
+				AssetsBrowserItem* Instance = Browser->GetItem(Id);
 				Browser->Delete(Instance->GetTargetPath());
 			}
 
@@ -119,7 +119,7 @@ namespace NxEd
 
 		for (auto Id : Selection)
 		{
-			AssetsBrowserItem* Instance = Browser->Items[Id];
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
 			AssetsBrowserItem* Parent = Instance->GetParent();
 			bool Selected = false;
 

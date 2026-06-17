@@ -106,14 +106,9 @@ namespace NxEd
 		for (uint64 Index = 0; Index < Paths.GetCount(); ++Index)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[Index]);
-			Paths[Index] = Instance->GetTargetPath();
-		}
-
-		for (auto& Item : Paths)
-		{
-			if (Browser->Exist(Item))
+			if (Browser->Exist(Instance->GetTargetPath()))
 			{
-				Browser->Delete(Item);
+				Browser->Delete(Instance->GetTargetPath());
 			}
 		}
 	}
