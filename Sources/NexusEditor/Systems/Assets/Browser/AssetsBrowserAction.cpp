@@ -31,10 +31,13 @@ namespace NxEd
 			for (auto Item : Items)
 			{
 				AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
+				if (Instance->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
+				{
+					NX_LOG(Error, System, "Can only create AssetsBrowserItem in directory");
+					continue;
+				}
 
-				NxFr::StringView Directory = Instance->IsDirectory() ? Instance->GetTargetPath() : Instance->GetDirectory();
-				NxFr::String Path = NxFr::Path::Combine(Directory, Name);
-
+				NxFr::String Path = NxFr::Path::Combine(Instance->GetTargetPath(), Name);
 				Browser->Create(Type, Path);
 			}
 		});
@@ -50,20 +53,7 @@ namespace NxEd
 			for (auto Item : Items)
 			{
 				AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Item);
-
-				NxFr::String Path = Instance->GetTargetPath();
-				NxFr::String Parent = Instance->GetDirectory();
-
-				if (Instance->IsDirectory())
-				{
-					Path = NxFr::Path::Combine((NxFr::StringView)Parent, Input);
-				}
-				else
-				{
-					Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + NxFr::Path::SeparatorExtension + Instance->GetExtension()));
-				}
-
-				Browser->Move(Instance->GetTargetPath(), Path);
+				Browser->Move(Instance->GetTargetPath(), NxFr::Path::ChangeName(Instance->GetTargetPath(), Input));
 			}
 		});
 	}
@@ -88,13 +78,16 @@ namespace NxEd
 
 		AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
 		AssetsBrowserItem* Target = static_cast<AssetsBrowserItem*>(Items[0]);
-
-		NX_ASSERT(Target->GetObjectType() == AssetsBrowserItemDirectory::GetClassType(), System, "Can only move AssetsBrowserItem to directory");
+		if (Target->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
+		{
+			NX_LOG(Error, System, "Can only move AssetsBrowserItem in directory");
+			return;
+		}
 
 		for (uint64 Index = 1; Index < Items.GetCount(); ++Index)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[Index]);
-			Browser->Move(Instance->GetTargetPath(), NxFr::Path::Combine(Target->GetTargetPath(), Instance->GetTargetName()));
+			Browser->Move(Instance->GetTargetPath(), NxFr::Path::ChangeFolder(Instance->GetTargetPath(), Target->GetTargetPath()));
 		}
 	}
 
@@ -106,10 +99,7 @@ namespace NxEd
 		for (uint64 Index = 0; Index < Paths.GetCount(); ++Index)
 		{
 			AssetsBrowserItem* Instance = static_cast<AssetsBrowserItem*>(Items[Index]);
-			if (Browser->Exist(Instance->GetTargetPath()))
-			{
-				Browser->Delete(Instance->GetTargetPath());
-			}
+			Browser->Delete(Instance->GetTargetPath());
 		}
 	}
 
@@ -151,29 +141,7 @@ namespace NxEd
 				continue;
 			}
 
-			Assets->Load(Id);
-		}
-	}
-
-	void AssetsBrowserActionReload::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
-		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-
-		for (auto& Item : Items)
-		{
-			if (Item->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
-			{
-				continue;
-			}
-
-			NxFr::GUID Id = Item->GetItemId();
-			if (IsInstantiable(Assets, Id))
-			{
-				NX_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
-				continue;
-			}
-
-			Assets->Reload(Item->GetItemId());
+			Assets->Reload(Id);
 		}
 	}
 

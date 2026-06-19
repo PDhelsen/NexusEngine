@@ -78,11 +78,12 @@ namespace NxEd
 
 	void AssetsBrowser::Create(NxFr::StringId Type, NxFr::StringView TargetPath)
 	{
+		NX_ASSERT(Type != NxFr::StringUtility::Id, Default, "Can't create the Asset without type");
 		NX_ASSERT(!TargetPath.IsEmpty(), Default, "Can't create the Assets/ folder");
 
 		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
 
-		OnCreate(Type, Target);
+		OnCreate(Type, Target, GetParent(TargetPath));
 	}
 
 	void AssetsBrowser::Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath)
@@ -93,7 +94,13 @@ namespace NxEd
 		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
 		AssetsBrowserItem* Item = GetItem(Id);
 
-		OnMove(Item, Target);
+		if (!Item)
+		{
+			NX_LOG(Error, System, "Failed to move asset at path %s", ItemPath.C());
+			return;
+		}
+
+		OnMove(Item, Target, GetParent(TargetPath));
 	}
 
 	void AssetsBrowser::Duplicate(NxFr::StringView ItemPath, NxFr::StringView TargetPath)
@@ -104,7 +111,13 @@ namespace NxEd
 		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
 		AssetsBrowserItem* Item = GetItem(Id);
 
-		OnDuplicate(Item, Target);
+		if (!Item)
+		{
+			NX_LOG(Error, System, "Failed to move asset at path %s", ItemPath.C());
+			return;
+		}
+
+		OnDuplicate(Item, Target, GetParent(TargetPath));
 	}
 
 	void AssetsBrowser::Delete(NxFr::StringView ItemPath)
@@ -113,6 +126,12 @@ namespace NxEd
 
 		NxFr::GUID Id = ItemPathToId(Validate(ItemPath));
 		AssetsBrowserItem* Item = GetItem(Id);
+
+		if (!Item)
+		{
+			NX_LOG(Error, System, "Failed to move asset at path %s", ItemPath.C());
+			return;
+		}
 
 		OnDelete(Item);
 	}
@@ -127,11 +146,6 @@ namespace NxEd
 		if (ItemPath == NxFr::StringUtility::Empty)
 		{
 			return ItemPath;
-		}
-
-		if (NxFr::StringUtility::Start(ItemPath, "/"))
-		{
-			ItemPath = NxFr::StringUtility::TrimLeading(ItemPath, '/');
 		}
 
 		NX_ASSERT(NxFr::Path::IsDirectory(ItemPath) || (NxFr::Path::IsFile(ItemPath) && NxFr::Path::HasExtension(ItemPath)), Default, "Path %s needs to have an extension or be a directory", ItemPath.C());
@@ -373,45 +387,45 @@ namespace NxEd
 		SelectionContextId = 0;
 	}
 
-	void AssetsBrowser::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath)
+	void AssetsBrowser::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath, AssetsBrowserItem* Parent)
 	{
-		NxFr::String AssetPath = ItemPathToAssetPath(TargetPath);
+		NxFr::String ItemPath = ItemPathToAssetPath(TargetPath);
 
-		AssetsBrowserItem* Item = AppendItem(AssetPath);
+		AssetsBrowserItem* Item = AppendItem(ItemPath);
 		Item->OnCreate(Type, ItemPathToCallbackPath(TargetPath, Item));
-		UpdateItem(Item, AssetPath);
-		AttachItem(Item, GetParent(AssetPath));
+		UpdateItem(Item, ItemPath);
+		AttachItem(Item, Parent);
 	}
 
-	void AssetsBrowser::OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath)
+	void AssetsBrowser::OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath, AssetsBrowserItem* Parent)
 	{
 		AssetsBrowserItem* Iterator = Item->Child;
 		while (Iterator)
 		{
-			OnMove(Iterator, NxFr::Path::Combine(TargetPath, Iterator->GetTargetName()));
+			OnMove(Iterator, NxFr::Path::ChangeFolder(Iterator->GetTargetPath(), TargetPath), Item);
 			Iterator = Iterator->Next;
 		}
 
 		DetachItem(Item);
 		Item->OnMove(ItemPathToCallbackPath(Item->Path, Item), ItemPathToCallbackPath(TargetPath, Item));
 		UpdateItem(Item, TargetPath, true);
-		AttachItem(Item, GetParent(TargetPath));
+		AttachItem(Item, Parent);
 	}
 
-	void AssetsBrowser::OnDuplicate(AssetsBrowserItem* Item, NxFr::StringView TargetPath)
+	void AssetsBrowser::OnDuplicate(AssetsBrowserItem* Item, NxFr::StringView TargetPath, AssetsBrowserItem* Parent)
 	{
 		AssetsBrowserItem* Copy = AppendItem(TargetPath);
 
 		AssetsBrowserItem* Iterator = Item->Child;
 		while (Iterator)
 		{
-			OnDuplicate(Iterator, NxFr::Path::Combine(TargetPath, Iterator->GetTargetName()));
+			OnDuplicate(Iterator, NxFr::Path::ChangeFolder(Iterator->GetTargetPath(), TargetPath), Copy);
 			Iterator = Iterator->Next;
 		}
 
 		Item->OnDuplicate(ItemPathToCallbackPath(Item->Path, Item), ItemPathToCallbackPath(TargetPath, Item));
 		UpdateItem(Copy, TargetPath);
-		AttachItem(Copy, GetParent(TargetPath));
+		AttachItem(Copy, Parent);
 	}
 
 	void AssetsBrowser::OnDelete(AssetsBrowserItem* Item)

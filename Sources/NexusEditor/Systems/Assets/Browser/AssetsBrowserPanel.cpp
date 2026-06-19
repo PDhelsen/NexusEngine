@@ -31,7 +31,6 @@ namespace NxEd
 		AppendAction<AssetsBrowserActionDelete>();
 		AppendAction<AssetsBrowserActionImport>();
 		AppendAction<AssetsBrowserActionLoad>();
-		AppendAction<AssetsBrowserActionReload>();
 		AppendAction<AssetsBrowserActionInstantiate>();
 		AppendAction<AssetsBrowserActionView>();
 	}

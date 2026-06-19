@@ -51,14 +51,14 @@ namespace NxEd
 		NX_ASSERT(Exist || (!Path.IsEmpty() && !Extension.IsEmpty() && Extension != NxEn::AssetMetadata::AssetExtension), Default, "AssetImporter needs a file path with an extension different from the asset extension to import a file");
 		NX_ASSERT(!Exist || Id != 0, Default, "AssetImporter needs an Id to reimport an asset");
 
-		YAML::Node Node = Exist ? Assets->GetAssetdata(Id) : YAML::Node();
+		YAML::Node AssetData = Exist ? Assets->GetAssetdata(Id) : YAML::Node();
 		Importer = GetImporters().TryGet(Type);
 		if (Importer)
 		{
-			Importer->OnImport(Node, ContentPath, Exist);
+			Importer->OnImport(AssetData, ContentPath, Exist);
 		}
 
-		Instance = Exist ? Assets->Reimport(Id, Node) : Assets->Import(Type, Node, Path, Extension);
+		Instance = Exist ? Assets->Reimport(Id, AssetData) : Assets->Import(Type, AssetData, Path, Extension);
 		Assets->Save(Instance->GetId());
 
 		return Instance;

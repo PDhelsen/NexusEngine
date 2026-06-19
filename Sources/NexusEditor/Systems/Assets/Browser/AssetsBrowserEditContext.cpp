@@ -36,19 +36,7 @@ namespace NxEd
 			for (auto Id : Instances)
 			{
 				AssetsBrowserItem* Instance = Browser->GetItem(Id);
-				NxFr::String Path = Instance->GetTargetPath();
-				NxFr::String Parent = Instance->GetDirectory();
-
-				if (Instance->IsDirectory())
-				{
-					Path = NxFr::Path::Combine((NxFr::StringView)Parent, Input);
-				}
-				else
-				{
-					Path = NxFr::Path::Combine((NxFr::StringView)Parent, (Input + NxFr::Path::SeparatorExtension + Instance->GetExtension()));
-				}
-
-				Browser->Move(Instance->GetTargetPath(), Path);
+				Browser->Move(Instance->GetTargetPath(), NxFr::Path::ChangeName(Instance->GetTargetPath(), Input));
 			}
 		});
 	}
@@ -91,13 +79,17 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Paste()
 	{
-		AssetsBrowserItem* Parent = Browser->GetItem(Selected);
-		NxFr::String Root = Parent->IsDirectory() ? Parent->GetTargetPath() : Parent->GetDirectory();
+		AssetsBrowserItem* Target = Browser->GetItem(Selected);
+		if (Target->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
+		{
+			NX_LOG(Error, System, "Can only paste AssetsBrowserItem in directory");
+			return;
+		}
 
 		for (auto Id : Clipboard)
 		{
 			AssetsBrowserItem* Instance = Browser->GetItem(Id);
-			Browser->Duplicate(Instance->GetTargetPath(), NxFr::Path::Combine(Root, Instance->GetTargetName()));
+			Browser->Duplicate(Instance->GetTargetPath(), NxFr::Path::ChangeFolder(Instance->GetTargetPath(), Target->GetTargetPath()));
 		}
 
 		if (IsCutting)

@@ -76,19 +76,8 @@ namespace NxEd
 	public:
 		NX_OBJECT(AssetsBrowserActionLoad)
 
-		AssetsBrowserActionLoad() : TreeAction("Load", 8, true, false) {}
+		AssetsBrowserActionLoad() : TreeAction("Load / Reload", 8, true, false) {}
 		virtual ~AssetsBrowserActionLoad() = default;
-
-		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
-	};
-
-	class NX_EDITOR_API AssetsBrowserActionReload : public NxEn::TreeAction
-	{
-	public:
-		NX_OBJECT(AssetsBrowserActionReload)
-
-		AssetsBrowserActionReload() : TreeAction("Reload", 9, true, false) {}
-		virtual ~AssetsBrowserActionReload() = default;
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};

@@ -22,12 +22,9 @@ namespace NxEd
 		NxFr::GUID GetItemId() const override { return Id; }
 
 		NxFr::StringView GetTargetPath() const { return Path; }
-		NxFr::StringView GetPrettyPath() const { return NxFr::Path::GetPathWithoutExtension(Path); }
-		NxFr::StringView GetDirectory() const { return NxFr::Path::GetFolder(Path); }
 		NxFr::StringView GetTargetName() const { return NxFr::Path::GetNameAndExtension(Path); }
+		NxFr::StringView GetPrettyPath() const { return NxFr::Path::GetPathWithoutExtension(Path); }
 		NxFr::StringView GetPrettyName() const { return NxFr::Path::GetName(Path); }
-		NxFr::StringView GetExtension() const { return NxFr::Path::GetExtension(Path); }
-		bool IsDirectory() const { return NxFr::Path::IsDirectory(Path); }
 
 	protected:
 		AssetsBrowserItem();
