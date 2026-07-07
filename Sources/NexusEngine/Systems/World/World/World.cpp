@@ -200,25 +200,6 @@ namespace NxEn
 		return Factory.FindComponents(Query);
 	}
 
-	NxFr::Array<NxFr::Handle<Tags>> World::FindTags(NxFr::StringView Query, bool MatchAll)
-	{
-		NxFr::List<NxFr::Handle<Tags>> Result;
-
-		NxFr::List<NxFr::StringView> Filters = NxFr::StringUtility::SplitAll(Query, " ");
-		NxFr::Collection<NxFr::StringView> Collection = Filters;
-
-		for (auto Iterator = BeginComponents<Tags>(); Iterator != EndComponents<Tags>(); ++Iterator)
-		{
-			if (Iterator->Contains(Collection, MatchAll))
-			{
-				NxFr::Handle<GameObject> Instance = Iterator->GetGameObject();
-				Result.Append(Instance->GetComponentById(Iterator->GetId()));
-			}
-		}
-
-		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Tags>>(Result);
-	}
-
 	NxFr::Array<NxFr::Handle<GameObject>> World::GetGameObjects() const
 	{
 		return Factory.GetGameObjects();

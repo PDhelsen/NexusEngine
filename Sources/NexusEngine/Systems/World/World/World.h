@@ -7,8 +7,6 @@
 
 #include "NexusEngine/Systems/World/Factory/WorldObjectFactory.h"
 
-#include "NexusEngine/Systems/World/Components/Components/Tags.h"
-
 namespace NxEn
 {
 	class NX_ENGINE_API World : public Object
@@ -42,7 +40,6 @@ namespace NxEn
 		NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Query) const;
 		NxFr::Array<NxFr::Handle<Behaviour>> FindBehaviours(NxFr::StringView Query) const;
 		NxFr::Array<NxFr::Handle<Component>> FindComponents(NxFr::StringView Query) const;
-		NxFr::Array<NxFr::Handle<Tags>> FindTags(NxFr::StringView Query, bool MatchAll = false);
 
 		NxFr::Array<NxFr::Handle<GameObject>> GetGameObjects() const;
 		NxFr::Handle<GameObject> GetGameObject(NxFr::GUID GameObjectId) const;
