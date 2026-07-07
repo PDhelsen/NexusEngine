@@ -46,23 +46,41 @@ namespace NxEn
 		NxFr::Handle<GameObject> GetIterator() const;
 		uint64 GetOrderIndex() const;
 
-		template<typename T> NxFr::Handle<T> GetBehaviour();
+		template<typename T> NxFr::Handle<T> GetBehaviour()
+		{
+			return static_cast<NxFr::Handle<T>>(GetBehaviourByType(T::GetClassType()));
+		}
+		template<typename T> NxFr::Array<NxFr::Handle<T>> GetBehaviours()
+		{
+			return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetBehavioursByType(T::GetClassType()));
+		}
+		template<typename T> NxFr::Array<NxFr::Handle<T>> GetBehavioursInChildren()
+		{
+			return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetBehavioursInChildrenByType(T::GetClassType()));
+		}
 		NxFr::Handle<Behaviour> GetBehaviourById(NxFr::GUID Id);
 		NxFr::Handle<Behaviour> GetBehaviourByType(NxFr::StringId Id);
-		template<typename T> NxFr::Array<NxFr::Handle<T>> GetBehaviours();
 		NxFr::Array<NxFr::Handle<Behaviour>> GetBehavioursByType(NxFr::StringId Id);
 		void GetBehavioursByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result);
-		template<typename T> NxFr::Array<NxFr::Handle<T>> GetBehavioursInChildren();
 		NxFr::Array<NxFr::Handle<Behaviour>> GetBehavioursInChildrenByType(NxFr::StringId Id);
 		void GetBehavioursInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Behaviour>>& Result);
 
-		template<typename T> NxFr::Handle<T> GetComponent();
+		template<typename T> NxFr::Handle<T> GetComponent()
+		{
+			return static_cast<NxFr::Handle<T>>(GetComponentByType(T::GetClassType()));
+		}
+		template<typename T> NxFr::Array<NxFr::Handle<T>> GetComponents()
+		{
+			return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetComponentsByType(T::GetClassType()));
+		}
+		template<typename T> NxFr::Array<NxFr::Handle<T>> GetComponentsInChildren()
+		{
+			return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetComponentsInChildrenByType(T::GetClassType()));
+		}
 		NxFr::Handle<Component> GetComponentById(NxFr::GUID Id);
 		NxFr::Handle<Component> GetComponentByType(NxFr::StringId Id);
-		template<typename T> NxFr::Array<NxFr::Handle<T>> GetComponents();
 		NxFr::Array<NxFr::Handle<Component>> GetComponentsByType(NxFr::StringId Id);
 		void GetComponentsByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result);
-		template<typename T> NxFr::Array<NxFr::Handle<T>> GetComponentsInChildren();
 		NxFr::Array<NxFr::Handle<Component>> GetComponentsInChildrenByType(NxFr::StringId Id);
 		void GetComponentsInChildrenByType(NxFr::StringId Id, NxFr::List<NxFr::Handle<Component>>& Result);
 
@@ -84,9 +102,6 @@ namespace NxEn
 		void OnPatchReferences() override;
 		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const override;
 
-		static NxFr::GUID ReadIdFromYaml(const YAML::Node& Node);
-		static NxFr::Handle<GameObject> GetThis(GameObject* Instance);
-
 	private:
 		NxFr::GUID WorldId;
 		NxFr::GUID GameObjectId;
@@ -102,40 +117,4 @@ namespace NxEn
 		NxFr::List<NxFr::Handle<Behaviour>> Behaviours;
 		NxFr::List<NxFr::Handle<Component>> Components;
 	};
-
-	template<typename T>
-	inline NxFr::Handle<T> GameObject::GetBehaviour()
-	{
-		return static_cast<NxFr::Handle<T>>(GetBehaviourByType(T::GetClassType()));
-	}
-
-	template<typename T>
-	inline NxFr::Array<NxFr::Handle<T>> GameObject::GetBehaviours()
-	{
-		return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetBehavioursByType(T::GetClassType()));
-	}
-
-	template<typename T>
-	inline NxFr::Array<NxFr::Handle<T>> GameObject::GetBehavioursInChildren()
-	{
-		return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetBehavioursInChildrenByType(T::GetClassType()));
-	}
-
-	template<typename T>
-	inline NxFr::Handle<T> GameObject::GetComponent()
-	{
-		return static_cast<NxFr::Handle<T>>(GetComponentByType(T::GetClassType()));
-	}
-
-	template<typename T>
-	inline NxFr::Array<NxFr::Handle<T>> GameObject::GetComponents()
-	{
-		return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetComponentsByType(T::GetClassType()));
-	}
-
-	template<typename T>
-	inline NxFr::Array<NxFr::Handle<T>> GameObject::GetComponentsInChildren()
-	{
-		return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetComponentsInChildrenByType(T::GetClassType()));
-	}
 }

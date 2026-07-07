@@ -2,10 +2,7 @@
 
 #include "NexusEngine/Application/Object/Object.h"
 
-#define NX_BEHAVIOUR_DECLARATION(Type) \
-NX_OBJECT(Type)
-
-#define NX_BEHAVIOUR_IMPLEMENTATION(Type) \
+#define NX_BEHAVIOUR(Type) \
 NxEn::WorldObjectStorage* Storage##Type = NxEn::WorldObjectStorage::Register<Type>();
 
 namespace NxEn

@@ -15,11 +15,6 @@ namespace NxEn
 
 	WorldObjectFactory::~WorldObjectFactory()
 	{
-		Clear();
-	}
-
-	void WorldObjectFactory::Clear()
-	{
 		for (auto [Type, Instance] : Components)
 		{
 			delete Instance;

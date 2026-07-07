@@ -18,8 +18,6 @@ namespace NxEn
 		WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
 		~WorldObjectFactory();
 
-		void Clear();
-
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), bool HandleReferences = false);
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
@@ -69,11 +67,24 @@ namespace NxEn
 		WorldObjectStorage* GetStorage(NxFr::StringId Type, NxFr::Dictionary<NxFr::StringId, WorldObjectStorage*>& Storages, NxFr::Dictionary<NxFr::GUID, WorldObjectInfo>& Infos);
 
 		template<typename T>
-		WorldObjectStorageTyped<T>* GetTypedStorageGameObjects();
+		WorldObjectStorageTyped<T>* GetTypedStorageGameObjects()
+		{
+			return static_cast<WorldObjectStorageTyped<T>*>(GameObjects);
+		}
 		template<typename T>
-		WorldObjectStorageTyped<T>* GetTypedStorageBehaviours();
+		WorldObjectStorageTyped<T>* GetTypedStorageBehaviours()
+		{
+			NxFr::StringId Type = T::GetClassType();
+			WorldObjectStorage* Storage = GetStorage(Type, Behaviours, InfosBehaviours);
+			return static_cast<WorldObjectStorageTyped<T>*>(Storage);
+		}
 		template<typename T>
-		WorldObjectStorageTyped<T>* GetTypedStorageComponents();
+		WorldObjectStorageTyped<T>* GetTypedStorageComponents()
+		{
+			NxFr::StringId Type = T::GetClassType();
+			WorldObjectStorage* Storage = GetStorage(Type, Components, InfosComponents);
+			return static_cast<WorldObjectStorageTyped<T>*>(Storage);
+		}
 
 	private:
 		NxFr::GUID WorldId;
@@ -88,26 +99,4 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, WorldObjectInfo> InfosBehaviours;
 		NxFr::Dictionary<NxFr::GUID, WorldObjectInfo> InfosComponents;
 	};
-
-	template<typename T>
-	inline WorldObjectStorageTyped<T>* WorldObjectFactory::GetTypedStorageGameObjects()
-	{
-		return static_cast<WorldObjectStorageTyped<T>*>(GameObjects);
-	}
-
-	template<typename T>
-	inline WorldObjectStorageTyped<T>* WorldObjectFactory::GetTypedStorageBehaviours()
-	{
-		NxFr::StringId Type = T::GetClassType();
-		WorldObjectStorage* Storage = GetStorage(Type, Behaviours, InfosBehaviours);
-		return static_cast<WorldObjectStorageTyped<T>*>(Storage);
-	}
-
-	template<typename T>
-	inline WorldObjectStorageTyped<T>* WorldObjectFactory::GetTypedStorageComponents()
-	{
-		NxFr::StringId Type = T::GetClassType();
-		WorldObjectStorage* Storage = GetStorage(Type, Components, InfosComponents);
-		return static_cast<WorldObjectStorageTyped<T>*>(Storage);
-	}
 }

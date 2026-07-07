@@ -59,7 +59,7 @@ namespace NxEn
 		Remove(Info.Index);
 
 		// Remove use RemoveSwap
-		// So after calling remove, the last element in now at the removed index
+		// So after calling remove, the last element is now at the removed index
 		// So the handle needs to be updated
 		UpdateSlot(Info.Index);
 	}

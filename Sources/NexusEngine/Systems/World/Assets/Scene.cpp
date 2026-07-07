@@ -17,10 +17,9 @@ namespace NxEn
 			return;
 		}
 
-		AssetMetadata& Metadata = Application::GetSystem<AssetsSystem>()->GetMetadata(GetId());
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 
-		Root = Factory->CreateGameObject(Metadata.GetName(), NxFr::Handle<GameObject>());
+		Root = Factory->CreateGameObject(GetName(), NxFr::Handle<GameObject>());
 
 		Root->ReferenceId = GetId();
 
@@ -50,7 +49,7 @@ namespace NxEn
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
 
-		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
+		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), Data["GameObject"]["Id"].as<NxFr::GUID>());
 		Root->Deserialize(Data);
 		Root->PatchReferences();
 		Root->Initialize();

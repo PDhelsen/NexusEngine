@@ -25,11 +25,17 @@ namespace NxEn
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
-		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target);
+		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target)
+		{
+			return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target));
+		}
 		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
 		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
 
-		template<typename T> NxFr::Handle<T> CreateComponent(NxFr::Handle<GameObject> Target);
+		template<typename T> NxFr::Handle<T> CreateComponent(NxFr::Handle<GameObject> Target)
+		{
+			return static_cast<NxFr::Handle<T>>(CreateComponent(T::GetClassType(), Target));
+		}
 		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
@@ -71,17 +77,5 @@ namespace NxEn
 		WorldObjectFactory Factory;
 		NxFr::Handle<GameObject> Root;
 	};
-
-	template<typename T>
-	inline NxFr::Handle<T> World::CreateBehaviour(NxFr::Handle<GameObject> Target)
-	{
-		return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target));
-	}
-
-	template<typename T>
-	inline NxFr::Handle<T> World::CreateComponent(NxFr::Handle<GameObject> Target)
-	{
-		return static_cast<NxFr::Handle<T>>(CreateComponent(T::GetClassType(), Target));
-	}
 }
 

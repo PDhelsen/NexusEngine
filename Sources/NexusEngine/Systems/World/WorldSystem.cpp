@@ -5,28 +5,35 @@ namespace NxEn
 {
 	static Command* CmdWorldSceneCreate = Command::Create("World.Scene.Create"_Sid, "Create scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
-		Application::GetSystem<WorldSystem>()->CreateScene(Path);
+		WorldSystem* Worlds = Application::GetSystem<WorldSystem>();
+		Worlds->CreateScene(Path);
 	}));
 
 	static Command* CmdWorldSceneSave = Command::Create("World.Scene.Save"_Sid, "Save scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
-		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
-		NxFr::GUID Id = System->PathToId(Path);
-		Application::GetSystem<WorldSystem>()->SaveScene(Id);
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		WorldSystem* Worlds = Application::GetSystem<WorldSystem>();
+
+		NxFr::GUID Id = Assets->PathToId(Path);
+		Worlds->SaveScene(Id);
 	}));
 
 	static Command* CmdWorldSceneLoad = Command::Create("World.Scene.Load"_Sid, "Load scene into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
-		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
-		NxFr::GUID Id = System->PathToId(Path);
-		Application::GetSystem<WorldSystem>()->LoadScene(Id);
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		WorldSystem* Worlds = Application::GetSystem<WorldSystem>();
+
+		NxFr::GUID Id = Assets->PathToId(Path);
+		Worlds->LoadScene(Id);
 	}));
 
 	static Command* CmdWorldSceneUnload = Command::Create("World.Scene.Unload"_Sid, "Unload scene", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
 	{
-		AssetsSystem* System = Application::GetSystem<AssetsSystem>();
-		NxFr::GUID Id = System->PathToId(Path);
-		Application::GetSystem<WorldSystem>()->UnloadScene(Id);
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		WorldSystem* Worlds = Application::GetSystem<WorldSystem>();
+
+		NxFr::GUID Id = Assets->PathToId(Path);
+		Worlds->UnloadScene(Id);
 	}));
 
 	static Command* CmdWorldInstantiate = Command::Create("World.Prefab.Instantiate"_Sid, "Instantiate into the Main world", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)

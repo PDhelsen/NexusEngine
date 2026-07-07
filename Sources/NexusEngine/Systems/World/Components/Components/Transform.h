@@ -11,22 +11,13 @@ namespace NxEn
 
 	class NX_ENGINE_API Transform : public Component
 	{
-		enum class DirtyFlag : uint8
-		{
-			None = 0,
-			Position = 1 << 0,
-			Rotation = 1 << 1,
-			Scaling = 1 << 2,
-			All = (1 << 3) - 1
-		};
-
 	public:
 		static NxFr::Vector3f TransformPosition(const NxFr::Matrix4x4f& Space, NxFr::Vector3f Position);
 		static NxFr::Vector3f TransformVector(const NxFr::Matrix4x4f& Space, NxFr::Vector3f Vector);
 		static NxFr::Vector3f TransformDirection(const NxFr::Matrix4x4f& Space, NxFr::Vector3f Direction);
 		static NxFr::Quaternion TransformRotation(const NxFr::Matrix4x4f& Space, NxFr::Quaternion Rotation);
 
-		NX_COMPONENT_DECLARATION(Transform)
+		NX_OBJECT(Transform)
 
 		Transform();
 		~Transform();
@@ -61,11 +52,19 @@ namespace NxEn
 		void OnUpdateHierarchy() override;
 
 	private:
+		enum class DirtyFlag : uint8
+		{
+			None = 0,
+			Position = 1 << 0,
+			Rotation = 1 << 1,
+			Scaling = 1 << 2,
+			All = (1 << 3) - 1
+		};
+
 		void SetDirty(DirtyFlag Flag, bool Recursive = true) const;
 		void CleanDirty(DirtyFlag Flag) const;
 		bool IsDirty(DirtyFlag Flag) const;
 
-	private:
 		NxFr::Handle<Transform> Parent;
 		mutable uint8 Dirty;
 

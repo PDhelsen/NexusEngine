@@ -45,7 +45,7 @@ namespace NxEn
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
 
-		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), GameObject::ReadIdFromYaml(Data));
+		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), Data["GameObject"]["Id"].as<NxFr::GUID>());
 		Root->Deserialize(Data);
 		Root->PatchReferences();
 		Root->Initialize();

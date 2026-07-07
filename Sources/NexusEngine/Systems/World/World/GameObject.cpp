@@ -3,12 +3,6 @@
 
 namespace NxEn
 {
-	static const NxFr::String YamlRoot = "GameObject";
-	static const NxFr::String YamlChildren = "Children";
-	static const NxFr::String YamlType = "Type";
-	static const NxFr::String YamlId = "Id";
-	static const NxFr::String YamlReference = "Reference";
-
 	GameObject::GameObject()
 		: WorldId(0), GameObjectId(0), ReferenceId(0),
 		Name(""),
@@ -187,9 +181,9 @@ namespace NxEn
 		if (GUI::Draw::Button("Add Behaviour", NxFr::Vector2f(HalfWindowSize , 0.0f)))
 		{
 			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
-			Popup->RegisterCallback([=](NxFr::StringView Input)
+			Popup->RegisterCallback([&](NxFr::StringView Input)
 			{
-				GetWorld()->CreateBehaviour(Input, GetThis(this));
+				GetWorld()->CreateBehaviour(Input, GetWorld()->GetGameObject(GameObjectId));
 			});
 		}
 
@@ -198,9 +192,9 @@ namespace NxEn
 		if (GUI::Draw::Button("Add Component", NxFr::Vector2f(HalfWindowSize, 0.0f)))
 		{
 			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
-			Popup->RegisterCallback([=](NxFr::StringView Input)
+			Popup->RegisterCallback([&](NxFr::StringView Input)
 			{
-				GetWorld()->CreateComponent(Input, GetThis(this));
+				GetWorld()->CreateComponent(Input, GetWorld()->GetGameObject(GameObjectId));
 			});
 		}
 	}
@@ -226,7 +220,7 @@ namespace NxEn
 		}
 		Instance["Components"] = NodeComponents;
 
-		Node[YamlRoot] = Instance;
+		Node["GameObject"] = Instance;
 
 		YAML::Node Children;
 		NxFr::Handle<GameObject> Iterator = GetChild();
@@ -238,11 +232,10 @@ namespace NxEn
 
 				YAML::Node ChildInstance;
 				Iterator->OnSerialize(ChildInstance);
-				ChildNode[YamlRoot] = ChildInstance;
-				ChildNode[YamlChildren] = YAML::Node();
+				ChildNode["GameObject"] = ChildInstance;
+				ChildNode["Children"] = YAML::Node();
 
 				Children.push_back(ChildNode);
-
 			}
 			else
 			{
@@ -251,7 +244,7 @@ namespace NxEn
 
 			Iterator = Iterator->GetNext();
 		}
-		Node[YamlChildren] = Children;
+		Node["Children"] = Children;
 
 		return Node;
 	}
@@ -260,12 +253,12 @@ namespace NxEn
 	{
 		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
 		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
-		YAML::Node Instance = Node[YamlRoot];
+		YAML::Node Instance = Node["GameObject"];
 
 		NxFr::Delegate<NxFr::Handle<GameObject>(const YAML::Node&)> ChildLoad = [&](const YAML::Node& ChildNode)
 		{
 			NxFr::Handle<GameObject> ChildInstance;
-			NxFr::GUID ChildReference = ChildNode[YamlRoot][YamlReference].as<NxFr::GUID>();
+			NxFr::GUID ChildReference = ChildNode["GameObject"]["Reference"].as<NxFr::GUID>();
 
 			if (ChildReference)
 			{
@@ -274,7 +267,7 @@ namespace NxEn
 			}
 			else
 			{
-				ChildInstance = Factory->CreateGameObject("", This, ChildNode[YamlRoot][YamlId].as<NxFr::GUID>());
+				ChildInstance = Factory->CreateGameObject("", This, ChildNode["GameObject"]["Id"].as<NxFr::GUID>());
 				ChildInstance->Deserialize(ChildNode);
 			}
 
@@ -305,7 +298,7 @@ namespace NxEn
 			B->Deserialize(NodeComponent);
 		}
 
-		YAML::Node Children = Node[YamlChildren];
+		YAML::Node Children = Node["Children"];
 		if (Children.size() > 0)
 		{
 			Child = ChildLoad.Invoke(Children[0]);
@@ -737,9 +730,6 @@ namespace NxEn
 
 	void GameObject::OnDeserialize(const YAML::Node& Node)
 	{
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
-		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
-
 		Name = Node["Name"].as<NxFr::String>();
 		NX_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		ReferenceId = Node["Reference"].as<NxFr::GUID>();
@@ -758,15 +748,5 @@ namespace NxEn
 
 	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
-	}
-
-	NxFr::GUID GameObject::ReadIdFromYaml(const YAML::Node& Node)
-	{
-		return Node[YamlRoot][YamlId].as<NxFr::GUID>();
-	}
-
-	NxFr::Handle<GameObject> GameObject::GetThis(GameObject* Instance)
-	{
-		return Instance->GetWorld()->GetGameObject(Instance->GetId());
 	}
 }
