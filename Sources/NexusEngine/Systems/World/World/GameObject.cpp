@@ -251,7 +251,7 @@ namespace NxEn
 
 	void GameObject::Deserialize(const YAML::Node& Node)
 	{
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactory::GetContexts().TryGet();
 		NxFr::Handle<GameObject> This = Factory->GetGameObject(GameObjectId);
 		YAML::Node Instance = Node["GameObject"];
 

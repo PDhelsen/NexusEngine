@@ -70,8 +70,8 @@ namespace NxEn
 		void Reserve(uint64 Size) override { Instances.Reserve(Size); }
 		void Clear() override { Instances.Clear(); }
 
-		WorldObjectIterator<T> Begin() { return !IsEmpty() ? WorldObjectIterator<T>(&Instances[0]) : WorldObjectIterator<T>(nullptr); }
-		WorldObjectIterator<T> End() { return !IsEmpty() ? WorldObjectIterator(&Instances[0], GetCount()) : WorldObjectIterator<T>(nullptr); }
+		Iterator::IteratorWorld<T> Begin() { return !IsEmpty() ? Iterator::IteratorWorld<T>(&Instances[0]) : Iterator::IteratorWorld<T>(nullptr); }
+		Iterator::IteratorWorld<T> End() { return !IsEmpty() ? Iterator::IteratorWorld(&Instances[0], GetCount()) : Iterator::IteratorWorld<T>(nullptr); }
 
 		bool IsEmpty() const override { return Instances.IsEmpty(); };
 		uint64 GetCount() const override { return Instances.GetCount(); }

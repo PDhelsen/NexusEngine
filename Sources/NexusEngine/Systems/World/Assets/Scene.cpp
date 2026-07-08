@@ -17,7 +17,7 @@ namespace NxEn
 			return;
 		}
 
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactory::GetContexts().TryGet();
 
 		Root = Factory->CreateGameObject(GetName(), NxFr::Handle<GameObject>());
 
@@ -46,7 +46,7 @@ namespace NxEn
 
 	void Scene::OnLoad(NxFr::StringView Path)
 	{
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactory::GetContexts().TryGet();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
 
 		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), Data["GameObject"]["Id"].as<NxFr::GUID>());
@@ -58,7 +58,7 @@ namespace NxEn
 
 	void Scene::OnUnload()
 	{
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactory::GetContexts().TryGet();
 
 		Root->SetEnabled(false);
 		Root->Shutdown();

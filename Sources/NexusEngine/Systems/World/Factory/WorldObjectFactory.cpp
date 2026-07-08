@@ -5,6 +5,12 @@
 
 namespace NxEn
 {
+	NxFr::Context<WorldObjectFactory>& WorldObjectFactory::GetContexts()
+	{
+		static NxFr::Context<WorldObjectFactory> Contexts;
+		return Contexts;
+	}
+
 	WorldObjectFactory::WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences)
 		: WorldId(WorldId), KeepReferences(KeepReferences), Handles(),
 		GameObjects(), Behaviours(), Components(),
@@ -38,7 +44,7 @@ namespace NxEn
 			Attach(Instance, Parent, Parent->GetChildCount());
 		}
 
-		WorldObjectReferences* Refs = WorldObjectReferences::GetReferences();
+		WorldObjectReferences* Refs = WorldObjectReferences::GetContexts().TryGet();
 		if (Refs)
 		{
 			Refs->Ids.Append(Instance->GetId(), Instance->GetId());
@@ -52,7 +58,7 @@ namespace NxEn
 		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
 		Instance->Clone((const GameObject*)Original.GetRedirectedPointer());
 
-		WorldObjectReferences* Refs = WorldObjectReferences::GetReferences();
+		WorldObjectReferences* Refs = WorldObjectReferences::GetContexts().TryGet();
 		if (Refs)
 		{
 			Refs->Ids.Append(Original->GetId(), Instance->GetId());
@@ -137,7 +143,7 @@ namespace NxEn
 		Instance->Target = Target;
 		Target->Behaviours.Append(Instance);
 
-		WorldObjectReferences* Refs = WorldObjectReferences::GetReferences();
+		WorldObjectReferences* Refs = WorldObjectReferences::GetContexts().TryGet();
 		if (Refs)
 		{
 			Refs->Ids.Append(Instance->GetId(), Instance->GetId());
@@ -151,7 +157,7 @@ namespace NxEn
 		NxFr::Handle<Behaviour> Instance = CreateBehaviour(Original->GetObjectType(), Target);
 		Instance->Clone((const Behaviour*)Original.GetRedirectedPointer());
 
-		WorldObjectReferences* Refs = WorldObjectReferences::GetReferences();
+		WorldObjectReferences* Refs = WorldObjectReferences::GetContexts().TryGet();
 		if (Refs)
 		{
 			Refs->Ids.Append(Original->GetId(), Instance->GetId());
@@ -177,7 +183,7 @@ namespace NxEn
 		Instance->Target = Target;
 		Target->Components.Append(Instance);
 
-		WorldObjectReferences* Refs = WorldObjectReferences::GetReferences();
+		WorldObjectReferences* Refs = WorldObjectReferences::GetContexts().TryGet();
 		if (Refs)
 		{
 			Refs->Ids.Append(Instance->GetId(), Instance->GetId());
@@ -191,7 +197,7 @@ namespace NxEn
 		NxFr::Handle<Component> Instance = CreateComponent(Original->GetObjectType(), Target);
 		Instance->Clone((const Component*)Original.GetRedirectedPointer());
 
-		WorldObjectReferences* Refs = WorldObjectReferences::GetReferences();
+		WorldObjectReferences* Refs = WorldObjectReferences::GetContexts().TryGet();
 		if (Refs)
 		{
 			Refs->Ids.Append(Original->GetId(), Instance->GetId());

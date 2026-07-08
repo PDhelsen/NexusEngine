@@ -3,26 +3,15 @@
 
 namespace NxEn
 {
-	static NxFr::Stack<WorldObjectReferences*> References;
-
-	WorldObjectReferences* WorldObjectReferences::GetReferences()
+	NxFr::Context<WorldObjectReferences>& WorldObjectReferences::GetContexts()
 	{
-		return References.GetCount() ? References.Get() : nullptr;
+		static NxFr::Context<WorldObjectReferences> Contexts;
+		return Contexts;
 	}
 
 	NxFr::GUID WorldObjectReferences::Resolve(NxFr::GUID Id)
 	{
-		WorldObjectReferences* Map = GetReferences();
+		WorldObjectReferences* Map = GetContexts().TryGet();
 		return Map && Id != 0 ? Map->Ids[Id] : Id;
-	}
-
-	WorldObjectReferences::WorldObjectReferences()
-	{
-		References.Append(this);
-	}
-
-	WorldObjectReferences::~WorldObjectReferences()
-	{
-		References.Remove();
 	}
 }

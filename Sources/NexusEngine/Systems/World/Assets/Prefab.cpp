@@ -12,7 +12,7 @@ namespace NxEn
 
 	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
 	{
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactory::GetContexts().TryGet();
 
 		Root = Factory->DuplicateGameObject(Instance, NxFr::Handle<GameObject>(), true);
 
@@ -42,7 +42,7 @@ namespace NxEn
 
 	void Prefab::OnLoad(NxFr::StringView Path)
 	{
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactory::GetContexts().TryGet();
 		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
 
 		Root = Factory->CreateGameObject("", NxFr::Handle<GameObject>(), Data["GameObject"]["Id"].as<NxFr::GUID>());
@@ -54,7 +54,7 @@ namespace NxEn
 
 	void Prefab::OnUnload()
 	{
-		WorldObjectFactory* Factory = WorldObjectFactoryContext::GetFactory();
+		WorldObjectFactory* Factory = WorldObjectFactory::GetContexts().TryGet();
 
 		Root->SetEnabled(false);
 		Root->Shutdown();

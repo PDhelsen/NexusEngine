@@ -6,11 +6,9 @@ namespace NxEn
 {
 	struct WorldObjectReferences
 	{
-		static WorldObjectReferences* GetReferences();
+	public:
+		static NxFr::Context<WorldObjectReferences>& GetContexts();
 		static NxFr::GUID Resolve(NxFr::GUID Id);
-
-		WorldObjectReferences();
-		~WorldObjectReferences();
 
 		NxFr::Dictionary<NxFr::GUID, NxFr::GUID> Ids;
 	};

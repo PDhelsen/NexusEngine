@@ -7,7 +7,6 @@
 #include "NexusEngine/Systems/World/Factory/WorldObjectInfo.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectIterator.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectStorage.h"
-#include "NexusEngine/Systems/World/Factory/WorldObjectFactoryContext.h"
 #include "NexusEngine/Systems/World/Factory/WorldObjectReferences.h"
 
 namespace NxEn
@@ -15,6 +14,8 @@ namespace NxEn
 	class WorldObjectFactory
 	{
 	public:
+		static NxFr::Context<WorldObjectFactory>& GetContexts();
+
 		WorldObjectFactory(NxFr::GUID WorldId, bool KeepReferences);
 		~WorldObjectFactory();
 
@@ -46,12 +47,12 @@ namespace NxEn
 		NxFr::Handle<Component> GetComponent(NxFr::GUID ComponentId) const;
 		NxFr::Array<NxFr::Handle<Component>> GetComponents() const;
 
-		WorldObjectIterator<GameObject> BeginGameObjects() { return GetTypedStorageGameObjects<GameObject>()->Begin(); }
-		WorldObjectIterator<GameObject> EndGameObjects() { return GetTypedStorageGameObjects<GameObject>()->End(); }
-		template<typename T> WorldObjectIterator<T> BeginBehaviours() { return GetTypedStorageBehaviours<T>()->Begin(); }
-		template<typename T> WorldObjectIterator<T> EndBehaviours() { return GetTypedStorageBehaviours<T>()->End(); }
-		template<typename T> WorldObjectIterator<T> BeginComponents() { return GetTypedStorageComponents<T>()->Begin(); }
-		template<typename T> WorldObjectIterator<T> EndComponents() { return GetTypedStorageComponents<T>()->End(); }
+		Iterator::IteratorWorld<GameObject> BeginGameObjects() { return GetTypedStorageGameObjects<GameObject>()->Begin(); }
+		Iterator::IteratorWorld<GameObject> EndGameObjects() { return GetTypedStorageGameObjects<GameObject>()->End(); }
+		template<typename T> Iterator::IteratorWorld<T> BeginBehaviours() { return GetTypedStorageBehaviours<T>()->Begin(); }
+		template<typename T> Iterator::IteratorWorld<T> EndBehaviours() { return GetTypedStorageBehaviours<T>()->End(); }
+		template<typename T> Iterator::IteratorWorld<T> BeginComponents() { return GetTypedStorageComponents<T>()->Begin(); }
+		template<typename T> Iterator::IteratorWorld<T> EndComponents() { return GetTypedStorageComponents<T>()->End(); }
 
 		NxFr::GUID GetId() const { return WorldId; }
 

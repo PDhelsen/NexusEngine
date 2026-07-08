@@ -128,7 +128,7 @@ namespace NxEn
 	Scene* WorldSystem::CreateScene(NxFr::StringView Path, NxFr::GUID WorldId)
 	{
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance);
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Create<Scene>(Path, "scene");
 
@@ -170,8 +170,8 @@ namespace NxEn
 		}
 
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance);
-		WorldObjectReferences References;
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
+		NxFr::Context<WorldObjectReferences>::Value References = WorldObjectReferences::GetContexts().PushValue();
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->Load<Scene>(SceneId);
 
@@ -206,7 +206,7 @@ namespace NxEn
 		}
 
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance);
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
 
 		Scene* SceneInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Scene>(SceneId);
 
@@ -244,8 +244,8 @@ namespace NxEn
 	Prefab* WorldSystem::CreatePrefab(NxFr::Handle<GameObject> Target, NxFr::StringView Path)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance);
-		WorldObjectReferences References;
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
+		NxFr::Context<WorldObjectReferences>::Value References = WorldObjectReferences::GetContexts().PushValue();
 
 		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->Create<Prefab>(Path, "prefab");
 		PrefabInstance->SetRoot(Target);
@@ -255,8 +255,8 @@ namespace NxEn
 	void WorldSystem::SavePrefab(NxFr::Handle<GameObject> Target)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance);
-		WorldObjectReferences References;
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
+		NxFr::Context<WorldObjectReferences>::Value References = WorldObjectReferences::GetContexts().PushValue();
 
 		Prefab* PrefabInstance = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->GetReferenceId());
 		PrefabInstance->SetRoot(Target);
@@ -265,8 +265,8 @@ namespace NxEn
 	Prefab* WorldSystem::LoadPrefab(NxFr::GUID PrefabId)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance);
-		WorldObjectReferences References;
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
+		NxFr::Context<WorldObjectReferences>::Value References = WorldObjectReferences::GetContexts().PushValue();
 
 		return Application::GetSystem<AssetsSystem>()->Load<Prefab>(PrefabId);
 	}
@@ -274,8 +274,8 @@ namespace NxEn
 	void WorldSystem::UnloadPrefab(NxFr::GUID PrefabId)
 	{
 		World* WorldInstance = GetWorld(DummyId);
-		WorldObjectFactoryContext Context(WorldInstance);
-		WorldObjectReferences References;
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
+		NxFr::Context<WorldObjectReferences>::Value References = WorldObjectReferences::GetContexts().PushValue();
 
 		Application::GetSystem<AssetsSystem>()->Unload(PrefabId);
 	}
@@ -293,8 +293,8 @@ namespace NxEn
 	NxFr::Handle<GameObject> WorldSystem::InstantiatePrefab(Prefab* Instance, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
 		World* WorldInstance = GetWorld(WorldId);
-		WorldObjectFactoryContext Context(WorldInstance);
-		WorldObjectReferences References;
+		NxFr::Context<WorldObjectFactory>::Reference Factory = WorldObjectFactory::GetContexts().PushReference(&WorldInstance->Factory);
+		NxFr::Context<WorldObjectReferences>::Value References = WorldObjectReferences::GetContexts().PushValue();
 
 		return WorldInstance->DuplicateGameObject(Instance->GetRoot(), Parent, true);
 	}

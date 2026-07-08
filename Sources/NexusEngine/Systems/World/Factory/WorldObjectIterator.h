@@ -4,114 +4,50 @@
 
 namespace NxEn
 {
-	template<typename T>
-	struct WorldObjectIterator
+	namespace Iterator
 	{
-	public:
-		WorldObjectIterator(T* Pointer)
-			: Instance(Pointer)
+		template<typename T>
+		struct IteratorWorld : public NxFr::Iterator::Iterator<T, IteratorWorld<T>>
 		{
-		}
+		public:
+			IteratorWorld(T* Pointer, uint64 Index = 0)
+				: Instance(Pointer + Index)
+			{
+			}
 
-		WorldObjectIterator(T* Pointer, uint64 Index)
-			: Instance(Pointer + Index)
-		{
-		}
+			bool Equals(const IteratorWorld<T>& Other) const
+			{
+				return Instance == Other.Instance;
+			}
 
-		WorldObjectIterator<T>& operator++()
-		{
-			Iterate();
-			return *this;
-		}
+			void Increment()
+			{
+				++Instance;
+			}
 
-		WorldObjectIterator<T> operator++(int32)
-		{
-			WorldObjectIterator<T> Temp = *this;
-			++(*this);
-			return Temp;
-		}
+			void Decrement()
+			{
+				--Instance;
+			}
 
-		WorldObjectIterator<T>& operator--()
-		{
-			Reverse();
-			return *this;
-		}
+			T& Get()
+			{
+				return *Instance;
+			}
 
-		WorldObjectIterator<T> operator--(int32)
-		{
-			WorldObjectIterator<T> Temp = *this;
-			--(*this);
-			return Temp;
-		}
+			const T& Get() const
+			{
+				return *Instance;
+			}
 
-		T* operator->()
-		{
-			return &Get();
-		}
+			uint64 Id() const
+			{
+				NX_ASSERT(false, Default, "IteratorWorld doesn't support query the id");
+				return -1;
+			}
 
-		const T* operator->() const
-		{
-			return &Get();
-		}
-
-		T& operator*()
-		{
-			return Get();
-		}
-
-		const T& operator*() const
-		{
-			return Get();
-		}
-
-		bool operator==(const WorldObjectIterator<T>& Other) const
-		{
-			return Equals(Other);
-		}
-
-		bool operator!=(const WorldObjectIterator<T>& Other) const
-		{
-			return !Equals(Other);
-		}
-
-		bool Equals(const WorldObjectIterator<T>& Other) const
-		{
-			return Instance == Other.Instance;
-		}
-
-		T& Get()
-		{
-			return *Instance;
-		}
-
-		const T& Get() const
-		{
-			return *Instance;
-		}
-
-		void Iterate()
-		{
-			++Instance;
-		}
-
-		void Reverse()
-		{
-			--Instance;
-		}
-
-		WorldObjectIterator<T>& Next()
-		{
-			Iterate();
-			return *this;
-		}
-
-		WorldObjectIterator<T>& Previous()
-		{
-			Reverse();
-			return *this;
-		}
-
-	private:
-		T* Instance;
-	};
+		private:
+			T* Instance;
+		};
+	}
 }

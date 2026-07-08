@@ -11,7 +11,7 @@ namespace NxEn
 {
 	class NX_ENGINE_API World : public Object
 	{
-		friend struct WorldObjectFactoryContext;
+		friend class WorldSystem;
 
 	public:
 		NX_OBJECT(World)
@@ -55,12 +55,12 @@ namespace NxEn
 		NxFr::Array<NxFr::Handle<Component>> GetComponents() const;
 		NxFr::Handle<Component> GetComponent(NxFr::GUID ComponentId) const;
 
-		WorldObjectIterator<GameObject> BeginGameObjects() { return Factory.BeginGameObjects(); }
-		WorldObjectIterator<GameObject> EndGameObjects() { return Factory.EndGameObjects(); }
-		template<typename T> WorldObjectIterator<T> BeginBehaviours() { return Factory.BeginBehaviours<T>(); }
-		template<typename T> WorldObjectIterator<T> EndBehaviours() { return Factory.EndBehaviours<T>(); }
-		template<typename T> WorldObjectIterator<T> BeginComponents() { return Factory.BeginComponents<T>(); }
-		template<typename T> WorldObjectIterator<T> EndComponents() { return Factory.EndComponents<T>(); }
+		Iterator::IteratorWorld<GameObject> BeginGameObjects() { return Factory.BeginGameObjects(); }
+		Iterator::IteratorWorld<GameObject> EndGameObjects() { return Factory.EndGameObjects(); }
+		template<typename T> Iterator::IteratorWorld<T> BeginBehaviours() { return Factory.BeginBehaviours<T>(); }
+		template<typename T> Iterator::IteratorWorld<T> EndBehaviours() { return Factory.EndBehaviours<T>(); }
+		template<typename T> Iterator::IteratorWorld<T> BeginComponents() { return Factory.BeginComponents<T>(); }
+		template<typename T> Iterator::IteratorWorld<T> EndComponents() { return Factory.EndComponents<T>(); }
 
 		NxFr::GUID GetId() const override { return GetWorldId(); };
 		NxFr::GUID GetWorldId() const { return WorldId; };
