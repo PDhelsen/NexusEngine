@@ -282,7 +282,7 @@ namespace NxEn
 
 	void WorldSystem::UnpackPrefab(NxFr::Handle<GameObject> Target)
 	{
-		if (!Target->GetReferenceId() || Target->IsRoot())
+		if (!Target->GetReferenceId())
 		{
 			return;
 		}

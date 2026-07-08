@@ -102,7 +102,6 @@ namespace NxEn
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
-		Target->UpdateHierarchy();
 		return Instance;
 	}
 
@@ -120,8 +119,6 @@ namespace NxEn
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
 		Factory.DestroyBehaviour(Instance);
-
-		Target->UpdateHierarchy();
 	}
 
 	NxFr::Handle<Component> World::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
@@ -132,7 +129,6 @@ namespace NxEn
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
-		Target->UpdateHierarchy();
 		return Instance;
 	}
 
@@ -150,8 +146,6 @@ namespace NxEn
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
 		Factory.DestroyComponent(Instance);
-
-		Target->UpdateHierarchy();
 	}
 
 	bool World::Belong(NxFr::Handle<GameObject> Instance) const

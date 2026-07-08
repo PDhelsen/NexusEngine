@@ -73,8 +73,6 @@ namespace NxEn
 		}
 
 		Size = NxFr::Math::Max(GetCapacity() * 2, Size);
-
-		Reserve(Size);
 		Reserve(Size);
 
 		for (uint64 Index = 0; Index < GetCount(); ++Index)
