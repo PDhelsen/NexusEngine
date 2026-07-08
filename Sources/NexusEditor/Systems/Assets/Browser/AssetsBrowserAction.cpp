@@ -3,9 +3,9 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
-#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
-#include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
-#include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
+//#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+//#include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
+//#include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
 
 #include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
@@ -14,8 +14,10 @@ namespace NxEd
 {
 	static bool IsInstantiable(NxEn::AssetsSystem* Assets, NxFr::GUID Id)
 	{
-		NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
-		return Type == NxEn::Scene::GetClassType() || Type == NxEn::Prefab::GetClassType();
+		return false;
+
+		//NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
+		//return Type == NxEn::Scene::GetClassType() || Type == NxEn::Prefab::GetClassType();
 	}
 
 	void AssetsBrowserActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>&Items)
@@ -147,7 +149,7 @@ namespace NxEd
 
 	void AssetsBrowserActionInstantiate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		/*NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
 		NxFr::GUID WorldId = NxEn::WorldSystem::WorldId.GetId();
@@ -175,12 +177,12 @@ namespace NxEd
 			{
 				NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
 			}
-		}
+		}*/
 	}
 
 	void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		/*NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
 
@@ -213,6 +215,6 @@ namespace NxEd
 		{
 			StageView = Manager->CreateStage(Target);
 		}
-		Manager->ShowStage(Target);
+		Manager->ShowStage(Target);*/
 	}
 }
