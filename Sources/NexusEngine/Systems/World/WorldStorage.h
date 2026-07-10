@@ -2,7 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 
-#define NX_WORLD_OBJECT(Type) NxFr::Factory<NxEn::WorldStorage>::Creator* FactoryGameObject = NxEn::WorldStorage::GetFactory().Register<NxEn::WorldStorageTyped<Type>>(Type::GetClassType());
+#define NX_WORLD_OBJECT(Type) NxFr::Factory<NxEn::WorldStorage>::Creator* Factory##Type = NxEn::WorldStorage::GetFactory().Register<NxEn::WorldStorageTyped<Type>>(Type::GetClassType());
 
 namespace NxEn
 {

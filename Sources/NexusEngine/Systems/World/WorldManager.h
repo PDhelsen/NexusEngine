@@ -5,6 +5,8 @@
 #include "NexusEngine/Systems/World/WorldStorage.h"
 #include "NexusEngine/Systems/World/World.h"
 #include "NexusEngine/Systems/World/GameObject.h"
+#include "NexusEngine/Systems/World/Behaviour.h"
+#include "NexusEngine/Systems/World/Component.h"
 
 namespace NxEn
 {
@@ -27,6 +29,14 @@ namespace NxEn
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		void DetachGameObject(NxFr::Handle<GameObject> Instance);
+
+		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId = 0);
+		NxFr::Handle<Behaviour> DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target);
+		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
+
+		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID ComponentId = 0);
+		NxFr::Handle<Component> DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target);
+		void DestroyComponent(NxFr::Handle<Component> Instance);
 
 	private:
 		NxFr::Handle<Object> AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId);

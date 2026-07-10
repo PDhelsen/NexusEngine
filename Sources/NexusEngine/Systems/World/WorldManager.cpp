@@ -63,6 +63,7 @@ namespace NxEn
 
 		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
 		NxFr::Handle<GameObject> Instance = AllocateStorage(Storage, GameObjectId);
+
 		Instance->WorldId = WorldInstance->GetId();
 		Instance->GameObjectId = GameObjectId;
 		Instance->Name = Name;
@@ -80,7 +81,17 @@ namespace NxEn
 		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
 		Instance->Clone((const GameObject*)Original.GetRedirectedPointer());
 
-		NxFr::Handle<GameObject> Child = Target->GetChild();
+		for (auto& B : Original->Behaviours)
+		{
+			DuplicateBehaviour(B, Instance);
+		}
+
+		for (auto& C : Original->Components)
+		{
+			DuplicateComponent(C, Instance);
+		}
+
+		NxFr::Handle<GameObject> Child = Original->GetChild();
 		while (Child)
 		{
 			DuplicateGameObject(Child, Instance);
@@ -100,8 +111,19 @@ namespace NxEn
 			Child = Next;
 		}
 
-		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
+		while (Instance->Components.GetCount())
+		{
+			DestroyComponent(Instance->Components[0]);
+		}
+
+		while (Instance->Behaviours.GetCount())
+		{
+			DestroyBehaviour(Instance->Behaviours[0]);
+		}
+
 		DetachGameObject(Instance);
+
+		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
 		FreeStorage(Storage, Instance);
 	}
 
@@ -160,6 +182,76 @@ namespace NxEn
 		Instance->Parent = NxFr::Handle<GameObject>();
 		Instance->Prev = NxFr::Handle<GameObject>();
 		Instance->Next = NxFr::Handle<GameObject>();
+	}
+
+	NxFr::Handle<Behaviour> WorldManager::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId)
+	{
+		if (BehaviourId == 0)
+		{
+			BehaviourId = NxFr::Integer::GenerateGuid();
+		}
+
+		WorldStorage* Storage = GetStorage(Type);
+		NxFr::Handle<Behaviour> Instance = AllocateStorage(Storage, BehaviourId);
+
+		Instance->BehaviourId = BehaviourId;
+		Instance->Target = Target;
+		Target->Behaviours.Append(Instance);
+
+		return Instance;
+	}
+
+	NxFr::Handle<Behaviour> WorldManager::DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target)
+	{
+		NxFr::Handle<Behaviour> Instance = CreateBehaviour(Original->GetObjectType(), Target);
+		Instance->Clone((const Behaviour*)Original.GetRedirectedPointer());
+
+		return Instance;
+	}
+
+	void WorldManager::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
+	{
+		NxFr::Handle<GameObject> Target = Instance->GetGameObject();
+		Target->Behaviours.RemoveSwap(NxFr::ContainerUtility::Find(Target->Behaviours, Instance).Id());
+		Instance->Target = NxFr::Handle<GameObject>();
+
+		WorldStorage* Storage = GetStorage(Instance->GetObjectType());
+		FreeStorage(Storage, Instance);
+	}
+
+	NxFr::Handle<Component> WorldManager::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID ComponentId)
+	{
+		if (ComponentId == 0)
+		{
+			ComponentId = NxFr::Integer::GenerateGuid();
+		}
+
+		WorldStorage* Storage = GetStorage(Type);
+		NxFr::Handle<Component> Instance = AllocateStorage(Storage, ComponentId);
+
+		Instance->ComponentId = ComponentId;
+		Instance->Target = Target;
+		Target->Components.Append(Instance);
+
+		return Instance;
+	}
+
+	NxFr::Handle<Component> WorldManager::DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target)
+	{
+		NxFr::Handle<Component> Instance = CreateComponent(Original->GetObjectType(), Target);
+		Instance->Clone((const Component*)Original.GetRedirectedPointer());
+
+		return Instance;
+	}
+
+	void WorldManager::DestroyComponent(NxFr::Handle<Component> Instance)
+	{
+		NxFr::Handle<GameObject> Target = Instance->GetGameObject();
+		Target->Components.RemoveSwap(NxFr::ContainerUtility::Find(Target->Components, Instance).Id());
+		Instance->Target = NxFr::Handle<GameObject>();
+
+		WorldStorage* Storage = GetStorage(Instance->GetObjectType());
+		FreeStorage(Storage, Instance);
 	}
 
 	NxFr::Handle<Object> WorldManager::AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId)

@@ -1,0 +1,63 @@
+#include "NexusEngine/Core/NexusEnginePch.h"
+#include "NexusEngine/Systems/World/Behaviour.h"
+
+namespace NxEn
+{
+	Behaviour::Behaviour()
+		: BehaviourId(0), Target()
+	{
+		SetTickable(true);
+	}
+
+	Behaviour::~Behaviour()
+	{
+	}
+
+	bool Behaviour::IsTicking() const
+	{
+		return Object::IsTicking() && GetGameObject()->IsTicking();
+	}
+
+	NxFr::StringView Behaviour::GetName() const
+	{
+		return Target->GetName();
+	}
+
+	NxFr::GUID Behaviour::GetId() const
+	{
+		return BehaviourId;
+	}
+
+	NxFr::Handle<GameObject> Behaviour::GetGameObject() const
+	{
+		return Target;
+	}
+
+	void Behaviour::OnUpdateHierarchy()
+	{
+		bool Enabled = IsEnabled() && GetGameObject()->IsEnabledInHierarchy();
+		if (Enabled == IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		SetFlag(ObjectFlags::EnabledInHierarchy, Enabled);
+
+		if (Enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
+	}
+
+	void Behaviour::OnClone(const Object& Other)
+	{
+		const Behaviour& Instance = static_cast<const Behaviour&>(Other);
+
+		SetFlag(ObjectFlags::Enabled, Instance.IsEnabled());
+		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
+	}
+}

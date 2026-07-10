@@ -6,6 +6,8 @@
 #include "NexusEngine/Systems/World/WorldStorage.h"
 #include "NexusEngine/Systems/World/World.h"
 #include "NexusEngine/Systems/World/GameObject.h"
+#include "NexusEngine/Systems/World/Behaviour.h"
+#include "NexusEngine/Systems/World/Component.h"
 
 namespace NxEn
 {
@@ -29,6 +31,14 @@ namespace NxEn
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		void DetachGameObject(NxFr::Handle<GameObject> Instance);
+
+		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId) { return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target, WorldId)); }
+		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId);
+		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
+
+		template<typename T> NxFr::Handle<T> CreateComponent(NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId) { return static_cast<NxFr::Handle<T>>(CreateComponent(T::GetClassType(), Target, WorldId)); }
+		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId);
+		void DestroyComponent(NxFr::Handle<Component> Instance);
 
 	protected:
 		void OnInitialize() override;

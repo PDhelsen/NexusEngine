@@ -1,0 +1,63 @@
+#include "NexusEngine/Core/NexusEnginePch.h"
+#include "NexusEngine/Systems/World/Component.h"
+
+namespace NxEn
+{
+	Component::Component()
+		: ComponentId(0), Target()
+	{
+		SetTickable(false);
+	}
+
+	Component::~Component()
+	{
+	}
+
+	bool Component::IsTicking() const
+	{
+		return false;
+	}
+
+	NxFr::StringView Component::GetName() const
+	{
+		return Target->GetName();
+	}
+
+	NxFr::GUID Component::GetId() const
+	{
+		return ComponentId;
+	}
+
+	NxFr::Handle<GameObject> Component::GetGameObject() const
+	{
+		return Target;
+	}
+
+	void Component::OnUpdateHierarchy()
+	{
+		bool Enabled = IsEnabled() && GetGameObject()->IsEnabledInHierarchy();
+		if (Enabled == IsEnabledInHierarchy())
+		{
+			return;
+		}
+
+		SetFlag(ObjectFlags::EnabledInHierarchy, Enabled);
+
+		if (Enabled)
+		{
+			OnEnable();
+		}
+		else
+		{
+			OnDisable();
+		}
+	}
+
+	void Component::OnClone(const Object& Other)
+	{
+		const Component& Instance = static_cast<const Component&>(Other);
+
+		SetFlag(ObjectFlags::Enabled, Instance.IsEnabled());
+		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
+	}
+}

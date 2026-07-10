@@ -171,6 +171,62 @@ namespace NxEn
 		Instance->UpdateHierarchy();
 	}
 
+	NxFr::Handle<Behaviour> WorldSystem::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId)
+	{
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Handle<Behaviour>();
+		}
+
+		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Target->GetWorldId() == WorldId, Default, "Target should belong to the same world");
+
+		NxFr::Handle<Behaviour> Instance = Manager->CreateBehaviour(Type, Target);
+		Instance->Initialize();
+		Instance->SetEnabled(true);
+
+		return Instance;
+	}
+
+	void WorldSystem::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
+	{
+		WorldManager* Manager = GetManager(Instance->GetGameObject()->GetWorldId());
+
+		Instance->SetEnabled(false);
+		Instance->Shutdown();
+		Manager->DestroyGameObject(Instance);
+	}
+
+	NxFr::Handle<Component> WorldSystem::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId)
+	{
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Handle<Component>();
+		}
+
+		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Target->GetWorldId() == WorldId, Default, "Target should belong to the same world");
+
+		NxFr::Handle<Component> Instance = Manager->CreateComponent(Type, Target);
+		Instance->Initialize();
+		Instance->SetEnabled(true);
+
+		return Instance;
+	}
+
+	void WorldSystem::DestroyComponent(NxFr::Handle<Component> Instance)
+	{
+		WorldManager* Manager = GetManager(Instance->GetGameObject()->GetWorldId());
+
+		Instance->SetEnabled(false);
+		Instance->Shutdown();
+		Manager->DestroyGameObject(Instance);
+	}
+
 	void WorldSystem::OnInitialize()
 	{
 		System::OnInitialize();

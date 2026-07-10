@@ -26,6 +26,16 @@ namespace NxEn
 		OnInitialize();
 		SetFlag(ObjectFlags::Initialized, true);
 
+		for (auto& B : Behaviours)
+		{
+			B->Initialize();
+		}
+
+		for (auto& C : Components)
+		{
+			C->Initialize();
+		}
+
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -48,6 +58,16 @@ namespace NxEn
 			Iterator = Iterator->GetNext();
 		}
 
+		for (auto& C : Components)
+		{
+			C->Shutdown();
+		}
+
+		for (auto& B : Behaviours)
+		{
+			B->Shutdown();
+		}
+
 		OnShutdown();
 		SetFlag(ObjectFlags::Initialized, false);
 	}
@@ -55,6 +75,16 @@ namespace NxEn
 	void GameObject::UpdateHierarchy()
 	{
 		OnUpdateHierarchy();
+
+		for (auto& B : Behaviours)
+		{
+			B->UpdateHierarchy();
+		}
+
+		for (auto& C : Components)
+		{
+			C->UpdateHierarchy();
+		}
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
@@ -72,6 +102,13 @@ namespace NxEn
 		}
 
 		OnTick(TimeStep);
+
+		for (auto& B : Behaviours)
+		{
+			B->Tick();
+		}
+
+		//Components are ticked by systems
 
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
@@ -250,6 +287,132 @@ namespace NxEn
 		}
 
 		return Order;
+	}
+
+	NxFr::Handle<Behaviour> GameObject::GetBehaviourById(NxFr::GUID BehaviourId)
+	{
+		for (auto& B : Behaviours)
+		{
+			if (B->GetId() == BehaviourId)
+			{
+				return B;
+			}
+		}
+
+		return NxFr::Handle<Behaviour>();
+	}
+
+	NxFr::Handle<Behaviour> GameObject::GetBehaviourByType(NxFr::StringId BehaviourType)
+	{
+		for (auto& B : Behaviours)
+		{
+			if (B->GetObjectType() == BehaviourType)
+			{
+				return B;
+			}
+		}
+
+		return NxFr::Handle<Behaviour>();
+	}
+
+	NxFr::Array<NxFr::Handle<Behaviour>> GameObject::GetBehavioursByType(NxFr::StringId BehaviourType)
+	{
+		NxFr::List<NxFr::Handle<Behaviour>> Result;
+		GetBehavioursByType(BehaviourType, Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Behaviour>>(Result);
+	}
+
+	void GameObject::GetBehavioursByType(NxFr::StringId BehaviourType, NxFr::List<NxFr::Handle<Behaviour>>& Result)
+	{
+		for (auto& B : Behaviours)
+		{
+			if (B->GetObjectType() == BehaviourType)
+			{
+				Result.Append(B);
+			}
+		}
+	}
+
+	NxFr::Array<NxFr::Handle<Behaviour>> GameObject::GetBehavioursInChildrenByType(NxFr::StringId BehaviourType)
+	{
+		NxFr::List<NxFr::Handle<Behaviour>> Result;
+		GetBehavioursInChildrenByType(BehaviourType, Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Behaviour>>(Result);
+	}
+
+	void GameObject::GetBehavioursInChildrenByType(NxFr::StringId BehaviourType, NxFr::List<NxFr::Handle<Behaviour>>& Result)
+	{
+		GetBehavioursByType(BehaviourType, Result);
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->GetBehavioursInChildrenByType(BehaviourType, Result);
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	NxFr::Handle<Component> GameObject::GetComponentById(NxFr::GUID ComponentId)
+	{
+		for (auto& C : Components)
+		{
+			if (C->GetId() == ComponentId)
+			{
+				return C;
+			}
+		}
+
+		return NxFr::Handle<Component>();
+	}
+
+	NxFr::Handle<Component> GameObject::GetComponentByType(NxFr::StringId ComponentType)
+	{
+		for (auto& C : Components)
+		{
+			if (C->GetObjectType() == ComponentType)
+			{
+				return C;
+			}
+		}
+
+		return NxFr::Handle<Component>();
+	}
+
+	NxFr::Array<NxFr::Handle<Component>> GameObject::GetComponentsByType(NxFr::StringId ComponentType)
+	{
+		NxFr::List<NxFr::Handle<Component>> Result;
+		GetComponentsByType(ComponentType, Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Component>>(Result);
+	}
+
+	void GameObject::GetComponentsByType(NxFr::StringId ComponentType, NxFr::List<NxFr::Handle<Component>>& Result)
+	{
+		for (auto& C : Components)
+		{
+			if (C->GetObjectType() == ComponentType)
+			{
+				Result.Append(C);
+			}
+		}
+	}
+
+	NxFr::Array<NxFr::Handle<Component>> GameObject::GetComponentsInChildrenByType(NxFr::StringId ComponentType)
+	{
+		NxFr::List<NxFr::Handle<Component>> Result;
+		GetComponentsInChildrenByType(ComponentType, Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Component>>(Result);
+	}
+
+	void GameObject::GetComponentsInChildrenByType(NxFr::StringId ComponentType, NxFr::List<NxFr::Handle<Component>>& Result)
+	{
+		GetComponentsByType(ComponentType, Result);
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->GetComponentsInChildrenByType(ComponentType, Result);
+			Iterator = Iterator->GetNext();
+		}
 	}
 
 	void GameObject::OnUpdateHierarchy()
