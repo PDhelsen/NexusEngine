@@ -29,7 +29,7 @@ namespace NxEn
 		Systems.CreateSystem<GUISystem>();
 		Systems.CreateSystem<ResourcesSystem>();
 		Systems.CreateSystem<AssetsSystem>();
-		//Systems.CreateSystem<WorldSystem>();
+		Systems.CreateSystem<WorldSystem>();
 	}
 
 	NexusEngineApplication::~NexusEngineApplication()
@@ -45,7 +45,7 @@ namespace NxEn
 		Systems.DestroySystem<GUISystem>();
 		Systems.DestroySystem<ResourcesSystem>();
 		Systems.DestroySystem<AssetsSystem>();
-		//Systems.DestroySystem<WorldSystem>();
+		Systems.DestroySystem<WorldSystem>();
 	}
 
 	void NexusEngineApplication::OnInitialize()
@@ -73,7 +73,7 @@ namespace NxEn
 		Bootstrap.AppendSystem<GUISystem>().AppendDependency<GUISystem, WindowSystem>();
 		Bootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, DebugSystem>();
 		Bootstrap.AppendSystem<AssetsSystem>().AppendDependency<AssetsSystem, ResourcesSystem>();
-		//Bootstrap.AppendSystem<WorldSystem>().AppendDependency<WorldSystem, AssetsSystem>();
+		Bootstrap.AppendSystem<WorldSystem>().AppendDependency<WorldSystem, AssetsSystem>();
 
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Apply Settings", []()
 		{
@@ -105,9 +105,9 @@ namespace NxEn
 		Unbootstrap.AppendSystem<SettingsSystem>();
 		Unbootstrap.AppendSystem<InputSystem>();
 		Unbootstrap.AppendSystem<GUISystem>();
-		//Unbootstrap.AppendSystem<WorldSystem>();
+		Unbootstrap.AppendSystem<WorldSystem>();
 		Unbootstrap.AppendSystem<WindowSystem>().AppendDependency<WindowSystem, InputSystem>().AppendDependency<WindowSystem, GUISystem>();
-		Unbootstrap.AppendSystem<AssetsSystem>()/*.AppendDependency<AssetsSystem, WorldSystem>()*/;
+		Unbootstrap.AppendSystem<AssetsSystem>().AppendDependency<AssetsSystem, WorldSystem>();
 		Unbootstrap.AppendSystem<ResourcesSystem>().AppendDependency<ResourcesSystem, AssetsSystem>();
 
 		Application::OnShutdown();
@@ -122,7 +122,7 @@ namespace NxEn
 		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, Ticker::LowFrequency).AppendDependency<CommandsSystem, InputSystem>();
 		Ticks.AppendSystem<ResourcesSystem>(Ticker::TickBucket::Engine);
 		Ticks.AppendSystem<AssetsSystem>(Ticker::TickBucket::Engine).AppendDependency<AssetsSystem, ResourcesSystem>();
-		//Ticks.AppendSystem<WorldSystem>(Ticker::TickBucket::Engine).AppendDependency<WorldSystem, AssetsSystem>();
+		Ticks.AppendSystem<WorldSystem>(Ticker::TickBucket::Engine).AppendDependency<WorldSystem, AssetsSystem>();
 		Ticks.AppendSystem<GUISystem>(Ticker::TickBucket::Output);
 		Ticks.AppendSystem<WindowSystem>(Ticker::TickBucket::Output).AppendDependency<WindowSystem, GUISystem>();
 		Ticks.AppendSystem<MemorySystem>(Ticker::TickBucket::Cleanup);

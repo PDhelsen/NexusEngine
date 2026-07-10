@@ -16,5 +16,6 @@
 #include "NexusEngine/Systems/Settings/SettingsSystem.h"
 #include "NexusEngine/Systems/Resources/ResourcesSystem.h"
 #include "NexusEngine/Systems/Assets/AssetsSystem.h"
+#include "NexusEngine/Systems/World/WorldSystem.h"
 
 #include "NexusEngine/Core/NexusEngineApplication.h"
