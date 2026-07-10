@@ -90,6 +90,7 @@ namespace NxEn
 		}
 
 		NX_ASSERT(!Parent || Parent->GetWorldId() == WorldId, Default, "Parent should belong to the same world");
+
 		if (!Parent)
 		{
 			Parent = Manager->GetWorld()->GetRoot();
@@ -111,8 +112,10 @@ namespace NxEn
 			return NxFr::Handle<GameObject>();
 		}
 
-		NX_ASSERT(!Parent || Parent->GetWorldId() == WorldId, Default, "Parent should belong to the same world");
+		NX_ASSERT(Original, Default, "Original should be valid");
 		NX_ASSERT(Original != Manager->GetWorld()->GetRoot(), Default, "Can't duplicate root object");
+		NX_ASSERT(!Parent || Parent->GetWorldId() == WorldId, Default, "Parent should belong to the same world");
+
 		if (!Parent)
 		{
 			Parent = Original->GetParent();
@@ -131,6 +134,11 @@ namespace NxEn
 
 	void WorldSystem::DestroyGameObject(NxFr::Handle<GameObject> Instance)
 	{
+		if (!Instance)
+		{
+			return;
+		}
+
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
 
 		NX_ASSERT(Instance != Manager->GetWorld()->GetRoot(), Default, "Can't destroy root object");
@@ -142,10 +150,17 @@ namespace NxEn
 
 	void WorldSystem::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index)
 	{
+		if (!Parent)
+		{
+			DetachGameObject(Instance);
+			return;
+		}
+
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
 
-		NX_ASSERT(!Parent || Parent->GetWorldId() == Instance->GetWorldId(), Default, "Parent should belong to the same world");
+		NX_ASSERT(Instance, Default, "Instance should be valid");
 		NX_ASSERT(Instance != Manager->GetWorld()->GetRoot(), Default, "Can't attach root object");
+		NX_ASSERT(!Parent || Parent->GetWorldId() == Instance->GetWorldId(), Default, "Parent should belong to the same world");
 
 		NxFr::Handle<GameObject> Root = Manager->GetWorld()->GetRoot();
 		if (!Parent)
@@ -163,6 +178,11 @@ namespace NxEn
 
 	void WorldSystem::DetachGameObject(NxFr::Handle<GameObject> Instance)
 	{
+		if (!Instance)
+		{
+			return;
+		}
+
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
 
 		NX_ASSERT(Instance != Manager->GetWorld()->GetRoot(), Default, "Can't detach root object");
@@ -192,6 +212,11 @@ namespace NxEn
 
 	void WorldSystem::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
+		if (!Instance)
+		{
+			return;
+		}
+
 		WorldManager* Manager = GetManager(Instance->GetGameObject()->GetWorldId());
 
 		Instance->SetEnabled(false);
@@ -220,6 +245,11 @@ namespace NxEn
 
 	void WorldSystem::DestroyComponent(NxFr::Handle<Component> Instance)
 	{
+		if (!Instance)
+		{
+			return;
+		}
+
 		WorldManager* Manager = GetManager(Instance->GetGameObject()->GetWorldId());
 
 		Instance->SetEnabled(false);
