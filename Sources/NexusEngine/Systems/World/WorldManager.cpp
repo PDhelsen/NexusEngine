@@ -4,8 +4,9 @@
 namespace NxEn
 {
 	WorldManager::WorldManager()
-		: Storages(), Objects(), Handles()
+		: Storages(), Objects(), Handles(), WorldInstance(nullptr)
 	{
+		
 	}
 
 	WorldManager::~WorldManager()
@@ -18,6 +19,7 @@ namespace NxEn
 
 	void WorldManager::Tick(float TimeStep)
 	{
+		WorldInstance->Tick(TimeStep);
 	}
 
 	void WorldManager::Reserve(NxFr::StringId Type, uint64 Size)
@@ -26,7 +28,141 @@ namespace NxEn
 		ResizeStorage(Storage, Size);
 	}
 
-	NxFr::Handle<Object> WorldManager::AllocateStorage(WorldStorage* Storage, NxFr::GUID Id)
+	World* WorldManager::CreateWorld(NxFr::StringId Name)
+	{
+		WorldInstance = new World();
+		WorldInstance->WorldId = Name;
+		return WorldInstance;
+	}
+
+	void WorldManager::DestroyWorld()
+	{
+		delete WorldInstance;
+	}
+
+	World* WorldManager::GetWorld()
+	{
+		return WorldInstance;
+	}
+
+	void WorldManager::SetWorldRoot(NxFr::Handle<GameObject> Instance)
+	{
+		WorldInstance->Root = Instance;
+		if (Instance)
+		{
+			Instance->SetTickable(true);
+		}
+	}
+
+	NxFr::Handle<GameObject> WorldManager::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
+	{
+		if (GameObjectId == 0)
+		{
+			GameObjectId = NxFr::Integer::GenerateGuid();
+		}
+
+		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
+		NxFr::Handle<GameObject> Instance = AllocateStorage(Storage, GameObjectId);
+		Instance->WorldId = WorldInstance->GetId();
+		Instance->GameObjectId = GameObjectId;
+		Instance->Name = Name;
+
+		if (Parent)
+		{
+			AttachGameObject(Instance, Parent, Parent->GetChildCount());
+		}
+
+		return Instance;
+	}
+
+	NxFr::Handle<GameObject> WorldManager::DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent)
+	{
+		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
+		Instance->Clone((const GameObject*)Original.GetRedirectedPointer());
+
+		NxFr::Handle<GameObject> Child = Target->GetChild();
+		while (Child)
+		{
+			DuplicateGameObject(Child, Instance);
+			Child = Child->GetNext();
+		}
+
+		return Instance;
+	}
+
+	void WorldManager::DestroyGameObject(NxFr::Handle<GameObject> Instance)
+	{
+		NxFr::Handle<GameObject> Child = Instance->GetChild();
+		while (Child)
+		{
+			NxFr::Handle<GameObject> Next = Child->GetNext();
+			DestroyGameObject(Child);
+			Child = Next;
+		}
+
+		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
+		DetachGameObject(Instance);
+		FreeStorage(Storage, Instance);
+	}
+
+	void WorldManager::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index)
+	{
+		DetachGameObject(Instance);
+
+		Instance->Parent = Parent;
+
+		if (!Parent->Child)
+		{
+			Parent->Child = Instance;
+		}
+		else
+		{
+			NxFr::Handle<GameObject> Target = Parent->Child;
+			while (Target->Next && Index > 0)
+			{
+				Index--;
+				Target = Target->Next;
+			}
+
+			if (Index > 0)
+			{
+				Target->Next = Instance;
+				Instance->Prev = Target;
+			}
+			else
+			{
+				if (Target->Prev)
+				{
+					Target->Prev->Next = Instance;
+					Instance->Prev = Target->Prev;
+				}
+				Target->Prev = Instance;
+				Instance->Next = Target;
+			}
+		}
+	}
+
+	void WorldManager::DetachGameObject(NxFr::Handle<GameObject> Instance)
+	{
+		if (Instance->Parent && Instance->Parent->Child == Instance)
+		{
+			Instance->Parent->Child = Instance->Next;
+		}
+		if (Instance->Prev)
+		{
+			Instance->Prev->Next = Instance->Next;
+		}
+		if (Instance->Next)
+		{
+			Instance->Next->Prev = Instance->Prev;
+		}
+
+		Instance->Parent = NxFr::Handle<GameObject>();
+		Instance->Prev = NxFr::Handle<GameObject>();
+		Instance->Next = NxFr::Handle<GameObject>();
+	}
+
+	NxFr::Handle<Object> WorldManager::AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId)
 	{
 		ResizeStorage(Storage, Storage->GetCount() + 1);
 
@@ -34,7 +170,7 @@ namespace NxEn
 		uint64 Index = Storage->GetCount() - 1;
 
 		NxFr::Handle<Object> Handle = Handles.AcquireHandle(Instance);
-		Objects.Append(Id, WorldObject{ .Id = Id, .Index = Index, .Handle = Handle });
+		Objects.Append(ObjectId, WorldObject{ .Id = ObjectId, .Index = Index, .Handle = Handle });
 
 		return Handle;
 	}

@@ -3,6 +3,8 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/World/WorldInfo.h"
 #include "NexusEngine/Systems/World/WorldStorage.h"
+#include "NexusEngine/Systems/World/World.h"
+#include "NexusEngine/Systems/World/GameObject.h"
 
 namespace NxEn
 {
@@ -15,8 +17,19 @@ namespace NxEn
 		void Tick(float TimeStep);
 		void Reserve(NxFr::StringId Type, uint64 Size);
 
+		World* CreateWorld(NxFr::StringId Name);
+		void DestroyWorld();
+		World* GetWorld();
+		void SetWorldRoot(NxFr::Handle<GameObject> Instance);
+
+		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0);
+		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
+		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
+		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
+		void DetachGameObject(NxFr::Handle<GameObject> Instance);
+
 	private:
-		NxFr::Handle<Object> AllocateStorage(WorldStorage* Storage, NxFr::GUID Id);
+		NxFr::Handle<Object> AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId);
 		void FreeStorage(WorldStorage* Storage, NxFr::Handle<Object> Instance);
 		void UpdateStorage(WorldStorage* Storage, uint64 Index);
 		void ResizeStorage(WorldStorage* Storage, uint64 Size);
@@ -25,6 +38,7 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::StringId, WorldStorage*> Storages;
 		NxFr::Dictionary<NxFr::GUID, WorldObject> Objects;
 		HandleManager Handles;
+		World* WorldInstance;
 	};
 }
 
