@@ -4,6 +4,65 @@
 
 namespace NxEn
 {
+	static Command* CmdWorldWorldCreate = Command::Create("World.World.Create"_Sid, "Create World", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		World->CreateWorld(Name);
+	}));
+	static Command* CmdWorldWorldDestroy = Command::Create("World.World.Destroy"_Sid, "Destroy World", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		World->DestroyWorld(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+	}));
+	static Command* CmdWorldGameObjectCreate = Command::Create("World.GameObject.Create"_Sid, "Create GameObject", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Name, NxFr::StringView WorldId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		World->CreateGameObject(Name, NxFr::Handle<GameObject>(), NxFr::StringId(WorldId));
+	}));
+	static Command* CmdWorldGameObjectDuplicate = Command::Create("World.GameObject.Duplicate"_Sid, "Duplicate GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+		World->DuplicateGameObject(Instance);
+	}));
+	static Command* CmdWorldGameObjectDestroy = Command::Create("World.GameObject.Destroy"_Sid, "Destroy GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+		World->DestroyGameObject(Instance);
+	}));
+	static Command* CmdWorldGameObjectAttach = Command::Create("World.GameObject.Attach"_Sid, "Attach GameObject", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView InstanceId, NxFr::StringView ParentId, NxFr::StringView Index)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(InstanceId));
+		NxFr::Handle<GameObject> Parent = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(ParentId));
+		World->AttachGameObject(Instance, Parent, NxFr::StringUtility::FromString<uint64>(Index));
+	}));
+	static Command* CmdWorldBehaviourCreate = Command::Create("World.Behaviour.Create"_Sid, "Create Behaviour", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Type, NxFr::StringView TargetId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<GameObject> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
+		World->CreateBehaviour(Type, Target);
+	}));
+	static Command* CmdWorldBehaviourDestroy = Command::Create("World.Behaviour.Destroy"_Sid, "Destroy Behaviour", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView BehaviourId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<Behaviour> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(BehaviourId));
+		World->DestroyBehaviour(Instance);
+	}));
+	static Command* CmdWorldComponentCreate = Command::Create("World.Component.Create"_Sid, "Create Component", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Type, NxFr::StringView TargetId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<GameObject> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
+		World->CreateComponent(Type, Target);
+	}));
+	static Command* CmdWorldComponentDestroy = Command::Create("World.Component.Destroy"_Sid, "Destroy Component", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView ComponentId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<Component> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(ComponentId));
+		World->DestroyComponent(Instance);
+	}));
+
 	WorldSystem::WorldSystem()
 		: Managers()
 	{
