@@ -16,7 +16,7 @@ namespace NxEn
 	public:
 		NX_OBJECT(WorldSystem)
 
-		inline static const NxFr::StringId MainWorldId = "World"_Sid;
+		inline static const NxFr::StringId MainWorldId = "Main World"_Sid;
 
 		inline static const NxFr::StringId EventCreatedId = "Created"_Sid;
 		inline static const NxFr::StringId EventDestroyedId = "Destroyed"_Sid;
@@ -36,12 +36,12 @@ namespace NxEn
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
-		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId) { return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target, WorldId)); }
-		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId);
+		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target) { return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target)); }
+		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
 		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
 
-		template<typename T> NxFr::Handle<T> CreateComponent(NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId) { return static_cast<NxFr::Handle<T>>(CreateComponent(T::GetClassType(), Target, WorldId)); }
-		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId);
+		template<typename T> NxFr::Handle<T> CreateComponent(NxFr::Handle<GameObject> Target) { return static_cast<NxFr::Handle<T>>(CreateComponent(T::GetClassType(), Target)); }
+		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
 		bool Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = MainWorldId);

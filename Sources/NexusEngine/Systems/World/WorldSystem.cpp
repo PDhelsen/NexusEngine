@@ -205,17 +205,16 @@ namespace NxEn
 		OnWorldObjectChange.Invoke(EventMovedId, Instance->GetWorldId(), Instance->GetId());
 	}
 
-	NxFr::Handle<Behaviour> WorldSystem::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId)
+	NxFr::Handle<Behaviour> WorldSystem::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
-		WorldManager* Manager = GetManager(WorldId);
+		NX_ASSERT(Target, Default, "Target should be valid");
+
+		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
 		{
-			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			NX_LOG(Warning, System, "World %llu doesn't exist", Target->GetWorldId());
 			return NxFr::Handle<Behaviour>();
 		}
-
-		NX_ASSERT(Target, Default, "Target should be valid");
-		NX_ASSERT(Target->GetWorldId() == WorldId, Default, "Target should belong to the same world");
 
 		NxFr::Handle<Behaviour> Instance = Manager->CreateBehaviour(Type, Target);
 		Instance->Initialize();
@@ -239,20 +238,19 @@ namespace NxEn
 
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
-		Manager->DestroyGameObject(Instance);
+		Manager->DestroyBehaviour(Instance);
 	}
 
-	NxFr::Handle<Component> WorldSystem::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId)
+	NxFr::Handle<Component> WorldSystem::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
-		WorldManager* Manager = GetManager(WorldId);
+		NX_ASSERT(Target, Default, "Target should be valid");
+
+		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
 		{
-			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			NX_LOG(Warning, System, "World %llu doesn't exist", Target->GetWorldId());
 			return NxFr::Handle<Component>();
 		}
-
-		NX_ASSERT(Target, Default, "Target should be valid");
-		NX_ASSERT(Target->GetWorldId() == WorldId, Default, "Target should belong to the same world");
 
 		NxFr::Handle<Component> Instance = Manager->CreateComponent(Type, Target);
 		Instance->Initialize();
@@ -276,7 +274,7 @@ namespace NxEn
 
 		Instance->SetEnabled(false);
 		Instance->Shutdown();
-		Manager->DestroyGameObject(Instance);
+		Manager->DestroyComponent(Instance);
 	}
 
 	bool WorldSystem::Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId)
