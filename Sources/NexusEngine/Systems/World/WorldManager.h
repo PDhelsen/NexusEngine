@@ -38,10 +38,10 @@ namespace NxEn
 		NxFr::Handle<Component> DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
-		bool Belong(NxFr::Handle<Object> Instance) const;
-		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject) const;
-		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject) const;
-		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId) const;
+		bool Belong(NxFr::Handle<Object> Instance);
+		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject);
+		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject);
+		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId);
 
 		Iterator::WorldObject Begin(NxFr::StringId Type);
 		Iterator::WorldObject End(NxFr::StringId Type);

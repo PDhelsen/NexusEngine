@@ -256,7 +256,7 @@ namespace NxEn
 		FreeStorage(Storage, Instance);
 	}
 
-	bool WorldManager::Belong(NxFr::Handle<Object> Instance) const
+	bool WorldManager::Belong(NxFr::Handle<Object> Instance)
 	{
 		NxFr::GUID Id = Instance->GetId();
 		WorldObject Info = Objects[Id];
@@ -279,7 +279,7 @@ namespace NxEn
 		}
 	}
 
-	NxFr::Array<NxFr::Handle<Object>> WorldManager::Find(NxFr::StringView Query, WorldObjectType Type) const
+	NxFr::Array<NxFr::Handle<Object>> WorldManager::Find(NxFr::StringView Query, WorldObjectType Type)
 	{
 		NxFr::List<NxFr::Handle<Object>> Result;
 
@@ -295,7 +295,7 @@ namespace NxEn
 		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Object>>(Result);
 	}
 
-	NxFr::Array<NxFr::Handle<Object>> WorldManager::GetObjects(WorldObjectType Type) const
+	NxFr::Array<NxFr::Handle<Object>> WorldManager::GetObjects(WorldObjectType Type)
 	{
 		NxFr::List<NxFr::Handle<Object>> Result;
 
@@ -310,7 +310,7 @@ namespace NxEn
 		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Object>>(Result);
 	}
 
-	NxFr::Handle<Object> WorldManager::GetObject(NxFr::GUID ObjectId) const
+	NxFr::Handle<Object> WorldManager::GetObject(NxFr::GUID ObjectId)
 	{
 		const WorldObject* Info = Objects.TryGet(ObjectId);
 		return Info ? Info->Handle : NxFr::Handle<Object>();

@@ -40,15 +40,16 @@ namespace NxEn
 		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
-		bool Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = MainWorldId) const;
-		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId) const;
-		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId) const;
-		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId) const;
+		bool Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = MainWorldId);
+		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId);
+		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId);
+		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId);
 
 		template<typename T> Iterator::WorldObjectOf<T> Begin(NxFr::GUID WorldId = MainWorldId) { return Begin(T::GetClassType(), WorldId); }
 		Iterator::WorldObject Begin(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);
 		template<typename T> Iterator::WorldObjectOf<T> End(NxFr::GUID WorldId = MainWorldId) { return End(T::GetClassType(), WorldId); }
 		Iterator::WorldObject End(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);
+		template<typename T> NxFr::Iterator::View<Iterator::WorldObjectOf<T>> View(NxFr::GUID WorldId = MainWorldId) { return { Begin<T>(WorldId), End<T>(WorldId) }; }
 
 	protected:
 		void OnInitialize() override;
@@ -57,7 +58,6 @@ namespace NxEn
 
 	private:
 		class WorldManager* GetManager(NxFr::GUID WorldId);
-		const class WorldManager* GetManager(NxFr::GUID WorldId) const;
 
 		NxFr::Dictionary<NxFr::GUID, class WorldManager*> Managers;
 	};
