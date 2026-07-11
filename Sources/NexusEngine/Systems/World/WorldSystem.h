@@ -38,10 +38,12 @@ namespace NxEn
 
 		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target) { return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target)); }
 		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
+		NxFr::Handle<Behaviour> DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target);
 		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
 
 		template<typename T> NxFr::Handle<T> CreateComponent(NxFr::Handle<GameObject> Target) { return static_cast<NxFr::Handle<T>>(CreateComponent(T::GetClassType(), Target)); }
 		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target);
+		NxFr::Handle<Component> DuplicateComponent(NxFr::Handle<Component>, NxFr::Handle<GameObject> Target);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
 		bool Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = MainWorldId);

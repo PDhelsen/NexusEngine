@@ -284,6 +284,26 @@ namespace NxEn
 		return Instance;
 	}
 
+	NxFr::Handle<Behaviour> WorldSystem::DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target)
+	{
+		NX_ASSERT(Target, Default, "Target should be valid");
+
+		WorldManager* Manager = GetManager(Target->GetWorldId());
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", Target->GetWorldId());
+			return NxFr::Handle<Behaviour>();
+		}
+
+		NxFr::Handle<Behaviour> Instance = Manager->DuplicateBehaviour(Original, Target);
+		Instance->Initialize();
+		Instance->SetEnabled(true);
+
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
+
+		return Instance;
+	}
+
 	void WorldSystem::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
 		if (!Instance)
@@ -312,6 +332,26 @@ namespace NxEn
 		}
 
 		NxFr::Handle<Component> Instance = Manager->CreateComponent(Type, Target);
+		Instance->Initialize();
+		Instance->SetEnabled(true);
+
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
+
+		return Instance;
+	}
+
+	NxFr::Handle<Component> WorldSystem::DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target)
+	{
+		NX_ASSERT(Target, Default, "Target should be valid");
+
+		WorldManager* Manager = GetManager(Target->GetWorldId());
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", Target->GetWorldId());
+			return NxFr::Handle<Component>();
+		}
+
+		NxFr::Handle<Component> Instance = Manager->DuplicateComponent(Original, Target);
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
