@@ -38,8 +38,13 @@ namespace NxEn
 		NxFr::Handle<Component> DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
+		bool Belong(NxFr::Handle<Object> Instance) const;
+		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject) const;
+		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject) const;
+		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId) const;
+
 	private:
-		NxFr::Handle<Object> AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId);
+		NxFr::Handle<Object> AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type);
 		void FreeStorage(WorldStorage* Storage, NxFr::Handle<Object> Instance);
 		void UpdateStorage(WorldStorage* Storage, uint64 Index);
 		void ResizeStorage(WorldStorage* Storage, uint64 Size);

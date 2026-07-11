@@ -257,6 +257,58 @@ namespace NxEn
 		Manager->DestroyGameObject(Instance);
 	}
 
+	bool WorldSystem::Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId) const
+	{
+		const WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return false;
+		}
+
+		return Manager->Belong(Instance);
+	}
+
+	NxFr::Array<NxFr::Handle<Object>> WorldSystem::Find(NxFr::StringView Query, WorldObjectType Type, NxFr::GUID WorldId) const
+	{
+		const WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Array<NxFr::Handle<Object>>();
+		}
+
+		return Manager->Find(Query, Type);
+	}
+
+	NxFr::Array<NxFr::Handle<Object>> WorldSystem::GetObjects(WorldObjectType Type, NxFr::GUID WorldId) const
+	{
+		const WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Array<NxFr::Handle<Object>>();
+		}
+
+		return Manager->GetObjects(Type);
+	}
+
+	NxFr::Handle<Object> WorldSystem::GetObject(NxFr::GUID ObjectId) const
+	{
+		NxFr::Handle<Object> Result;
+
+		for (auto [Id, Manager] : Managers)
+		{
+			Result = Manager->GetObject(ObjectId);
+			if (Result)
+			{
+				break;
+			}
+		}
+
+		return Result;
+	}
+
 	void WorldSystem::OnInitialize()
 	{
 		System::OnInitialize();
@@ -282,6 +334,12 @@ namespace NxEn
 	WorldManager* WorldSystem::GetManager(NxFr::GUID WorldId)
 	{
 		WorldManager** Manager = Managers.TryGet(WorldId);
+		return Manager ? *Manager : nullptr;
+	}
+
+	const WorldManager* WorldSystem::GetManager(NxFr::GUID WorldId) const
+	{
+		WorldManager* const * Manager = Managers.TryGet(WorldId);
 		return Manager ? *Manager : nullptr;
 	}
 }

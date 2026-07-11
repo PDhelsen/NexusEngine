@@ -40,6 +40,11 @@ namespace NxEn
 		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId = MainWorldId);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
+		bool Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = MainWorldId) const;
+		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId) const;
+		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId) const;
+		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId) const;
+
 	protected:
 		void OnInitialize() override;
 		void OnShutdown() override;
@@ -47,6 +52,7 @@ namespace NxEn
 
 	private:
 		class WorldManager* GetManager(NxFr::GUID WorldId);
+		const class WorldManager* GetManager(NxFr::GUID WorldId) const;
 
 		NxFr::Dictionary<NxFr::GUID, class WorldManager*> Managers;
 	};

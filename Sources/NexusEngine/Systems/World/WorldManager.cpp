@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/World/WorldManager.h"
 
+#include "NexusEngine/Misc/Utils/Filter.h"
+
 namespace NxEn
 {
 	WorldManager::WorldManager()
@@ -62,7 +64,7 @@ namespace NxEn
 		}
 
 		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
-		NxFr::Handle<GameObject> Instance = AllocateStorage(Storage, GameObjectId);
+		NxFr::Handle<GameObject> Instance = AllocateStorage(Storage, GameObjectId, WorldObjectType::GameObject);
 
 		Instance->WorldId = WorldInstance->GetId();
 		Instance->GameObjectId = GameObjectId;
@@ -192,7 +194,7 @@ namespace NxEn
 		}
 
 		WorldStorage* Storage = GetStorage(Type);
-		NxFr::Handle<Behaviour> Instance = AllocateStorage(Storage, BehaviourId);
+		NxFr::Handle<Behaviour> Instance = AllocateStorage(Storage, BehaviourId, WorldObjectType::Behaviour);
 
 		Instance->BehaviourId = BehaviourId;
 		Instance->Target = Target;
@@ -227,7 +229,7 @@ namespace NxEn
 		}
 
 		WorldStorage* Storage = GetStorage(Type);
-		NxFr::Handle<Component> Instance = AllocateStorage(Storage, ComponentId);
+		NxFr::Handle<Component> Instance = AllocateStorage(Storage, ComponentId, WorldObjectType::Component);
 
 		Instance->ComponentId = ComponentId;
 		Instance->Target = Target;
@@ -254,7 +256,67 @@ namespace NxEn
 		FreeStorage(Storage, Instance);
 	}
 
-	NxFr::Handle<Object> WorldManager::AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId)
+	bool WorldManager::Belong(NxFr::Handle<Object> Instance) const
+	{
+		NxFr::GUID Id = Instance->GetId();
+		WorldObject Info = Objects[Id];
+
+		if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::GameObject))
+		{
+			return ((NxFr::Handle<GameObject>)Instance)->GetWorldId() == WorldInstance->GetId();
+		}
+		else if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::Behaviour))
+		{
+			return ((NxFr::Handle<Behaviour>)Instance)->GetGameObject()->GetWorldId() == WorldInstance->GetId();
+		}
+		else if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::Component))
+		{
+			return ((NxFr::Handle<Component>)Instance)->GetGameObject()->GetWorldId() == WorldInstance->GetId();
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	NxFr::Array<NxFr::Handle<Object>> WorldManager::Find(NxFr::StringView Query, WorldObjectType Type) const
+	{
+		NxFr::List<NxFr::Handle<Object>> Result;
+
+		Utils::Filter Filter(Query);
+		for (auto& [Id, Info] : Objects)
+		{
+			if (NxFr::Enum::CheckFlag(Info.Type, Type) && Filter.FilterObject(*Info.Handle.GetRedirectedPointer()))
+			{
+				Result.Append(Info.Handle);
+			}
+		}
+
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Object>>(Result);
+	}
+
+	NxFr::Array<NxFr::Handle<Object>> WorldManager::GetObjects(WorldObjectType Type) const
+	{
+		NxFr::List<NxFr::Handle<Object>> Result;
+
+		for (auto& [Id, Info] : Objects)
+		{
+			if (NxFr::Enum::CheckFlag(Info.Type, Type))
+			{
+				Result.Append(Info.Handle);
+			}
+		}
+
+		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Object>>(Result);
+	}
+
+	NxFr::Handle<Object> WorldManager::GetObject(NxFr::GUID ObjectId) const
+	{
+		const WorldObject* Info = Objects.TryGet(ObjectId);
+		return Info ? Info->Handle : NxFr::Handle<Object>();
+	}
+
+	NxFr::Handle<Object> WorldManager::AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type)
 	{
 		ResizeStorage(Storage, Storage->GetCount() + 1);
 
@@ -262,7 +324,7 @@ namespace NxEn
 		uint64 Index = Storage->GetCount() - 1;
 
 		NxFr::Handle<Object> Handle = Handles.AcquireHandle(Instance);
-		Objects.Append(ObjectId, WorldObject{ .Id = ObjectId, .Index = Index, .Handle = Handle });
+		Objects.Append(ObjectId, WorldObject{ .Id = ObjectId, .Type = Type, .Index = Index, .Handle = Handle });
 
 		return Handle;
 	}
