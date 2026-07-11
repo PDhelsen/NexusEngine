@@ -28,6 +28,8 @@ namespace NxEn
 		World->Initialize();
 		World->SetEnabled(true);
 
+		OnWorldChange.Invoke(EventCreatedId, Name);
+
 		NxFr::Handle<GameObject> Root = CreateGameObject(Name, NxFr::Handle<GameObject>(), Name);
 		Manager->SetWorldRoot(Root);
 
@@ -46,6 +48,8 @@ namespace NxEn
 		NxFr::Handle<GameObject> Root = Manager->GetWorld()->GetRoot();
 		Manager->SetWorldRoot(NxFr::Handle<GameObject>());
 		DestroyGameObject(Root);
+
+		OnWorldChange.Invoke(EventDestroyedId, WorldId);
 
 		World* World = Manager->GetWorld();
 		World->SetEnabled(false);
@@ -100,6 +104,8 @@ namespace NxEn
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetWorldId(), Instance->GetId());
+
 		return Instance;
 	}
 
@@ -129,6 +135,8 @@ namespace NxEn
 		Instance->Initialize();
 		Instance->UpdateHierarchy();
 
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetWorldId(), Instance->GetId());
+
 		return Instance;
 	}
 
@@ -138,6 +146,8 @@ namespace NxEn
 		{
 			return;
 		}
+
+		OnWorldObjectChange.Invoke(EventDestroyedId, Instance->GetWorldId(), Instance->GetId());
 
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
 
@@ -174,6 +184,8 @@ namespace NxEn
 
 		Manager->AttachGameObject(Instance, Parent, Index);
 		Instance->UpdateHierarchy();
+
+		OnWorldObjectChange.Invoke(EventMovedId, Instance->GetWorldId(), Instance->GetId());
 	}
 
 	void WorldSystem::DetachGameObject(NxFr::Handle<GameObject> Instance)
@@ -189,6 +201,8 @@ namespace NxEn
 
 		Manager->DetachGameObject(Instance);
 		Instance->UpdateHierarchy();
+
+		OnWorldObjectChange.Invoke(EventMovedId, Instance->GetWorldId(), Instance->GetId());
 	}
 
 	NxFr::Handle<Behaviour> WorldSystem::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID WorldId)
@@ -207,6 +221,8 @@ namespace NxEn
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
+
 		return Instance;
 	}
 
@@ -216,6 +232,8 @@ namespace NxEn
 		{
 			return;
 		}
+
+		OnWorldObjectChange.Invoke(EventDestroyedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
 
 		WorldManager* Manager = GetManager(Instance->GetGameObject()->GetWorldId());
 
@@ -240,6 +258,8 @@ namespace NxEn
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
+
 		return Instance;
 	}
 
@@ -249,6 +269,8 @@ namespace NxEn
 		{
 			return;
 		}
+
+		OnWorldObjectChange.Invoke(EventDestroyedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
 
 		WorldManager* Manager = GetManager(Instance->GetGameObject()->GetWorldId());
 
@@ -293,20 +315,34 @@ namespace NxEn
 		return Manager->GetObjects(Type);
 	}
 
-	NxFr::Handle<Object> WorldSystem::GetObject(NxFr::GUID ObjectId)
+	NxFr::Handle<Object> WorldSystem::GetObject(NxFr::GUID ObjectId, NxFr::GUID WorldId)
 	{
-		NxFr::Handle<Object> Result;
-
-		for (auto [Id, Manager] : Managers)
+		if (WorldId != 0)
 		{
-			Result = Manager->GetObject(ObjectId);
-			if (Result)
+			WorldManager* Manager = GetManager(WorldId);
+			if (!Manager)
 			{
-				break;
+				NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+				return NxFr::Handle<Object>();
 			}
-		}
 
-		return Result;
+			return Manager->GetObject(ObjectId);
+		}
+		else
+		{
+			NxFr::Handle<Object> Result;
+
+			for (auto [Id, Manager] : Managers)
+			{
+				Result = Manager->GetObject(ObjectId);
+				if (Result)
+				{
+					break;
+				}
+			}
+
+			return Result;
+		}
 	}
 
 	Iterator::WorldObject WorldSystem::Begin(NxFr::StringId Type, NxFr::GUID WorldId)

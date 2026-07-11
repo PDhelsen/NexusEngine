@@ -18,6 +18,10 @@ namespace NxEn
 
 		inline static const NxFr::StringId MainWorldId = "World"_Sid;
 
+		inline static const NxFr::StringId EventCreatedId = "Created"_Sid;
+		inline static const NxFr::StringId EventDestroyedId = "Destroyed"_Sid;
+		inline static const NxFr::StringId EventMovedId = "Moved"_Sid;
+
 		WorldSystem();
 		~WorldSystem();
 
@@ -43,13 +47,16 @@ namespace NxEn
 		bool Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = MainWorldId);
 		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId);
 		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId);
-		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId);
+		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId, NxFr::GUID WorldId = 0);
 
 		template<typename T> Iterator::WorldObjectOf<T> Begin(NxFr::GUID WorldId = MainWorldId) { return Begin(T::GetClassType(), WorldId); }
 		Iterator::WorldObject Begin(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);
 		template<typename T> Iterator::WorldObjectOf<T> End(NxFr::GUID WorldId = MainWorldId) { return End(T::GetClassType(), WorldId); }
 		Iterator::WorldObject End(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);
 		template<typename T> NxFr::Iterator::View<Iterator::WorldObjectOf<T>> View(NxFr::GUID WorldId = MainWorldId) { return { Begin<T>(WorldId), End<T>(WorldId) }; }
+
+		NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldChange() { return OnWorldChange; }
+		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnWorldObjectChange() { return OnWorldObjectChange; }
 
 	protected:
 		void OnInitialize() override;
@@ -58,6 +65,9 @@ namespace NxEn
 
 	private:
 		class WorldManager* GetManager(NxFr::GUID WorldId);
+
+		NxFr::Event<NxFr::StringId, NxFr::GUID> OnWorldChange;
+		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID> OnWorldObjectChange;
 
 		NxFr::Dictionary<NxFr::GUID, class WorldManager*> Managers;
 	};
