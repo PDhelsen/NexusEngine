@@ -28,9 +28,9 @@ namespace NxEn
 	Transform::Transform()
 		: Parent(),
 		Position(NxFr::Vector3f::Zero), Rotation(NxFr::Quaternion::Identity), Scaling(NxFr::Vector3f::One),
-		World(), Dirty()
+		World(), Dirty(false)
 	{
-		SetDirty();
+		
 	}
 
 	Transform::~Transform()
@@ -286,16 +286,13 @@ namespace NxEn
 			return;
 		}
 
-		NxFr::Handle<GameObject> Iterator = GetGameObject();
-		while (Iterator && Iterator != GetGameObject()->GetNext())
+		for (auto It = GetGameObject()->BeginChild(); It != GetGameObject()->EndChild(); ++It)
 		{
-			NxFr::Handle<Transform> Instance = Iterator->GetComponent<Transform>();
+			NxFr::Handle<Transform> Instance = It->GetComponent<Transform>();
 			if (Instance)
 			{
 				Instance->Dirty = true;
 			}
-
-			Iterator = Iterator->GetIterator();
 		}
 	}
 

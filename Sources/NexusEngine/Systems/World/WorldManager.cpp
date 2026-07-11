@@ -316,6 +316,18 @@ namespace NxEn
 		return Info ? Info->Handle : NxFr::Handle<Object>();
 	}
 
+	Iterator::WorldObject WorldManager::Begin(NxFr::StringId Type)
+	{
+		WorldStorage* Storage = GetStorage(Type);
+		return Storage->Begin();
+	}
+
+	Iterator::WorldObject WorldManager::End(NxFr::StringId Type)
+	{
+		WorldStorage* Storage = GetStorage(Type);
+		return Storage->End();
+	}
+
 	NxFr::Handle<Object> WorldManager::AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type)
 	{
 		ResizeStorage(Storage, Storage->GetCount() + 1);

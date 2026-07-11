@@ -45,6 +45,11 @@ namespace NxEn
 		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId) const;
 		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId) const;
 
+		template<typename T> Iterator::WorldObjectOf<T> Begin(NxFr::GUID WorldId = MainWorldId) { return Begin(T::GetClassType(), WorldId); }
+		Iterator::WorldObject Begin(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);
+		template<typename T> Iterator::WorldObjectOf<T> End(NxFr::GUID WorldId = MainWorldId) { return End(T::GetClassType(), WorldId); }
+		Iterator::WorldObject End(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);
+
 	protected:
 		void OnInitialize() override;
 		void OnShutdown() override;

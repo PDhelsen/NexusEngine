@@ -153,6 +153,11 @@ namespace NxEn
 		return Application::GetSystem<WorldSystem>()->GetWorld(WorldId);
 	}
 
+	NxFr::Handle<GameObject> GameObject::GetThis() const
+	{
+		return Application::GetSystem<WorldSystem>()->GetObject(GameObjectId);
+	}
+
 	NxFr::Handle<GameObject> GameObject::GetParent() const
 	{
 		return Parent;
@@ -249,6 +254,20 @@ namespace NxEn
 		return Count;
 	}
 
+	uint64 GameObject::GetOrderIndex() const
+	{
+		uint64 Order = 0;
+
+		NxFr::Handle<GameObject> Iterator = GetWorld()->GetRoot();
+		while (Iterator && Iterator.GetRedirectedPointer() != this)
+		{
+			Order++;
+			Iterator = Iterator->GetIterator();
+		}
+
+		return Order;
+	}
+
 	NxFr::Handle<GameObject> GameObject::GetIterator() const
 	{
 		if (Child)
@@ -275,18 +294,14 @@ namespace NxEn
 		return NxFr::Handle<GameObject>();
 	}
 
-	uint64 GameObject::GetOrderIndex() const
+	Iterator::WorldHierarchy GameObject::BeginChild() const
 	{
-		uint64 Order = 0;
+		return Iterator::WorldHierarchy(GetThis());
+	}
 
-		NxFr::Handle<GameObject> Iterator = GetWorld()->GetRoot();
-		while (Iterator && Iterator.GetRedirectedPointer() != this)
-		{
-			Order++;
-			Iterator = Iterator->GetIterator();
-		}
-
-		return Order;
+	Iterator::WorldHierarchy GameObject::EndChild() const
+	{
+		return Iterator::WorldHierarchy(Next);
 	}
 
 	NxFr::Handle<Behaviour> GameObject::GetBehaviourById(NxFr::GUID BehaviourId)

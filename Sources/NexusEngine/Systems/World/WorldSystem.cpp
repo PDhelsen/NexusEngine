@@ -309,6 +309,30 @@ namespace NxEn
 		return Result;
 	}
 
+	Iterator::WorldObject WorldSystem::Begin(NxFr::StringId Type, NxFr::GUID WorldId)
+	{
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return Iterator::WorldObject(nullptr, 0);
+		}
+
+		return Manager->Begin(Type);
+	}
+
+	Iterator::WorldObject WorldSystem::End(NxFr::StringId Type, NxFr::GUID WorldId)
+	{
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return Iterator::WorldObject(nullptr, 0);
+		}
+
+		return Manager->End(Type);
+	}
+
 	void WorldSystem::OnInitialize()
 	{
 		System::OnInitialize();

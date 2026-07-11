@@ -4,6 +4,7 @@
 #include "NexusEngine/Application/Object/Object.h"
 #include "NexusEngine/Systems/World/Behaviour.h"
 #include "NexusEngine/Systems/World/Component.h"
+#include "NexusEngine/Systems/World/Misc/Iterator.h"
 
 namespace NxEn
 {
@@ -18,6 +19,7 @@ namespace NxEn
 
 		GameObject();
 		~GameObject();
+		
 
 		void Initialize() override;
 		void Shutdown() override;
@@ -32,6 +34,7 @@ namespace NxEn
 		bool IsRoot() const;
 
 		World* GetWorld() const;
+		NxFr::Handle<GameObject> GetThis() const;
 		NxFr::Handle<GameObject> GetParent() const;
 		NxFr::Handle<GameObject> GetPrevious() const;
 		NxFr::Handle<GameObject> GetNext() const;
@@ -41,8 +44,11 @@ namespace NxEn
 		NxFr::Handle<GameObject> GetChild(uint64 Index) const;
 		uint64 GetSiblingCount() const;
 		uint64 GetChildCount(bool Recursive = false) const;
-		NxFr::Handle<GameObject> GetIterator() const;
 		uint64 GetOrderIndex() const;
+
+		NxFr::Handle<GameObject> GetIterator() const;
+		Iterator::WorldHierarchy BeginChild() const;
+		Iterator::WorldHierarchy EndChild() const;
 
 		template<typename T> NxFr::Handle<T> GetBehaviour() { return static_cast<NxFr::Handle<T>>(GetBehaviourByType(T::GetClassType())); }
 		template<typename T> NxFr::Array<NxFr::Handle<T>> GetBehaviours() { return static_cast<NxFr::Array<NxFr::Handle<T>>>(GetBehavioursByType(T::GetClassType())); }

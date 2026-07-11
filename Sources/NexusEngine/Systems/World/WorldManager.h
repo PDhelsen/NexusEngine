@@ -43,6 +43,9 @@ namespace NxEn
 		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject) const;
 		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId) const;
 
+		Iterator::WorldObject Begin(NxFr::StringId Type);
+		Iterator::WorldObject End(NxFr::StringId Type);
+
 	private:
 		NxFr::Handle<Object> AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type);
 		void FreeStorage(WorldStorage* Storage, NxFr::Handle<Object> Instance);
