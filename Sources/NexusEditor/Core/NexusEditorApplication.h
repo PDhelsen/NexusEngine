@@ -4,7 +4,7 @@
 #include "NexusEngine/Core/NexusEngineApplication.h"
 
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
-//#include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 //#include "NexusEditor/Systems/Object/Stage/StageManager.h"
 
 namespace NxEd
@@ -23,7 +23,7 @@ namespace NxEd
 
 		NxEn::Input::Schema* GetInputsEditor() { return Inputs; }
 		AssetsBrowser* GetAssetsBrowser() { return Browser; }
-		//HierarchyManager* GetHierarchyManager() { return Hierarchy; }
+		HierarchyManager* GetHierarchyManager() { return Hierarchy; }
 		//StageManager* GetStageManager() { return Stages; }
 
 	protected:
@@ -38,7 +38,7 @@ namespace NxEd
 
 		NxEn::Input::Schema* Inputs;
 		AssetsBrowser* Browser;
-		//HierarchyManager* Hierarchy;
+		HierarchyManager* Hierarchy;
 		//StageManager* Stages;
 	};
 }

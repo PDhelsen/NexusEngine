@@ -38,8 +38,5 @@ namespace NxEd
 	private:
 		HierarchyManager* Manager;
 		NxFr::Handle<NxEn::GameObject> Target;
-
-		NxFr::String Name;
-		NxFr::GUID ReferenceId;
 	};
 }

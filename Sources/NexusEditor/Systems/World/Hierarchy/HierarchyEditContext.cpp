@@ -1,74 +1,105 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyEditContext.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
-#include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 
 namespace NxEd
 {
-	HierarchyEditContext::HierarchyEditContext(NxFr::StringId Id, HierarchyPanel* Hierarchy)
-		: Edit::Context(Id), Hierarchy(Hierarchy), World(nullptr)
+	HierarchyEditContext::HierarchyEditContext()
+		: Edit::Context(ContextId), Manager(nullptr), IsCutting(false)
 	{
-		World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->CreateWorld(Id);
+		OnSelectionChanged += { this, & HierarchyEditContext::OnSelectItem };
+
 	}
 
 	HierarchyEditContext::~HierarchyEditContext()
 	{
-		NxEn::Application::GetSystem<NxEn::WorldSystem>()->DestroyWorld(Id);
+		OnSelectionChanged -= { this, & HierarchyEditContext::OnSelectItem };
 	}
 
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::GetAll()
 	{
-		HierarchyItem* Item = static_cast<HierarchyItem*>(Hierarchy->Root);
-
-		NxFr::List<NxFr::GUID> Result;
-
-		NxFr::Handle<NxEn::GameObject> Iterator = Item->GetTarget();
-		while (Iterator)
-		{
-			Result.Append(Iterator->GetId());
-			Iterator = Iterator->GetIterator();
-		}
-
-		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
+		return NxFr::ContainerUtility::ToArrayKeys(Manager->Items);
 	}
 
 	uint64 HierarchyEditContext::GetCount()
 	{
-		HierarchyItem* Item = static_cast<HierarchyItem*>(Hierarchy->Root);
-		return Item->GetTarget()->GetChildCount() + 1;
+		return Manager->Items.GetCount();;
 	}
 
 	void HierarchyEditContext::Rename()
 	{
-		Hierarchy->RunAction<HierarchyActionRename>();
+		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+		Popup->RegisterCallback([=](NxFr::StringView Input)
+		{
+			NxFr::Set<NxFr::GUID> Ids = FilterSelection();
+			for (auto& Id : Ids)
+			{
+				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
+				Instance->SetName(Input);
+			}
+		});
 	}
 
 	void HierarchyEditContext::Duplicate()
 	{
-		Hierarchy->RunAction<HierarchyActionDuplicate>();
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Set<NxFr::GUID> Ids = FilterSelection();
+		for (auto& Id : Ids)
+		{
+			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
+			System->DuplicateGameObject(Instance);
+		}
 	}
 
 	void HierarchyEditContext::Delete()
 	{
-		Hierarchy->RunAction<HierarchyActionDelete>();
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Set<NxFr::GUID> Ids = FilterSelection();
+		for (auto& Id : Ids)
+		{
+			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
+			System->DestroyGameObject(Instance);
+		}
 	}
 
 	void HierarchyEditContext::Cut()
 	{
-		ClearClipboard();
-		CopySelection();
-		DestroySelection();
+		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+		Clipboard.Clear();
+		Clipboard.AppendRange(Instances);
+		IsCutting = true;
 	}
 
 	void HierarchyEditContext::Copy()
 	{
-		ClearClipboard();
-		CopySelection();
+		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
+		Clipboard.Clear();
+		Clipboard.AppendRange(Instances);
+		IsCutting = false;
 	}
 
 	void HierarchyEditContext::Paste()
 	{
-		PasteClipboard();
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Handle<NxEn::GameObject> Target = Manager->GetItem(Selected)->GetTarget();
+
+		for (auto Id : Clipboard)
+		{
+			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
+			System->DuplicateGameObject(Instance, Target);
+		}
+
+		if (IsCutting)
+		{
+			for (auto Id : Clipboard)
+			{
+				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
+				System->DestroyGameObject(Instance);
+			}
+
+			Clipboard.Clear();
+			IsCutting = false;
+		}
 	}
 
 	NxFr::Set<NxFr::GUID> HierarchyEditContext::FilterSelection()
@@ -77,7 +108,7 @@ namespace NxEd
 
 		for (auto Id : Selection)
 		{
-			NxFr::Handle<NxEn::GameObject> Target = Hierarchy->Manager->Items[Id]->GetTarget();
+			NxFr::Handle<NxEn::GameObject> Target = Manager->Items[Id]->GetTarget();
 			NxFr::Handle<NxEn::GameObject> Parent = Target->GetParent();
 			bool Selected = false;
 
@@ -100,49 +131,8 @@ namespace NxEd
 		return Result;
 	}
 
-	void HierarchyEditContext::CopySelection()
+	void HierarchyEditContext::OnSelectItem(NxFr::GUID Id, bool State)
 	{
-		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-		for (auto Id : Instances)
-		{
-			NxFr::Handle<NxEn::GameObject> Target = Hierarchy->Manager->Items[Id]->GetTarget();
-			NxFr::Handle<NxEn::GameObject> Instance = World->DuplicateGameObject(Target, World->GetRootGameObject());
-			Clipboard.Append(Instance->GetId());
-		}
-	}
-
-	void HierarchyEditContext::DestroySelection()
-	{
-		NxEn::World* Instance = Hierarchy->Manager->Items[Selected]->GetTarget()->GetWorld();
-
-		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-		for (auto Id : Instances)
-		{
-			NxFr::Handle<NxEn::GameObject> Target = Instance->GetGameObject(Id);
-			Instance->DestroyGameObject(Target);
-		}
-	}
-
-	void HierarchyEditContext::PasteClipboard()
-	{
-		NxFr::Handle<NxEn::GameObject> Parent = Hierarchy->Manager->Items[Selected]->GetTarget();
-		NxEn::World* Instance = Parent->GetWorld();
-
-		for (auto Id : Clipboard)
-		{
-			NxFr::Handle<NxEn::GameObject> Target = World->GetGameObject(Id);
-			Instance->DuplicateGameObject(Target, Parent);
-		}
-	}
-
-	void HierarchyEditContext::ClearClipboard()
-	{
-		for (auto Id : Clipboard)
-		{
-			NxFr::Handle<NxEn::GameObject> Target = World->GetGameObject(Id);
-			World->DestroyGameObject(Target);
-		}
-
-		Clipboard.Clear();
+		Manager->SelectItem(Manager->GetItem(Id)->GetTarget(), State, GetId());
 	}
 }

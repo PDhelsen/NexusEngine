@@ -1,14 +1,21 @@
 #pragma once
 
+#include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEditor/Systems/Edit/EditContext.h"
-#include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
 
 namespace NxEd
 {
+	class HierarchyManager;
+	class HierarchyItem;
+
 	class NX_EDITOR_API HierarchyEditContext : public Edit::Context
 	{
+		friend class HierarchyManager;
+
 	public:
-		HierarchyEditContext(NxFr::StringId Id, HierarchyPanel* Hierarchy);
+		inline static const NxFr::StringId ContextId = "HierarchyContext"_Sid;
+
+		HierarchyEditContext();
 		~HierarchyEditContext();
 
 	protected:
@@ -22,16 +29,12 @@ namespace NxEd
 		void Copy() override;
 		void Paste() override;
 
-	private:
 		NxFr::Set<NxFr::GUID> FilterSelection();
-		void CopySelection();
-		void DestroySelection();
-		void PasteClipboard();
-		void ClearClipboard();
+		void OnSelectItem(NxFr::GUID Id, bool State);
 
 	private:
-		HierarchyPanel* Hierarchy;
-		NxEn::World* World;
+		HierarchyManager* Manager;
+		bool IsCutting;
 	};
 }
 

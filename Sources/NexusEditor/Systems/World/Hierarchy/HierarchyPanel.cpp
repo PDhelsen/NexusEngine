@@ -2,38 +2,19 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
-#include "NexusEditor/Systems/World/Hierarchy/HierarchyEditContext.h"
-
-#include "NexusEditor/Systems/Edit/EditSystem.h"
 
 namespace NxEd
 {
+	static HierarchyPanel* Panel = NxEn::GUI::Panel::Create<HierarchyPanel>();
+
+	const static NxEn::GUI::Menu::Item MenuItemHierarchy = NxEn::GUI::Menu::Item::Create("Object/World/Hierarchy", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel HierarchyPanel");
+	}));
+
 	void HierarchyPanel::Refresh()
 	{
-		NxEn::TreeItem* Target = Root;
-		TreePanel::Refresh();
-		Root = Target;
-	}
-
-	void HierarchyPanel::Show(NxFr::Handle<NxEn::GameObject> Target)
-	{
-		Clear();
-		Root = Manager->Convert(Target);
-		TreePanel::Show();
-	}
-
-	void HierarchyPanel::SelectGameObject(NxFr::Handle<NxEn::GameObject> Target)
-	{
-		TreePanel::Select(Manager->Convert(Target));
-	}
-
-	HierarchyPanel::HierarchyPanel(HierarchyManager* Manager)
-		: Manager(Manager)
-	{
-	}
-
-	HierarchyPanel::~HierarchyPanel()
-	{
+		Manager->Refresh();
 	}
 
 	void HierarchyPanel::OnInitialize()
@@ -46,39 +27,21 @@ namespace NxEd
 		AppendAction<HierarchyActionDuplicate>();
 		AppendAction<HierarchyActionMove>();
 		AppendAction<HierarchyActionDelete>();
-		AppendAction<HierarchyActionPrefabCreate>();
-		AppendAction<HierarchyActionPrefabSave>();
-		AppendAction<HierarchyActionPrefabUnpack>();
-		AppendAction<HierarchyActionInspect>();
-	}
-
-	void HierarchyPanel::OnShutdown()
-	{
-		TreePanel::OnShutdown();
+		//AppendAction<HierarchyActionPrefabCreate>();
+		//AppendAction<HierarchyActionPrefabSave>();
+		//AppendAction<HierarchyActionPrefabUnpack>();
+		//AppendAction<HierarchyActionInspect>();
 	}
 
 	void HierarchyPanel::OnEnable()
 	{
 		TreePanel::OnEnable();
 
-		Refresh();
-
-		Context = new HierarchyEditContext(GetImGuiId(), this);
-		Context->GetOnSelectionChanged() += [this](NxFr::GUID Id, bool State)
-			{
-				NxEn::TreeItem* Item = Manager->Items[Id];
-				SelectItem(Item, State, true, false);
-			};
-		Edit = NxEn::Application::GetSystem<EditSystem>();
-		Edit->RegisterContext(GetImGuiId(), Context);
+		Root = FetchRootItem();
 	}
 
 	void HierarchyPanel::OnDisable()
 	{
-		delete Edit->UnregisterContext(GetImGuiId());
-		Context = nullptr;
-		Edit = nullptr;
-
 		Clear();
 
 		TreePanel::OnDisable();
@@ -88,7 +51,7 @@ namespace NxEd
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
-			Edit::Context::SetCurrent(Context);
+			Edit::Context::SetCurrent(&Manager->Context);
 		}
 
 		TreePanel::OnDraw();
@@ -96,31 +59,12 @@ namespace NxEd
 
 	NxEn::TreeItem* HierarchyPanel::FetchRootItem()
 	{
-		return nullptr;
-	}
-
-	void HierarchyPanel::OnDestroyItem(NxEn::TreeItem* Item)
-	{
-		if (Edit && Context)
-		{
-			Edit->Unselect(Item->GetItemId(), Context->GetId());
-		}
-
-		TreePanel::OnDestroyItem(Item);
+		return Manager->Root;
 	}
 
 	void HierarchyPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
 	{
-		TreePanel::OnSelectItem(Item, State);
-
-		if (State)
-		{
-			Edit->Select(Item->GetItemId(), Context->GetId());
-		}
-		else
-		{
-			Edit->Unselect(Item->GetItemId(), Context->GetId());
-		}
+		Manager->SelectItem(static_cast<HierarchyItem*>(Item)->GetTarget(), State, GetId());
 	}
 
 	void HierarchyPanel::FindItem()
@@ -132,10 +76,10 @@ namespace NxEd
 		}
 
 		NxEn::World* World = static_cast<HierarchyItem*>(Root)->GetTarget()->GetWorld();
-		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = World->Find(Filter);
+		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = Manager->Worlds->FindGameObjects(Filter, World->GetId());
 		for (auto& Instance : GameObjects)
 		{
-			NxEn::TreeItem* Item = Manager->Convert(Instance);
+			NxEn::TreeItem* Item = Manager->GetItem(Instance);
 			ShowItem(Item);
 			Filtered.Append(Item);
 		}

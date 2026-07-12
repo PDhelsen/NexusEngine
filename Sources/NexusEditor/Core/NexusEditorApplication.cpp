@@ -21,7 +21,7 @@ namespace NxEd
 	NX_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
 	NexusEditorApplication::NexusEditorApplication(const NxEn::Project& ProjectInfo)
-		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(nullptr), Browser(nullptr)/*, Hierarchy(nullptr), Stages(nullptr)*/
+		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(nullptr), Browser(nullptr), Hierarchy(nullptr)/*, Stages(nullptr)*/
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 		Systems.CreateSystem<EditSystem>();
@@ -68,7 +68,7 @@ namespace NxEd
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Create Assets & Worlds Managers", [&]()
 		{
 			Browser = new AssetsBrowser();
-			//Hierarchy = new HierarchyManager();
+			Hierarchy = new HierarchyManager();
 			//Stages = new StageManager();
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
@@ -106,7 +106,7 @@ namespace NxEd
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Destroy Assets & Worlds Managers", [&]()
 		{
 			//delete Stages;
-			//delete Hierarchy;
+			delete Hierarchy;
 			delete Browser;
 		});
 

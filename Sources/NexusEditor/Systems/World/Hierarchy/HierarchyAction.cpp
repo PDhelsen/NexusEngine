@@ -1,9 +1,6 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 
-#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
-
-#include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -13,12 +10,11 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
+			NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 			for (auto& Item : Items)
 			{
-				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-				NxEn::World* World = Instance->GetWorld();
-
-				World->CreateGameObject(Input, Instance);
+				NxFr::Handle<NxEn::GameObject> Parent = static_cast<HierarchyItem*>(Item)->GetTarget();
+				System->CreateGameObject(Input, Parent, Parent->GetWorld()->GetId());
 			}
 		});
 	}
@@ -31,7 +27,6 @@ namespace NxEd
 			for (auto& Item : Items)
 			{
 				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-
 				Instance->SetName(Input);
 			}
 		});
@@ -39,12 +34,11 @@ namespace NxEd
 
 	void HierarchyActionDuplicate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		for (auto& Item : Items)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-			NxEn::World* World = Instance->GetWorld();
-
-			World->DuplicateGameObject(Instance);
+			System->DuplicateGameObject(Instance);
 		}
 	}
 
@@ -55,71 +49,70 @@ namespace NxEd
 			return;
 		}
 
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxFr::Handle<NxEn::GameObject> Parent = static_cast<HierarchyItem*>(Items[0])->GetTarget();
 		NxEn::World* World = Parent->GetWorld();
 
 		for (uint64 Index = 1; Index < Items.GetCount(); Index++)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Items[Index])->GetTarget();
-
-			World->AttachGameObject(Instance, Parent);
+			System->AttachGameObject(Instance, Parent);
 		}
 	}
 
 	void HierarchyActionDelete::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		for (auto& Item : Items)
-		{
-			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-			NxEn::World* World = Instance->GetWorld();
-
-			World->DestroyGameObject(Instance);
-		}
-	}
-
-	void HierarchyActionPrefabCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
-		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
-		Popup->RegisterCallback([=](NxFr::StringView Input)
-		{
-			NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-			for (auto& Item : Items)
-			{
-				NxFr::String Path = NxFr::Path::IsDirectory(Input) ? Input + Item->GetItemName() : NxFr::String(Input);
-				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-
-				System->CreatePrefab(Instance, Path);
-			}
-		});
-	}
-
-	void HierarchyActionPrefabSave::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		for (auto& Item : Items)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-			System->SavePrefab(Instance);
+			System->DestroyGameObject(Instance);
 		}
 	}
 
-	void HierarchyActionPrefabUnpack::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
-		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		for (auto& Item : Items)
-		{
-			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-			System->UnpackPrefab(Instance);
-		}
-	}
+	//void HierarchyActionPrefabCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	//{
+	//	NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+	//	Popup->RegisterCallback([=](NxFr::StringView Input)
+	//	{
+	//		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+	//		for (auto& Item : Items)
+	//		{
+	//			NxFr::String Path = NxFr::Path::IsDirectory(Input) ? Input + Item->GetItemName() : NxFr::String(Input);
+	//			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
 
-	void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	{
-		HierarchyItem* Item = static_cast<HierarchyItem*>(Items[0]);
+	//			System->CreatePrefab(Instance, Path);
+	//		}
+	//	});
+	//}
 
-		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
-		InspectorPanel* Inspector = Editor->GetStageManager()->GetFocusedStage()->GetInspector();
+	//void HierarchyActionPrefabSave::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	//{
+	//	NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+	//	for (auto& Item : Items)
+	//	{
+	//		NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
+	//		System->SavePrefab(Instance);
+	//	}
+	//}
 
-		Inspector->Show(Item->GetTarget(), true);
-	}
+	//void HierarchyActionPrefabUnpack::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	//{
+	//	NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+	//	for (auto& Item : Items)
+	//	{
+	//		NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
+	//		System->UnpackPrefab(Instance);
+	//	}
+	//}
+
+	//void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	//{
+	//	HierarchyItem* Item = static_cast<HierarchyItem*>(Items[0]);
+
+	//	NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
+	//	InspectorPanel* Inspector = Editor->GetStageManager()->GetFocusedStage()->GetInspector();
+
+	//	Inspector->Show(Item->GetTarget(), true);
+	//}
 }
