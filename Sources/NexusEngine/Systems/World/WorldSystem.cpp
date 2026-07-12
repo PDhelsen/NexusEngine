@@ -145,14 +145,17 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
+		if (Parent)
+		{
+			WorldId = Parent->GetWorldId();
+		}
+
 		WorldManager* Manager = GetManager(WorldId);
 		if (!Manager)
 		{
 			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
 			return NxFr::Handle<GameObject>();
 		}
-
-		NX_ASSERT(!Parent || Parent->GetWorldId() == WorldId, Default, "Parent should belong to the same world");
 
 		if (!Parent)
 		{
@@ -170,6 +173,11 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
+		if (Parent)
+		{
+			WorldId = Parent->GetWorldId();
+		}
+
 		WorldManager* Manager = GetManager(WorldId);
 		if (!Manager)
 		{
@@ -179,7 +187,6 @@ namespace NxEn
 
 		NX_ASSERT(Original, Default, "Original should be valid");
 		NX_ASSERT(Original != Manager->GetWorld()->GetRoot(), Default, "Can't duplicate root object");
-		NX_ASSERT(!Parent || Parent->GetWorldId() == WorldId, Default, "Parent should belong to the same world");
 
 		if (!Parent)
 		{
@@ -219,12 +226,6 @@ namespace NxEn
 
 	void WorldSystem::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index)
 	{
-		if (!Parent)
-		{
-			DetachGameObject(Instance);
-			return;
-		}
-
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
 
 		NX_ASSERT(Instance, Default, "Instance should be valid");
@@ -242,23 +243,6 @@ namespace NxEn
 		}
 
 		Manager->AttachGameObject(Instance, Parent, Index);
-		Instance->UpdateHierarchy();
-
-		OnWorldObjectChange.Invoke(EventMovedId, Instance->GetWorldId(), Instance->GetId());
-	}
-
-	void WorldSystem::DetachGameObject(NxFr::Handle<GameObject> Instance)
-	{
-		if (!Instance)
-		{
-			return;
-		}
-
-		WorldManager* Manager = GetManager(Instance->GetWorldId());
-
-		NX_ASSERT(Instance != Manager->GetWorld()->GetRoot(), Default, "Can't detach root object");
-
-		Manager->DetachGameObject(Instance);
 		Instance->UpdateHierarchy();
 
 		OnWorldObjectChange.Invoke(EventMovedId, Instance->GetWorldId(), Instance->GetId());
@@ -388,30 +372,6 @@ namespace NxEn
 		return Manager->Belong(Instance);
 	}
 
-	NxFr::Array<NxFr::Handle<Object>> WorldSystem::Find(NxFr::StringView Query, WorldObjectType Type, NxFr::GUID WorldId)
-	{
-		WorldManager* Manager = GetManager(WorldId);
-		if (!Manager)
-		{
-			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
-			return NxFr::Array<NxFr::Handle<Object>>();
-		}
-
-		return Manager->Find(Query, Type);
-	}
-
-	NxFr::Array<NxFr::Handle<Object>> WorldSystem::GetObjects(WorldObjectType Type, NxFr::GUID WorldId)
-	{
-		WorldManager* Manager = GetManager(WorldId);
-		if (!Manager)
-		{
-			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
-			return NxFr::Array<NxFr::Handle<Object>>();
-		}
-
-		return Manager->GetObjects(Type);
-	}
-
 	NxFr::Handle<Object> WorldSystem::GetObject(NxFr::GUID ObjectId, NxFr::GUID WorldId)
 	{
 		if (WorldId != 0)
@@ -440,6 +400,42 @@ namespace NxEn
 
 			return Result;
 		}
+	}
+
+	NxFr::Array<NxFr::Handle<Object>> WorldSystem::GetObjects(WorldObjectType Type, NxFr::GUID WorldId)
+	{
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Array<NxFr::Handle<Object>>();
+		}
+
+		return Manager->GetObjects(Type);
+	}
+
+	NxFr::Array<NxFr::Handle<Object>> WorldSystem::Find(NxFr::StringView Query, WorldObjectType Type, NxFr::GUID WorldId)
+	{
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Array<NxFr::Handle<Object>>();
+		}
+
+		return Manager->Find(Query, Type);
+	}
+
+	NxFr::Array<NxFr::Handle<GameObject>> WorldSystem::FindGameObjects(NxFr::StringView Query, NxFr::GUID WorldId)
+	{
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Array<NxFr::Handle<GameObject>>();
+		}
+
+		return Manager->FindGameObjects(Query);
 	}
 
 	Iterator::WorldObject WorldSystem::Begin(NxFr::StringId Type, NxFr::GUID WorldId)

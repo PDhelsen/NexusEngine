@@ -7,9 +7,12 @@ namespace NxEn
 	enum class WorldObjectType : uint8
 	{
 		None = 0,
+
 		GameObject = 1 << 0,
 		Behaviour = 1 << 1,
-		Component = 1 << 2
+		Component = 1 << 2,
+
+		All = GameObject | Behaviour | Component
 	};
 
 	struct WorldObject
