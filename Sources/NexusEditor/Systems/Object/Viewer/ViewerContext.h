@@ -15,8 +15,6 @@ namespace NxEd
 		ViewerContext() = default;
 		virtual ~ViewerContext() = default;
 
-		virtual NxEn::World* GetWorld() const { return nullptr; }
-
 	protected:
 		virtual void Clear() = 0;
 		virtual void SetupMenu(NxEn::GUI::Menu& Menu) {};

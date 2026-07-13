@@ -8,7 +8,7 @@ namespace NxEd
 	{
 		enum class ViewContextMode
 		{
-			Invalid, World, Prefab
+			Invalid, World/*, Prefab*/
 		};
 
 	public:
@@ -16,8 +16,6 @@ namespace NxEd
 
 		ViewerContext3D();
 		virtual ~ViewerContext3D();
-
-		NxEn::World* GetWorld() const override { return World; }
 
 	protected:
 		void Clear() override;
@@ -28,8 +26,6 @@ namespace NxEd
 
 	private:
 		ViewContextMode Mode;
-
-		NxEn::World* World;
 		NxFr::Handle<NxEn::GameObject> Target;
 	};
 }

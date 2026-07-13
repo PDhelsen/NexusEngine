@@ -3,10 +3,10 @@
 namespace NxEd
 {
 	static ViewerFactory::Factory* FactoryWorld = ViewerFactory::Register<NxEn::World, ViewerContext3D>();
-	static ViewerFactory::Factory* FactoryPrefab = ViewerFactory::Register<NxEn::Prefab, ViewerContext3D>();
+	//static ViewerFactory::Factory* FactoryPrefab = ViewerFactory::Register<NxEn::Prefab, ViewerContext3D>();
 
 	ViewerContext3D::ViewerContext3D()
-		: Mode(), World(nullptr), Target()
+		: Mode(), Target()
 	{
 
 	}
@@ -18,11 +18,11 @@ namespace NxEd
 
 	void ViewerContext3D::Clear()
 	{
-		if (Mode == ViewContextMode::Prefab)
+		/*if (Mode == ViewContextMode::Prefab)
 		{
 			NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-			Worlds->DestroyWorld(World->GetId());
-		}
+			Worlds->DestroyWorld(Target->GetWorldId());
+		}*/
 	}
 
 	void ViewerContext3D::SetupMenu(NxEn::GUI::Menu& Menu)
@@ -35,10 +35,10 @@ namespace NxEd
 		{
 			Mode = ViewContextMode::World;
 
-			World = static_cast<NxEn::World*>(Instance);
-			Target = World->GetRootGameObject();
+			NxEn::World* World = static_cast<NxEn::World*>(Instance);
+			Target = World->GetRoot();
 		}
-		else if (Instance->GetObjectType() == NxEn::Prefab::GetClassType())
+		/*else if (Instance->GetObjectType() == NxEn::Prefab::GetClassType())
 		{
 			Mode = ViewContextMode::Prefab;
 
@@ -48,7 +48,7 @@ namespace NxEd
 			World = Worlds->CreateWorld(Prefab->GetId());
 			Target = Worlds->InstantiatePrefab(Prefab, World->GetRootGameObject(), World->GetId());
 			Target->SetName(Prefab->GetName());
-		}
+		}*/
 		else
 		{
 			Mode = ViewContextMode::Invalid;
