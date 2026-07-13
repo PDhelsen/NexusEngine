@@ -118,6 +118,95 @@ namespace NxEn
 		}
 	}
 
+	void GameObject::Draw()
+	{
+		float HalfWindowSize = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * (1.0f / 2.0f);
+		float ThirdWindowSize = (ImGui::GetContentRegionAvail().x - 2.0f * ImGui::GetStyle().ItemSpacing.x) * (1.0f / 3.0f);
+
+		OnDraw();
+		ImGui::Separator();
+
+		for (uint64 Index = 0; Index < Behaviours.GetCount(); ++Index)
+		{
+			NxFr::Handle<Behaviour> B = Behaviours[Index];
+			ImGui::PushID(B->GetId());
+
+			if (GUI::Draw::Button("Move Up", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index > 0)
+			{
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Behaviour>>(Behaviours, Index, Index - 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Behaviours.GetCount() - 1)
+			{
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Behaviour>>(Behaviours, Index, Index + 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
+			{
+				Behaviours.Remove(Index);
+				ImGui::PopID();
+				Index--;
+				continue;
+			}
+
+			B->Draw();
+			ImGui::Separator();
+
+			ImGui::PopID();
+		}
+
+		for (uint64 Index = 0; Index < Components.GetCount(); ++Index)
+		{
+			NxFr::Handle<Component> C = Components[Index];
+			ImGui::PushID(C->GetId());
+
+			if (GUI::Draw::Button("Move Up", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index > 0)
+			{
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Component>>(Components, Index, Index - 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Components.GetCount() - 1)
+			{
+				NxFr::ContainerUtility::Swap<NxFr::Handle<Component>>(Components, Index, Index + 1);
+			}
+			ImGui::SameLine();
+			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
+			{
+				Components.Remove(Index);
+				ImGui::PopID();
+				Index--;
+				continue;
+			}
+
+			C->Draw();
+			ImGui::Separator();
+
+			ImGui::PopID();
+		}
+
+		if (GUI::Draw::Button("Add Behaviour", NxFr::Vector2f(HalfWindowSize, 0.0f)))
+		{
+			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+			Popup->RegisterCallback([&](NxFr::StringView Input)
+			{
+				WorldSystem* World = Application::GetSystem<WorldSystem>();
+				World->CreateBehaviour(Input, World->GetObject(GameObjectId, WorldId));
+			});
+		}
+
+		ImGui::SameLine();
+
+		if (GUI::Draw::Button("Add Component", NxFr::Vector2f(HalfWindowSize, 0.0f)))
+		{
+			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+			Popup->RegisterCallback([&](NxFr::StringView Input)
+			{
+				WorldSystem* World = Application::GetSystem<WorldSystem>();
+				World->CreateComponent(Input, World->GetObject(GameObjectId, WorldId));
+			});
+		}
+	}
+
 	NxFr::GUID GameObject::GetId() const
 	{
 		return GetGameObjectId();
@@ -447,6 +536,27 @@ namespace NxEn
 		else
 		{
 			OnDisable();
+		}
+	}
+
+	void GameObject::OnDraw()
+	{
+		GUI::Drawer<NxFr::String>::Field(Name, "Name");
+
+		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
+
+		bool Enabled = IsEnabled();
+		GUI::Drawer<bool>::Field(Enabled, "Enabled");
+		if (Enabled != IsEnabled())
+		{
+			SetEnabled(Enabled);
+		}
+
+		bool Tickable = IsTickable();
+		GUI::Drawer<bool>::Field(Tickable, "Tickable");
+		if (Tickable != IsTickable())
+		{
+			SetTickable(Tickable);
 		}
 	}
 

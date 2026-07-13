@@ -25,6 +25,7 @@ namespace NxEn
 
 	protected:
 		void OnUpdateHierarchy() override;
+		void OnDraw() override;
 		void OnClone(const Object& Other) override;
 
 	private:

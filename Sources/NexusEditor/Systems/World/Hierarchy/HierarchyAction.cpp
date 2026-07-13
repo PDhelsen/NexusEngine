@@ -1,6 +1,8 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 
+#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
@@ -106,13 +108,14 @@ namespace NxEd
 	//	}
 	//}
 
-	//void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
-	//{
-	//	HierarchyItem* Item = static_cast<HierarchyItem*>(Items[0]);
+	void HierarchyActionInspect::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
+	{
+		HierarchyItem* Item = static_cast<HierarchyItem*>(Items[0]);
 
-	//	NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
-	//	InspectorPanel* Inspector = Editor->GetStageManager()->GetFocusedStage()->GetInspector();
+		//NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
+		//InspectorPanel* Inspector = Editor->GetStageManager()->GetFocusedStage()->GetInspector();
 
-	//	Inspector->Show(Item->GetTarget(), true);
-	//}
+		InspectorPanel* Inspector = NxEn::GUISystem::GetPanel<InspectorPanel>();
+		Inspector->Show(Item->GetTarget(), true);
+	}
 }

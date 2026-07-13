@@ -53,6 +53,19 @@ namespace NxEn
 		}
 	}
 
+	void Component::OnDraw()
+	{
+		GUI::Drawer<NxFr::StringId>::Property(GetObjectType(), "Type");
+		GUI::Drawer<NxFr::GUID>::Property(ComponentId, "Id");
+
+		bool Enabled = IsEnabled();
+		GUI::Drawer<bool>::Field(Enabled, "Enabled");
+		if (Enabled != IsEnabled())
+		{
+			SetEnabled(Enabled);
+		}
+	}
+
 	void Component::OnClone(const Object& Other)
 	{
 		const Component& Instance = static_cast<const Component&>(Other);

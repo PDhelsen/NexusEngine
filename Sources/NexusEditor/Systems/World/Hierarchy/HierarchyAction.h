@@ -91,7 +91,7 @@ namespace NxEd
 		virtual ~HierarchyActionPrefabUnpack() = default;
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
-	};
+	};*/
 
 	class NX_EDITOR_API HierarchyActionInspect : public NxEn::TreeAction
 	{
@@ -102,5 +102,5 @@ namespace NxEd
 		virtual ~HierarchyActionInspect() = default;
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
-	};*/
+	};
 }

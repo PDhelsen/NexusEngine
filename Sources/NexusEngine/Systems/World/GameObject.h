@@ -25,6 +25,7 @@ namespace NxEn
 		void Shutdown() override;
 		void UpdateHierarchy() override;
 		void Tick(float TimeStep = 0.0f) override;
+		void Draw() override;
 
 		NxFr::GUID GetId() const override;
 		NxFr::GUID GetWorldId() const;
@@ -72,6 +73,7 @@ namespace NxEn
 
 	protected:
 		void OnUpdateHierarchy() override;
+		void OnDraw() override;
 		void OnClone(const Object& Other) override;
 
 	private:
