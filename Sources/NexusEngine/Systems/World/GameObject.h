@@ -19,13 +19,16 @@ namespace NxEn
 
 		GameObject();
 		~GameObject();
-		
 
 		void Initialize() override;
 		void Shutdown() override;
 		void UpdateHierarchy() override;
 		void Tick(float TimeStep = 0.0f) override;
 		void Draw() override;
+
+		YAML::Node Serialize() const override;
+		void Deserialize(const YAML::Node& Node) override;
+		void Unload() override;
 
 		NxFr::GUID GetId() const override;
 		NxFr::GUID GetWorldId() const;
@@ -75,6 +78,9 @@ namespace NxEn
 		void OnUpdateHierarchy() override;
 		void OnDraw() override;
 		void OnClone(const Object& Other) override;
+		void OnSerialize(YAML::Node& Node) const override;
+		void OnDeserialize(const YAML::Node& Node) override;
+		void OnUnload() override;
 
 	private:
 		NxFr::GUID GameObjectId;

@@ -24,6 +24,8 @@ namespace NxEn
 		World* GetWorld();
 		void SetWorldRoot(NxFr::Handle<GameObject> Instance);
 
+		NxFr::Handle<GameObject> CreateHierarchy(YAML::Node Node, NxFr::Handle<GameObject> Parent);
+
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);

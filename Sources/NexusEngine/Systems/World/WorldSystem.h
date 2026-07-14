@@ -66,11 +66,11 @@ namespace NxEn
 		void OnTick(float TimeStep) override;
 
 	private:
-		class WorldManager* GetManager(NxFr::GUID WorldId);
+		WorldManager* GetManager(NxFr::GUID WorldId);
 
 		NxFr::Event<NxFr::StringId, NxFr::GUID> OnWorldChange;
 		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID> OnWorldObjectChange;
 
-		NxFr::Dictionary<NxFr::GUID, class WorldManager*> Managers;
+		NxFr::Dictionary<NxFr::GUID, WorldManager*> Managers;
 	};
 }

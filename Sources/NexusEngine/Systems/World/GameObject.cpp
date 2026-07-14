@@ -190,7 +190,7 @@ namespace NxEn
 			Popup->RegisterCallback([&](NxFr::StringView Input)
 			{
 				WorldSystem* World = Application::GetSystem<WorldSystem>();
-				World->CreateBehaviour(Input, World->GetObject(GameObjectId, WorldId));
+				World->CreateBehaviour(Input, GetThis());
 			});
 		}
 
@@ -202,8 +202,91 @@ namespace NxEn
 			Popup->RegisterCallback([&](NxFr::StringView Input)
 			{
 				WorldSystem* World = Application::GetSystem<WorldSystem>();
-				World->CreateComponent(Input, World->GetObject(GameObjectId, WorldId));
+				World->CreateComponent(Input, GetThis());
 			});
+		}
+	}
+
+	YAML::Node GameObject::Serialize() const
+	{
+		YAML::Node NodeGameObject;
+		OnSerialize(NodeGameObject);
+
+		YAML::Node NodeBehaviours;
+		for (auto& B : Behaviours)
+		{
+			NodeBehaviours.push_back(B->Serialize());
+		}
+		NodeGameObject["Behaviours"] = NodeBehaviours;
+
+		YAML::Node NodeComponents;
+		for (auto& C : Components)
+		{
+			NodeComponents.push_back(C->Serialize());
+		}
+		NodeGameObject["Components"] = NodeComponents;
+
+		YAML::Node NodeChildren;
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			NodeChildren.push_back(Iterator->Serialize());
+			Iterator = Iterator->GetNext();
+		}
+
+		YAML::Node Node;
+		Node["GameObject"] = NodeGameObject;
+		Node["Children"] = NodeChildren;
+
+		return Node;
+	}
+
+	void GameObject::Deserialize(const YAML::Node& Node)
+	{
+		YAML::Node NodeGameObject = Node["GameObject"];
+		OnDeserialize(NodeGameObject);
+
+		YAML::Node NodeBehaviours = NodeGameObject["Behaviours"];
+		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
+		{
+			Behaviours[Index]->Deserialize(NodeBehaviours[Index]);
+		}
+
+		YAML::Node NodeComponents = NodeGameObject["Components"];
+		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
+		{
+			Components[Index]->Deserialize(NodeComponents[Index]);
+		}
+
+		uint64 NodeChildrenIndex = 0;
+		YAML::Node NodeChildren = Node["Children"];
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Deserialize(NodeChildren[NodeChildrenIndex++]);
+			Iterator = Iterator->GetNext();
+		}
+	}
+
+	void GameObject::Unload()
+	{
+		OnUnload();
+
+		for (auto& B : Behaviours)
+		{
+			B->Unload();
+		}
+
+		for (auto& C : Components)
+		{
+			C->Unload();
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->Unload();
+			Iterator = Iterator->GetNext();
 		}
 	}
 
@@ -244,7 +327,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> GameObject::GetThis() const
 	{
-		return Application::GetSystem<WorldSystem>()->GetObject(GameObjectId);
+		return Application::GetSystem<WorldSystem>()->GetObject(GameObjectId, WorldId);
 	}
 
 	NxFr::Handle<GameObject> GameObject::GetParent() const
@@ -569,5 +652,26 @@ namespace NxEn
 		SetFlag(ObjectFlags::Enabled, Instance.IsEnabled());
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 		SetFlag(ObjectFlags::EnabledInHierarchy, false);
+	}
+
+	void GameObject::OnSerialize(YAML::Node& Node) const
+	{
+		Node["Name"] = Name;
+		Node["Id"] = GameObjectId;
+		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
+		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
+	}
+
+	void GameObject::OnDeserialize(const YAML::Node& Node)
+	{
+		Name = Node["Name"].as<NxFr::String>();
+		NX_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
+		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
+		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
+		SetFlag(ObjectFlags::EnabledInHierarchy, false);
+	}
+
+	void GameObject::OnUnload()
+	{
 	}
 }
