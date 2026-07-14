@@ -3,7 +3,7 @@
 
 namespace NxEd
 {
-	const static NxEn::GUI::Menu::Item MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/Objects/Stage", NxFr::Delegate<void()>([]()
+	const static NxEn::GUI::Menu::Item MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/World/Stage", NxFr::Delegate<void()>([]()
 	{
 		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
 		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
@@ -31,31 +31,25 @@ namespace NxEd
 		Stages->ShowStage(Target);
 	}));
 
-	static NxEn::Command* CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Query)
+	static NxEn::Command* CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
 	{
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Handle<NxEn::GameObject> Instance = Worlds->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+
 		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
-		Stage* Instance = Stages->GetFocusedStage();
-
-		NxEn::World* World = Instance->GetWorld();
-		if (!World)
+		Stage* Stage = Stages->GetStage(Instance->GetWorld());
+		if (!Instance)
 		{
-			return;
+			Stage = Stages->CreateStage(Instance->GetWorld());
 		}
-
-		Instance->GetHierarchy()->Find(Query);
-
-		NxFr::Array<NxFr::Handle<NxEn::GameObject>> Selection = World->Find(Query);
-		if (Selection.GetCount())
-		{
-			Instance->GetInspector()->Show(Selection[0]);
-		}
+		Stages->ShowStage(Instance->GetWorld());
+		Stage->GetHierarchy()->Select(Instance);
 	}));
 
 	StageManager::StageManager()
 		: Stages()
 	{
 		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
-
 		CreateStage(World);
 		ShowStage(World);
 	}
@@ -65,6 +59,24 @@ namespace NxEd
 		while (Stages.GetCount())
 		{
 			DestroyStage(Stages.Begin().Get().Key);
+		}
+	}
+
+	void StageManager::Tick(float TimeStep)
+	{
+		NxFr::List<NxEn::Object*> ToRemove = Stages.GetCount();
+
+		for (auto [Target, Instance] : Stages)
+		{
+			if (!Instance->IsVisible())
+			{
+				ToRemove.Append(Target);
+			}
+		}
+
+		for (auto Target : ToRemove)
+		{
+			DestroyStage(Target);
 		}
 	}
 
@@ -84,17 +96,6 @@ namespace NxEd
 		return Instance;
 	}
 
-	void StageManager::ShowStage(NxEn::Object* Target)
-	{
-		Stage* Instance = GetStage(Target);
-		if (!Instance)
-		{
-			return;
-		}
-
-		Instance->Show();
-	}
-
 	void StageManager::DestroyStage(NxEn::Object* Target)
 	{
 		Stage* Instance = GetStage(Target);
@@ -110,22 +111,15 @@ namespace NxEd
 		delete Instance;
 	}
 
-	void StageManager::DestroyDisableStage()
+	void StageManager::ShowStage(NxEn::Object* Target)
 	{
-		NxFr::List<NxEn::Object*> ToRemove = Stages.GetCount();
-
-		for (auto [Target, Instance] : Stages)
+		Stage* Instance = GetStage(Target);
+		if (!Instance)
 		{
-			if (!Instance->IsVisible())
-			{
-				ToRemove.Append(Target);
-			}
+			return;
 		}
 
-		for (auto Target : ToRemove)
-		{
-			DestroyStage(Target);
-		}
+		Instance->Show();
 	}
 
 	Stage* StageManager::GetStage(NxEn::Object* Target) const

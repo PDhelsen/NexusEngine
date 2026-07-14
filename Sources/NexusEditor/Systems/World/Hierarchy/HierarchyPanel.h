@@ -16,6 +16,8 @@ namespace NxEd
 		NX_OBJECT(HierarchyPanel)
 
 		void Refresh() override;
+		void Select(NxFr::GUID Id);
+		void Select(NxFr::Handle<NxEn::GameObject> Target);
 
 	protected:
 		void OnInitialize() override;
@@ -29,6 +31,9 @@ namespace NxEd
 		void FindItem() override;
 
 	private:
+		HierarchyPanel(HierarchyManager* Manager, HierarchyItem* Root);
+		~HierarchyPanel();
+
 		HierarchyManager* Manager;
 	};
 }

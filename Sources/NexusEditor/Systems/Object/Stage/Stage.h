@@ -24,7 +24,7 @@ namespace NxEd
 		bool IsMain() const;
 
 		NxEn::Object* GetTarget() const { return Target; }
-		NxEn::World* GetWorld() const { return Viewer && Viewer->GetContext() ? Viewer->GetContext()->GetWorld() : nullptr;  }
+		NxEn::World* GetWorld() const { return World; }
 
 		ViewerPanel* GetViewer() const { return Viewer; }
 		InspectorPanel* GetInspector() const { return Inspector; }
@@ -44,6 +44,7 @@ namespace NxEd
 
 	private:
 		NxEn::Object* Target;
+		NxEn::World* World;
 
 		uint32 DockId;
 		bool Layout;

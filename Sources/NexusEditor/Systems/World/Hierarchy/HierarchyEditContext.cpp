@@ -4,26 +4,25 @@
 
 namespace NxEd
 {
-	HierarchyEditContext::HierarchyEditContext()
-		: Edit::Context(ContextId), Manager(nullptr), IsCutting(false)
-	{
-		OnSelectionChanged += { this, & HierarchyEditContext::OnSelectItem };
-
-	}
-
-	HierarchyEditContext::~HierarchyEditContext()
-	{
-		OnSelectionChanged -= { this, & HierarchyEditContext::OnSelectItem };
-	}
-
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::GetAll()
 	{
-		return NxFr::ContainerUtility::ToArrayKeys(Manager->Items);
+		NxFr::List<NxFr::GUID> Result;
+
+		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld(Id)->GetRoot();
+		Result.Append(Root->GetId());
+
+		for (auto It = Root->BeginChild(); It != Root->EndChild(); ++It)
+		{
+			Result.Append(It->GetId());
+		}
+
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
 	uint64 HierarchyEditContext::GetCount()
 	{
-		return Manager->Items.GetCount();;
+		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld(Id)->GetRoot();
+		return Root->GetChildCount(true);
 	}
 
 	void HierarchyEditContext::Rename()
@@ -134,5 +133,16 @@ namespace NxEd
 	void HierarchyEditContext::OnSelectItem(NxFr::GUID Id, bool State)
 	{
 		Manager->SelectItem(Manager->GetItem(Id)->GetTarget(), State, GetId());
+	}
+
+	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, NxFr::StringId Id)
+		: Edit::Context(Id), Manager(Manager), IsCutting(false)
+	{
+		OnSelectionChanged += { this, & HierarchyEditContext::OnSelectItem };
+	}
+
+	HierarchyEditContext::~HierarchyEditContext()
+	{
+		OnSelectionChanged -= { this, & HierarchyEditContext::OnSelectItem };
 	}
 }

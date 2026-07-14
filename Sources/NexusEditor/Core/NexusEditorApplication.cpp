@@ -21,7 +21,7 @@ namespace NxEd
 	NX_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
 	NexusEditorApplication::NexusEditorApplication(const NxEn::Project& ProjectInfo)
-		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(nullptr), Browser(nullptr), Hierarchy(nullptr)/*, Stages(nullptr)*/
+		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(nullptr), Browser(nullptr), Hierarchy(nullptr), Stages(nullptr)
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 		Systems.CreateSystem<EditSystem>();
@@ -69,7 +69,7 @@ namespace NxEd
 		{
 			Browser = new AssetsBrowser();
 			Hierarchy = new HierarchyManager();
-			//Stages = new StageManager();
+			Stages = new StageManager();
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
 		{
@@ -105,7 +105,7 @@ namespace NxEd
 		});
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Destroy Assets & Worlds Managers", [&]()
 		{
-			//delete Stages;
+			delete Stages;
 			delete Hierarchy;
 			delete Browser;
 		});
@@ -137,7 +137,7 @@ namespace NxEd
 		NexusEngineApplication::OnRun();
 		NxEn::Ticker& Ticks = GetTicker();
 
-		//Ticks.AppendTick(NxEn::Ticker::TickBucket::Engine, "Stages", [&]() { Stages->DestroyDisableStage(); });
+		Ticks.AppendTick(NxEn::Ticker::TickBucket::Engine, "Stages", [&]() { Stages->Tick(GetTime().GetDeltaTime()); });
 	}
 
 	void NexusEditorApplication::ApplySettings()

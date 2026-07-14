@@ -10,8 +10,17 @@ namespace NxEd
 	static NxFr::Vector2f DockDefaultSize = NxFr::Vector2f(1600.0f, 800.0f);
 
 	Stage::Stage(NxEn::Object* Target)
-		: Target(Target), DockId(0), Layout(false), Main(false), Viewer(nullptr), Inspector(nullptr), Hierarchy(nullptr)
+		: Target(Target), World(nullptr), DockId(0), Layout(false), Main(false), Viewer(nullptr), Inspector(nullptr), Hierarchy(nullptr)
 	{
+		if (Target->GetObjectType() == NxEn::World::GetClassType())
+		{
+			World = static_cast<NxEn::World*>(Target);
+		}
+		else if (Target->GetObjectType() == NxEn::GameObject::GetClassType())
+		{
+			NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+			World = Worlds->CreateWorld(Target->GetName());
+		}
 	}
 
 	Stage::~Stage()
@@ -56,14 +65,14 @@ namespace NxEd
 		Inspector->SetTitle("Inspector##" + IdString);
 		Inspector->SetManual(true);
 
-		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->CreatePanel();
+		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->CreatePanel(World);
 		Hierarchy->SetTitle("Hierarchy##" + IdString);
 		Hierarchy->SetManual(true);
 	}
 
 	void Stage::OnShutdown()
 	{
-		NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->DestroyPanel(Hierarchy);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->DestroyPanel(World);
 
 		Inspector->Shutdown();
 		delete Inspector;
@@ -80,13 +89,10 @@ namespace NxEd
 
 		Viewer->Show(Target);
 		Inspector->Show(Target);
-		if (GetWorld())
-		{
-			Hierarchy->Show(GetWorld()->GetRootGameObject());
-		}
+		Hierarchy->Show();
 
 		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
-		Edit::Context* Ctx = Edit->GetContext(Hierarchy->GetImGuiId());
+		Edit::Context* Ctx = Edit->GetContext(Target->GetId());
 		if (Ctx)
 		{
 			Ctx->GetOnSelectionChanged() += { this, & Stage::OnSelectionChanged };
@@ -98,16 +104,13 @@ namespace NxEd
 	void Stage::OnDisable()
 	{
 		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
-		Edit::Context* Ctx = Edit->GetContext(Hierarchy->GetImGuiId());
+		Edit::Context* Ctx = Edit->GetContext(Target->GetId());
 		if (Ctx)
 		{
 			Ctx->GetOnSelectionChanged() -= { this, & Stage::OnSelectionChanged };
 		}
 
-		if (GetWorld())
-		{
-			Hierarchy->Hide();
-		}
+		Hierarchy->Hide();
 		Inspector->Hide();
 		Viewer->Hide();
 
@@ -126,19 +129,11 @@ namespace NxEd
 
 	void Stage::OnSelectionChanged(NxFr::GUID Id, bool State)
 	{
-		NxEn::World* World = GetWorld();
-		if (!World)
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Handle<NxEn::GameObject> Instance = Worlds->GetObject(Id);
+		if (State && Instance)
 		{
-			return;
-		}
-
-		if (State)
-		{
-			Inspector->Show(World->GetGameObject(Id));
-		}
-		else
-		{
-			Inspector->Show(Target);
+			Inspector->Show(Instance);
 		}
 	}
 

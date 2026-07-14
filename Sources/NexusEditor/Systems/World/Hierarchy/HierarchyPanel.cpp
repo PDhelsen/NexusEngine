@@ -5,16 +5,19 @@
 
 namespace NxEd
 {
-	static HierarchyPanel* Panel = NxEn::GUI::Panel::Create<HierarchyPanel>();
-
-	const static NxEn::GUI::Menu::Item MenuItemHierarchy = NxEn::GUI::Menu::Item::Create("Object/World/Hierarchy", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel HierarchyPanel");
-	}));
-
 	void HierarchyPanel::Refresh()
 	{
-		Manager->Refresh();
+		
+	}
+
+	void HierarchyPanel::Select(NxFr::GUID Id)
+	{
+		TreePanel::Select(Manager->GetItem(Id));
+	}
+
+	void HierarchyPanel::Select(NxFr::Handle<NxEn::GameObject> Target)
+	{
+		TreePanel::Select(Manager->GetItem(Target));
 	}
 
 	void HierarchyPanel::OnInitialize()
@@ -36,8 +39,6 @@ namespace NxEd
 	void HierarchyPanel::OnEnable()
 	{
 		TreePanel::OnEnable();
-
-		Root = FetchRootItem();
 	}
 
 	void HierarchyPanel::OnDisable()
@@ -51,7 +52,8 @@ namespace NxEd
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
-			Edit::Context::SetCurrent(&Manager->Context);
+			NxFr::Handle<NxEn::GameObject> Target = static_cast<HierarchyItem*>(Root)->GetTarget();
+			Edit::Context::SetCurrent(Manager->Contexts[Target->GetWorldId()]);
 		}
 
 		TreePanel::OnDraw();
@@ -59,7 +61,7 @@ namespace NxEd
 
 	NxEn::TreeItem* HierarchyPanel::FetchRootItem()
 	{
-		return Manager->Root;
+		return Root;
 	}
 
 	void HierarchyPanel::OnSelectItem(NxEn::TreeItem* Item, bool State)
@@ -83,5 +85,15 @@ namespace NxEd
 			ShowItem(Item);
 			Filtered.Append(Item);
 		}
+	}
+
+	HierarchyPanel::HierarchyPanel(HierarchyManager* Manager, HierarchyItem* Root)
+		: Manager(Manager)
+	{
+		this->Root = Root;
+	}
+
+	HierarchyPanel::~HierarchyPanel()
+	{
 	}
 }

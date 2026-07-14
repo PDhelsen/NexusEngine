@@ -12,12 +12,6 @@ namespace NxEd
 	{
 		friend class HierarchyManager;
 
-	public:
-		inline static const NxFr::StringId ContextId = "HierarchyContext"_Sid;
-
-		HierarchyEditContext();
-		~HierarchyEditContext();
-
 	protected:
 		NxFr::Array<NxFr::GUID> GetAll() override;
 		uint64 GetCount() override;
@@ -33,6 +27,9 @@ namespace NxEd
 		void OnSelectItem(NxFr::GUID Id, bool State);
 
 	private:
+		HierarchyEditContext(HierarchyManager* Manager, NxFr::StringId Id);
+		~HierarchyEditContext();
+
 		HierarchyManager* Manager;
 		bool IsCutting;
 	};

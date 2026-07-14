@@ -4,47 +4,47 @@ namespace NxEd
 {
 	HierarchyManager::HierarchyManager()
 		: Worlds(nullptr),
-		Items(), Root(nullptr), Panel(nullptr)
+		Items(), Panels(), Contexts()
 	{
-		Panel = NxEn::GUISystem::GetPanel<HierarchyPanel>();
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
-		Panel->Manager = this;
-		Context.Manager = this;
-
 		Worlds->GetOnWorldObjectChange() += { this, &HierarchyManager::OnHierarchyChanged };
-		Edit->RegisterContext(Context.GetId(), &Context);
 
-		Refresh();
+		FetchItems();
 	}
 
 	HierarchyManager::~HierarchyManager()
 	{
 		ClearItems();
 
-		Edit->UnregisterContext(Context.GetId());
 		Worlds->GetOnWorldObjectChange() -= { this, &HierarchyManager::OnHierarchyChanged };
 	}
 
-	void HierarchyManager::Refresh()
+	HierarchyPanel* HierarchyManager::CreatePanel(NxEn::World* Target)
 	{
-		ClearItems();
-		Root = FetchItems();
+		HierarchyPanel* Panel = new HierarchyPanel(this, GetItem(Target->GetRoot()));
+		Panel->Initialize();
+		Panels.Append(Target->GetId(), Panel);
 
-		Root->Open(true);
+		HierarchyEditContext* Context = new HierarchyEditContext(this, Target->GetId());
+		Edit->RegisterContext(Context->GetId(), Context);
+		Contexts.Append(Target->GetId(), Context);
 
-		Panel->Root = Root;
+		return Panel;
 	}
 
-	void HierarchyManager::Select(NxFr::GUID Id)
+	void HierarchyManager::DestroyPanel(NxEn::World* Target)
 	{
-		Panel->Select(GetItem(Id));
-	}
+		HierarchyEditContext* Context = Contexts[Target->GetId()];
+		Contexts.Remove(Target->GetId());
+		Edit->UnregisterContext(Context->GetId());
+		delete Context;
 
-	void HierarchyManager::Select(NxFr::Handle<NxEn::GameObject> Instance)
-	{
-		Panel->Select(GetItem(Instance));
+		HierarchyPanel* Panel = Panels[Target->GetId()];
+		Panels.Remove(Target->GetId());
+		Panel->Shutdown();
+		delete Panel;
 	}
 
 	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId)
@@ -60,25 +60,39 @@ namespace NxEd
 		}
 	}
 
-	HierarchyItem* HierarchyManager::FetchItems()
+	void HierarchyManager::FetchItems()
 	{
-		NxEn::World* World = Worlds->GetWorld();
-		NxFr::Handle<NxEn::GameObject> Instance = World->GetRoot();
+		NxFr::Array<NxFr::GUID> WorldsIds = Worlds->GetWorlds();
+		for (auto WorldId : WorldsIds)
+		{
+			NxEn::World* World = Worlds->GetWorld(WorldId);
+			NxFr::Handle<NxEn::GameObject> Instances = World->GetRoot();
 
-		AppendItem(Instance);
-		return GetItem(Instance);
+			AppendItem(Instances);
+		}
 	}
 
 	void HierarchyManager::ClearItems()
 	{
+		for (auto [Id, Context] : Contexts)
+		{
+			Edit->Unselect(Context->GetId());
+			delete Context;
+		}
+
+		for (auto [Id, Panel] : Panels)
+		{
+			delete Panel;
+		}
+
 		for (auto [Id, Item] : Items)
 		{
 			delete Item;
 		}
 
+		Contexts.Clear();
+		Panels.Clear();
 		Items.Clear();
-		Panel->Clear();
-		Edit->Unselect(Context.GetId());
 	}
 
 	void HierarchyManager::AppendItem(NxFr::Handle<NxEn::GameObject> Instance)
@@ -86,7 +100,10 @@ namespace NxEd
 		HierarchyItem* Item = new HierarchyItem(this, Instance);
 		Items.Append(Instance->GetId(), Item);
 
-		Panel->OnCreateItem(Item);
+		for (auto [Id, Panel] : Panels)
+		{
+			Panel->OnCreateItem(Item);
+		}
 
 		NxFr::Handle<NxEn::GameObject> Iterator = Instance->GetChild();
 		while (Iterator)
@@ -108,8 +125,16 @@ namespace NxEd
 			Iterator = Next;
 		}
 
-		Edit->Unselect(Instance->GetId(), Context.GetId());
-		Panel->OnDestroyItem(Item);
+		for (auto [Id, Panel] : Panels)
+		{
+			Panel->OnDestroyItem(Item);
+		}
+
+		for (auto [Id, Context] : Contexts)
+		{
+			Edit->Unselect(Instance->GetId(), Context->GetId());
+		}
+
 		Items.Remove(Item->GetItemId());
 		delete Item;
 	}
@@ -133,20 +158,21 @@ namespace NxEd
 		}
 
 		SelectionContextId = SelectionId;
+		NxFr::GUID WorldId = Instance->GetWorldId();
 
-		if (SelectionContextId != Panel->GetId())
+		if (SelectionContextId != Panels[WorldId]->GetId())
 		{
-			Panel->SelectItem(GetItem(Instance->GetId()), State, true, false);
+			Panels[WorldId]->SelectItem(GetItem(Instance->GetId()), State, true, false);
 		}
-		if (SelectionContextId != Context.GetId())
+		if (SelectionContextId != Contexts[WorldId]->GetId())
 		{
 			if (State)
 			{
-				Edit->Select(Instance->GetId(), Context.GetId());
+				Edit->Select(Instance->GetId(), Contexts[WorldId]->GetId());
 			}
 			else
 			{
-				Edit->Unselect(Instance->GetId(), Context.GetId());
+				Edit->Unselect(Instance->GetId(), Contexts[WorldId]->GetId());
 			}
 		}
 

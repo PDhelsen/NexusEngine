@@ -18,14 +18,13 @@ namespace NxEd
 		HierarchyManager();
 		~HierarchyManager();
 
-		void Refresh();
-		void Select(NxFr::GUID Id);
-		void Select(NxFr::Handle<NxEn::GameObject> Instance);
+		HierarchyPanel* CreatePanel(NxEn::World* Target);
+		void DestroyPanel(NxEn::World* Target);
 
 	private:
 		void OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId);
 
-		HierarchyItem* FetchItems();
+		void FetchItems();
 		void ClearItems();
 		void AppendItem(NxFr::Handle<NxEn::GameObject> Instance);
 		void RemoveItem(NxFr::Handle<NxEn::GameObject> Instance);
@@ -37,9 +36,8 @@ namespace NxEd
 		EditSystem* Edit;
 
 		NxFr::Dictionary<NxFr::GUID, HierarchyItem*> Items;
-		HierarchyItem* Root;
-		HierarchyPanel* Panel;
-		HierarchyEditContext Context;
+		NxFr::Dictionary<NxFr::GUID, HierarchyPanel*> Panels;
+		NxFr::Dictionary<NxFr::GUID, HierarchyEditContext*> Contexts;
 
 		NxFr::StringId SelectionContextId;
 	};

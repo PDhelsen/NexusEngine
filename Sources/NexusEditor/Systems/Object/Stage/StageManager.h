@@ -11,10 +11,11 @@ namespace NxEd
 		StageManager();
 		~StageManager();
 
+		void Tick(float TimeStep);
+
 		Stage* CreateStage(NxEn::Object* Target);
-		void ShowStage(NxEn::Object* Target);
 		void DestroyStage(NxEn::Object* Target);
-		void DestroyDisableStage();
+		void ShowStage(NxEn::Object* Target);
 
 		Stage* GetStage(NxEn::Object* Target) const;
 		Stage* GetMainStage() const;
