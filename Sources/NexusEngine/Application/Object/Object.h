@@ -20,6 +20,8 @@ namespace NxEn
 	class NX_ENGINE_API Object
 	{
 	public:
+		inline static const NxFr::GUID NullId = 0;
+
 		Object();
 		virtual ~Object();
 

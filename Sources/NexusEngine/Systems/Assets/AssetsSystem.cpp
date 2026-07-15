@@ -237,7 +237,7 @@ namespace NxEn
 
 	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
 	{
-		NX_ASSERT(Instance->GetId() == 0, System, "Already tracked asset %llu", Instance->GetId());
+		NX_ASSERT(Instance->GetId() == Object::NullId, System, "Already tracked asset %llu", Instance->GetId());
 		
 		AssetMetadata& Metadata = Registry->Append(Instance->GetObjectType(), Path, Extension);
 		AssetHandle& Handle = Manager->Append(Metadata.GetId(), Instance);
