@@ -26,6 +26,7 @@ namespace NxEn
 		void Tick(float TimeStep = 0.0f) override;
 		void Draw() override;
 
+		void Clone(const Object* Other) override;
 		YAML::Node Serialize() const override;
 		void Deserialize(const YAML::Node& Node) override;
 		void Unload() override;

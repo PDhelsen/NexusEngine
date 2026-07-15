@@ -103,10 +103,9 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> WorldManager::DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> WorldManager::DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent)
 	{
 		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
-		Instance->Clone((const GameObject*)Original.GetRedirectedPointer());
 
 		for (auto& B : Original->Behaviours)
 		{
@@ -236,12 +235,9 @@ namespace NxEn
 		return CreateBehaviour(Type, Target, Id);
 	}
 
-	NxFr::Handle<Behaviour> WorldManager::DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target)
+	NxFr::Handle<Behaviour> WorldManager::DuplicateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
 	{
-		NxFr::Handle<Behaviour> Instance = CreateBehaviour(Original->GetObjectType(), Target);
-		Instance->Clone((const Behaviour*)Original.GetRedirectedPointer());
-
-		return Instance;
+		return CreateBehaviour(Original->GetObjectType(), Target);
 	}
 
 	void WorldManager::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
@@ -279,12 +275,9 @@ namespace NxEn
 		return CreateComponent(Type, Target, Id);
 	}
 
-	NxFr::Handle<Component> WorldManager::DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target)
+	NxFr::Handle<Component> WorldManager::DuplicateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)
 	{
-		NxFr::Handle<Component> Instance = CreateComponent(Original->GetObjectType(), Target);
-		Instance->Clone((const Component*)Original.GetRedirectedPointer());
-
-		return Instance;
+		return CreateComponent(Original->GetObjectType(), Target);
 	}
 
 	void WorldManager::DestroyComponent(NxFr::Handle<Component> Instance)

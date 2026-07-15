@@ -207,6 +207,32 @@ namespace NxEn
 		}
 	}
 
+	void GameObject::Clone(const Object* Other)
+	{
+		const GameObject& Instance = static_cast<const GameObject&>(*Other);
+
+		OnClone(Instance);
+
+		for (uint64 Index = 0; Index < Behaviours.GetCount(); ++Index)
+		{
+			Behaviours[Index]->Clone(Instance.Behaviours[Index].GetRedirectedPointer());
+		}
+
+		for (uint64 Index = 0; Index < Components.GetCount(); ++Index)
+		{
+			Components[Index]->Clone(Instance.Components[Index].GetRedirectedPointer());
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		NxFr::Handle<const GameObject> IteratorInstance = Instance.GetChild();
+		while (Iterator)
+		{
+			Iterator->Clone(IteratorInstance.GetRedirectedPointer());
+			Iterator = Iterator->GetNext();
+			IteratorInstance = IteratorInstance->GetNext();
+		}
+	}
+
 	YAML::Node GameObject::Serialize() const
 	{
 		YAML::Node Node;

@@ -171,7 +171,7 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
+	NxFr::Handle<GameObject> WorldSystem::DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
 		if (Parent)
 		{
@@ -198,6 +198,7 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent);
+		Instance->Clone(Original.GetRedirectedPointer());
 		Instance->Initialize();
 		Instance->UpdateHierarchy();
 
@@ -268,7 +269,7 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<Behaviour> WorldSystem::DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target)
+	NxFr::Handle<Behaviour> WorldSystem::DuplicateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
 
@@ -280,6 +281,7 @@ namespace NxEn
 		}
 
 		NxFr::Handle<Behaviour> Instance = Manager->DuplicateBehaviour(Original, Target);
+		Instance->Clone(Original.GetRedirectedPointer());
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
@@ -324,7 +326,7 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<Component> WorldSystem::DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target)
+	NxFr::Handle<Component> WorldSystem::DuplicateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
 
@@ -336,6 +338,7 @@ namespace NxEn
 		}
 
 		NxFr::Handle<Component> Instance = Manager->DuplicateComponent(Original, Target);
+		Instance->Clone(Original.GetRedirectedPointer());
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
