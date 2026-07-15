@@ -24,19 +24,20 @@ namespace NxEn
 		World* GetWorld();
 		void SetWorldRoot(NxFr::Handle<GameObject> Instance);
 
-		NxFr::Handle<GameObject> CreateHierarchy(YAML::Node Node, NxFr::Handle<GameObject> Parent);
-
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0);
+		NxFr::Handle<GameObject> CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
 		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId = 0);
+		NxFr::Handle<Behaviour> CreateBehaviour(YAML::Node Node, NxFr::Handle<GameObject> Target);
 		NxFr::Handle<Behaviour> DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target);
 		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
 
 		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID ComponentId = 0);
+		NxFr::Handle<Component> CreateComponent(YAML::Node Node, NxFr::Handle<GameObject> Target);
 		NxFr::Handle<Component> DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 

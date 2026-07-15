@@ -209,22 +209,22 @@ namespace NxEn
 
 	YAML::Node GameObject::Serialize() const
 	{
-		YAML::Node NodeGameObject;
-		OnSerialize(NodeGameObject);
+		YAML::Node Node;
+		OnSerialize(Node);
 
 		YAML::Node NodeBehaviours;
 		for (auto& B : Behaviours)
 		{
 			NodeBehaviours.push_back(B->Serialize());
 		}
-		NodeGameObject["Behaviours"] = NodeBehaviours;
+		Node["Behaviours"] = NodeBehaviours;
 
 		YAML::Node NodeComponents;
 		for (auto& C : Components)
 		{
 			NodeComponents.push_back(C->Serialize());
 		}
-		NodeGameObject["Components"] = NodeComponents;
+		Node["Components"] = NodeComponents;
 
 		YAML::Node NodeChildren;
 		NxFr::Handle<GameObject> Iterator = GetChild();
@@ -233,9 +233,6 @@ namespace NxEn
 			NodeChildren.push_back(Iterator->Serialize());
 			Iterator = Iterator->GetNext();
 		}
-
-		YAML::Node Node;
-		Node["GameObject"] = NodeGameObject;
 		Node["Children"] = NodeChildren;
 
 		return Node;
@@ -243,16 +240,15 @@ namespace NxEn
 
 	void GameObject::Deserialize(const YAML::Node& Node)
 	{
-		YAML::Node NodeGameObject = Node["GameObject"];
-		OnDeserialize(NodeGameObject);
+		OnDeserialize(Node);
 
-		YAML::Node NodeBehaviours = NodeGameObject["Behaviours"];
+		YAML::Node NodeBehaviours = Node["Behaviours"];
 		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
 		{
 			Behaviours[Index]->Deserialize(NodeBehaviours[Index]);
 		}
 
-		YAML::Node NodeComponents = NodeGameObject["Components"];
+		YAML::Node NodeComponents = Node["Components"];
 		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
 		{
 			Components[Index]->Deserialize(NodeComponents[Index]);

@@ -56,40 +56,6 @@ namespace NxEn
 		}
 	}
 
-	NxFr::Handle<GameObject> WorldManager::CreateHierarchy(YAML::Node Node, NxFr::Handle<GameObject> Parent)
-	{
-		YAML::Node NodeGameObject = Node["GameObject"];
-		NxFr::GUID GameObjectId = NodeGameObject["Id"].as<NxFr::GUID>();
-		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent, GameObjectId);
-
-		YAML::Node NodeBehaviours = NodeGameObject["Behaviours"];
-		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
-		{
-			YAML::Node NodeBehaviour = NodeBehaviours[Index];
-			NxFr::StringId BehaviourType = NodeBehaviour["Type"].as<NxFr::StringId>();
-			NxFr::GUID BehaviourId = NodeBehaviour["Id"].as<NxFr::GUID>();
-
-			CreateBehaviour(BehaviourType, Instance, BehaviourId);
-		}
-
-		YAML::Node NodeComponents = NodeGameObject["Components"];
-		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
-		{
-			YAML::Node NodeComponent = NodeComponents[Index];
-			NxFr::StringId ComponentType = NodeComponent["Type"].as<NxFr::StringId>();
-			NxFr::GUID ComponentId = NodeComponent["Id"].as<NxFr::GUID>();
-			CreateComponent(ComponentType, Instance, ComponentId);
-		}
-
-		YAML::Node NodeChildren = Node["Children"];
-		for (uint64 Index = 0; Index < NodeChildren.size(); ++Index)
-		{
-			CreateHierarchy(NodeChildren[Index], Instance);
-		}
-
-		return Instance;
-	}
-
 	NxFr::Handle<GameObject> WorldManager::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
 	{
 		if (GameObjectId == 0)
@@ -107,6 +73,31 @@ namespace NxEn
 		if (Parent)
 		{
 			AttachGameObject(Instance, Parent, Parent->GetChildCount());
+		}
+
+		return Instance;
+	}
+
+	NxFr::Handle<GameObject> WorldManager::CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent)
+	{
+		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent, Node["Id"].as<NxFr::GUID>());
+
+		YAML::Node NodeBehaviours = Node["Behaviours"];
+		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
+		{
+			CreateBehaviour(NodeBehaviours[Index], Instance);
+		}
+
+		YAML::Node NodeComponents = Node["Components"];
+		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
+		{
+			CreateComponent(NodeComponents[Index], Instance);
+		}
+
+		YAML::Node NodeChildren = Node["Children"];
+		for (uint64 Index = 0; Index < NodeChildren.size(); ++Index)
+		{
+			CreateGameObject(NodeChildren[Index], Instance);
 		}
 
 		return Instance;
@@ -237,6 +228,14 @@ namespace NxEn
 		return Instance;
 	}
 
+	NxFr::Handle<Behaviour> WorldManager::CreateBehaviour(YAML::Node Node, NxFr::Handle<GameObject> Target)
+	{
+		NxFr::StringId Type = Node["Type"].as<NxFr::StringId>();
+		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
+
+		return CreateBehaviour(Type, Target, Id);
+	}
+
 	NxFr::Handle<Behaviour> WorldManager::DuplicateBehaviour(NxFr::Handle<Behaviour> Original, NxFr::Handle<GameObject> Target)
 	{
 		NxFr::Handle<Behaviour> Instance = CreateBehaviour(Original->GetObjectType(), Target);
@@ -270,6 +269,14 @@ namespace NxEn
 		Target->Components.Append(Instance);
 
 		return Instance;
+	}
+
+	NxFr::Handle<Component> WorldManager::CreateComponent(YAML::Node Node, NxFr::Handle<GameObject> Target)
+	{
+		NxFr::StringId Type = Node["Type"].as<NxFr::StringId>();
+		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
+
+		return CreateComponent(Type, Target, Id);
 	}
 
 	NxFr::Handle<Component> WorldManager::DuplicateComponent(NxFr::Handle<Component> Original, NxFr::Handle<GameObject> Target)
