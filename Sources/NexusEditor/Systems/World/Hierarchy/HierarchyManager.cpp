@@ -49,7 +49,12 @@ namespace NxEd
 
 	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId)
 	{
-		NxFr::Handle<NxEn::GameObject> GameObject = Worlds->GetObject(GameObjectId, WorldId);
+		NxFr::Handle<NxEn::Object> GameObject = Worlds->GetObject(GameObjectId, WorldId);
+		if (GameObject->GetObjectType() != NxEn::GameObject::GetClassType())
+		{
+			return;
+		}
+
 		if (EventId == NxEn::WorldSystem::EventCreatedId)
 		{
 			AppendItem(GameObject);
