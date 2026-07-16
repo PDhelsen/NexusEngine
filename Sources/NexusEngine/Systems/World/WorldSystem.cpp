@@ -9,32 +9,38 @@ namespace NxEn
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
 		World->CreateWorld(Name);
 	}));
-	static Command* CmdWorldWorldDestroy = Command::Create("World.World.Destroy"_Sid, "Destroy World", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	static Command* CmdWorldWorldDestroy = Command::Create("World.World.Destroy"_Sid, "Destroy World", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView WorldId)
 	{
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
-		World->DestroyWorld(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+		World->DestroyWorld(NxFr::StringUtility::FromString<NxFr::GUID>(WorldId));
 	}));
 	static Command* CmdWorldGameObjectCreate = Command::Create("World.GameObject.Create"_Sid, "Create GameObject", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Name, NxFr::StringView WorldId)
 	{
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
 		World->CreateGameObject(Name, NxFr::Handle<GameObject>(), NxFr::StringId(WorldId));
 	}));
-	static Command* CmdWorldGameObjectDuplicate = Command::Create("World.GameObject.Duplicate"_Sid, "Duplicate GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	static Command* CmdWorldGameObjectInstantiate = Command::Create("World.GameObject.Instantiate"_Sid, "Instantiate GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView GameObjectId)
 	{
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
-		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId));
+		World->InstantiateGameObject(Instance);
+	}));
+	static Command* CmdWorldGameObjectDuplicate = Command::Create("World.GameObject.Duplicate"_Sid, "Duplicate GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView GameObjectId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId));
 		World->DuplicateGameObject(Instance);
 	}));
-	static Command* CmdWorldGameObjectDestroy = Command::Create("World.GameObject.Destroy"_Sid, "Destroy GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	static Command* CmdWorldGameObjectDestroy = Command::Create("World.GameObject.Destroy"_Sid, "Destroy GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView GameObjectId)
 	{
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
-		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId));
 		World->DestroyGameObject(Instance);
 	}));
-	static Command* CmdWorldGameObjectAttach = Command::Create("World.GameObject.Attach"_Sid, "Attach GameObject", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView InstanceId, NxFr::StringView ParentId, NxFr::StringView Index)
+	static Command* CmdWorldGameObjectAttach = Command::Create("World.GameObject.Attach"_Sid, "Attach GameObject", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView, NxFr::StringView)>([](NxFr::StringView GameObjectId, NxFr::StringView ParentId, NxFr::StringView Index)
 	{
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
-		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(InstanceId));
+		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId));
 		NxFr::Handle<GameObject> Parent = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(ParentId));
 		World->AttachGameObject(Instance, Parent, NxFr::StringUtility::FromString<uint64>(Index));
 	}));
@@ -43,6 +49,20 @@ namespace NxEn
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
 		NxFr::Handle<GameObject> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
 		World->CreateBehaviour(Type, Target);
+	}));
+	static Command* CmdWorldBehaviourInstantiate = Command::Create("World.Behaviour.Instantiate"_Sid, "Instantiate Behaviour", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView BehaviourId, NxFr::StringView TargetId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<Behaviour> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(BehaviourId));
+		NxFr::Handle<Behaviour> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
+		World->InstantiateBehaviour(Instance, Target);
+	}));
+	static Command* CmdWorldBehaviourDuplicate = Command::Create("World.Behaviour.Duplicate"_Sid, "Duplicate Behaviour", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView BehaviourId, NxFr::StringView TargetId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<Behaviour> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(BehaviourId));
+		NxFr::Handle<Behaviour> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
+		World->DuplicateBehaviour(Instance, Target);
 	}));
 	static Command* CmdWorldBehaviourDestroy = Command::Create("World.Behaviour.Destroy"_Sid, "Destroy Behaviour", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView BehaviourId)
 	{
@@ -55,6 +75,20 @@ namespace NxEn
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
 		NxFr::Handle<GameObject> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
 		World->CreateComponent(Type, Target);
+	}));
+	static Command* CmdWorldComponentInstantiate = Command::Create("World.Component.Instantiate"_Sid, "Instantiate Component", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView ComponentId, NxFr::StringView TargetId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<Component> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(ComponentId));
+		NxFr::Handle<Component> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
+		World->InstantiateComponent(Instance, Target);
+	}));
+	static Command* CmdWorldComponentDuplicate = Command::Create("World.Component.Duplicate"_Sid, "Duplicate Component", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView ComponentId, NxFr::StringView TargetId)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<Component> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(ComponentId));
+		NxFr::Handle<Component> Target = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(TargetId));
+		World->DuplicateComponent(Instance, Target);
 	}));
 	static Command* CmdWorldComponentDestroy = Command::Create("World.Component.Destroy"_Sid, "Destroy Component", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView ComponentId)
 	{
@@ -74,13 +108,14 @@ namespace NxEn
 
 	World* WorldSystem::CreateWorld(NxFr::StringId Name)
 	{
-		if (GetManager(Name))
+		WorldManager* Manager = GetManager(Name);
+		if (Manager)
 		{
 			NX_LOG(Warning, System, "World %llu already exist", Name.GetId());
-			return GetWorld(Name);
+			return Manager->GetWorld();
 		}
 
-		WorldManager* Manager = new WorldManager();
+		Manager = new WorldManager();
 		Managers.Append(Name.GetId(), Manager);
 
 		World* World = Manager->CreateWorld(Name);
@@ -165,6 +200,39 @@ namespace NxEn
 		NxFr::Handle<GameObject> Instance = Manager->CreateGameObject(Name, Parent);
 		Instance->Initialize();
 		Instance->SetEnabled(true);
+
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetWorldId(), Instance->GetId());
+
+		return Instance;
+	}
+
+	NxFr::Handle<GameObject> WorldSystem::InstantiateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
+	{
+		if (Parent)
+		{
+			WorldId = Parent->GetWorldId();
+		}
+
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return NxFr::Handle<GameObject>();
+		}
+
+		NX_ASSERT(Original, Default, "Original should be valid");
+		NX_ASSERT(Original != Manager->GetWorld()->GetRoot(), Default, "Can't duplicate root object");
+
+		if (!Parent)
+		{
+			Parent = Manager->GetWorld()->GetRoot();
+		}
+
+		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
+		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent);
+		Instance->Clone(Original.GetRedirectedPointer());
+		Instance->Initialize();
+		Instance->UpdateHierarchy();
 
 		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetWorldId(), Instance->GetId());
 
@@ -269,9 +337,33 @@ namespace NxEn
 		return Instance;
 	}
 
+	NxFr::Handle<Behaviour> WorldSystem::InstantiateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
+	{
+		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Original, Default, "Original should be valid");
+
+		WorldManager* Manager = GetManager(Target->GetWorldId());
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", Target->GetWorldId());
+			return NxFr::Handle<Behaviour>();
+		}
+
+		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
+		NxFr::Handle<Behaviour> Instance = Manager->DuplicateBehaviour(Original, Target);
+		Instance->Clone(Original.GetRedirectedPointer());
+		Instance->Initialize();
+		Instance->UpdateHierarchy();
+
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
+
+		return Instance;
+	}
+
 	NxFr::Handle<Behaviour> WorldSystem::DuplicateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Original, Default, "Original should be valid");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -283,7 +375,7 @@ namespace NxEn
 		NxFr::Handle<Behaviour> Instance = Manager->DuplicateBehaviour(Original, Target);
 		Instance->Clone(Original.GetRedirectedPointer());
 		Instance->Initialize();
-		Instance->SetEnabled(true);
+		Instance->UpdateHierarchy();
 
 		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
 
@@ -326,9 +418,33 @@ namespace NxEn
 		return Instance;
 	}
 
+	NxFr::Handle<Component> WorldSystem::InstantiateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)
+	{
+		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Original, Default, "Original should be valid");
+
+		WorldManager* Manager = GetManager(Target->GetWorldId());
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", Target->GetWorldId());
+			return NxFr::Handle<Component>();
+		}
+
+		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
+		NxFr::Handle<Component> Instance = Manager->DuplicateComponent(Original, Target);
+		Instance->Clone(Original.GetRedirectedPointer());
+		Instance->Initialize();
+		Instance->UpdateHierarchy();
+
+		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
+
+		return Instance;
+	}
+
 	NxFr::Handle<Component> WorldSystem::DuplicateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Original, Default, "Original should be valid");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -340,7 +456,7 @@ namespace NxEn
 		NxFr::Handle<Component> Instance = Manager->DuplicateComponent(Original, Target);
 		Instance->Clone(Original.GetRedirectedPointer());
 		Instance->Initialize();
-		Instance->SetEnabled(true);
+		Instance->UpdateHierarchy();
 
 		OnWorldObjectChange.Invoke(EventCreatedId, Instance->GetGameObject()->GetWorldId(), Instance->GetId());
 

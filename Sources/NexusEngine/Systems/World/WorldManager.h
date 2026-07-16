@@ -19,6 +19,10 @@ namespace NxEn
 		void Tick(float TimeStep);
 		void Reserve(NxFr::StringId Type, uint64 Size);
 
+		void RecordIds(NxFr::GUID OrignalId, NxFr::GUID InstanceId);
+		NxFr::GUID ResolveId(NxFr::GUID InstanceId);
+		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>& GetIdsRemap();
+
 		World* CreateWorld(NxFr::StringId Name);
 		void DestroyWorld();
 		World* GetWorld();
@@ -59,6 +63,7 @@ namespace NxEn
 
 		NxFr::Dictionary<NxFr::StringId, WorldStorage*> Storages;
 		NxFr::Dictionary<NxFr::GUID, WorldObject> Objects;
+		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>> Remap;
 		HandleManager Handles;
 		World* WorldInstance;
 	};

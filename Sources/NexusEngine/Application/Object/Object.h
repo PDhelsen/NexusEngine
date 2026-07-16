@@ -59,7 +59,6 @@ namespace NxEn
 		virtual void Load(NxFr::StringView Path);
 		virtual void Unload();
 
-		virtual void PatchReferences();
 		virtual NxFr::Array<NxFr::GUID> GetDependencies() const;
 
 	protected:
@@ -76,7 +75,6 @@ namespace NxEn
 		virtual void OnSave(NxFr::StringView Path) const;
 		virtual void OnLoad(NxFr::StringView Path);
 		virtual void OnUnload();
-		virtual void OnPatchReferences();
 		virtual void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const;
 
 		NX_FORCE_INLINE bool GetFlag(ObjectFlags Flag) const;

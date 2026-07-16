@@ -160,11 +160,6 @@ namespace NxEn
 		OnUnload();
 	}
 
-	void Object::PatchReferences()
-	{
-		OnPatchReferences();
-	}
-
 	NxFr::Array<NxFr::GUID> Object::GetDependencies() const
 	{
 		NxFr::Set<NxFr::GUID> Ids;
@@ -247,11 +242,6 @@ namespace NxEn
 	}
 
 	void Object::OnUnload()
-	{
-
-	}
-
-	void Object::OnPatchReferences()
 	{
 
 	}

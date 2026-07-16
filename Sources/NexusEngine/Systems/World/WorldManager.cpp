@@ -30,6 +30,32 @@ namespace NxEn
 		ResizeStorage(Storage, Size);
 	}
 
+	void WorldManager::RecordIds(NxFr::GUID OrignalId, NxFr::GUID InstanceId)
+	{
+		NxFr::Dictionary<NxFr::GUID, NxFr::GUID>* Ids = Remap.TryGet();
+		if (Ids)
+		{
+			Ids->Append(OrignalId, InstanceId);
+		}
+	}
+
+	NxFr::GUID WorldManager::ResolveId(NxFr::GUID InstanceId)
+	{
+		NxFr::Dictionary<NxFr::GUID, NxFr::GUID>* Ids = Remap.TryGet();
+		if (Ids)
+		{
+			NxFr::GUID* ResolvedId = Ids->TryGet(InstanceId);
+			InstanceId = ResolvedId ? *ResolvedId : InstanceId;
+		}
+
+		return InstanceId;
+	}
+
+	NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>& WorldManager::GetIdsRemap()
+	{
+		return Remap;
+	}
+
 	World* WorldManager::CreateWorld(NxFr::StringId Name)
 	{
 		WorldInstance = new World();
@@ -106,6 +132,7 @@ namespace NxEn
 	NxFr::Handle<GameObject> WorldManager::DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent)
 	{
 		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
+		RecordIds(Original->GetId(), Instance->GetId());
 
 		for (auto& B : Original->Behaviours)
 		{
@@ -237,7 +264,10 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> WorldManager::DuplicateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
 	{
-		return CreateBehaviour(Original->GetObjectType(), Target);
+		NxFr::Handle<Behaviour> Instance = CreateBehaviour(Original->GetObjectType(), Target);
+		RecordIds(Original->GetId(), Instance->GetId());
+
+		return Instance;
 	}
 
 	void WorldManager::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
@@ -277,7 +307,10 @@ namespace NxEn
 
 	NxFr::Handle<Component> WorldManager::DuplicateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)
 	{
-		return CreateComponent(Original->GetObjectType(), Target);
+		NxFr::Handle<Component> Instance = CreateComponent(Original->GetObjectType(), Target);
+		RecordIds(Original->GetId(), Instance->GetId());
+
+		return Instance;
 	}
 
 	void WorldManager::DestroyComponent(NxFr::Handle<Component> Instance)
@@ -315,6 +348,7 @@ namespace NxEn
 
 	NxFr::Handle<Object> WorldManager::GetObject(NxFr::GUID ObjectId)
 	{
+		ObjectId = ResolveId(ObjectId);
 		const WorldObject* Info = Objects.TryGet(ObjectId);
 		return Info ? Info->Handle : NxFr::Handle<Object>();
 	}
