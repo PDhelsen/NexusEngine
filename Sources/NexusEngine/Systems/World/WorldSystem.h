@@ -8,6 +8,7 @@
 #include "NexusEngine/Systems/World/GameObject.h"
 #include "NexusEngine/Systems/World/Behaviour.h"
 #include "NexusEngine/Systems/World/Component.h"
+#include "NexusEngine/Systems/World/Prefab.h"
 
 namespace NxEn
 {
@@ -17,6 +18,7 @@ namespace NxEn
 		NX_OBJECT(WorldSystem)
 
 		inline static const NxFr::StringId MainWorldId = "Main World"_Sid;
+		inline static const NxFr::StringId PrefabWorldId = "Prefab World"_Sid;
 
 		inline static const NxFr::StringId EventCreatedId = "Created"_Sid;
 		inline static const NxFr::StringId EventDestroyedId = "Destroyed"_Sid;
@@ -29,6 +31,12 @@ namespace NxEn
 		void DestroyWorld(NxFr::GUID WorldId);
 		World* GetWorld(NxFr::GUID WorldId = MainWorldId);
 		NxFr::Array<NxFr::GUID> GetWorlds();
+
+		NxFr::Handle<GameObject> PackPrefab(NxFr::Handle<GameObject> Original);
+		void UnpackPrefab(NxFr::Handle<GameObject> Original);
+		YAML::Node SerializePrefab(NxFr::Handle<GameObject> Instance);
+		NxFr::Handle<GameObject> DeserializePrefab(YAML::Node Node);
+		void UnloadPrefab(NxFr::Handle<GameObject> Instance);
 
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);
 		NxFr::Handle<GameObject> InstantiateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);

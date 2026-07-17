@@ -14,6 +14,22 @@ namespace NxEn
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
 		World->DestroyWorld(NxFr::StringUtility::FromString<NxFr::GUID>(WorldId));
 	}));
+	static Command* CmdWorldPrefabPack = Command::Create("World.Prefab.Pack"_Sid, "Create Prefab", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView GameObjectId, NxFr::StringView Path)
+	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+
+		NxFr::GUID Id = Assets->PathToId(Path);
+		Prefab* PrefabInstance = Id == Object::NullId ? Assets->Create<Prefab>(Path, Prefab::Extension) : Assets->Load<Prefab>(Id);
+		NxFr::Handle<GameObject> GameObjectInstance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId));
+		PrefabInstance->SetRoot(GameObjectInstance);
+	}));
+	static Command* CmdWorldPrefabUnpack = Command::Create("World.Prefab.Unpack"_Sid, "Create Prefab", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView GameObjectId, NxFr::StringView Path)
+	{
+		WorldSystem* World = Application::GetSystem<WorldSystem>();
+		NxFr::Handle<GameObject> GameObjectInstance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId));
+		World->UnpackPrefab(GameObjectInstance);
+	}));
 	static Command* CmdWorldGameObjectCreate = Command::Create("World.GameObject.Create"_Sid, "Create GameObject", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Name, NxFr::StringView WorldId)
 	{
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
@@ -21,9 +37,20 @@ namespace NxEn
 	}));
 	static Command* CmdWorldGameObjectInstantiate = Command::Create("World.GameObject.Instantiate"_Sid, "Instantiate GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView GameObjectId)
 	{
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
 		WorldSystem* World = Application::GetSystem<WorldSystem>();
-		NxFr::Handle<GameObject> Instance = World->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId));
-		World->InstantiateGameObject(Instance);
+
+		NxFr::GUID Id = NxFr::StringUtility::FromString<NxFr::GUID>(GameObjectId);
+		if (Assets->IsTracked(Id))
+		{
+			Prefab* PrefabInstance = Assets->Load<Prefab>(Id);
+			World->InstantiateGameObject(PrefabInstance->GetRoot());
+		}
+		else
+		{
+			NxFr::Handle<GameObject> GameObjectInstance = World->GetObject(Id);
+			World->InstantiateGameObject(GameObjectInstance);
+		}
 	}));
 	static Command* CmdWorldGameObjectDuplicate = Command::Create("World.GameObject.Duplicate"_Sid, "Duplicate GameObject", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView GameObjectId)
 	{
@@ -124,9 +151,13 @@ namespace NxEn
 
 		OnWorldChange.Invoke(EventCreatedId, Name);
 
-		NxFr::Handle<GameObject> Root = CreateGameObject(Name, NxFr::Handle<GameObject>(), Name);
-		Manager->SetWorldRoot(Root);
+		NxFr::Handle<GameObject> Root = Manager->CreateGameObject(Name);
+		Root->Initialize();
+		Root->SetEnabled(true);
 
+		OnWorldObjectChange.Invoke(EventCreatedId, Root->GetWorldId(), Root->GetId());
+
+		Manager->SetWorldRoot(Root);
 		return World;
 	}
 
@@ -140,8 +171,12 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Root = Manager->GetWorld()->GetRoot();
-		Manager->SetWorldRoot(NxFr::Handle<GameObject>());
-		DestroyGameObject(Root);
+
+		OnWorldObjectChange.Invoke(EventDestroyedId, Root->GetWorldId(), Root->GetId());
+
+		Root->SetEnabled(false);
+		Root->Shutdown();
+		Manager->DestroyGameObject(Root);
 
 		OnWorldChange.Invoke(EventDestroyedId, WorldId);
 
@@ -178,12 +213,65 @@ namespace NxEn
 		return Result;
 	}
 
+	NxFr::Handle<GameObject> WorldSystem::PackPrefab(NxFr::Handle<GameObject> Original)
+	{
+		NX_ASSERT(Original, Default, "Original should be valid");
+		NX_ASSERT(!Belong(Original, PrefabWorldId), Default, "Original should not be a prefab");
+
+		WorldManager* Manager = GetManager(PrefabWorldId);
+		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
+
+		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
+		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent);
+		Instance->Clone(Original.GetRedirectedPointer());
+
+		return Instance;
+	}
+
+	void WorldSystem::UnpackPrefab(NxFr::Handle<GameObject> Original)
+	{
+		NX_ASSERT(Original, Default, "Original should be valid");
+		NX_ASSERT(!Belong(Original, PrefabWorldId), Default, "Original should not be a prefab");
+	}
+
+	YAML::Node WorldSystem::SerializePrefab(NxFr::Handle<GameObject> Instance)
+	{
+		NX_ASSERT(Instance, Default, "Instance should be valid");
+		NX_ASSERT(Belong(Instance, PrefabWorldId), Default, "Instance should be a prefab");
+
+		return Instance->Serialize();
+	}
+
+	NxFr::Handle<GameObject> WorldSystem::DeserializePrefab(YAML::Node Node)
+	{
+		WorldManager* Manager = GetManager(PrefabWorldId);
+		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
+
+		NxFr::Handle<GameObject> Instance = Manager->CreateGameObject(Node, Parent);
+		Instance->Deserialize(Node);
+
+		return Instance;
+	}
+
+	void WorldSystem::UnloadPrefab(NxFr::Handle<GameObject> Instance)
+	{
+		NX_ASSERT(Instance, Default, "Instance should be valid");
+		NX_ASSERT(Belong(Instance, PrefabWorldId), Default, "Instance should be a prefab");
+
+		WorldManager* Manager = GetManager(PrefabWorldId);
+
+		Instance->Unload();
+		Manager->DestroyGameObject(Instance);
+	}
+
 	NxFr::Handle<GameObject> WorldSystem::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
 		if (Parent)
 		{
 			WorldId = Parent->GetWorldId();
 		}
+
+		NX_ASSERT(WorldId != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
 		if (!Manager)
@@ -212,6 +300,8 @@ namespace NxEn
 		{
 			WorldId = Parent->GetWorldId();
 		}
+
+		NX_ASSERT(WorldId != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
 		if (!Manager)
@@ -245,6 +335,8 @@ namespace NxEn
 		{
 			WorldId = Parent->GetWorldId();
 		}
+
+		NX_ASSERT(WorldId != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
 		if (!Manager)
@@ -282,6 +374,8 @@ namespace NxEn
 			return;
 		}
 
+		NX_ASSERT(Instance->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
+
 		OnWorldObjectChange.Invoke(EventDestroyedId, Instance->GetWorldId(), Instance->GetId());
 
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
@@ -295,6 +389,8 @@ namespace NxEn
 
 	void WorldSystem::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index)
 	{
+		NX_ASSERT(Instance->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
+
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
 
 		NX_ASSERT(Instance, Default, "Instance should be valid");
@@ -320,6 +416,7 @@ namespace NxEn
 	NxFr::Handle<Behaviour> WorldSystem::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Target->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -341,6 +438,7 @@ namespace NxEn
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
 		NX_ASSERT(Original, Default, "Original should be valid");
+		NX_ASSERT(Target->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -364,6 +462,7 @@ namespace NxEn
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
 		NX_ASSERT(Original, Default, "Original should be valid");
+		NX_ASSERT(Target->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -384,6 +483,8 @@ namespace NxEn
 
 	void WorldSystem::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
+		NX_ASSERT(Instance->GetGameObject()->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
+
 		if (!Instance)
 		{
 			return;
@@ -401,6 +502,7 @@ namespace NxEn
 	NxFr::Handle<Component> WorldSystem::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
+		NX_ASSERT(Target->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -422,6 +524,7 @@ namespace NxEn
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
 		NX_ASSERT(Original, Default, "Original should be valid");
+		NX_ASSERT(Target->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -445,6 +548,7 @@ namespace NxEn
 	{
 		NX_ASSERT(Target, Default, "Target should be valid");
 		NX_ASSERT(Original, Default, "Original should be valid");
+		NX_ASSERT(Target->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Target->GetWorldId());
 		if (!Manager)
@@ -465,6 +569,8 @@ namespace NxEn
 
 	void WorldSystem::DestroyComponent(NxFr::Handle<Component> Instance)
 	{
+		NX_ASSERT(Instance->GetGameObject()->GetWorldId() != PrefabWorldId, Default, "Can't be use on the prefab world");
+
 		if (!Instance)
 		{
 			return;
@@ -689,12 +795,16 @@ namespace NxEn
 		System::OnInitialize();
 
 		CreateWorld(MainWorldId);
+		CreateWorld(PrefabWorldId);
+
+		GetWorld(PrefabWorldId)->SetTickable(false);
 	}
 
 	void WorldSystem::OnShutdown()
 	{
 		System::OnShutdown();
 
+		DestroyWorld(PrefabWorldId);
 		DestroyWorld(MainWorldId);
 	}
 
