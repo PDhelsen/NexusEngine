@@ -73,6 +73,7 @@ namespace NxEd
 		NxEn::WindowSystem* Window;
 		NxEn::InputSystem* Inputs;
 		NxEn::AssetsSystem* Assets;
+		NxEn::WorldSystem* Worlds;
 		EditSystem* Edit;
 
 		NxFr::Graph<Node> Nodes;

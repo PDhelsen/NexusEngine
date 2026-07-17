@@ -87,6 +87,7 @@ namespace NxEd
 		Window = NxEn::Application::GetSystem<NxEn::WindowSystem>();
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
 		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
@@ -261,16 +262,49 @@ namespace NxEd
 
 	void ReferencesPanel::FetchNodes(NxFr::GUID Id)
 	{
-		NxFr::Array<NxFr::GUID> Instances = Full ? Assets->Find("*") : NxFr::Array<NxFr::GUID>({ Id });
-		for (auto Instance : Instances)
+		auto GetLabel = [&](NxFr::GUID TargetId)
 		{
-			AddNode(Instance, Assets->IdToPath(Instance));
+			NxFr::StringView Label;
+			if (Label.IsEmpty())
+			{
+				Label = Assets->IdToPath(TargetId);
+			}
+			if (Label.IsEmpty())
+			{
+				Label = Worlds->GetObject(TargetId)->GetName();
+			}
+			return Label;
+		};
+		auto GetDependencies = [&](NxFr::GUID TargetId)
+		{
+			NxFr::Array<NxFr::GUID> Dependencies;
+			if (Assets->IsTracked(TargetId))
+			{
+				Dependencies = Assets->GetDependencies(TargetId, false);
+			}
+			if (Worlds->GetObject(TargetId))
+			{
+				Dependencies = Worlds->GetDependencies(TargetId, false);
+			}
+			return Dependencies;
+		};
 
-			NxFr::Array<NxFr::GUID> Dependencies = Assets->GetDependencies(Instance, false);
+		NxFr::Set<NxFr::GUID> Ids = { Id };
+		if (Full)
+		{
+			Ids.TryAppendRange(Assets->Find("*"));
+			Ids.TryAppendRange(Worlds->Find("*"));
+		}
+
+		for (auto Id : Ids)
+		{
+			AddNode(Id, GetLabel(Id));
+
+			NxFr::Array<NxFr::GUID> Dependencies = GetDependencies(Id);
 			for (auto& Dependency : Dependencies)
 			{
-				AddNode(Dependency, Assets->IdToPath(Dependency));
-				ConnectNode(Instance, Dependency);
+				AddNode(Dependency, GetLabel(Dependency));
+				ConnectNode(Id, Dependency);
 			}
 		}
 	}

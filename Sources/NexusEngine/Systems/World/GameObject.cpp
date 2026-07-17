@@ -312,20 +312,73 @@ namespace NxEn
 		}
 	}
 
+	void GameObject::GetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
+	{
+		OnGetDependencies(Ids);
+
+		for (auto& B : Behaviours)
+		{
+			B->GetDependencies(Ids);
+		}
+
+		for (auto& C : Components)
+		{
+			C->GetDependencies(Ids);
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->GetDependencies(Ids);
+			Iterator = Iterator->GetNext();
+		}
+
+		Ids.TryRemoveRange(GetIds());
+	}
+
 	NxFr::GUID GameObject::GetId() const
 	{
 		return GetGameObjectId();
-	};
+	}
 
 	NxFr::GUID GameObject::GetWorldId() const
 	{
 		return WorldId;
-	};
+	}
 
 	NxFr::GUID GameObject::GetGameObjectId() const
 	{
 		return GameObjectId;
-	};
+	}
+
+	NxFr::Array<NxFr::GUID> GameObject::GetIds() const
+	{
+		NxFr::Set<NxFr::GUID> Ids;
+		GetIds(Ids);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Ids);
+	}
+
+	void GameObject::GetIds(NxFr::Set<NxFr::GUID>& Ids) const
+	{
+		Ids.TryAppend(GetId());
+
+		for (auto& B : Behaviours)
+		{
+			Ids.TryAppend(B->GetId());
+		}
+
+		for (auto& C : Components)
+		{
+			Ids.TryAppend(C->GetId());
+		}
+
+		NxFr::Handle<GameObject> Iterator = GetChild();
+		while (Iterator)
+		{
+			Iterator->GetIds(Ids);
+			Iterator = Iterator->GetNext();
+		}
+	}
 
 	NxFr::StringView GameObject::GetName() const
 	{
@@ -694,6 +747,10 @@ namespace NxEn
 	}
 
 	void GameObject::OnUnload()
+	{
+	}
+
+	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
 	}
 }

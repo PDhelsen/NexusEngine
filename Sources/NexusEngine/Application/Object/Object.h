@@ -60,6 +60,7 @@ namespace NxEn
 		virtual void Unload();
 
 		virtual NxFr::Array<NxFr::GUID> GetDependencies() const;
+		virtual void GetDependencies(NxFr::Set<NxFr::GUID>& Ids) const;
 
 	protected:
 		virtual void OnInitialize();

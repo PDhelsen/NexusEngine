@@ -46,10 +46,11 @@ namespace NxEn
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
 		bool Belong(NxFr::Handle<Object> Instance);
+		WorldObjectType GetType(NxFr::Handle<Object> Instance);
 		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId);
 		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject);
-		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject);
-		NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Query);
+		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject);
+		NxFr::Array<NxFr::GUID> FindGameObjects(NxFr::StringView Query);
 
 		Iterator::WorldObject Begin(NxFr::StringId Type);
 		Iterator::WorldObject End(NxFr::StringId Type);

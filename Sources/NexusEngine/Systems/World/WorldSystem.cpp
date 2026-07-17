@@ -481,6 +481,8 @@ namespace NxEn
 
 	bool WorldSystem::Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId)
 	{
+		NX_ASSERT(Instance, Default, "Instance should be valid");
+
 		WorldManager* Manager = GetManager(WorldId);
 		if (!Manager)
 		{
@@ -491,9 +493,41 @@ namespace NxEn
 		return Manager->Belong(Instance);
 	}
 
+	WorldObjectType WorldSystem::GetType(NxFr::Handle<Object> Instance, NxFr::GUID WorldId)
+	{
+		NX_ASSERT(Instance, Default, "Instance should be valid");
+
+		if (WorldId != Object::NullId)
+		{
+			WorldManager* Manager = GetManager(WorldId);
+			if (!Manager)
+			{
+				NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+				return WorldObjectType::None;
+			}
+
+			return Manager->GetType(Instance);
+		}
+		else
+		{
+			WorldObjectType Result = WorldObjectType::None;
+
+			for (auto [Id, Manager] : Managers)
+			{
+				Result = Manager->GetType(Instance);
+				if (Result != WorldObjectType::None)
+				{
+					break;
+				}
+			}
+
+			return Result;
+		}
+	}
+
 	NxFr::Handle<Object> WorldSystem::GetObject(NxFr::GUID ObjectId, NxFr::GUID WorldId)
 	{
-		if (WorldId != 0)
+		if (WorldId != Object::NullId)
 		{
 			WorldManager* Manager = GetManager(WorldId);
 			if (!Manager)
@@ -523,38 +557,107 @@ namespace NxEn
 
 	NxFr::Array<NxFr::Handle<Object>> WorldSystem::GetObjects(WorldObjectType Type, NxFr::GUID WorldId)
 	{
-		WorldManager* Manager = GetManager(WorldId);
-		if (!Manager)
+		if (WorldId != Object::NullId)
 		{
-			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
-			return NxFr::Array<NxFr::Handle<Object>>();
-		}
+			WorldManager* Manager = GetManager(WorldId);
+			if (!Manager)
+			{
+				NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+				return NxFr::Array<NxFr::Handle<Object>>();
+			}
 
-		return Manager->GetObjects(Type);
+			return Manager->GetObjects(Type);
+		}
+		else
+		{
+			NxFr::List<NxFr::Handle<Object>> Result;
+
+			for (auto [Id, Manager] : Managers)
+			{
+				Result.AppendRange(Manager->GetObjects(Type));
+			}
+
+			return NxFr::ContainerUtility::ToArray<NxFr::Handle<Object>>(Result);
+		}
 	}
 
-	NxFr::Array<NxFr::Handle<Object>> WorldSystem::Find(NxFr::StringView Query, WorldObjectType Type, NxFr::GUID WorldId)
+	NxFr::Array<NxFr::GUID> WorldSystem::Find(NxFr::StringView Query, WorldObjectType Type, NxFr::GUID WorldId)
 	{
-		WorldManager* Manager = GetManager(WorldId);
-		if (!Manager)
+		if (WorldId != Object::NullId)
 		{
-			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
-			return NxFr::Array<NxFr::Handle<Object>>();
-		}
+			WorldManager* Manager = GetManager(WorldId);
+			if (!Manager)
+			{
+				NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+				return NxFr::Array<NxFr::GUID>();
+			}
 
-		return Manager->Find(Query, Type);
+			return Manager->Find(Query, Type);
+		}
+		else
+		{
+			NxFr::List<NxFr::GUID> Result;
+
+			for (auto [Id, Manager] : Managers)
+			{
+				Result.AppendRange(Manager->Find(Query, Type));
+			}
+
+			return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
+		}
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> WorldSystem::FindGameObjects(NxFr::StringView Query, NxFr::GUID WorldId)
+	NxFr::Array<NxFr::GUID> WorldSystem::FindGameObjects(NxFr::StringView Query, NxFr::GUID WorldId)
 	{
-		WorldManager* Manager = GetManager(WorldId);
-		if (!Manager)
+		if (WorldId != Object::NullId)
 		{
-			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
-			return NxFr::Array<NxFr::Handle<GameObject>>();
-		}
+			WorldManager* Manager = GetManager(WorldId);
+			if (!Manager)
+			{
+				NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+				return NxFr::Array<NxFr::GUID>();
+			}
 
-		return Manager->FindGameObjects(Query);
+			return Manager->FindGameObjects(Query);
+		}
+		else
+		{
+			NxFr::List<NxFr::GUID> Result;
+
+			for (auto [Id, Manager] : Managers)
+			{
+				Result.AppendRange(Manager->FindGameObjects(Query));
+			}
+
+			return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
+		}
+	}
+
+	NxFr::Array<NxFr::GUID> WorldSystem::GetDependencies(NxFr::GUID Id, bool Recursive)
+	{
+		NxFr::Set<NxFr::GUID> Dependencies;
+		GetDependencies(Id, Recursive, Dependencies);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Dependencies);
+	}
+
+	void WorldSystem::GetDependencies(NxFr::GUID Id, bool Recursive, NxFr::Set<NxFr::GUID>& Result)
+	{
+		NxFr::Handle<Object> Instance = GetObject(Id);
+		NxFr::Array<NxFr::GUID> Dependencies = Instance->GetDependencies();
+
+		for (auto& Dependency : Dependencies)
+		{
+			if (Dependency == 0 || Result.TryGet(Dependency))
+			{
+				continue;
+			}
+
+			Result.Append(Dependency);
+			if (Recursive)
+			{
+				GetDependencies(Dependency, Recursive, Result);
+			}
+		}
 	}
 
 	Iterator::WorldObject WorldSystem::Begin(NxFr::StringId Type, NxFr::GUID WorldId)

@@ -49,10 +49,38 @@ namespace NxEn
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 
 		bool Belong(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = MainWorldId);
-		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId, NxFr::GUID WorldId = 0);
-		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId);
-		NxFr::Array<NxFr::Handle<Object>> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject, NxFr::GUID WorldId = MainWorldId);
-		NxFr::Array<NxFr::Handle<GameObject>> FindGameObjects(NxFr::StringView Query, NxFr::GUID WorldId = MainWorldId);
+		WorldObjectType GetType(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = Object::NullId);
+		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId, NxFr::GUID WorldId = Object::NullId);
+		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::All, NxFr::GUID WorldId = Object::NullId);
+		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::All, NxFr::GUID WorldId = Object::NullId);
+		NxFr::Array<NxFr::GUID> FindGameObjects(NxFr::StringView Query, NxFr::GUID WorldId = Object::NullId);
+		NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recursive = false);
+		void GetDependencies(NxFr::GUID Id, bool Recursive, NxFr::Set<NxFr::GUID>& Result);
+
+		template<typename T>
+		NxFr::Handle<T> Cast(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = Object::NullId)
+		{
+			if (Instance->GetObjectType() == T::GetClassType())
+			{
+				return Instance;
+			}
+
+			WorldObjectType Type = GetType(Instance, WorldId);
+			if (Type == WorldObjectType::GameObject && T::GetClassType() == GameObject::GetClassType())
+			{
+				return Instance;
+			}
+			else if (Type == WorldObjectType::Behaviour && T::GetClassType() == Behaviour::GetClassType())
+			{
+				return Instance;
+			}
+			else if (Type == WorldObjectType::Component && T::GetClassType() == Component::GetClassType())
+			{
+				return Instance;
+			}
+
+			return NxFr::Handle<T>();
+		}
 
 		template<typename T> Iterator::WorldObjectOf<T> Begin(NxFr::GUID WorldId = MainWorldId) { return Begin(T::GetClassType(), WorldId); }
 		Iterator::WorldObject Begin(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);

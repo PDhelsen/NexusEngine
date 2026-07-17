@@ -78,10 +78,10 @@ namespace NxEd
 		}
 
 		NxEn::World* World = static_cast<HierarchyItem*>(Root)->GetTarget()->GetWorld();
-		NxFr::Array<NxFr::Handle<NxEn::GameObject>> GameObjects = Manager->Worlds->FindGameObjects(Filter, World->GetId());
-		for (auto& Instance : GameObjects)
+		NxFr::Array<NxFr::GUID> Ids = Manager->Worlds->FindGameObjects(Filter, World->GetId());
+		for (auto& Id : Ids)
 		{
-			NxEn::TreeItem* Item = Manager->GetItem(Instance);
+			NxEn::TreeItem* Item = Manager->GetItem(Id);
 			ShowItem(Item);
 			Filtered.Append(Item);
 		}

@@ -30,10 +30,13 @@ namespace NxEn
 		YAML::Node Serialize() const override;
 		void Deserialize(const YAML::Node& Node) override;
 		void Unload() override;
+		void GetDependencies(NxFr::Set<NxFr::GUID>& Ids) const override;
 
 		NxFr::GUID GetId() const override;
 		NxFr::GUID GetWorldId() const;
 		NxFr::GUID GetGameObjectId() const;
+		NxFr::Array<NxFr::GUID> GetIds() const;
+		void GetIds(NxFr::Set<NxFr::GUID>& Ids) const;
 		NxFr::StringView GetName() const;
 		void SetName(NxFr::StringView Name);
 		bool IsRoot() const;
@@ -82,6 +85,7 @@ namespace NxEn
 		void OnSerialize(YAML::Node& Node) const override;
 		void OnDeserialize(const YAML::Node& Node) override;
 		void OnUnload() override;
+		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const override;
 
 	private:
 		NxFr::GUID GameObjectId;

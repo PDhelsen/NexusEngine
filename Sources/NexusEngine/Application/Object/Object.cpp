@@ -163,8 +163,13 @@ namespace NxEn
 	NxFr::Array<NxFr::GUID> Object::GetDependencies() const
 	{
 		NxFr::Set<NxFr::GUID> Ids;
-		OnGetDependencies(Ids);
+		GetDependencies(Ids);
 		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Ids);
+	}
+
+	void Object::GetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
+	{
+		OnGetDependencies(Ids);
 	}
 
 	void Object::OnInitialize()

@@ -325,18 +325,22 @@ namespace NxEn
 
 	bool WorldManager::Belong(NxFr::Handle<Object> Instance)
 	{
-		NxFr::GUID Id = Instance->GetId();
-		WorldObject Info = Objects[Id];
+		NxFr::GUID ObjectId = Instance->GetId();
+		const WorldObject* Info = Objects.TryGet(ObjectId);
 
-		if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::GameObject))
+		if (!Info)
+		{
+			return false;
+		}
+		else if (NxFr::Enum::CheckFlag(Info->Type, WorldObjectType::GameObject))
 		{
 			return ((NxFr::Handle<GameObject>)Instance)->GetWorldId() == WorldInstance->GetId();
 		}
-		else if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::Behaviour))
+		else if (NxFr::Enum::CheckFlag(Info->Type, WorldObjectType::Behaviour))
 		{
 			return ((NxFr::Handle<Behaviour>)Instance)->GetGameObject()->GetWorldId() == WorldInstance->GetId();
 		}
-		else if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::Component))
+		else if (NxFr::Enum::CheckFlag(Info->Type, WorldObjectType::Component))
 		{
 			return ((NxFr::Handle<Component>)Instance)->GetGameObject()->GetWorldId() == WorldInstance->GetId();
 		}
@@ -344,6 +348,13 @@ namespace NxEn
 		{
 			return false;
 		}
+	}
+
+	WorldObjectType WorldManager::GetType(NxFr::Handle<Object> Instance)
+	{
+		NxFr::GUID ObjectId = Instance->GetId();
+		const WorldObject* Info = Objects.TryGet(ObjectId);
+		return Info ? Info->Type : WorldObjectType::None;
 	}
 
 	NxFr::Handle<Object> WorldManager::GetObject(NxFr::GUID ObjectId)
@@ -368,25 +379,25 @@ namespace NxEn
 		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Object>>(Result);
 	}
 
-	NxFr::Array<NxFr::Handle<Object>> WorldManager::Find(NxFr::StringView Query, WorldObjectType Type)
+	NxFr::Array<NxFr::GUID> WorldManager::Find(NxFr::StringView Query, WorldObjectType Type)
 	{
-		NxFr::List<NxFr::Handle<Object>> Result;
+		NxFr::List<NxFr::GUID> Result;
 
 		Utils::Filter Filter(Query);
 		for (auto& [Id, Info] : Objects)
 		{
 			if (NxFr::Enum::CheckFlag(Info.Type, Type) && Filter.FilterObject(*Info.Handle.GetRedirectedPointer()))
 			{
-				Result.Append(Info.Handle);
+				Result.Append(Id);
 			}
 		}
 
-		return NxFr::ContainerUtility::ToArray<NxFr::Handle<Object>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
-	NxFr::Array<NxFr::Handle<GameObject>> WorldManager::FindGameObjects(NxFr::StringView Query)
+	NxFr::Array<NxFr::GUID> WorldManager::FindGameObjects(NxFr::StringView Query)
 	{
-		NxFr::List<NxFr::Handle<Object>> Result;
+		NxFr::List<NxFr::GUID> Result;
 
 		Utils::Filter Filter(Query);
 		for (auto& [Id, Info] : Objects)
@@ -395,15 +406,15 @@ namespace NxEn
 			{
 				if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::GameObject))
 				{
-					Result.Append(Info.Handle);
+					Result.Append(Info.Handle->GetId());
 				}
 				else if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::Behaviour))
 				{
-					Result.Append(((NxFr::Handle<Behaviour>)Info.Handle)->GetGameObject());
+					Result.Append(((NxFr::Handle<Behaviour>)Info.Handle)->GetGameObject()->GetId());
 				}
 				else if (NxFr::Enum::CheckFlag(Info.Type, WorldObjectType::Component))
 				{
-					Result.Append(((NxFr::Handle<Component>)Info.Handle)->GetGameObject());
+					Result.Append(((NxFr::Handle<Component>)Info.Handle)->GetGameObject()->GetId());
 				}
 				else
 				{
@@ -411,7 +422,7 @@ namespace NxEn
 			}
 		}
 
-		return NxFr::ContainerUtility::ToArray<NxFr::Handle<GameObject>>(Result);
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
 	Iterator::WorldObject WorldManager::Begin(NxFr::StringId Type)
