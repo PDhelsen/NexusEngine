@@ -154,7 +154,7 @@ namespace NxEn
 	NxFr::GUID AssetsRegistry::PathToId(NxFr::StringView Path) const
 	{
 		const NxFr::GUID* Id = Paths.TryGet(Path);
-		return Id ? *Id : 0;
+		return Id ? *Id : Object::NullId;
 	}
 
 	NxFr::StringView AssetsRegistry::IdToPath(NxFr::GUID Id) const
