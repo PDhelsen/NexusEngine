@@ -38,12 +38,12 @@ namespace NxEn
 	void Prefab::OnSave(NxFr::StringView Path) const
 	{
 		YAML::Node Data = NxEn::Application::GetSystem<WorldSystem>()->SerializePrefab(Root);
-		NxFr::Yaml::SerializeFile(Data, Path);
+		NxFr::Yaml::SerializeAndSave(Data, Path);
 	}
 
 	void Prefab::OnLoad(NxFr::StringView Path)
 	{
-		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
+		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
 		Root = NxEn::Application::GetSystem<WorldSystem>()->DeserializePrefab(Data);
 	}
 

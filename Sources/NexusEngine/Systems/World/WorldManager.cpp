@@ -27,7 +27,7 @@ namespace NxEn
 	void WorldManager::Reserve(NxFr::StringId Type, uint64 Size)
 	{
 		WorldStorage* Storage = GetStorage(Type);
-		ResizeStorage(Storage, Size);
+		Resize(Storage, Size);
 	}
 
 	void WorldManager::RecordIds(NxFr::GUID OrignalId, NxFr::GUID InstanceId)
@@ -90,7 +90,7 @@ namespace NxEn
 		}
 
 		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
-		NxFr::Handle<GameObject> Instance = AllocateStorage(Storage, GameObjectId, WorldObjectType::GameObject);
+		NxFr::Handle<GameObject> Instance = Allocate(Storage, GameObjectId, WorldObjectType::GameObject);
 
 		Instance->WorldId = WorldInstance->GetId();
 		Instance->GameObjectId = GameObjectId;
@@ -177,7 +177,7 @@ namespace NxEn
 		DetachGameObject(Instance);
 
 		WorldStorage* Storage = GetStorage(GameObject::GetClassType());
-		FreeStorage(Storage, Instance);
+		Free(Storage, Instance);
 	}
 
 	void WorldManager::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index)
@@ -245,7 +245,7 @@ namespace NxEn
 		}
 
 		WorldStorage* Storage = GetStorage(Type);
-		NxFr::Handle<Behaviour> Instance = AllocateStorage(Storage, BehaviourId, WorldObjectType::Behaviour);
+		NxFr::Handle<Behaviour> Instance = Allocate(Storage, BehaviourId, WorldObjectType::Behaviour);
 
 		Instance->BehaviourId = BehaviourId;
 		Instance->Target = Target;
@@ -277,7 +277,7 @@ namespace NxEn
 		Instance->Target = NxFr::Handle<GameObject>();
 
 		WorldStorage* Storage = GetStorage(Instance->GetObjectType());
-		FreeStorage(Storage, Instance);
+		Free(Storage, Instance);
 	}
 
 	NxFr::Handle<Component> WorldManager::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID ComponentId)
@@ -288,7 +288,7 @@ namespace NxEn
 		}
 
 		WorldStorage* Storage = GetStorage(Type);
-		NxFr::Handle<Component> Instance = AllocateStorage(Storage, ComponentId, WorldObjectType::Component);
+		NxFr::Handle<Component> Instance = Allocate(Storage, ComponentId, WorldObjectType::Component);
 
 		Instance->ComponentId = ComponentId;
 		Instance->Target = Target;
@@ -320,7 +320,7 @@ namespace NxEn
 		Instance->Target = NxFr::Handle<GameObject>();
 
 		WorldStorage* Storage = GetStorage(Instance->GetObjectType());
-		FreeStorage(Storage, Instance);
+		Free(Storage, Instance);
 	}
 
 	bool WorldManager::Belong(NxFr::Handle<Object> Instance)
@@ -437,9 +437,9 @@ namespace NxEn
 		return Storage->End();
 	}
 
-	NxFr::Handle<Object> WorldManager::AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type)
+	NxFr::Handle<Object> WorldManager::Allocate(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type)
 	{
-		ResizeStorage(Storage, Storage->GetCount() + 1);
+		Resize(Storage, Storage->GetCount() + 1);
 
 		Object* Instance = &Storage->Append();
 		uint64 Index = Storage->GetCount() - 1;
@@ -450,7 +450,7 @@ namespace NxEn
 		return Handle;
 	}
 
-	void WorldManager::FreeStorage(WorldStorage* Storage, NxFr::Handle<Object> Instance)
+	void WorldManager::Free(WorldStorage* Storage, NxFr::Handle<Object> Instance)
 	{
 		NxFr::GUID Id = Instance->GetId();
 		WorldObject Info = Objects.Get(Id);
@@ -463,10 +463,10 @@ namespace NxEn
 		// Remove use RemoveSwap
 		// So after calling remove, the last element is now at the removed index
 		// So the handle needs to be updated
-		UpdateStorage(Storage, Info.Index);
+		Update(Storage, Info.Index);
 	}
 
-	void WorldManager::UpdateStorage(WorldStorage* Storage, uint64 Index)
+	void WorldManager::Update(WorldStorage* Storage, uint64 Index)
 	{
 		uint64 Count = Storage->GetCount();
 		if (Count == 0 || Count == Index)
@@ -483,7 +483,7 @@ namespace NxEn
 		Handles.UpdateHandle(Info.Handle, &Instance);
 	}
 
-	void WorldManager::ResizeStorage(WorldStorage* Storage, uint64 Size)
+	void WorldManager::Resize(WorldStorage* Storage, uint64 Size)
 	{
 		if (Size < Storage->GetCapacity())
 		{
@@ -495,7 +495,7 @@ namespace NxEn
 
 		for (uint64 Index = 0; Index < Storage->GetCount(); ++Index)
 		{
-			UpdateStorage(Storage, Index);
+			Update(Storage, Index);
 		}
 	}
 

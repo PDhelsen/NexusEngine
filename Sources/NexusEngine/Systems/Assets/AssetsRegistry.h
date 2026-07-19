@@ -18,7 +18,7 @@ namespace NxEn
 		AssetMetadata& Get(NxFr::GUID Id);
 
 		void SerializeAndSave(NxFr::GUID Id, const YAML::Node& Assetdata);
-		YAML::Node DeserializeAndLoad(NxFr::GUID Id);
+		YAML::Node LoadAndDeserialize(NxFr::GUID Id);
 
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Query) const;
 		NxFr::GUID PathToId(NxFr::StringView Path) const;

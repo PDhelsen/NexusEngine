@@ -305,8 +305,8 @@ namespace NxEn
 		Instance->Id = Id;
 		Instance->Name = Metadata.GetName();
 
-		YAML::Node Assetdata = Registry->DeserializeAndLoad(Id);
-		Manager->DeserializeAndLoad(Id, Assetdata, Registry->IdToContentFsPath(Id));
+		YAML::Node Assetdata = Registry->LoadAndDeserialize(Id);
+		Manager->LoadAndDeserialize(Id, Assetdata, Registry->IdToContentFsPath(Id));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventLoadedId, Id);
@@ -331,8 +331,8 @@ namespace NxEn
 
 		Instance->Dirty = false;
 
-		YAML::Node Assetdata = Registry->DeserializeAndLoad(Id);
-		Manager->DeserializeAndLoad(Id, Assetdata, Registry->IdToContentFsPath(Id));
+		YAML::Node Assetdata = Registry->LoadAndDeserialize(Id);
+		Manager->LoadAndDeserialize(Id, Assetdata, Registry->IdToContentFsPath(Id));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventLoadedId, Id);
@@ -380,7 +380,7 @@ namespace NxEn
 		NxEn::Asset* Instance = GetFactory().Create(Type);
 
 		Track(Instance, Path, Extension);
-		Manager->DeserializeAndLoad(Instance->GetId(), Assetdata, Registry->IdToContentFsPath(Instance->GetId()));
+		Manager->LoadAndDeserialize(Instance->GetId(), Assetdata, Registry->IdToContentFsPath(Instance->GetId()));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
@@ -405,7 +405,7 @@ namespace NxEn
 
 		Instance->Dirty = true;
 
-		Manager->DeserializeAndLoad(Id, Assetdata, Registry->IdToContentFsPath(Id));
+		Manager->LoadAndDeserialize(Id, Assetdata, Registry->IdToContentFsPath(Id));
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
@@ -442,7 +442,7 @@ namespace NxEn
 	{
 		NX_ASSERT(IsTracked(Id), System, "Unknown asset %llu", Id);
 
-		return Registry->DeserializeAndLoad(Id);
+		return Registry->LoadAndDeserialize(Id);
 	}
 
 	NxFr::Array<NxFr::GUID> AssetsSystem::GetDependencies(NxFr::GUID Id, bool Recursive)

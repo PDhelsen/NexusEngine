@@ -19,12 +19,12 @@ namespace NxEn
 
 	void Table::OnSave(NxFr::StringView Path) const
 	{
-		NxFr::Yaml::SerializeFile(Data, Path);
+		NxFr::Yaml::SerializeAndSave(Data, Path);
 	}
 
 	void Table::OnLoad(NxFr::StringView Path)
 	{
-		Data = NxFr::Yaml::DeserializeFile(Path);
+		Data = NxFr::Yaml::LoadAndDeserialize(Path);
 	}
 
 	void Table::OnUnload()

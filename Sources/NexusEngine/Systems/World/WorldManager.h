@@ -56,10 +56,10 @@ namespace NxEn
 		Iterator::WorldObject End(NxFr::StringId Type);
 
 	private:
-		NxFr::Handle<Object> AllocateStorage(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type);
-		void FreeStorage(WorldStorage* Storage, NxFr::Handle<Object> Instance);
-		void UpdateStorage(WorldStorage* Storage, uint64 Index);
-		void ResizeStorage(WorldStorage* Storage, uint64 Size);
+		NxFr::Handle<Object> Allocate(WorldStorage* Storage, NxFr::GUID ObjectId, WorldObjectType Type);
+		void Free(WorldStorage* Storage, NxFr::Handle<Object> Instance);
+		void Update(WorldStorage* Storage, uint64 Index);
+		void Resize(WorldStorage* Storage, uint64 Size);
 		WorldStorage* GetStorage(NxFr::StringId Type);
 
 		NxFr::Dictionary<NxFr::StringId, WorldStorage*> Storages;

@@ -14,12 +14,12 @@ namespace NxEn
 
 	void Yaml::OnSave(NxFr::StringView FilePath) const
 	{
-		NxFr::Yaml::SerializeFile(Data, FilePath);
+		NxFr::Yaml::SerializeAndSave(Data, FilePath);
 	}
 
 	void Yaml::OnLoad(NxFr::StringView FilePath)
 	{
-		Data = NxFr::Yaml::DeserializeFile(FilePath);
+		Data = NxFr::Yaml::LoadAndDeserialize(FilePath);
 	}
 
 	void Yaml::OnUnload()

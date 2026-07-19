@@ -37,7 +37,7 @@ namespace NxEn
 		return Assetdata;
 	}
 
-	void AssetsManager::DeserializeAndLoad(NxFr::GUID Id, const YAML::Node& Assetdata, NxFr::StringView ContentFsPath)
+	void AssetsManager::LoadAndDeserialize(NxFr::GUID Id, const YAML::Node& Assetdata, NxFr::StringView ContentFsPath)
 	{
 		NX_ASSERT(!Loading.TryGet(Id), System, "Circular loading dependecy detected (%llu)", Id);
 

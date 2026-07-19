@@ -129,7 +129,7 @@ namespace NxEn
 		Write(PathToFsPath(Metadata.GetPath(), AssetMetadata::AssetExtension), Metadata.Serialize(), Assetdata);
 	}
 
-	YAML::Node AssetsRegistry::DeserializeAndLoad(NxFr::GUID Id)
+	YAML::Node AssetsRegistry::LoadAndDeserialize(NxFr::GUID Id)
 	{
 		AssetMetadata& Metadata = Assets[Id];
 		return Read(PathToFsPath(Metadata.GetPath(), AssetMetadata::AssetExtension), KeyAssetdata);
@@ -177,7 +177,7 @@ namespace NxEn
 
 	YAML::Node AssetsRegistry::Read(NxFr::StringView Path, NxFr::StringView Key)
 	{
-		YAML::Node Root = NxFr::Yaml::DeserializeFile(Path);
+		YAML::Node Root = NxFr::Yaml::LoadAndDeserialize(Path);
 		return Root[Key];
 	}
 
@@ -186,7 +186,7 @@ namespace NxEn
 		YAML::Node Root;
 		Root[KeyMetadata] = Metadata;
 		Root[KeyAssetdata] = !Assetdata.IsNull() ? Assetdata : Read(Path, KeyAssetdata);
-		NxFr::Yaml::SerializeFile(Root, Path);
+		NxFr::Yaml::SerializeAndSave(Root, Path);
 	}
 
 	NxFr::String AssetsRegistry::PathToFsPath(NxFr::StringView Path, NxFr::StringView Extension) const

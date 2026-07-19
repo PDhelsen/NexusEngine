@@ -194,7 +194,7 @@ namespace NxEn
 			return;
 		}
 
-		YAML::Node Data = NxFr::Yaml::DeserializeFile(Path);
+		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
 
 		LoadThemeImGui(Data["ImGui"]);
 		LoadThemeNexus(Data["Nexus"]);
@@ -221,7 +221,7 @@ namespace NxEn
 		SaveThemeNexus(Data);
 		Data << YAML::EndMap;
 
-		NxFr::Yaml::SerializeFile(Data, Path);
+		NxFr::Yaml::SerializeAndSave(Data, Path);
 
 		NX_LOG(Info, System, "GUI style %s saved", Name.C());
 	}

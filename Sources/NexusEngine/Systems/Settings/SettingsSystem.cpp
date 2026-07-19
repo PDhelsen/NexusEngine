@@ -59,7 +59,7 @@ namespace NxEn
 				continue;
 			}
 
-			YAML::Node Root = NxFr::Yaml::DeserializeFile(PagePath);
+			YAML::Node Root = NxFr::Yaml::LoadAndDeserialize(PagePath);
 			for (auto It = Root.begin(); It != Root.end(); ++It)
 			{
 				YAML::Node& Key = It->first;
@@ -91,7 +91,7 @@ namespace NxEn
 			{
 				Instance->OnSerialize(Root);
 			}
-			NxFr::Yaml::SerializeFile(Root, PagePath);
+			NxFr::Yaml::SerializeAndSave(Root, PagePath);
 		}
 
 		NX_LOG(Info, System, "Settings saved to : %s", FolderPath.C());
