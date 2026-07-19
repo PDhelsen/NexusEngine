@@ -6,11 +6,6 @@ namespace NxEd
 {
 	class NX_EDITOR_API ViewerContext3D : public ViewerContext
 	{
-		enum class ViewContextMode
-		{
-			Invalid, World/*, Prefab*/
-		};
-
 	public:
 		NX_OBJECT(ViewerContext3D)
 
@@ -25,7 +20,6 @@ namespace NxEd
 		void OnDraw() override;
 
 	private:
-		ViewContextMode Mode;
-		NxFr::Handle<NxEn::GameObject> Target;
+		NxEn::Object* Target;
 	};
 }

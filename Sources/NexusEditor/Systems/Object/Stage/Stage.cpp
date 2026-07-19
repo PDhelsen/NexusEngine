@@ -16,10 +16,15 @@ namespace NxEd
 		{
 			World = static_cast<NxEn::World*>(Target);
 		}
-		else if (Target->GetObjectType() == NxEn::GameObject::GetClassType())
+		else
 		{
 			NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 			World = Worlds->CreateWorld(Target->GetName());
+			if (Target->GetObjectType() == NxEn::Prefab::GetClassType())
+			{
+				NxEn::Prefab* Prefab = static_cast<NxEn::Prefab*>(Target);
+				Worlds->InstantiateGameObject(Prefab->GetRoot(), World->GetRoot(), World->GetId());
+			}
 		}
 	}
 
@@ -87,8 +92,16 @@ namespace NxEd
 	{
 		Element::OnEnable();
 
-		Viewer->Show(Target);
-		Inspector->Show(Target);
+		if (Target->GetObjectType() == NxEn::World::GetClassType() || Target->GetObjectType() == NxEn::Prefab::GetClassType())
+		{
+			Viewer->Show(World);
+			Inspector->Show(World->GetRoot());
+		}
+		else
+		{
+			Viewer->Show(Target);
+			Inspector->Show(Target);
+		}
 		Hierarchy->Show();
 
 		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
@@ -130,7 +143,7 @@ namespace NxEd
 	void Stage::OnSelectionChanged(NxFr::GUID Id, bool State)
 	{
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Handle<NxEn::GameObject> Instance = Worlds->GetObject(Id);
+		NxFr::Handle<NxEn::GameObject> Instance = Worlds->GetObject(Id, World->GetId());
 		if (State && Instance)
 		{
 			Inspector->Show(Instance);

@@ -3,10 +3,9 @@
 namespace NxEd
 {
 	static ViewerFactory::Factory* FactoryWorld = ViewerFactory::Register<NxEn::World, ViewerContext3D>();
-	//static ViewerFactory::Factory* FactoryPrefab = ViewerFactory::Register<NxEn::Prefab, ViewerContext3D>();
 
 	ViewerContext3D::ViewerContext3D()
-		: Mode(), Target()
+		: Target()
 	{
 
 	}
@@ -18,11 +17,7 @@ namespace NxEd
 
 	void ViewerContext3D::Clear()
 	{
-		/*if (Mode == ViewContextMode::Prefab)
-		{
-			NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-			Worlds->DestroyWorld(Target->GetWorldId());
-		}*/
+
 	}
 
 	void ViewerContext3D::SetupMenu(NxEn::GUI::Menu& Menu)
@@ -31,30 +26,9 @@ namespace NxEd
 
 	void ViewerContext3D::SetupTarget(NxEn::Object* Instance)
 	{
-		if (Instance->GetObjectType() == NxEn::World::GetClassType())
-		{
-			Mode = ViewContextMode::World;
+		NX_ASSERT(Instance->GetObjectType() == NxEn::World::GetClassType(), Default, "Viewer 3D expect a world");
 
-			NxEn::World* World = static_cast<NxEn::World*>(Instance);
-			Target = World->GetRoot();
-		}
-		/*else if (Instance->GetObjectType() == NxEn::Prefab::GetClassType())
-		{
-			Mode = ViewContextMode::Prefab;
-
-			NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-			NxEn::Prefab* Prefab = static_cast<NxEn::Prefab*>(Instance);
-
-			World = Worlds->CreateWorld(Prefab->GetId());
-			Target = Worlds->InstantiatePrefab(Prefab, World->GetRootGameObject(), World->GetId());
-			Target->SetName(Prefab->GetName());
-		}*/
-		else
-		{
-			Mode = ViewContextMode::Invalid;
-
-			NX_LOG(Error, System, "Unsupported type for ViewerContext3D")
-		}
+		Target = Instance;
 	}
 
 	void ViewerContext3D::OnDraw()

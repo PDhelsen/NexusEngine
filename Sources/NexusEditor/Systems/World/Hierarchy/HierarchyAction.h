@@ -60,24 +60,35 @@ namespace NxEd
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	/*class NX_EDITOR_API HierarchyActionPrefabCreate : public NxEn::TreeAction
+	class NX_EDITOR_API HierarchyActionInspect : public NxEn::TreeAction
+	{
+	public:
+		NX_OBJECT(HierarchyActionInspect)
+
+			HierarchyActionInspect() : TreeAction("Inspect", 6, false, false) {}
+		virtual ~HierarchyActionInspect() = default;
+
+		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
+	};
+
+	class NX_EDITOR_API HierarchyActionPrefabCreate : public NxEn::TreeAction
 	{
 	public:
 		NX_OBJECT(HierarchyActionPrefabCreate)
 
-		HierarchyActionPrefabCreate() : TreeAction("Prefab - Create", 6, false, false) {}
+		HierarchyActionPrefabCreate() : TreeAction("Prefab - Create", 7, false, false) {}
 		virtual ~HierarchyActionPrefabCreate() = default;
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
 
-	class NX_EDITOR_API HierarchyActionPrefabSave : public NxEn::TreeAction
+	class NX_EDITOR_API HierarchyActionPrefabPack : public NxEn::TreeAction
 	{
 	public:
-		NX_OBJECT(HierarchyActionPrefabSave)
+		NX_OBJECT(HierarchyActionPrefabPack)
 
-		HierarchyActionPrefabSave() : TreeAction("Prefab - Save", 7, false, false) {}
-		virtual ~HierarchyActionPrefabSave() = default;
+		HierarchyActionPrefabPack() : TreeAction("Prefab - Pack", 8, false, false) {}
+		virtual ~HierarchyActionPrefabPack() = default;
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};
@@ -87,19 +98,8 @@ namespace NxEd
 	public:
 		NX_OBJECT(HierarchyActionPrefabUnpack)
 
-		HierarchyActionPrefabUnpack() : TreeAction("Prefab - Unpack", 8, false, false) {}
+		HierarchyActionPrefabUnpack() : TreeAction("Prefab - Unpack", 9, false, false) {}
 		virtual ~HierarchyActionPrefabUnpack() = default;
-
-		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
-	};*/
-
-	class NX_EDITOR_API HierarchyActionInspect : public NxEn::TreeAction
-	{
-	public:
-		NX_OBJECT(HierarchyActionInspect)
-
-		HierarchyActionInspect() : TreeAction("Inspect", 9, false, false) {}
-		virtual ~HierarchyActionInspect() = default;
 
 		void Execute(const NxFr::Array<NxEn::TreeItem*>& Items) override;
 	};

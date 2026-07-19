@@ -3,23 +3,11 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
-//#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
-//#include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
-//#include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
-
 #include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
 
 namespace NxEd
 {
-	static bool IsInstantiable(NxEn::AssetsSystem* Assets, NxFr::GUID Id)
-	{
-		return false;
-
-		//NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
-		//return Type == NxEn::Scene::GetClassType() || Type == NxEn::Prefab::GetClassType();
-	}
-
 	void AssetsBrowserActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>&Items)
 	{
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
@@ -137,22 +125,14 @@ namespace NxEd
 			}
 
 			NxFr::GUID Id = Item->GetItemId();
-			if (IsInstantiable(Assets, Id))
-			{
-				NX_LOG(Warning, System, "Loading is not supported for this asset type. Use Instantiate instead");
-				continue;
-			}
-
 			Assets->Reload(Id);
 		}
 	}
 
 	void AssetsBrowserActionInstantiate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		/*NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
-		NxFr::GUID WorldId = NxEn::WorldSystem::WorldId.GetId();
 
 		for (auto& Item : Items)
 		{
@@ -164,26 +144,21 @@ namespace NxEd
 			NxFr::GUID Id = Item->GetItemId();
 			NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
 
-			if (Type == NxEn::Scene::GetClassType())
+			if (Type == NxEn::Prefab::GetClassType())
 			{
-				Worlds->LoadScene(Id, WorldId);
-			}
-			else if (Type == NxEn::Prefab::GetClassType())
-			{
-				NxEn::Prefab* Instance = Worlds->LoadPrefab(Id);
-				Worlds->InstantiatePrefab(Instance, NxFr::Handle<NxEn::GameObject>(), WorldId);
+				NxEn::Prefab* Instance = Assets->Load<NxEn::Prefab>(Id);
+				Worlds->InstantiateGameObject(Instance->GetRoot());
 			}
 			else
 			{
 				NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
 			}
-		}*/
+		}
 	}
 
 	void AssetsBrowserActionView::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		/*NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NexusEditorApplication* Editor = NxEn::Application::GetInstance<NexusEditorApplication>();
 
 		AssetsBrowserItem* Item = static_cast<AssetsBrowserItem*>(Items[0]);
@@ -192,22 +167,8 @@ namespace NxEd
 			return;
 		}
 
-		NxEn::Object* Target = nullptr;
 		NxFr::GUID Id = Item->GetItemId();
-		NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
-
-		if (Type == NxEn::Scene::GetClassType())
-		{
-			Target = nullptr;
-		}
-		else if (Type == NxEn::Prefab::GetClassType())
-		{
-			Target = Worlds->LoadPrefab(Id);
-		}
-		else
-		{
-			Target = Assets->Load(Id);
-		}
+		NxEn::Object* Target = Assets->Load(Id);
 
 		StageManager* Manager = Editor->GetStageManager();
 		Stage* StageView = Manager->GetStage(Target);
@@ -215,6 +176,6 @@ namespace NxEd
 		{
 			StageView = Manager->CreateStage(Target);
 		}
-		Manager->ShowStage(Target);*/
+		Manager->ShowStage(Target);
 	}
 }
