@@ -253,6 +253,7 @@ namespace NxEn
 		WorldManager* Manager = GetManager(PrefabWorldId);
 		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
 
+		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
 		NxFr::Handle<GameObject> Instance = Manager->CreateGameObject(Node, Parent);
 		Instance->Deserialize(Node);
 

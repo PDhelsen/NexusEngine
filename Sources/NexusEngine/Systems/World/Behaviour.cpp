@@ -85,8 +85,6 @@ namespace NxEn
 
 	void Behaviour::OnDeserialize(const YAML::Node& Node)
 	{
-		NX_ASSERT(BehaviourId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
-		NX_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
 	}

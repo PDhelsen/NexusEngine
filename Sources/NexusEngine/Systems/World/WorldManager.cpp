@@ -107,7 +107,11 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldManager::CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent, ReferenceMode Mode)
 	{
-		NxFr::Handle<GameObject> Instance = CreateGameObject(Parent, Node["Id"].as<NxFr::GUID>(), Node["AssetId"].as<NxFr::GUID>(), Mode);
+		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
+		NxFr::GUID AssetId = Node["AssetId"].as<NxFr::GUID>();
+
+		NxFr::Handle<GameObject> Instance = CreateGameObject(Parent, !Objects.TryGet(Id) ? Id : 0, AssetId, Mode);
+		RecordIds(Id, Instance->GetId());
 
 		YAML::Node NodeBehaviours = Node["Behaviours"];
 		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
@@ -280,7 +284,10 @@ namespace NxEn
 		NxFr::StringId Type = Node["Type"].as<NxFr::StringId>();
 		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
 
-		return CreateBehaviour(Type, Target, Id);
+		NxFr::Handle<Behaviour> Instance = CreateBehaviour(Type, Target, !Objects.TryGet(Id) ? Id : 0);
+		RecordIds(Id, Instance->GetId());
+
+		return Instance;
 	}
 
 	NxFr::Handle<Behaviour> WorldManager::DuplicateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
@@ -323,7 +330,10 @@ namespace NxEn
 		NxFr::StringId Type = Node["Type"].as<NxFr::StringId>();
 		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
 
-		return CreateComponent(Type, Target, Id);
+		NxFr::Handle<Component> Instance = CreateComponent(Type, Target, !Objects.TryGet(Id) ? Id : 0);
+		RecordIds(Id, Instance->GetId());
+
+		return Instance;
 	}
 
 	NxFr::Handle<Component> WorldManager::DuplicateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)

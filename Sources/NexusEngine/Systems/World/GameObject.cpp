@@ -755,8 +755,6 @@ namespace NxEn
 	void GameObject::OnDeserialize(const YAML::Node& Node)
 	{
 		Name = Node["Name"].as<NxFr::String>();
-		NX_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
-		NX_ASSERT(AssetId == Node["AssetId"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
 		SetFlag(ObjectFlags::EnabledInHierarchy, false);

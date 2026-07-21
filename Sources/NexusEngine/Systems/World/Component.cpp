@@ -84,8 +84,6 @@ namespace NxEn
 
 	void Component::OnDeserialize(const YAML::Node& Node)
 	{
-		NX_ASSERT(ComponentId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
-		NX_ASSERT(Target->GetId() == Node["Target"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 	}
 }
