@@ -151,7 +151,8 @@ namespace NxEn
 
 		OnWorldChange.Invoke(EventCreatedId, Name);
 
-		NxFr::Handle<GameObject> Root = Manager->CreateGameObject(Name);
+		NxFr::Handle<GameObject> Root = Manager->CreateGameObject();
+		Root->SetName(Name);
 		Root->Initialize();
 		Root->SetEnabled(true);
 
@@ -213,7 +214,7 @@ namespace NxEn
 		return Result;
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::PackPrefab(NxFr::Handle<GameObject> Original)
+	NxFr::Handle<GameObject> WorldSystem::PackPrefab(NxFr::Handle<GameObject> Original, NxFr::GUID AssetId)
 	{
 		NX_ASSERT(Original, Default, "Original should be valid");
 		NX_ASSERT(!Belong(Original, PrefabWorldId), Default, "Original should not be a prefab");
@@ -222,8 +223,11 @@ namespace NxEn
 		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
 
 		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
-		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent);
+		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent, WorldManager::ReferenceMode::Keep);
 		Instance->Clone(Original.GetRedirectedPointer());
+
+		Original->AssetId = AssetId;
+		Instance->AssetId = AssetId;
 
 		return Instance;
 	}
@@ -232,6 +236,8 @@ namespace NxEn
 	{
 		NX_ASSERT(Original, Default, "Original should be valid");
 		NX_ASSERT(!Belong(Original, PrefabWorldId), Default, "Original should not be a prefab");
+
+		Original->AssetId = 0;
 	}
 
 	YAML::Node WorldSystem::SerializePrefab(NxFr::Handle<GameObject> Instance)
@@ -285,7 +291,8 @@ namespace NxEn
 			Parent = Manager->GetWorld()->GetRoot();
 		}
 
-		NxFr::Handle<GameObject> Instance = Manager->CreateGameObject(Name, Parent);
+		NxFr::Handle<GameObject> Instance = Manager->CreateGameObject(Parent);
+		Instance->SetName(Name);
 		Instance->Initialize();
 		Instance->SetEnabled(true);
 
@@ -319,7 +326,7 @@ namespace NxEn
 		}
 
 		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
-		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent);
+		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent, WorldManager::ReferenceMode::Resolve);
 		Instance->Clone(Original.GetRedirectedPointer());
 		Instance->Initialize();
 		Instance->UpdateHierarchy();
@@ -357,7 +364,7 @@ namespace NxEn
 			Parent = Manager->GetWorld()->GetRoot();
 		}
 
-		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent);
+		NxFr::Handle<GameObject> Instance = Manager->DuplicateGameObject(Original, Parent, WorldManager::ReferenceMode::Ignore);
 		Instance->Clone(Original.GetRedirectedPointer());
 		Instance->Initialize();
 		Instance->UpdateHierarchy();

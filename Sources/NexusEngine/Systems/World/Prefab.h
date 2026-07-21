@@ -24,6 +24,7 @@ namespace NxEn
 		void OnSave(NxFr::StringView Path) const override;
 		void OnLoad(NxFr::StringView Path) override;
 		void OnUnload() override;
+		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const override;
 
 	private:
 		NxFr::Handle<GameObject> Root;

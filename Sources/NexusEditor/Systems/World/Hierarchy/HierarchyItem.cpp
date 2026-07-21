@@ -3,11 +3,8 @@
 
 namespace NxEd
 {
-	static const uint64 PrefixSize = 2;
-	static const uint64 ImGuiSplitSize = 2;
-
 	HierarchyItem::HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target)
-		: Manager(Manager), Target(Target)
+		: Manager(Manager), Target(Target), Cache("", 0)
 	{
 	}
 
@@ -17,13 +14,7 @@ namespace NxEd
 
 	void HierarchyItem::OnDraw()
 	{
-		NxFr::StringView Name = Target->GetName();
-
-		bool RecacheImGui =
-			NxFr::StringCApi::Compare(ImGuiText.C() + PrefixSize, Name.C(), Name.GetCount()) != 0 ||
-			NxFr::StringCApi::Compare(ImGuiText.C() + PrefixSize + Name.GetCount(), "##", ImGuiSplitSize) != 0;
-
-		if (RecacheImGui)
+		if (Cache.GetFirst() != Target->GetName() || Cache.GetSecond() != Target->GetAssetId())
 		{
 			CacheImGuiText();
 		}
@@ -38,9 +29,13 @@ namespace NxEd
 	{
 		NxFr::StringView Prefix =
 			Target == Target->GetWorld()->GetRoot() ? "W" :
+			Target->GetAssetId() ? "P" :
 			"G";
 
 		ImGuiText = Prefix + " " + Target->GetName() + "##" + NxFr::StringUtility::ToString(Target->GetId());
+
+		Cache.SetFirst(Target->GetName());
+		Cache.SetSecond(Target->GetAssetId());
 	}
 
 	HierarchyItem* HierarchyItem::GetParent() const

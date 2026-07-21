@@ -14,8 +14,15 @@ namespace NxEn
 	{
 		Unload();
 
-		Root = NxEn::Application::GetSystem<WorldSystem>()->PackPrefab(Instance);
+		Root = NxEn::Application::GetSystem<WorldSystem>()->PackPrefab(Instance, GetId());
 		SetDirty();
+
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
+		for (auto& Dependency : Dependencies)
+		{
+			Assets->Acquire(Dependency);
+		}
 	}
 
 	void Prefab::OnDraw()
@@ -33,6 +40,13 @@ namespace NxEn
 
 		Root = NxEn::Application::GetSystem<WorldSystem>()->InstantiateGameObject(Instance.Root);
 		SetDirty();
+
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
+		for (auto& Dependency : Dependencies)
+		{
+			Assets->Acquire(Dependency);
+		}
 	}
 
 	void Prefab::OnSave(NxFr::StringView Path) const
@@ -45,6 +59,13 @@ namespace NxEn
 	{
 		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
 		Root = NxEn::Application::GetSystem<WorldSystem>()->DeserializePrefab(Data);
+
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
+		for (auto& Dependency : Dependencies)
+		{
+			Assets->Acquire(Dependency);
+		}
 	}
 
 	void Prefab::OnUnload()
@@ -54,7 +75,32 @@ namespace NxEn
 			return;
 		}
 
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
+		for (auto& Dependency : Dependencies)
+		{
+			Assets->Release(Dependency);
+		}
+
 		NxEn::Application::GetSystem<WorldSystem>()->UnloadPrefab(Root);
 		Root = NxFr::Handle<GameObject>();
+	}
+
+	void Prefab::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
+	{
+		if (!Root)
+		{
+			return;
+		}
+
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::Array<NxFr::GUID> Dependencies = Root->Object::GetDependencies();
+		for (auto& Dependency : Dependencies)
+		{
+			if (Assets->IsTracked(Dependency) && Dependency != GetId())
+			{
+				Ids.Append(Dependency);
+			}
+		}
 	}
 }

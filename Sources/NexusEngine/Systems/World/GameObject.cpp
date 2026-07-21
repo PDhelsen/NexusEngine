@@ -6,8 +6,10 @@ namespace NxEn
 	NX_WORLD_OBJECT(GameObject)
 
 	GameObject::GameObject()
-		: GameObjectId(0), WorldId(0), Name(),
-		Parent(), Prev(), Next(), Child()
+		: GameObjectId(0), AssetId(0), WorldId(0),
+		Name(), Proxy(false),
+		Parent(), Prev(), Next(), Child(),
+		Behaviours(), Components()
 	{
 		SetTickable(false);
 	}
@@ -227,7 +229,13 @@ namespace NxEn
 		NxFr::Handle<const GameObject> IteratorInstance = Instance.GetChild();
 		while (Iterator)
 		{
-			Iterator->Clone(IteratorInstance.GetRedirectedPointer());
+			const GameObject* Target = IteratorInstance.GetRedirectedPointer();
+			if (Target->Proxy)
+			{
+				Target = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->AssetId)->GetRoot().GetRedirectedPointer();
+			}
+
+			Iterator->Clone(Target);
 			Iterator = Iterator->GetNext();
 			IteratorInstance = IteratorInstance->GetNext();
 		}
@@ -344,6 +352,11 @@ namespace NxEn
 	NxFr::GUID GameObject::GetWorldId() const
 	{
 		return WorldId;
+	}
+
+	NxFr::GUID GameObject::GetAssetId() const
+	{
+		return AssetId;
 	}
 
 	NxFr::GUID GameObject::GetGameObjectId() const
@@ -702,6 +715,7 @@ namespace NxEn
 		GUI::Drawer<NxFr::String>::Field(Name, "Name");
 
 		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
+		GUI::Drawer<NxFr::GUID>::Property(AssetId, "AssetId");
 
 		bool Enabled = IsEnabled();
 		GUI::Drawer<bool>::Field(Enabled, "Enabled");
@@ -733,6 +747,7 @@ namespace NxEn
 	{
 		Node["Name"] = Name;
 		Node["Id"] = GameObjectId;
+		Node["AssetId"] = AssetId;
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
 	}
@@ -741,6 +756,7 @@ namespace NxEn
 	{
 		Name = Node["Name"].as<NxFr::String>();
 		NX_ASSERT(GameObjectId == Node["Id"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
+		NX_ASSERT(AssetId == Node["AssetId"].as<NxFr::GUID>(), Default, "Runtime and Serialized id should match");
 		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
 		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
 		SetFlag(ObjectFlags::EnabledInHierarchy, false);
@@ -752,5 +768,6 @@ namespace NxEn
 
 	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
+		if (AssetId) Ids.TryAppend(AssetId);
 	}
 }

@@ -38,5 +38,6 @@ namespace NxEd
 	private:
 		HierarchyManager* Manager;
 		NxFr::Handle<NxEn::GameObject> Target;
+		NxFr::Tuple<NxFr::String, NxFr::GUID> Cache;
 	};
 }

@@ -32,7 +32,7 @@ namespace NxEn
 		World* GetWorld(NxFr::GUID WorldId = MainWorldId);
 		NxFr::Array<NxFr::GUID> GetWorlds();
 
-		NxFr::Handle<GameObject> PackPrefab(NxFr::Handle<GameObject> Original);
+		NxFr::Handle<GameObject> PackPrefab(NxFr::Handle<GameObject> Original, NxFr::GUID AssetId);
 		void UnpackPrefab(NxFr::Handle<GameObject> Original);
 		YAML::Node SerializePrefab(NxFr::Handle<GameObject> Instance);
 		NxFr::Handle<GameObject> DeserializePrefab(YAML::Node Node);

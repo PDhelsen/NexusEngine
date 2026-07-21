@@ -92,8 +92,14 @@ namespace NxEd
 
 			for (auto& Item : Items)
 			{
-				NxFr::String Path = NxFr::Path::IsDirectory(Input) ? Input + Item->GetItemName() : NxFr::String(Input);
 				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
+				if (Assets->IsTracked(Instance->GetAssetId()))
+				{
+					NX_LOG(Error, System, "%s is already a prefab", Instance->GetName().C());
+					continue;
+				}
+
+				NxFr::String Path = NxFr::Path::IsDirectory(Input) ? Input + Item->GetItemName() : NxFr::String(Input);
 				NxEn::Prefab* Prefab = Assets->Create<NxEn::Prefab>(Path, NxEn::Prefab::Extension);
 				Prefab->SetRoot(Instance);
 			}
@@ -108,17 +114,31 @@ namespace NxEd
 		for (auto& Item : Items)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-			NxEn::Prefab* Prefab = Assets->Load<NxEn::Prefab>(Instance->GetId());
+			if (!Assets->IsTracked(Instance->GetAssetId()))
+			{
+				NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
+				continue;
+			}
+
+			NxEn::Prefab* Prefab = Assets->Load<NxEn::Prefab>(Instance->GetAssetId());
 			Prefab->SetRoot(Instance);
 		}
 	}
 
 	void HierarchyActionPrefabUnpack::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+
 		for (auto& Item : Items)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
+			if (!Assets->IsTracked(Instance->GetAssetId()))
+			{
+				NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
+				continue;
+			}
+
 			System->UnpackPrefab(Instance);
 		}
 	}

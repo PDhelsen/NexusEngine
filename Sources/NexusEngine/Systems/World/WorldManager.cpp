@@ -6,7 +6,7 @@
 namespace NxEn
 {
 	WorldManager::WorldManager()
-		: Storages(), Objects(), Handles(), WorldInstance(nullptr)
+		: Storages(), Objects(), Remap(), Handles(), WorldInstance(nullptr)
 	{
 		
 	}
@@ -82,7 +82,7 @@ namespace NxEn
 		}
 	}
 
-	NxFr::Handle<GameObject> WorldManager::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId)
+	NxFr::Handle<GameObject> WorldManager::CreateGameObject(NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId, NxFr::GUID AssetId, ReferenceMode Mode)
 	{
 		if (GameObjectId == 0)
 		{
@@ -94,7 +94,8 @@ namespace NxEn
 
 		Instance->WorldId = WorldInstance->GetId();
 		Instance->GameObjectId = GameObjectId;
-		Instance->Name = Name;
+		Instance->AssetId = AssetId;
+		Instance->Proxy = Mode == ReferenceMode::Keep && AssetId;
 
 		if (Parent)
 		{
@@ -104,9 +105,9 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> WorldManager::CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> WorldManager::CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent, ReferenceMode Mode)
 	{
-		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent, Node["Id"].as<NxFr::GUID>());
+		NxFr::Handle<GameObject> Instance = CreateGameObject(Parent, Node["Id"].as<NxFr::GUID>(), Node["AssetId"].as<NxFr::GUID>(), Mode);
 
 		YAML::Node NodeBehaviours = Node["Behaviours"];
 		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
@@ -123,15 +124,15 @@ namespace NxEn
 		YAML::Node NodeChildren = Node["Children"];
 		for (uint64 Index = 0; Index < NodeChildren.size(); ++Index)
 		{
-			CreateGameObject(NodeChildren[Index], Instance);
+			CreateGameObject(NodeChildren[Index], Instance, ReferenceMode::Keep);
 		}
 
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> WorldManager::DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent)
+	NxFr::Handle<GameObject> WorldManager::DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent, ReferenceMode Mode)
 	{
-		NxFr::Handle<GameObject> Instance = CreateGameObject("", Parent);
+		NxFr::Handle<GameObject> Instance = CreateGameObject(Parent, 0, Original->GetAssetId(), ReferenceMode::Ignore);
 		RecordIds(Original->GetId(), Instance->GetId());
 
 		for (auto& B : Original->Behaviours)
@@ -147,7 +148,27 @@ namespace NxEn
 		NxFr::Handle<GameObject> Child = Original->GetChild();
 		while (Child)
 		{
-			DuplicateGameObject(Child, Instance);
+			if (Child->GetAssetId())
+			{
+				if (Mode == ReferenceMode::Keep)
+				{
+					CreateGameObject(Instance, 0, Child->GetAssetId(), ReferenceMode::Keep);
+				}
+				else if (Mode == ReferenceMode::Resolve)
+				{
+					NxFr::Handle<GameObject> Target = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Child->GetAssetId())->GetRoot();
+					DuplicateGameObject(Target, Instance, ReferenceMode::Resolve);
+				}
+				else // Mode == ReferenceMode::Ignore
+				{
+					DuplicateGameObject(Child, Instance, ReferenceMode::Ignore);
+				}
+			}
+			else
+			{
+				DuplicateGameObject(Child, Instance, Mode);
+			}
+
 			Child = Child->GetNext();
 		}
 

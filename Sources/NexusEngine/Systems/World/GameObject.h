@@ -12,6 +12,7 @@ namespace NxEn
 
 	class NX_ENGINE_API GameObject : public Object
 	{
+		friend class WorldSystem;
 		friend class WorldManager;
 
 	public:
@@ -34,6 +35,7 @@ namespace NxEn
 
 		NxFr::GUID GetId() const override;
 		NxFr::GUID GetWorldId() const;
+		NxFr::GUID GetAssetId() const;
 		NxFr::GUID GetGameObjectId() const;
 		NxFr::Array<NxFr::GUID> GetIds() const;
 		void GetIds(NxFr::Set<NxFr::GUID>& Ids) const;
@@ -89,9 +91,11 @@ namespace NxEn
 
 	private:
 		NxFr::GUID GameObjectId;
+		NxFr::GUID AssetId;
 		NxFr::GUID WorldId;
 
 		NxFr::String Name;
+		bool Proxy;
 
 		NxFr::Handle<GameObject> Parent;
 		NxFr::Handle<GameObject> Prev;
