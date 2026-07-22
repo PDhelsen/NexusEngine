@@ -5,26 +5,6 @@ namespace NxEn
 {
 	NX_ASSET(Prefab)
 
-	NxFr::Handle<GameObject> Prefab::GetRoot() const
-	{
-		return Root;
-	}
-
-	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
-	{
-		Unload();
-
-		Root = NxEn::Application::GetSystem<WorldSystem>()->PackPrefab(Instance, GetId());
-		SetDirty();
-
-		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
-		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
-		for (auto& Dependency : Dependencies)
-		{
-			Assets->Acquire(Dependency);
-		}
-	}
-
 	void Prefab::OnDraw()
 	{
 		Asset::OnDraw();
@@ -36,36 +16,19 @@ namespace NxEn
 	{
 		const Prefab& Instance = static_cast<const Prefab&>(Other);
 
-		Unload();
-
-		Root = NxEn::Application::GetSystem<WorldSystem>()->InstantiateGameObject(Instance.Root);
-		SetDirty();
-
-		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
-		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
-		for (auto& Dependency : Dependencies)
-		{
-			Assets->Acquire(Dependency);
-		}
+		Application::GetSystem<WorldSystem>()->PackPrefab(this, Instance.Root);
 	}
 
 	void Prefab::OnSave(NxFr::StringView Path) const
 	{
-		YAML::Node Data = NxEn::Application::GetSystem<WorldSystem>()->SerializePrefab(Root);
+		YAML::Node Data = Application::GetSystem<WorldSystem>()->SerializeGameObject(Root);
 		NxFr::Yaml::SerializeAndSave(Data, Path);
 	}
 
 	void Prefab::OnLoad(NxFr::StringView Path)
 	{
 		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
-		Root = NxEn::Application::GetSystem<WorldSystem>()->DeserializePrefab(Data);
-
-		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
-		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
-		for (auto& Dependency : Dependencies)
-		{
-			Assets->Acquire(Dependency);
-		}
+		SetRoot(Application::GetSystem<WorldSystem>()->DeserializeGameObject(Data));
 	}
 
 	void Prefab::OnUnload()
@@ -75,6 +38,8 @@ namespace NxEn
 			return;
 		}
 
+		Application::GetSystem<WorldSystem>()->UnloadGameObject(Root);
+
 		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
 		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
 		for (auto& Dependency : Dependencies)
@@ -82,7 +47,6 @@ namespace NxEn
 			Assets->Release(Dependency);
 		}
 
-		NxEn::Application::GetSystem<WorldSystem>()->UnloadPrefab(Root);
 		Root = NxFr::Handle<GameObject>();
 	}
 
@@ -101,6 +65,21 @@ namespace NxEn
 			{
 				Ids.Append(Dependency);
 			}
+		}
+	}
+
+	void Prefab::SetRoot(NxFr::Handle<GameObject> Instance)
+	{
+		Unload();
+
+		Root = Instance;
+		SetDirty();
+
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+		NxFr::Array<NxFr::GUID> Dependencies = GetDependencies();
+		for (auto& Dependency : Dependencies)
+		{
+			Assets->Acquire(Dependency);
 		}
 	}
 }

@@ -6,7 +6,7 @@ namespace NxEn
 	NX_WORLD_OBJECT(GameObject)
 
 	GameObject::GameObject()
-		: GameObjectId(0), AssetId(0), WorldId(0),
+		: GameObjectId(0), TemplateId(0), WorldId(0),
 		Name(), Proxy(false),
 		Parent(), Prev(), Next(), Child(),
 		Behaviours(), Components()
@@ -232,7 +232,7 @@ namespace NxEn
 			const GameObject* Target = IteratorInstance.GetRedirectedPointer();
 			if (Target->Proxy)
 			{
-				Target = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->AssetId)->GetRoot().GetRedirectedPointer();
+				Target = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->TemplateId)->GetRoot().GetRedirectedPointer();
 			}
 
 			Iterator->Clone(Target);
@@ -354,9 +354,9 @@ namespace NxEn
 		return WorldId;
 	}
 
-	NxFr::GUID GameObject::GetAssetId() const
+	NxFr::GUID GameObject::GetTemplateId() const
 	{
-		return AssetId;
+		return TemplateId;
 	}
 
 	NxFr::GUID GameObject::GetGameObjectId() const
@@ -715,7 +715,7 @@ namespace NxEn
 		GUI::Drawer<NxFr::String>::Field(Name, "Name");
 
 		GUI::Drawer<NxFr::GUID>::Property(GameObjectId, "Id");
-		GUI::Drawer<NxFr::GUID>::Property(AssetId, "AssetId");
+		GUI::Drawer<NxFr::GUID>::Property(TemplateId, "TemplateId");
 
 		bool Enabled = IsEnabled();
 		GUI::Drawer<bool>::Field(Enabled, "Enabled");
@@ -747,7 +747,7 @@ namespace NxEn
 	{
 		Node["Name"] = Name;
 		Node["Id"] = GameObjectId;
-		Node["AssetId"] = AssetId;
+		Node["TemplateId"] = TemplateId;
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
 	}
@@ -766,6 +766,6 @@ namespace NxEn
 
 	void GameObject::OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const
 	{
-		if (AssetId) Ids.TryAppend(AssetId);
+		if (TemplateId) Ids.TryAppend(TemplateId);
 	}
 }

@@ -18,7 +18,7 @@ namespace NxEn
 		NX_OBJECT(WorldSystem)
 
 		inline static const NxFr::StringId MainWorldId = "Main World"_Sid;
-		inline static const NxFr::StringId PrefabWorldId = "Prefab World"_Sid;
+		inline static const NxFr::StringId TemplateWorldId = "Template World"_Sid;
 
 		inline static const NxFr::StringId EventCreatedId = "Created"_Sid;
 		inline static const NxFr::StringId EventDestroyedId = "Destroyed"_Sid;
@@ -32,17 +32,20 @@ namespace NxEn
 		World* GetWorld(NxFr::GUID WorldId = MainWorldId);
 		NxFr::Array<NxFr::GUID> GetWorlds();
 
-		NxFr::Handle<GameObject> PackPrefab(NxFr::Handle<GameObject> Original, NxFr::GUID AssetId);
+		void PackPrefab(Prefab* Instance, NxFr::Handle<GameObject> Original);
 		void UnpackPrefab(NxFr::Handle<GameObject> Original);
-		YAML::Node SerializePrefab(NxFr::Handle<GameObject> Instance);
-		NxFr::Handle<GameObject> DeserializePrefab(YAML::Node Node);
-		void UnloadPrefab(NxFr::Handle<GameObject> Instance);
+		bool IsPrefab(NxFr::Handle<GameObject> Original);
 
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);
 		NxFr::Handle<GameObject> InstantiateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
+		YAML::Node SerializeGameObject(NxFr::Handle<GameObject> Instance);
+		NxFr::Handle<GameObject> DeserializeGameObject(YAML::Node Node);
+		void UnloadGameObject(NxFr::Handle<GameObject> Instance);
+		NxFr::Handle<GameObject> TemplateGameObject(NxFr::Handle<GameObject> Original, NxFr::GUID TemplateId);
+		void UntemplateGameObject(NxFr::Handle<GameObject> Instance);
 
 		template<typename T> NxFr::Handle<T> CreateBehaviour(NxFr::Handle<GameObject> Target) { return static_cast<NxFr::Handle<T>>(CreateBehaviour(T::GetClassType(), Target)); }
 		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target);

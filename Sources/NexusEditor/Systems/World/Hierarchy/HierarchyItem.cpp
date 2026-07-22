@@ -14,7 +14,7 @@ namespace NxEd
 
 	void HierarchyItem::OnDraw()
 	{
-		if (Cache.GetFirst() != Target->GetName() || Cache.GetSecond() != Target->GetAssetId())
+		if (Cache.GetFirst() != Target->GetName() || Cache.GetSecond() != Target->GetTemplateId())
 		{
 			CacheImGuiText();
 		}
@@ -35,7 +35,7 @@ namespace NxEd
 		ImGuiText = Prefix + " " + Target->GetName() + "##" + NxFr::StringUtility::ToString(Target->GetId());
 
 		Cache.SetFirst(Target->GetName());
-		Cache.SetSecond(Target->GetAssetId());
+		Cache.SetSecond(Target->GetTemplateId());
 	}
 
 	HierarchyItem* HierarchyItem::GetParent() const

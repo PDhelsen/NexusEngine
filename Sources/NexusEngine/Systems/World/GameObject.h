@@ -35,7 +35,7 @@ namespace NxEn
 
 		NxFr::GUID GetId() const override;
 		NxFr::GUID GetWorldId() const;
-		NxFr::GUID GetAssetId() const;
+		NxFr::GUID GetTemplateId() const;
 		NxFr::GUID GetGameObjectId() const;
 		NxFr::Array<NxFr::GUID> GetIds() const;
 		void GetIds(NxFr::Set<NxFr::GUID>& Ids) const;
@@ -91,7 +91,7 @@ namespace NxEn
 
 	private:
 		NxFr::GUID GameObjectId;
-		NxFr::GUID AssetId;
+		NxFr::GUID TemplateId;
 		NxFr::GUID WorldId;
 
 		NxFr::String Name;

@@ -33,7 +33,7 @@ namespace NxEn
 		World* GetWorld();
 		void SetWorldRoot(NxFr::Handle<GameObject> Instance);
 
-		NxFr::Handle<GameObject> CreateGameObject(NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0, NxFr::GUID AssetId = 0, ReferenceMode Mode = ReferenceMode::Ignore);
+		NxFr::Handle<GameObject> CreateGameObject(NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0, NxFr::GUID TemplateId = 0, ReferenceMode Mode = ReferenceMode::Ignore);
 		NxFr::Handle<GameObject> CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), ReferenceMode Mode = ReferenceMode::Ignore);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), ReferenceMode Mode = ReferenceMode::Ignore);
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);

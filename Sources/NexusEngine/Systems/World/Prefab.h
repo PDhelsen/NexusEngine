@@ -15,8 +15,7 @@ namespace NxEn
 
 		NX_OBJECT(Prefab)
 
-		NxFr::Handle<GameObject> GetRoot() const;
-		void SetRoot(NxFr::Handle<GameObject> Instance);
+		NxFr::Handle<GameObject> GetRoot() const { return Root; }
 
 	protected:
 		void OnDraw() override;
@@ -25,6 +24,9 @@ namespace NxEn
 		void OnLoad(NxFr::StringView Path) override;
 		void OnUnload() override;
 		void OnGetDependencies(NxFr::Set<NxFr::GUID>& Ids) const override;
+
+	private:
+		void SetRoot(NxFr::Handle<GameObject> Instance);
 
 	private:
 		NxFr::Handle<GameObject> Root;

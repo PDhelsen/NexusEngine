@@ -93,7 +93,7 @@ namespace NxEd
 			for (auto& Item : Items)
 			{
 				NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-				if (Assets->IsTracked(Instance->GetAssetId()))
+				if (Assets->IsTracked(Instance->GetTemplateId()))
 				{
 					NX_LOG(Error, System, "%s is already a prefab", Instance->GetName().C());
 					continue;
@@ -101,7 +101,7 @@ namespace NxEd
 
 				NxFr::String Path = NxFr::Path::IsDirectory(Input) ? Input + Item->GetItemName() : NxFr::String(Input);
 				NxEn::Prefab* Prefab = Assets->Create<NxEn::Prefab>(Path, NxEn::Prefab::Extension);
-				Prefab->SetRoot(Instance);
+				Worlds->PackPrefab(Prefab, Instance);
 			}
 		});
 	}
@@ -114,14 +114,14 @@ namespace NxEd
 		for (auto& Item : Items)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-			if (!Assets->IsTracked(Instance->GetAssetId()))
+			if (!Assets->IsTracked(Instance->GetTemplateId()))
 			{
 				NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
 				continue;
 			}
 
-			NxEn::Prefab* Prefab = Assets->Load<NxEn::Prefab>(Instance->GetAssetId());
-			Prefab->SetRoot(Instance);
+			NxEn::Prefab* Prefab = Assets->Load<NxEn::Prefab>(Instance->GetTemplateId());
+			Worlds->PackPrefab(Prefab, Instance);
 		}
 	}
 
@@ -133,7 +133,7 @@ namespace NxEd
 		for (auto& Item : Items)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Item)->GetTarget();
-			if (!Assets->IsTracked(Instance->GetAssetId()))
+			if (!Assets->IsTracked(Instance->GetTemplateId()))
 			{
 				NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
 				continue;
