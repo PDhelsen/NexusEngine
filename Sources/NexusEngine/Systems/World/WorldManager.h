@@ -33,6 +33,9 @@ namespace NxEn
 		World* GetWorld();
 		void SetWorldRoot(NxFr::Handle<GameObject> Instance);
 
+		void RegisterScene(NxFr::GUID SceneId, NxFr::Handle<GameObject> Root);
+		void UnregisterScene(NxFr::GUID SceneId);
+
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0, NxFr::GUID TemplateId = 0, ReferenceMode Mode = ReferenceMode::Ignore);
 		NxFr::Handle<GameObject> CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), ReferenceMode Mode = ReferenceMode::Ignore);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), ReferenceMode Mode = ReferenceMode::Ignore);
@@ -53,6 +56,8 @@ namespace NxEn
 		bool Belong(NxFr::Handle<Object> Instance);
 		WorldObjectType GetType(NxFr::Handle<Object> Instance);
 		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId);
+		NxFr::Handle<GameObject> GetScene(NxFr::GUID SceneId);
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> GetScenes();
 		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::GameObject);
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::GameObject);
 		NxFr::Array<NxFr::GUID> FindGameObjects(NxFr::StringView Query);
@@ -71,7 +76,9 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, WorldObject> Objects;
 		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>> Remap;
 		HandleManager Handles;
+
 		World* WorldInstance;
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> SceneInstances;
 	};
 }
 

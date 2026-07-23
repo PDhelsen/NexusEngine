@@ -9,6 +9,7 @@
 #include "NexusEngine/Systems/World/Behaviour.h"
 #include "NexusEngine/Systems/World/Component.h"
 #include "NexusEngine/Systems/World/Prefab.h"
+#include "NexusEngine/Systems/World/Scene.h"
 
 namespace NxEn
 {
@@ -31,6 +32,12 @@ namespace NxEn
 		void DestroyWorld(NxFr::GUID WorldId);
 		World* GetWorld(NxFr::GUID WorldId = MainWorldId);
 		NxFr::Array<NxFr::GUID> GetWorlds();
+
+		NxFr::Handle<GameObject> InstantiateScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		void DestroyScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		void PackScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		bool IsSceneInstantiated(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		bool IsScene(NxFr::Handle<GameObject> Original);
 
 		void PackPrefab(Prefab* Instance, NxFr::Handle<GameObject> Original);
 		void UnpackPrefab(NxFr::Handle<GameObject> Original);
@@ -63,6 +70,8 @@ namespace NxEn
 		WorldObjectType GetType(NxFr::Handle<Object> Instance, NxFr::GUID WorldId = Object::NullId);
 		NxFr::Handle<Object> GetObject(NxFr::GUID ObjectId, NxFr::GUID WorldId = Object::NullId);
 		NxFr::Array<NxFr::Handle<Object>> GetObjects(WorldObjectType Type = WorldObjectType::All, NxFr::GUID WorldId = Object::NullId);
+		NxFr::Handle<GameObject> GetScene(NxFr::GUID SceneId, NxFr::GUID WorldId = Object::NullId);
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> GetScenes(NxFr::GUID WorldId = Object::NullId);
 		NxFr::Array<NxFr::GUID> Find(NxFr::StringView Query, WorldObjectType Type = WorldObjectType::All, NxFr::GUID WorldId = Object::NullId);
 		NxFr::Array<NxFr::GUID> FindGameObjects(NxFr::StringView Query, NxFr::GUID WorldId = Object::NullId);
 		NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recursive = false);
@@ -99,7 +108,7 @@ namespace NxEn
 		Iterator::WorldObject End(NxFr::StringId Type, NxFr::GUID WorldId = MainWorldId);
 		template<typename T> NxFr::Iterator::View<Iterator::WorldObjectOf<T>> View(NxFr::GUID WorldId = MainWorldId) { return { Begin<T>(WorldId), End<T>(WorldId) }; }
 
-		NxFr::Event<NxFr::StringId, NxFr::GUID>& GetOnWorldChange() { return OnWorldChange; }
+		NxFr::Event<NxFr::StringId, NxFr::GUID, bool>& GetOnWorldChange() { return OnWorldChange; }
 		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID>& GetOnWorldObjectChange() { return OnWorldObjectChange; }
 
 	protected:
@@ -110,7 +119,7 @@ namespace NxEn
 	private:
 		WorldManager* GetManager(NxFr::GUID WorldId);
 
-		NxFr::Event<NxFr::StringId, NxFr::GUID> OnWorldChange;
+		NxFr::Event<NxFr::StringId, NxFr::GUID, bool> OnWorldChange;
 		NxFr::Event<NxFr::StringId, NxFr::GUID, NxFr::GUID> OnWorldObjectChange;
 
 		NxFr::Dictionary<NxFr::GUID, WorldManager*> Managers;

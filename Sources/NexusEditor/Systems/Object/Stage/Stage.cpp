@@ -22,8 +22,13 @@ namespace NxEd
 			World = Worlds->CreateWorld(Target->GetName());
 			if (Target->GetObjectType() == NxEn::Prefab::GetClassType())
 			{
-				NxEn::Prefab* Prefab = static_cast<NxEn::Prefab*>(Target);
-				Worlds->InstantiateGameObject(Prefab->GetRoot(), World->GetRoot(), World->GetId());
+				NxEn::Prefab* Instance = static_cast<NxEn::Prefab*>(Target);
+				Worlds->InstantiateGameObject(Instance->GetRoot(), World->GetRoot(), World->GetId());
+			}
+			else if (Target->GetObjectType() == NxEn::Scene::GetClassType())
+			{
+				NxEn::Scene* Instance = static_cast<NxEn::Scene*>(Target);
+				Worlds->InstantiateScene(Instance, World->GetId());
 			}
 		}
 	}
@@ -92,7 +97,7 @@ namespace NxEd
 	{
 		Element::OnEnable();
 
-		if (Target->GetObjectType() == NxEn::World::GetClassType() || Target->GetObjectType() == NxEn::Prefab::GetClassType())
+		if (Target->GetObjectType() == NxEn::World::GetClassType() || Target->GetObjectType() == NxEn::Scene::GetClassType() || Target->GetObjectType() == NxEn::Prefab::GetClassType())
 		{
 			Viewer->Show(World);
 			Inspector->Show(World->GetRoot());

@@ -6,7 +6,8 @@
 namespace NxEn
 {
 	WorldManager::WorldManager()
-		: Storages(), Objects(), Remap(), Handles(), WorldInstance(nullptr)
+		: Storages(), Objects(), Remap(), Handles(),
+		WorldInstance(nullptr), SceneInstances()
 	{
 		
 	}
@@ -80,6 +81,16 @@ namespace NxEn
 		{
 			Instance->SetTickable(true);
 		}
+	}
+
+	void WorldManager::RegisterScene(NxFr::GUID SceneId, NxFr::Handle<GameObject> Root)
+	{
+		SceneInstances.Append(SceneId, Root);
+	}
+
+	void WorldManager::UnregisterScene(NxFr::GUID SceneId)
+	{
+		SceneInstances.Remove(SceneId);
 	}
 
 	NxFr::Handle<GameObject> WorldManager::CreateGameObject(NxFr::Handle<GameObject> Parent, NxFr::GUID GameObjectId, NxFr::GUID TemplateId, ReferenceMode Mode)
@@ -393,6 +404,16 @@ namespace NxEn
 		ObjectId = ResolveId(ObjectId);
 		const WorldObject* Info = Objects.TryGet(ObjectId);
 		return Info ? Info->Handle : NxFr::Handle<Object>();
+	}
+
+	NxFr::Handle<GameObject> WorldManager::GetScene(NxFr::GUID SceneId)
+	{
+		return SceneInstances[SceneId];
+	}
+
+	NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> WorldManager::GetScenes()
+	{
+		return SceneInstances;
 	}
 
 	NxFr::Array<NxFr::Handle<Object>> WorldManager::GetObjects(WorldObjectType Type)

@@ -149,6 +149,11 @@ namespace NxEd
 				NxEn::Prefab* Instance = Assets->Load<NxEn::Prefab>(Id);
 				Worlds->InstantiateGameObject(Instance->GetRoot());
 			}
+			else if (Type == NxEn::Scene::GetClassType())
+			{
+				NxEn::Scene* Instance = Assets->Load<NxEn::Scene>(Id);
+				Worlds->InstantiateScene(Instance);
+			}
 			else
 			{
 				NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");

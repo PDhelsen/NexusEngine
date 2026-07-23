@@ -27,9 +27,16 @@ namespace NxEd
 
 	void HierarchyItem::CacheImGuiText()
 	{
+		NxEn::AssetMetadata* Metadata = nullptr;
+		if (Target->GetTemplateId())
+		{
+			Metadata = &NxEn::Application::GetSystem<NxEn::AssetsSystem>()->GetMetadata(Target->GetTemplateId());
+		}
+
 		NxFr::StringView Prefix =
 			Target == Target->GetWorld()->GetRoot() ? "W" :
-			Target->GetAssetId() ? "P" :
+			Metadata && Metadata->GetType() == NxEn::Scene::GetClassType() ? "S" :
+			Metadata && Metadata->GetType() == NxEn::Prefab::GetClassType() ? "P" :
 			"G";
 
 		ImGuiText = Prefix + " " + Target->GetName() + "##" + NxFr::StringUtility::ToString(Target->GetId());

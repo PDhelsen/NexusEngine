@@ -1,0 +1,8 @@
+Name: %s
+Id: 0
+TemplateId : %llu
+Enabled : true
+Tickable : true
+Behaviours : ~
+Components : ~
+Children : ~
