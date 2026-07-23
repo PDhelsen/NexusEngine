@@ -32,20 +32,21 @@ namespace NxEn
 		void DestroyWorld(NxFr::GUID WorldId);
 		World* GetWorld(NxFr::GUID WorldId = MainWorldId);
 		NxFr::Array<NxFr::GUID> GetWorlds();
+		bool IsWorld(NxFr::Handle<GameObject> Instance);
 
 		NxFr::Handle<GameObject> InstantiateScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
 		void DestroyScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
 		void PackScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
 		bool IsSceneInstantiated(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
-		bool IsScene(NxFr::Handle<GameObject> Original);
+		bool IsScene(NxFr::Handle<GameObject> Instance);
 
 		void PackPrefab(Prefab* Instance, NxFr::Handle<GameObject> Original);
 		void UnpackPrefab(NxFr::Handle<GameObject> Original);
-		bool IsPrefab(NxFr::Handle<GameObject> Original);
+		bool IsPrefab(NxFr::Handle<GameObject> Instance);
 
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);
 		NxFr::Handle<GameObject> InstantiateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);
-		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID WorldId = MainWorldId);
+		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		YAML::Node SerializeGameObject(NxFr::Handle<GameObject> Instance);
