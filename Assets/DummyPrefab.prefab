@@ -1,0 +1,15 @@
+Name: DummyPrefab
+Id: 1945725971663343409
+TemplateId: 15007799813166494080
+Enabled: true
+Tickable: false
+Behaviours: ~
+Components:
+  - Type: Transform
+    Id: 4717840507718332582
+    Target: 1945725971663343409
+    Enabled: true
+    Position: [0, 0, 0]
+    Rotation: [1, 0, 0, 0]
+    Scaling: [1, 1, 1]
+Children: ~
