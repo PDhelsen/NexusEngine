@@ -30,7 +30,7 @@ namespace NxEd
 		NxEn::AssetMetadata* Metadata = nullptr;
 		if (Target->GetTemplateId())
 		{
-			Metadata = &NxEn::Application::GetSystem<NxEn::AssetsSystem>()->GetMetadata(Target->GetTemplateId());
+			Metadata = NxEn::Application::GetSystem<NxEn::AssetsSystem>()->GetMetadata(Target->GetTemplateId());
 		}
 
 		NxFr::StringView Prefix =

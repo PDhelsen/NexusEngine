@@ -142,7 +142,7 @@ namespace NxEd
 			}
 
 			NxFr::GUID Id = Item->GetItemId();
-			NxFr::StringId Type = Assets->GetMetadata(Id).GetType();
+			NxFr::StringId Type = Assets->GetMetadata(Id)->GetType();
 
 			if (Type == NxEn::Prefab::GetClassType())
 			{

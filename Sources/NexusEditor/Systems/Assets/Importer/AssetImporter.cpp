@@ -44,7 +44,7 @@ namespace NxEd
 		NxFr::StringView Extension = NxFr::Path::GetExtension(ContentPath);
 		Id = Id != 0 ? Id : Assets->PathToId(Path);
 		bool Exist = Assets->IsTracked(Id);
-		Metadata = Exist ? &Assets->GetMetadata(Id) : nullptr;
+		Metadata = Exist ? Assets->GetMetadata(Id) : nullptr;
 		Type = Exist ? Metadata->GetType() : Type.GetId() != 0 ? Type : GetTypes().TryGet(Extension) != nullptr ? *GetTypes().TryGet(Extension) : NxFr::StringUtility::Id;
 
 		NX_ASSERT(Type != NxFr::StringUtility::Id, Default, "AssetImporter needs a Type to import a file");

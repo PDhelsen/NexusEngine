@@ -77,8 +77,8 @@ namespace NxEn
 		Asset* Reimport(NxFr::GUID Id, const YAML::Node& Assetdata);
 
 		Asset* GetAsset(NxFr::GUID Id);
-		AssetHandle& GetHandle(NxFr::GUID Id);
-		AssetMetadata& GetMetadata(NxFr::GUID Id);
+		AssetHandle* GetHandle(NxFr::GUID Id);
+		AssetMetadata* GetMetadata(NxFr::GUID Id);
 		YAML::Node GetAssetdata(NxFr::GUID Id);
 		NxFr::Array<NxFr::GUID> GetDependencies(NxFr::GUID Id, bool Recursive = false);
 		void GetDependencies(NxFr::GUID Id, bool Recursive, NxFr::Set<NxFr::GUID>& Result);

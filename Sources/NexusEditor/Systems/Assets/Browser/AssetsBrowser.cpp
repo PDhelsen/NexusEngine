@@ -268,7 +268,7 @@ namespace NxEd
 
 		Item->Path = ItemPath;
 		Item->Id = ItemPathToId(ItemPath);
-		Item->Type = Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? Assets->GetMetadata(Item->Id).GetType() : Item->GetObjectType();
+		Item->Type = Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? Assets->GetMetadata(Item->Id)->GetType() : Item->GetObjectType();
 		Item->CacheImGuiText();
 
 		Items.TryAppend(Item->Id, Item);
