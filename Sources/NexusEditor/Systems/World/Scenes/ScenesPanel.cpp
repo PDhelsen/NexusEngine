@@ -176,7 +176,14 @@ namespace NxEd
 	void ScenesPanel::Load(const SceneInfo& Info)
 	{
 		NxEn::Scene* SceneInstance = Assets->Acquire<NxEn::Scene>(Info.Id);
-		Worlds->InstantiateScene(SceneInstance, SettingLoadSingle->GetValue(), GetWorldId());
+		if (SettingLoadSingle->GetValue())
+		{
+			Worlds->InstantiateSceneSingle(SceneInstance, GetWorldId());
+		}
+		else
+		{
+			Worlds->InstantiateScene(SceneInstance, GetWorldId());
+		}
 	}
 
 	void ScenesPanel::Unload(const SceneInfo& Info)

@@ -260,7 +260,7 @@ namespace NxEn
 		return Instance == Manager->GetWorld()->GetRoot();
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::InstantiateScene(Scene* Instance, bool Single, NxFr::GUID WorldId)
+	NxFr::Handle<GameObject> WorldSystem::InstantiateScene(Scene* Instance, NxFr::GUID WorldId)
 	{
 		NX_ASSERT(Instance, Default, "Instance should be valid");
 		NX_ASSERT(WorldId != TemplateWorldId, Default, "Can't be use on the prefab world");
@@ -270,11 +270,6 @@ namespace NxEn
 		{
 			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
 			return NxFr::Handle<GameObject>();
-		}
-
-		if (Single)
-		{
-			DestroyScenes(WorldId);
 		}
 
 		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
@@ -292,6 +287,12 @@ namespace NxEn
 		OnWorldObjectChange.Invoke(EventCreatedId, Root->GetWorldId(), Root->GetId());
 
 		return Root;
+	}
+
+	NxFr::Handle<GameObject> WorldSystem::InstantiateSceneSingle(Scene* Instance, NxFr::GUID WorldId)
+	{
+		DestroyScenes(WorldId);
+		return InstantiateScene(Instance, WorldId);
 	}
 
 	void WorldSystem::DestroyScene(Scene* Instance, NxFr::GUID WorldId)
