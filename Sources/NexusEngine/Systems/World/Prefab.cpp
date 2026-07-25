@@ -14,6 +14,11 @@ namespace NxEn
 
 	void Prefab::OnClone(const Object& Other)
 	{
+		if (!Root)
+		{
+			return;
+		}
+
 		const Prefab& Instance = static_cast<const Prefab&>(Other);
 
 		Application::GetSystem<WorldSystem>()->PackPrefab(this, Instance.Root);
@@ -21,12 +26,22 @@ namespace NxEn
 
 	void Prefab::OnSave(NxFr::StringView Path) const
 	{
+		if (!Root)
+		{
+			return;
+		}
+
 		YAML::Node Data = Application::GetSystem<WorldSystem>()->SerializeGameObject(Root);
 		NxFr::Yaml::SerializeAndSave(Data, Path);
 	}
 
 	void Prefab::OnLoad(NxFr::StringView Path)
 	{
+		if (Path.IsEmpty())
+		{
+			return;
+		}
+
 		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
 		SetRoot(Application::GetSystem<WorldSystem>()->DeserializeGameObject(Data));
 	}
