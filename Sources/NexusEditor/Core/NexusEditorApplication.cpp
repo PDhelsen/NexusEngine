@@ -57,10 +57,10 @@ namespace NxEd
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event Save", [&]()
 		{
-			OnSave += []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
-			OnSave += []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
+			OnSave += []() { GetSystem<NxEn::WorldSystem>()->PackScenes(); };
 			OnSave += []() { GetSystem<NxEn::AssetsSystem>()->SaveDirty(); };
-			//OnSave += []() { GetSystem<NxEn::WorldSystem>()->SaveScenes(); };
+			OnSave += []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
+			OnSave += []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
 		});
 
 		Bootstrap.AppendSystem<EditSystem>();
@@ -125,8 +125,8 @@ namespace NxEd
 		{
 			OnSave -= []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
 			OnSave -= []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
+			OnSave -= []() { GetSystem<NxEn::WorldSystem>()->PackScenes(); };
 			OnSave -= []() { GetSystem<NxEn::AssetsSystem>()->SaveDirty(); };
-			//OnSave -= []() { GetSystem<NxEn::WorldSystem>()->SaveScenes(); };
 		});
 
 		NexusEngineApplication::OnShutdown();

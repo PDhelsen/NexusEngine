@@ -15,28 +15,36 @@ namespace NxEd
 
 	void ScenesPanel::Refresh()
 	{
-		NxFr::Array<NxFr::GUID> ScenesIds = Assets->Find("t:Scene");
-		ScenesInfos = ScenesIds.GetCount();
-		for (uint64 Index = 0; Index < ScenesIds.GetCount(); ++Index)
+		NxFr::Array<NxFr::GUID> Scenes = Assets->Find("t:Scene");
+		ScenesInstances = Scenes.GetCount();
+		for (uint64 Index = 0; Index < Scenes.GetCount(); ++Index)
 		{
-			NxFr::GUID Id = ScenesIds[Index];
-			ScenesInfos[Index] = Info{
-				.Id = Id,
-				.Path = Assets->IdToPath(Id),
-				.World = Worlds->IsSceneLoaded(Id)
+			NxFr::GUID SceneId = Scenes[Index];
+			ScenesInstances[Index] = SceneInfo
+			{
+				.Id = SceneId,
+				.Path = Assets->IdToPath(SceneId)
 			};
 		}
 
-		WorldsIds = Worlds->GetWorlds();
-		WorldsIndex = NxFr::ContainerUtility::Find(WorldsIds, NxEn::WorldSystem::WorldId.GetId()).Id();
-		NxFr::Array<NxFr::StringView> WorldsLabel = WorldsIds.GetCount();
-		for (uint64 Index = 0; Index < WorldsIds.GetCount(); ++Index)
+		NxFr::GUID TargetWorldId = NxEn::WorldSystem::MainWorldId;
+		if (WorldsInstances.IsValidIndex(WorldIndex))
 		{
-			WorldsLabel[Index] = Worlds->GetWorld(WorldsIds[Index])->GetName();
+			TargetWorldId = GetWorldId();
+		}
+
+		WorldsInstances = Worlds->GetWorlds();
+		auto WorldIterator = NxFr::ContainerUtility::Find(WorldsInstances, TargetWorldId);
+		WorldIndex = WorldIterator != WorldsInstances.End() ? WorldIterator.Id() : 0;
+		NxFr::Array<NxFr::StringView> WorldsLabel = WorldsInstances.GetCount();
+		for (uint64 Index = 0; Index < WorldsInstances.GetCount(); ++Index)
+		{
+			NxFr::GUID WorldId = WorldsInstances[Index];
+			WorldsLabel[Index] = Worlds->GetWorld(WorldId)->GetName();
 		}
 
 		Menu.Remove("Worlds/");
-		Menu.AddMenuEnum("Worlds/", &WorldsIndex, WorldsLabel, nullptr, 2);
+		Menu.AddMenuEnum("Worlds/", &WorldIndex, WorldsLabel, nullptr, 2);
 	}
 
 	void ScenesPanel::OnInitialize()
@@ -56,7 +64,7 @@ namespace NxEd
 	{
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		Worlds->GetOnSceneEvent() += { this, &ScenesPanel::OnScenesChanged };
+		Worlds->GetOnWorldChange() += { this, &ScenesPanel::OnScenesChanged };
 
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
@@ -70,7 +78,7 @@ namespace NxEd
 		Menu.SetEnabled(false);
 		Panel::OnDisable();
 
-		Worlds->GetOnSceneEvent() -= { this, &ScenesPanel::OnScenesChanged };
+		Worlds->GetOnWorldChange() -= { this, &ScenesPanel::OnScenesChanged };
 		Worlds = nullptr;
 		Assets = nullptr;
 	}
@@ -82,53 +90,57 @@ namespace NxEd
 		Style.Position.x = -1.0f;
 		Menu.Draw();
 
-		int32 Toggle = -1;
+		int64 ActionIndex = -1;
+		Action ActionType = Action::None;
+
 		float Origin = ImGui::GetCursorPosX();
 		float Offset = NxEn::GUI::Utils::Fill().x - Width * 2.0f;
 
-		for (uint64 Index = 0; Index < ScenesInfos.GetCount(); ++Index)
+		NxFr::GUID WorldId = GetWorldId();
+		for (uint64 Index = 0; Index < ScenesInstances.GetCount(); ++Index)
 		{
-			Info& Info = ScenesInfos[Index];
+			const SceneInfo& Info = ScenesInstances[Index];
 
 			Style.Position.x = Origin;
 			NxEn::GUI::Draw::Label(Info.Path, &Style);
+
 			ImGui::SameLine();
 
 			Style.Position.x = Origin + Offset;
-			bool IsLoaded = Info.IsLoaded();
-			NxEn::GUI::Draw::Label(IsLoaded ? Info.World.GetString() : "None", &Style);
-			ImGui::SameLine();
-
-			Style.Position.x = Origin + Offset + Width;
 			Style.SetPosition();
+			bool IsLoaded = IsSceneLoaded(Info.Id, WorldId);
 			if (NxEn::GUI::Draw::Button((IsLoaded ? "Unload" : "Load") + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), NxFr::Vector2f(Width, 0.0f)))
 			{
-				Toggle = Index;
+				ActionIndex = Index;
+				ActionType = Action::Toggle;
+			}
+
+			if (IsLoaded)
+			{
+				ImGui::SameLine();
+
+				Style.Position.x += Offset;
+				if (NxEn::GUI::Draw::Button("Save" + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), NxFr::Vector2f(Width, 0.0f)))
+				{
+					ActionIndex = Index;
+					ActionType = Action::Save;
+				}
 			}
 		}
 
-		if (Toggle >= 0)
+		if (ActionIndex >= 0)
 		{
-			OnToggle(Toggle);
+			switch (ActionType)
+			{
+			case Action::Toggle: Toggle(ScenesInstances[ActionIndex]); break;
+			case Action::Save: Save(ScenesInstances[ActionIndex]); break;
+			}
 		}
 	}
 
-	void ScenesPanel::OnScenesChanged(NxFr::StringId, NxFr::GUID, NxFr::GUID)
+	void ScenesPanel::OnScenesChanged(NxFr::StringId Action, NxFr::GUID SceneId, bool IsScene)
 	{
 		Refresh();
-	}
-
-	void ScenesPanel::OnToggle(uint64 Index)
-	{
-		Info& Info = ScenesInfos[Index];
-		if (Info.IsLoaded())
-		{
-			Unload(Info.Id);
-		}
-		else
-		{
-			Load(Info.Id);
-		}
 	}
 
 	void ScenesPanel::Create()
@@ -136,24 +148,41 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			Worlds->CreateScene(Input, GetWorld());
+			Assets->Create<NxEn::Scene>(Input, NxEn::Scene::Extension);
+			Refresh();
 		});
 	}
 
-	void ScenesPanel::Load(NxFr::GUID SceneId)
+	void ScenesPanel::Save(const SceneInfo& Info)
 	{
-		if (SettingLoadSingle->GetValue())
+		NxEn::Scene* SceneInstance = Assets->GetAsset<NxEn::Scene>(Info.Id);
+		Worlds->PackScene(SceneInstance, GetWorldId());
+		Assets->Save(SceneInstance->GetId());
+	}
+
+	void ScenesPanel::Toggle(const SceneInfo& Info)
+	{
+		NxFr::GUID WorldId = GetWorldId();
+		if (IsSceneLoaded(Info.Id, WorldId))
 		{
-			Worlds->LoadSceneSingle(SceneId, GetWorld());
+			Unload(Info);
 		}
 		else
 		{
-			Worlds->LoadScene(SceneId, GetWorld());
+			Load(Info);
 		}
 	}
 
-	void ScenesPanel::Unload(NxFr::GUID SceneId)
+	void ScenesPanel::Load(const SceneInfo& Info)
 	{
-		Worlds->UnloadScene(SceneId);
+		NxEn::Scene* SceneInstance = Assets->Acquire<NxEn::Scene>(Info.Id);
+		Worlds->InstantiateScene(SceneInstance, SettingLoadSingle->GetValue(), GetWorldId());
+	}
+
+	void ScenesPanel::Unload(const SceneInfo& Info)
+	{
+		NxEn::Scene* SceneInstance = Assets->GetAsset<NxEn::Scene>(Info.Id);
+		Worlds->DestroyScene(SceneInstance, GetWorldId());
+		Assets->Release(SceneInstance->GetId());
 	}
 }

@@ -223,14 +223,27 @@ namespace NxEn
 		return Manager->GetWorld();
 	}
 
-	NxFr::Array<NxFr::GUID> WorldSystem::GetWorlds()
+	NxFr::Array<NxFr::GUID> WorldSystem::GetWorlds(bool IncludeTemplateWorld)
 	{
-		NxFr::Array<NxFr::GUID> Result(Managers.GetCount());
 		uint64 Index = 0;
+		uint64 Count = Managers.GetCount();
+		if (Managers.TryGet(TemplateWorldId) && !IncludeTemplateWorld)
+		{
+			Count -= 1;
+		}
+		NxFr::Array<NxFr::GUID> Result = Count;
 
 		for (auto& [Id, Manager] : Managers)
 		{
-			Result[Index++] = Id;
+			if (!IncludeTemplateWorld && Id == TemplateWorldId)
+			{
+				continue;
+			}
+
+			if (Result.IsValidIndex(Index))
+			{
+				Result[Index++] = Id;
+			}
 		}
 
 		return Result;
@@ -247,7 +260,7 @@ namespace NxEn
 		return Instance == Manager->GetWorld()->GetRoot();
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::InstantiateScene(Scene* Instance, NxFr::GUID WorldId)
+	NxFr::Handle<GameObject> WorldSystem::InstantiateScene(Scene* Instance, bool Single, NxFr::GUID WorldId)
 	{
 		NX_ASSERT(Instance, Default, "Instance should be valid");
 		NX_ASSERT(WorldId != TemplateWorldId, Default, "Can't be use on the prefab world");
@@ -257,6 +270,11 @@ namespace NxEn
 		{
 			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
 			return NxFr::Handle<GameObject>();
+		}
+
+		if (Single)
+		{
+			DestroyScenes(WorldId);
 		}
 
 		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
@@ -301,6 +319,26 @@ namespace NxEn
 		Manager->DestroyGameObject(Root);
 	}
 
+	void WorldSystem::DestroyScenes(NxFr::GUID WorldId)
+	{
+		NX_ASSERT(WorldId != TemplateWorldId, Default, "Can't be use on the prefab world");
+
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return;
+		}
+
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> Scenes = Manager->GetScenes();
+		for (auto [Id, Original] : Scenes)
+		{
+			AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+			Scene* SceneInstance = Assets->GetAsset<Scene>(Id);
+			DestroyScene(SceneInstance, WorldId);
+		}
+	}
+
 	void WorldSystem::PackScene(Scene* Instance, NxFr::GUID WorldId)
 	{
 		NX_ASSERT(Instance, Default, "Instance should be valid");
@@ -320,9 +358,28 @@ namespace NxEn
 		Instance->SetRoot(Root);
 	}
 
-	bool WorldSystem::IsSceneInstantiated(Scene* Instance, NxFr::GUID WorldId)
+	void WorldSystem::PackScenes(NxFr::GUID WorldId)
 	{
-		NX_ASSERT(Instance, Default, "Instance should be valid");
+		NX_ASSERT(WorldId != TemplateWorldId, Default, "Can't be use on the prefab world");
+
+		WorldManager* Manager = GetManager(WorldId);
+		if (!Manager)
+		{
+			NX_LOG(Warning, System, "World %llu doesn't exist", WorldId);
+			return;
+		}
+
+		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> Scenes = Manager->GetScenes();
+		for (auto [Id, Original] : Scenes)
+		{
+			AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
+			Scene* SceneInstance = Assets->GetAsset<Scene>(Id);
+			PackScene(SceneInstance, WorldId);
+		}
+	}
+
+	bool WorldSystem::IsSceneInstantiated(NxFr::GUID SceneId, NxFr::GUID WorldId)
+	{
 		NX_ASSERT(WorldId != TemplateWorldId, Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
@@ -332,7 +389,7 @@ namespace NxEn
 			return false;
 		}
 
-		NxFr::Handle<GameObject> Root = Manager->GetScene(Instance->GetId());
+		NxFr::Handle<GameObject> Root = Manager->GetScene(SceneId);
 		return Root.GetRedirectedPointer();
 	}
 

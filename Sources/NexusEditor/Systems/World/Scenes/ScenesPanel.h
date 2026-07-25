@@ -6,14 +6,7 @@ namespace NxEd
 {
 	class NX_EDITOR_API ScenesPanel : public NxEn::GUI::Panel
 	{
-		struct Info
-		{
-			NxFr::GUID Id;
-			NxFr::String Path;
-			NxFr::StringId World;
-
-			bool IsLoaded() const { return World.GetId() != 0; }
-		};
+		struct SceneInfo;
 
 	public:
 		NX_OBJECT(ScenesPanel)
@@ -26,25 +19,37 @@ namespace NxEd
 		void OnDisable() override;
 		void OnDraw() override;
 
-		void OnScenesChanged(NxFr::StringId, NxFr::GUID, NxFr::GUID);
-		void OnToggle(uint64 Index);
+		void OnScenesChanged(NxFr::StringId Action, NxFr::GUID SceneId, bool IsScene);
 
 		void Create();
-		void Load(NxFr::GUID SceneId);
-		void Unload(NxFr::GUID SceneId);
+		void Save(const SceneInfo& Info);
+		void Toggle(const SceneInfo& Info);
+		void Load(const SceneInfo& Info);
+		void Unload(const SceneInfo& Info);
 
-		NxFr::GUID GetWorld() const { return WorldsIds[WorldsIndex]; }
+		NxFr::GUID GetWorldId() const { return WorldsInstances[WorldIndex]; }
+		bool IsSceneLoaded(NxFr::GUID SceneId, NxFr::GUID WorldId) const { return Worlds->IsSceneInstantiated(SceneId, WorldId); }
 
 	private:
+		enum class Action
+		{
+			None, Toggle, Save
+		};
+
+		struct SceneInfo
+		{
+			NxFr::GUID Id;
+			NxFr::String Path;
+		};
+
 		NxEn::GUI::Style Style;
 		NxEn::GUI::Menu Menu;
 
 		NxEn::AssetsSystem* Assets;
 		NxEn::WorldSystem* Worlds;
 
-		NxFr::Array<NxFr::GUID> WorldsIds;
-		NxFr::Array<Info> ScenesInfos;
-		uint64 WorldsIndex;
-		bool LoadSingle;
+		NxFr::Array<SceneInfo> ScenesInstances;
+		NxFr::Array<NxFr::GUID> WorldsInstances;
+		uint64 WorldIndex;
 	};
 }

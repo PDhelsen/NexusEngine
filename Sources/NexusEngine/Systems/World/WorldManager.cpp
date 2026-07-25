@@ -408,7 +408,8 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldManager::GetScene(NxFr::GUID SceneId)
 	{
-		return SceneInstances[SceneId];
+		NxFr::Handle<GameObject>* Root = SceneInstances.TryGet(SceneId);
+		return Root ? *Root : NxFr::Handle<GameObject>();
 	}
 
 	NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> WorldManager::GetScenes()

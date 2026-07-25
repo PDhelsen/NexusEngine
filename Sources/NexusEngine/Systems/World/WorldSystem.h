@@ -31,13 +31,15 @@ namespace NxEn
 		World* CreateWorld(NxFr::StringId Name);
 		void DestroyWorld(NxFr::GUID WorldId);
 		World* GetWorld(NxFr::GUID WorldId = MainWorldId);
-		NxFr::Array<NxFr::GUID> GetWorlds();
+		NxFr::Array<NxFr::GUID> GetWorlds(bool IncludeTemplateWorld = false);
 		bool IsWorld(NxFr::Handle<GameObject> Instance);
 
-		NxFr::Handle<GameObject> InstantiateScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		NxFr::Handle<GameObject> InstantiateScene(Scene* Instance, bool Single = false, NxFr::GUID WorldId = MainWorldId);
 		void DestroyScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		void DestroyScenes(NxFr::GUID WorldId = MainWorldId);
 		void PackScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
-		bool IsSceneInstantiated(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		void PackScenes(NxFr::GUID WorldId = MainWorldId);
+		bool IsSceneInstantiated(NxFr::GUID SceneId, NxFr::GUID WorldId = MainWorldId);
 		bool IsScene(NxFr::Handle<GameObject> Instance);
 
 		void PackPrefab(Prefab* Instance, NxFr::Handle<GameObject> Original);
