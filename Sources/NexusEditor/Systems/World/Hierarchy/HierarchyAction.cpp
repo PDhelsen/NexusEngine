@@ -3,7 +3,7 @@
 
 #include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
 #include "NexusEditor/Core/NexusEditorApplication.h"
-#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
+#include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEd
 {

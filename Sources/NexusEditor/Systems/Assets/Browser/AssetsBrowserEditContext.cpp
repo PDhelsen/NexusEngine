@@ -2,7 +2,7 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
-#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
+#include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEd
 {

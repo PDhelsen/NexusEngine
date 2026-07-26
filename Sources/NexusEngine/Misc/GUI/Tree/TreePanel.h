@@ -1,8 +1,8 @@
 #pragma once
 
 #include "NexusEngine/Systems/GUI/GUI.h"
-#include "NexusEngine/Systems/GUI/Components/Tree/TreeItem.h"
-#include "NexusEngine/Systems/GUI/Components/Tree/TreeAction.h"
+#include "NexusEngine/Misc/GUI/Tree/TreeItem.h"
+#include "NexusEngine/Misc/GUI/Tree/TreeAction.h"
 
 namespace NxEn
 {

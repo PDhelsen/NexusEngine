@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
-#include "NexusEngine/Systems/GUI/Components/Tree/TreeAction.h"
+#include "NexusEngine/Misc/GUI/Tree/TreeAction.h"
 
 namespace NxEd
 {

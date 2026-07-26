@@ -4,7 +4,7 @@
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 #include "NexusEditor/Core/NexusEditorApplication.h"
-#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
+#include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEd
 {

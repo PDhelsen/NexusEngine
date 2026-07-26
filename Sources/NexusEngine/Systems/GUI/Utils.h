@@ -2,7 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/Styles.h"
-#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
+#include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEn
 {

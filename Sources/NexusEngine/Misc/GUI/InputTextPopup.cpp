@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/GUI/Components/InputTextPopup.h"
+#include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEn
 {

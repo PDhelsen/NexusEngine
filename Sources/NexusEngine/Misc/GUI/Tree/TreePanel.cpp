@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/GUI/Components/Tree/TreePanel.h"
+#include "NexusEngine/Misc/GUI/Tree/TreePanel.h"
 
 #include "NexusEngine/Misc/Utils/Filter.h"
 
