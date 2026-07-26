@@ -38,6 +38,11 @@ namespace NxEn
 		GUISystem::GetPanels().TryGet(NxFr::StringId(Id))->Show();
 	}));
 
+	static Command* CmdGuiElement = Command::Create("GUI.Element"_Sid, "Open gui element", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	{
+		Application::GetSystem<GUISystem>()->GetElement(Id)->Show();
+	}));
+
 	static Command* CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
 	{
 		Application::GetSystem<GUISystem>()->SaveLayout(Name);
@@ -180,6 +185,24 @@ namespace NxEn
 		NxFr::Yaml::SerializeAndSave(Data, Path);
 
 		NX_LOG(Info, System, "GUI style %s saved", Name.C());
+	}
+
+	GUI::Element* GUISystem::GetElement(NxFr::StringView Id) const
+	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return nullptr;
+		}
+
+		for (auto& Instance : Elements)
+		{
+			if (Instance->GetImGuiId() == Id)
+			{
+				return Instance;
+			}
+		}
+
+		return nullptr;
 	}
 
 	GUI::Panel* GUISystem::GetActivePanel() const

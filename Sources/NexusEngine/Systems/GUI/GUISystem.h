@@ -13,6 +13,7 @@ namespace NxEn
 		NX_OBJECT(GUISystem)
 
 		template<typename T> static T* GetPanel() { return static_cast<T*>(GetPanels().TryGet(T::GetClassType())); }
+		template<typename T> static T* GetElement() { return static_cast<T*>(Application::GetSystem<GUISystem>()->GetElement(T::GetClassType())); }
 
 		static GUI::Window& GetWindow();
 		static NxFr::Registry<GUI::Panel*>& GetPanels();
@@ -28,6 +29,7 @@ namespace NxEn
 		void LoadTheme(NxFr::StringView Name = "");
 		void SaveTheme(NxFr::StringView Name = "");
 
+		GUI::Element* GetElement(NxFr::StringView Id) const;
 		GUI::Panel* GetActivePanel() const;
 
 	protected:

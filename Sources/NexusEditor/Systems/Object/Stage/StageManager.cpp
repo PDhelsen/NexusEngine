@@ -5,15 +5,7 @@ namespace NxEd
 {
 	static const NxEn::GUI::Menu::Item& MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/World/Stage", NxFr::Delegate<void()>([]()
 	{
-		NxEn::World* World = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld();
-		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
-
-		Stage* StageView = Stages->GetStage(World);
-		if (!StageView)
-		{
-			StageView = Stages->CreateStage(World);
-		}
-		Stages->ShowStage(World);
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Stage.Show.World \"" + NxEn::WorldSystem::MainWorldId.GetString() + "\"");
 	}));
 
 	static NxEn::Command* CmdStageShowAsset = NxEn::Command::Create("Stage.Show.Asset"_Sid, "Show asset on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Path)
@@ -23,27 +15,29 @@ namespace NxEd
 		NxEn::Asset* Target = Assets->Load(Id);
 
 		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
-		Stage* Instance = Stages->GetStage(Target);
-		if (!Instance)
-		{
-			Instance = Stages->CreateStage(Target);
-		}
+		Stage* Stage = Stages->CreateStage(Target);
+		Stages->ShowStage(Target);
+	}));
+
+	static NxEn::Command* CmdStageShowWorld = NxEn::Command::Create("Stage.Show.World"_Sid, "Show world on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	{
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxEn::World* Target = Worlds->GetWorld(NxFr::StringId(Id));
+
+		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
+		Stage* Stage = Stages->CreateStage(Target);
 		Stages->ShowStage(Target);
 	}));
 
 	static NxEn::Command* CmdStageShowGameObject = NxEn::Command::Create("Stage.Show.GameObject"_Sid, "Show gameobject on stage", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
 	{
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Handle<NxEn::GameObject> Instance = Worlds->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
+		NxFr::Handle<NxEn::GameObject> Target = Worlds->GetObject(NxFr::StringUtility::FromString<NxFr::GUID>(Id));
 
 		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
-		Stage* Stage = Stages->GetStage(Instance->GetWorld());
-		if (!Instance)
-		{
-			Stage = Stages->CreateStage(Instance->GetWorld());
-		}
-		Stages->ShowStage(Instance->GetWorld());
-		Stage->GetHierarchy()->Select(Instance);
+		Stage* Stage = Stages->CreateStage(Target->GetWorld());
+		Stages->ShowStage(Target->GetWorld());
+		Stage->GetHierarchy()->Select(Target);
 	}));
 
 	StageManager::StageManager()
