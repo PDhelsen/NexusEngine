@@ -8,7 +8,7 @@ namespace NxEn
 		Application::GetInstance()->Quit();
 	}));
 
-	static GUI::Menu::Item MenuItemQuit = GUI::Menu::Item::Create("File/Quit", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item& MenuItemQuit = GUI::Menu::Item::Create("File/Quit", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Execute("Application.Quit");
 	}), 2);

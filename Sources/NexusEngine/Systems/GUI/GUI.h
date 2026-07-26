@@ -44,12 +44,9 @@ namespace NxEn
 			template<typename T>
 			static T* Create()
 			{
-				//NxFr::AllocatorContext Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
 				T* Instance = new T();
 				Instance->Initialize();
-				GUISystem::RegisterPanel(Instance);
-				return Instance;
+				return static_cast<T*>(GUISystem::GetPanels().Register(T::GetClassType(), Instance));
 			}
 
 			Panel();
@@ -88,7 +85,7 @@ namespace NxEn
 				friend class Menu;
 
 			public:
-				static Item Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+				static const Item& Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 
 				bool operator==(const Item& Other) const;
 				bool operator<=(const Item& Other) const;

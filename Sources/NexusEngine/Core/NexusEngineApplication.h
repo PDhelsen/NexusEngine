@@ -13,7 +13,7 @@ namespace NxEn
 		NexusEngineApplication(const NxEn::Project& ProjectInfo);
 		virtual ~NexusEngineApplication();
 
-		GUI::Window* GetWindow() { return Window; }
+		GUI::Window& GetWindow() { return Window; }
 		Input::Schema* GetInputEngine() { return Inputs; }
 		bool IsHeadless() const { return Headless; }
 
@@ -23,7 +23,7 @@ namespace NxEn
 		virtual void OnRun() override;
 
 	private:
-		GUI::Window* Window;
+		GUI::Window& Window;
 		Input::Schema* Inputs;
 		bool Headless;
 	};

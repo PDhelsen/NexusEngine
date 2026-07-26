@@ -13,7 +13,7 @@ namespace NxEd
 		NxEn::Application::GetInstance<NexusEditorApplication>()->SaveAll();
 	}));
 
-	static NxEn::GUI::Menu::Item MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item& MenuItemSave = NxEn::GUI::Menu::Item::Create("File/Save", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Editor.Save");
 	}), 1);
@@ -78,7 +78,7 @@ namespace NxEd
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Show Window", [&]()
 		{
-			GetInstance<NexusEditorApplication>()->GetWindow()->Show();
+			GetInstance<NexusEditorApplication>()->GetWindow().Show();
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Load Layout", []()
 		{
@@ -96,7 +96,7 @@ namespace NxEd
 		});
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Hide Window", []()
 		{
-			GetInstance<NexusEditorApplication>()->GetWindow()->Hide();
+			GetInstance<NexusEditorApplication>()->GetWindow().Hide();
 		});
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Set Icon", []()
 		{

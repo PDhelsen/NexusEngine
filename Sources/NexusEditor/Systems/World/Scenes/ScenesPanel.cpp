@@ -8,7 +8,7 @@ namespace NxEd
 
 	static ScenesPanel* Panel = NxEn::GUI::Panel::Create<ScenesPanel>();
 
-	const static NxEn::GUI::Menu::Item MenuItemScenes = NxEn::GUI::Menu::Item::Create("Object/World/Scenes", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item& MenuItemScenes = NxEn::GUI::Menu::Item::Create("Object/World/Scenes", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel ScenesPanel");
 	}));

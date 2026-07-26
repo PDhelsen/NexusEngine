@@ -12,17 +12,10 @@ namespace NxEn
 	public:
 		NX_OBJECT(GUISystem)
 
-		static GUI::Window* GetWindow();
-		static GUI::Menu* GetMenu();
-		static void RegisterMenuItem(GUI::Menu::Item* Instance);
-		static void UnregisterMenuItem(GUI::Menu::Item* Instance);
-		template<typename T> static T* GetPanel()
-		{
-			return (T*)GetPanel(T::GetClassType());
-		}
-		static GUI::Panel* GetPanel(NxFr::StringId Id);
-		static void RegisterPanel(GUI::Panel* Instance);
-		static void UnregisterPanel(GUI::Panel* Instance);
+		template<typename T> static T* GetPanel() { return static_cast<T*>(GetPanels().TryGet(T::GetClassType())); }
+
+		static GUI::Window& GetWindow();
+		static NxFr::Registry<GUI::Panel*>& GetPanels();
 
 		GUISystem();
 		~GUISystem();

@@ -52,13 +52,13 @@ namespace NxAp
 
 	void NexusAppApplication::ShowWindow()
 	{
-		NxEn::GUI::Window* Window = GetWindow();
+		NxEn::GUI::Window& Window = GetWindow();
 
-		bool State = !Window->IsEnabled();
-		Window->SetEnabled(State);
+		bool State = !Window.IsEnabled();
+		Window.SetEnabled(State);
 
 		NxEn::ConsolePanel* Console = NxEn::GUISystem::GetPanel<NxEn::ConsolePanel>();
-		Console->SetDock(Window->GetImGuiId());
+		Console->SetDock(Window.GetImGuiId());
 		Console->SetEnabled(State);
 	}
 }

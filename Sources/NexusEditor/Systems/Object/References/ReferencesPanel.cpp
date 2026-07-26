@@ -5,7 +5,7 @@ namespace NxEd
 {
 	static ReferencesPanel* Panel = NxEn::GUI::Panel::Create<ReferencesPanel>();
 
-	const static NxEn::GUI::Menu::Item MenuItemReferences = NxEn::GUI::Menu::Item::Create("Object/Objects/References", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item& MenuItemReferences = NxEn::GUI::Menu::Item::Create("Object/Objects/References", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel ReferencesPanel");
 	}));
