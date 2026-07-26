@@ -36,6 +36,11 @@ namespace NxEn
 	{
 	}
 
+	void ConsolePanel::Clear()
+	{
+		ClearLogs();
+	}
+
 	void ConsolePanel::OnInitialize()
 	{
 		Panel::OnInitialize();

@@ -14,6 +14,8 @@ namespace NxEn
 		ConsolePanel();
 		~ConsolePanel();
 
+		void Clear();
+
 	protected:
 		void OnInitialize() override;
 		void OnShutdown() override;
