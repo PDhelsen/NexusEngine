@@ -8,7 +8,7 @@ namespace NxEn
 		Application::GetInstance()->Quit();
 	}));
 
-	static const NxEn::GUI::Menu::Item& MenuItemQuit = GUI::Menu::Item::Create("File/Quit", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemQuit = GUI::Menu::Item::Create("File/Quit", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Execute("Application.Quit");
 	}), 2);
@@ -16,7 +16,7 @@ namespace NxEn
 	NX_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
 	NexusEngineApplication::NexusEngineApplication(const NxEn::Project& ProjectInfo)
-		: Application(ProjectInfo), Window(GUISystem::GetWindow()), Inputs(nullptr), Headless(NxFr::Globals::Args->Has("Headless"))
+		: Application(ProjectInfo), Inputs(nullptr), Headless(NxFr::Globals::Args->Has("Headless"))
 	{
 		SystemManager& Systems = GetSystems();
 		Systems.CreateSystem<DebugSystem>();

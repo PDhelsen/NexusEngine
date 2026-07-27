@@ -3,7 +3,7 @@
 
 namespace NxEd
 {
-	static const NxEn::GUI::Menu::Item& MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/World/Stage", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemStage = NxEn::GUI::Menu::Item::Create("Object/World/Stage", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Stage.Show.World \"" + NxEn::WorldSystem::MainWorldId.GetString() + "\"");
 	}));

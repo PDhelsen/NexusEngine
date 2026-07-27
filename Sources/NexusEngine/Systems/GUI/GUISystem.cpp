@@ -38,9 +38,9 @@ namespace NxEn
 		GUISystem::GetPanels().TryGet(NxFr::StringId(Id))->Show();
 	}));
 
-	static Command* CmdGuiElement = Command::Create("GUI.Element"_Sid, "Open gui element", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	static Command* CmdGuiElement = Command::Create("GUI.Element"_Sid, "Open gui element", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Name, NxFr::StringView Type)
 	{
-		Application::GetSystem<GUISystem>()->GetElement(Id)->Show();
+		Application::GetSystem<GUISystem>()->GetElement(Name, Type)->Show();
 	}));
 
 	static Command* CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
@@ -53,16 +53,16 @@ namespace NxEn
 		Application::GetSystem<GUISystem>()->LoadLayout(Name);
 	}));
 
-	GUI::Window& GUISystem::GetWindow()
-	{
-		static GUI::Window Window;
-		return Window;
-	}
-
 	NxFr::Registry<GUI::Panel*>& GUISystem::GetPanels()
 	{
 		static NxFr::Registry<GUI::Panel*> Panels;
 		return Panels;
+	}
+
+	NxFr::Registry<GUI::Menu::Item>& GUISystem::GetMenuItems()
+	{
+		static NxFr::Registry<GUI::Menu::Item> MenuItems;
+		return MenuItems;
 	}
 
 	GUISystem::GUISystem()
@@ -187,22 +187,20 @@ namespace NxEn
 		NX_LOG(Info, System, "GUI style %s saved", Name.C());
 	}
 
-	GUI::Element* GUISystem::GetElement(NxFr::StringView Id) const
+	GUI::Element* GUISystem::GetElement(NxFr::StringView Name, NxFr::StringView Id) const
 	{
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			return nullptr;
 		}
 
-		for (auto& Instance : Elements)
+		NxFr::String ImGuiId = Name + "##" + Id;
+		auto It = NxFr::ContainerUtility::Where<GUI::Element*>(Elements, [&](GUI::Element* Element)
 		{
-			if (Instance->GetImGuiId() == Id)
-			{
-				return Instance;
-			}
-		}
+			return Element->GetImGuiId() == ImGuiId;
+		});
 
-		return nullptr;
+		return It.Get();
 	}
 
 	GUI::Panel* GUISystem::GetActivePanel() const
@@ -216,6 +214,11 @@ namespace NxEn
 		NxFr::StringId Id = ImGuiToNexusId(Name);
 		GUI::Panel* Active = GetPanels().TryGet(Id);
 		return Active ? Active : nullptr;
+	}
+
+	GUI::Window* GUISystem::GetWindow()
+	{
+		return &Window;
 	}
 
 	void GUISystem::OnInitialize()
@@ -234,21 +237,25 @@ namespace NxEn
 			LoadTheme();
 		}
 
-		GetWindow().Initialize();
+		Window.Initialize();
 
+		AddMenuWindowItems();
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
 	}
 
 	void GUISystem::OnShutdown()
 	{
-		GetWindow().Shutdown();
+		Window.Shutdown();
 
 		if (!Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			SaveTheme();
 			Imgui::Shutdown();
 		}
+
+		GetPanels().Clear();
+		GetMenuItems().Clear();
 		
 		System::OnShutdown();
 	}
@@ -266,7 +273,7 @@ namespace NxEn
 
 		Imgui::Tick();
 
-		GetWindow().Draw();
+		Window.Draw();
 
 		for (auto& Element : Elements)
 		{
@@ -283,7 +290,22 @@ namespace NxEn
 		Imgui::Render();
 	}
 
-	void GUISystem::AddMenuWindowPanels() const
+	void GUISystem::AddMenuWindowItems()
+	{
+		auto& MenuItems = GetMenuItems();
+		for (auto It = MenuItems.Begin(); It != MenuItems.End(); ++It)
+		{
+			AddMenuWindowItems(It->Value);
+		}
+	}
+
+	void GUISystem::AddMenuWindowItems(const GUI::Menu::Item& Item)
+	{
+		auto& Menu = Window.GetMenu();
+		Menu.AppendItem(Item);
+	}
+
+	void GUISystem::AddMenuWindowPanels()
 	{
 		auto& Panels = GetPanels();
 		for (auto It = Panels.Begin(); It != Panels.End(); ++It)
@@ -292,9 +314,9 @@ namespace NxEn
 		}
 	}
 
-	void GUISystem::AddMenuWindowPanels(NxEn::GUI::Panel* Panel) const
+	void GUISystem::AddMenuWindowPanels(NxEn::GUI::Panel* Panel)
 	{
-		auto& Menu = GetWindow().GetMenu();
+		auto& Menu = Window.GetMenu();
 
 		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]()
 		{
@@ -303,9 +325,9 @@ namespace NxEn
 		});
 	}
 
-	void GUISystem::AddMenuWindowLayouts() const
+	void GUISystem::AddMenuWindowLayouts()
 	{
-		auto& Menu = GetWindow().GetMenu();
+		auto& Menu = Window.GetMenu();
 
 		Menu.AddMenuItem("Window/Layouts/Save", []()
 		{
@@ -331,9 +353,9 @@ namespace NxEn
 		}
 	}
 
-	void GUISystem::AddMenuWindowLayouts(const NxFr::String& Name) const
+	void GUISystem::AddMenuWindowLayouts(const NxFr::String& Name)
 	{
-		auto& Menu = GetWindow().GetMenu();
+		auto& Menu = Window.GetMenu();
 
 		Menu.AddMenuItem("Window/Layouts/" + Name, [=]()
 		{

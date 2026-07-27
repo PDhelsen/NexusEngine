@@ -85,7 +85,7 @@ namespace NxEn
 				friend class Menu;
 
 			public:
-				static const Item& Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+				static const Item* Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 
 				bool operator==(const Item& Other) const;
 				bool operator<=(const Item& Other) const;

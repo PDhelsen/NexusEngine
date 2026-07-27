@@ -13,10 +13,9 @@ namespace NxEn
 		NX_OBJECT(GUISystem)
 
 		template<typename T> static T* GetPanel() { return static_cast<T*>(GetPanels().TryGet(T::GetClassType())); }
-		template<typename T> static T* GetElement() { return static_cast<T*>(Application::GetSystem<GUISystem>()->GetElement(T::GetClassType())); }
 
-		static GUI::Window& GetWindow();
 		static NxFr::Registry<GUI::Panel*>& GetPanels();
+		static NxFr::Registry<GUI::Menu::Item>& GetMenuItems();
 
 		GUISystem();
 		~GUISystem();
@@ -29,8 +28,9 @@ namespace NxEn
 		void LoadTheme(NxFr::StringView Name = "");
 		void SaveTheme(NxFr::StringView Name = "");
 
-		GUI::Element* GetElement(NxFr::StringView Id) const;
+		GUI::Element* GetElement(NxFr::StringView Name, NxFr::StringView Id) const;
 		GUI::Panel* GetActivePanel() const;
+		GUI::Window* GetWindow();
 
 	protected:
 		void OnInitialize() override;
@@ -38,10 +38,12 @@ namespace NxEn
 		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
-		void AddMenuWindowPanels() const;
-		void AddMenuWindowPanels(NxEn::GUI::Panel* Panel) const;
-		void AddMenuWindowLayouts() const;
-		void AddMenuWindowLayouts(const NxFr::String& Name) const;
+		void AddMenuWindowItems();
+		void AddMenuWindowItems(const GUI::Menu::Item& Item);
+		void AddMenuWindowPanels();
+		void AddMenuWindowPanels(NxEn::GUI::Panel* Panel);
+		void AddMenuWindowLayouts();
+		void AddMenuWindowLayouts(const NxFr::String& Name);
 
 		void LoadLayoutImGui(const NxFr::String& Path) const;
 		void LoadLayoutNexus(const NxFr::String& Path) const;
@@ -53,6 +55,7 @@ namespace NxEn
 		void SaveThemeNexus(YAML::Emitter& Emitter) const;
 
 	private:
+		GUI::Window Window;
 		NxFr::Set<GUI::Element*> Elements;
 	};
 }

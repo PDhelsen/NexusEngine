@@ -4,7 +4,7 @@
 
 namespace NxEd
 {
-	static const NxEn::GUI::Menu::Item& MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Assets/Importer", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemSettings = NxEn::GUI::Menu::Item::Create("Object/Assets/Importer", NxFr::Delegate<void()>([]()
 	{
 		AssetImporterPopup::ShowWithPath("");
 	}));

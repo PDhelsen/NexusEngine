@@ -154,12 +154,9 @@ namespace NxEn
 		static const char* MenuPathEdit					= "Edit/";
 		static const char* MenuPathFile					= "File/";
 
-		const Menu::Item& Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
+		const Menu::Item* Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
-			Menu& Menu = GUISystem::GetWindow().GetMenu();
-			uint64 Index = Menu.GetMenuItemCount();
-			Menu.AddMenuItem(Path, Callback, Priority, Validate);
-			return Menu.GetMenuItem(Index);
+			return GUISystem::GetMenuItems().Register(Path, Item(Callback, Validate, Path, Priority, ItemMode::Callback, 0, nullptr));
 		}
 
 		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
