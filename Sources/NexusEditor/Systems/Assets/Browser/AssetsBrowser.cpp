@@ -35,7 +35,7 @@ namespace NxEd
 		: Assets(nullptr), Edit(nullptr),
 		Items(), Root(nullptr), Panel(nullptr), Context()
 	{
-		Panel = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
 #include "NexusEngine/Systems/GUI/GUI.h"
 #include "NexusEngine/Systems/GUI/Styles.h"
@@ -12,10 +13,11 @@ namespace NxEn
 	public:
 		NX_OBJECT(GUISystem)
 
-		template<typename T> static T* GetPanel() { return static_cast<T*>(GetPanels().TryGet(T::GetClassType())); }
-
 		static NxFr::Registry<GUI::Panel*>& GetPanels();
 		static NxFr::Registry<GUI::Menu::Item>& GetMenuItems();
+
+		static NxFr::StringId ImGuiToNexusId(NxFr::StringView Name);
+		static NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::StringView Id);
 
 		GUISystem();
 		~GUISystem();
@@ -28,9 +30,12 @@ namespace NxEn
 		void LoadTheme(NxFr::StringView Name = "");
 		void SaveTheme(NxFr::StringView Name = "");
 
-		GUI::Element* GetElement(NxFr::StringView Name, NxFr::StringView Id) const;
-		GUI::Panel* GetActivePanel() const;
 		GUI::Window* GetWindow();
+		template<typename T> T* GetElement(NxFr::StringView Name) { return static_cast<T*>(GetElement(Name, T::GetClassType())); }
+		GUI::Element* GetElement(NxFr::StringView Name, NxFr::StringView Id);
+		template<typename T> T* GetPanel() { return static_cast<T*>(GetPanel(T::GetClassType())); }
+		GUI::Panel* GetPanel(NxFr::StringId Type);
+		GUI::Panel* GetActivePanel();
 
 	protected:
 		void OnInitialize() override;
@@ -43,12 +48,12 @@ namespace NxEn
 		void AddMenuWindowPanels();
 		void AddMenuWindowPanels(NxEn::GUI::Panel* Panel);
 		void AddMenuWindowLayouts();
-		void AddMenuWindowLayouts(const NxFr::String& Name);
+		void AddMenuWindowLayouts(NxFr::StringView Name);
 
-		void LoadLayoutImGui(const NxFr::String& Path) const;
-		void LoadLayoutNexus(const NxFr::String& Path) const;
-		void SaveLayoutImGui(const NxFr::String& Path) const;
-		void SaveLayoutNexus(const NxFr::String& Path) const;
+		void LoadLayoutImGui(NxFr::StringView Path) const;
+		void LoadLayoutNexus(NxFr::StringView Path) const;
+		void SaveLayoutImGui(NxFr::StringView Path) const;
+		void SaveLayoutNexus(NxFr::StringView Path) const;
 		void LoadThemeImGui(const YAML::Node& Node) const;
 		void LoadThemeNexus(const YAML::Node& Node);
 		void SaveThemeImGui(YAML::Emitter& Emitter) const;

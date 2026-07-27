@@ -52,11 +52,13 @@ namespace NxAp
 
 	void NexusAppApplication::ShowWindow()
 	{
-		NxEn::GUI::Window* Window = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetWindow();
+		NxEn::GUISystem* GUI = NxEn::Application::GetSystem<NxEn::GUISystem>();
+
+		NxEn::GUI::Window* Window = GUI->GetWindow();
 		bool State = !Window->IsEnabled();
 		Window->SetEnabled(State);
 
-		NxEn::ConsolePanel* Console = NxEn::GUISystem::GetPanel<NxEn::ConsolePanel>();
+		NxEn::ConsolePanel* Console = GUI->GetPanel<NxEn::ConsolePanel>();
 		Console->SetDock(Window->GetImGuiId());
 		Console->SetEnabled(State);
 	}

@@ -90,7 +90,7 @@ namespace NxEd
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
-		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+		AssetsBrowserPanel* Browser = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		if (Browser)
 		{
 			Edit::Context* Ctx = Edit->GetContext(Browser->GetImGuiId());
@@ -108,7 +108,7 @@ namespace NxEd
 	{
 		Clear();
 
-		AssetsBrowserPanel* Browser = NxEn::GUISystem::GetPanel<AssetsBrowserPanel>();
+		AssetsBrowserPanel* Browser = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		if (Browser)
 		{
 			Edit::Context* Ctx = Edit->GetContext(Browser->GetImGuiId());

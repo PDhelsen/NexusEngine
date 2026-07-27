@@ -27,15 +27,9 @@ namespace NxEn
 		return NxFr::Path::Combine(Folder, Name + NxFr::Path::SeparatorExtension + Extension);
 	}
 
-	static NxFr::StringId ImGuiToNexusId(NxFr::StringView Name)
-	{
-		NxFr::StringView Id = NxFr::StringUtility::Split(Name, "##", 1);
-		return NxFr::StringUtility::Split(Id, "/");
-	}
-
 	static Command* CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
 	{
-		GUISystem::GetPanels().TryGet(NxFr::StringId(Id))->Show();
+		Application::GetSystem<GUISystem>()->GetPanel(Id)->Show();
 	}));
 
 	static Command* CmdGuiElement = Command::Create("GUI.Element"_Sid, "Open gui element", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Name, NxFr::StringView Type)
@@ -65,8 +59,19 @@ namespace NxEn
 		return MenuItems;
 	}
 
+	NxFr::StringId GUISystem::ImGuiToNexusId(NxFr::StringView Name)
+	{
+		NxFr::StringView Id = NxFr::StringUtility::Split(Name, "##", 1);
+		return NxFr::StringUtility::Split(Id, "/");
+	}
+
+	NxFr::String GUISystem::NexusToImGuiId(NxFr::StringView Name, NxFr::StringView Id)
+	{
+		return Name + "##" + Id;
+	}
+
 	GUISystem::GUISystem()
-		: Elements()
+		: Window(), Elements()
 	{
 
 	}
@@ -89,11 +94,6 @@ namespace NxEn
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
 			GeneratePath(NameDefault, ExtensionImGui),
@@ -117,11 +117,6 @@ namespace NxEn
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
 			"", Name.IsEmpty());
@@ -141,35 +136,23 @@ namespace NxEn
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
 			GeneratePath(NameDefault, ExtensionStyle),
 			Name.IsEmpty());
-		if (!NxFr::Path::Exist(Path))
+		if (NxFr::Path::Exist(Path))
 		{
-			return;
+			YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
+
+			LoadThemeImGui(Data["ImGui"]);
+			LoadThemeNexus(Data["Nexus"]);
 		}
-
-		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
-
-		LoadThemeImGui(Data["ImGui"]);
-		LoadThemeNexus(Data["Nexus"]);
 
 		NX_LOG(Info, System, "GUI style %s loaded", Name.C());
 	}
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
 			"", Name.IsEmpty());
@@ -187,14 +170,14 @@ namespace NxEn
 		NX_LOG(Info, System, "GUI style %s saved", Name.C());
 	}
 
-	GUI::Element* GUISystem::GetElement(NxFr::StringView Name, NxFr::StringView Id) const
+	GUI::Window* GUISystem::GetWindow()
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return nullptr;
-		}
+		return &Window;
+	}
 
-		NxFr::String ImGuiId = Name + "##" + Id;
+	GUI::Element* GUISystem::GetElement(NxFr::StringView Name, NxFr::StringView Id)
+	{
+		NxFr::String ImGuiId = NexusToImGuiId(Name, Id);
 		auto It = NxFr::ContainerUtility::Where<GUI::Element*>(Elements, [&](GUI::Element* Element)
 		{
 			return Element->GetImGuiId() == ImGuiId;
@@ -203,7 +186,12 @@ namespace NxEn
 		return It.Get();
 	}
 
-	GUI::Panel* GUISystem::GetActivePanel() const
+	GUI::Panel* GUISystem::GetPanel(NxFr::StringId Type)
+	{
+		return GetPanels().TryGet(Type);
+	}
+
+	GUI::Panel* GUISystem::GetActivePanel()
 	{
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
@@ -212,32 +200,26 @@ namespace NxEn
 
 		NxFr::StringView Name = ImGui::GetCurrentContext()->NavWindow->RootWindow->Name;
 		NxFr::StringId Id = ImGuiToNexusId(Name);
-		GUI::Panel* Active = GetPanels().TryGet(Id);
-		return Active ? Active : nullptr;
-	}
-
-	GUI::Window* GUISystem::GetWindow()
-	{
-		return &Window;
+		return GetPanel(Id);
 	}
 
 	void GUISystem::OnInitialize()
 	{
 		System::OnInitialize();
-
-		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
-		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, Integer, Set);
+		Window.Initialize();
 
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder)).Create();
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Saved, Folder)).Create();
 
+		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
+		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::GuiElementsId, Integer, Set);
+
 		if (!Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			Imgui::Initialize();
-			LoadTheme();
 		}
 
-		Window.Initialize();
+		LoadTheme();
 
 		AddMenuWindowItems();
 		AddMenuWindowPanels();
@@ -246,17 +228,17 @@ namespace NxEn
 
 	void GUISystem::OnShutdown()
 	{
-		Window.Shutdown();
+		SaveTheme();
 
 		if (!Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
-			SaveTheme();
 			Imgui::Shutdown();
 		}
 
 		GetPanels().Clear();
 		GetMenuItems().Clear();
 		
+		Window.Shutdown();
 		System::OnShutdown();
 	}
 
@@ -274,7 +256,6 @@ namespace NxEn
 		Imgui::Tick();
 
 		Window.Draw();
-
 		for (auto& Element : Elements)
 		{
 			if (Element->IsManual())
@@ -317,10 +298,9 @@ namespace NxEn
 	void GUISystem::AddMenuWindowPanels(NxEn::GUI::Panel* Panel)
 	{
 		auto& Menu = Window.GetMenu();
-
 		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]()
 		{
-			NxFr::String Cmd = NxFr::StringView("GUI.Panel ") + Panel->GetObjectType().C();
+			NxFr::String Cmd = "GUI.Panel " + Panel->GetObjectType().GetString();
 			Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		});
 	}
@@ -328,12 +308,12 @@ namespace NxEn
 	void GUISystem::AddMenuWindowLayouts()
 	{
 		auto& Menu = Window.GetMenu();
-
 		Menu.AddMenuItem("Window/Layouts/Save", []()
 		{
-			NxFr::String Path = NxFr::Path::OpenFileDialog("Save Layout", "layout", "Layout", NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder));
+			NxFr::String Path = NxFr::Path::OpenFileDialog("Save Layout", ExtensionLayout, "Layout", NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder));
 			if (Path.IsEmpty()) return;
-			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Save ") + NxFr::Path::GetName(Path);
+
+			NxFr::String Cmd = "GUI.Layout.Save " + NxFr::Path::GetName(Path);
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		}, 1);
 
@@ -348,30 +328,36 @@ namespace NxEn
 				continue;
 			}
 
-			NxFr::String Name = NxFr::Path::GetName(Layout);
-			AddMenuWindowLayouts(Name);
+			AddMenuWindowLayouts(NxFr::Path::GetName(Layout));
 		}
 	}
 
-	void GUISystem::AddMenuWindowLayouts(const NxFr::String& Name)
+	void GUISystem::AddMenuWindowLayouts(NxFr::StringView Name)
 	{
-		auto& Menu = Window.GetMenu();
+		//Force copy name to allow the lambda to capture it.
+		NxFr::String Copy = Name;
 
+		auto& Menu = Window.GetMenu();
 		Menu.AddMenuItem("Window/Layouts/" + Name, [=]()
 		{
-			NxFr::String Cmd = NxFr::StringView("GUI.Layout.Load ") + Name;
+			NxFr::String Cmd = "GUI.Layout.Load " + Copy;
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
 		});
 	}
 
-	void GUISystem::LoadLayoutImGui(const NxFr::String& Path) const
+	void GUISystem::LoadLayoutImGui(NxFr::StringView Path) const
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NX_INSTUMENT_FUNCTION();
 
 		ImGui::LoadIniSettingsFromDisk(Path.C());
 	}
 
-	void GUISystem::LoadLayoutNexus(const NxFr::String& Path) const
+	void GUISystem::LoadLayoutNexus(NxFr::StringView Path) const
 	{
 		NX_INSTUMENT_FUNCTION();
 
@@ -381,26 +367,31 @@ namespace NxEn
 		NxFr::Set<NxFr::StringId> Ids;
 		while (!Stream.IsAtTheEnd())
 		{
-			Ids.Append(NxFr::StringId(Stream.ReadLine()));
+			Ids.Append(Stream.ReadLine());
 		}
 
 		auto& Panels = GetPanels();
 		for (auto It = Panels.Begin(); It != Panels.End(); ++It)
 		{
-			It->Value->SetEnabled(Ids.TryGet(It->Key) != nullptr);
+			It->Value->SetEnabled(Ids.TryGet(It->Key));
 		}
 
 		Stream.Close();
 	}
 
-	void GUISystem::SaveLayoutImGui(const NxFr::String& Path) const
+	void GUISystem::SaveLayoutImGui(NxFr::StringView Path) const
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NX_INSTUMENT_FUNCTION();
 
 		ImGui::SaveIniSettingsToDisk(Path.C());
 	}
 
-	void GUISystem::SaveLayoutNexus(const NxFr::String& Path) const
+	void GUISystem::SaveLayoutNexus(NxFr::StringView Path) const
 	{
 		NX_INSTUMENT_FUNCTION();
 
@@ -421,6 +412,11 @@ namespace NxEn
 
 	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NX_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();
@@ -595,6 +591,11 @@ namespace NxEn
 
 	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NX_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();

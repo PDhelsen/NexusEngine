@@ -91,6 +91,7 @@ namespace NxEn
 				bool operator<=(const Item& Other) const;
 
 				const NxFr::Delegate<void()>& GetCallback() const { return Callback; }
+				const NxFr::Delegate<bool()>& GetValidate() const { return Validate; }
 				NxFr::StringView GetPath() const { return Path; }
 				int64 GetPriority() const { return Priority; }
 				ItemMode GetMode() const { return Mode; }
