@@ -138,22 +138,6 @@ namespace NxEn
 
 #pragma region Menu
 
-		static const int64 MenuPriorityOffsetBase		= 10000;
-		static const int64 MenuPriorityOffsetDelta		= 1000;
-		static const int64 MenuPriorityOffsetProject	= MenuPriorityOffsetBase;
-		static const int64 MenuPriorityOffsetTools		= MenuPriorityOffsetProject	+ MenuPriorityOffsetDelta;
-		static const int64 MenuPriorityOffsetObject		= MenuPriorityOffsetTools	+ MenuPriorityOffsetDelta;
-		static const int64 MenuPriorityOffsetWindow		= MenuPriorityOffsetObject	+ MenuPriorityOffsetDelta;
-		static const int64 MenuPriorityOffsetEdit		= MenuPriorityOffsetWindow	+ MenuPriorityOffsetDelta;
-		static const int64 MenuPriorityOffsetFile		= MenuPriorityOffsetEdit	+ MenuPriorityOffsetDelta;
-
-		static const char* MenuPathProject				= "Project/";
-		static const char* MenuPathTools				= "Tools/";
-		static const char* MenuPathObject				= "Object/";
-		static const char* MenuPathWindow				= "Window/";
-		static const char* MenuPathEdit					= "Edit/";
-		static const char* MenuPathFile					= "File/";
-
 		const Menu::Item* Menu::Item::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
 			return GUISystem::GetMenuItems().Register(Path, Item(Callback, Validate, Path, Priority, ItemMode::Callback, 0, nullptr));
@@ -162,15 +146,6 @@ namespace NxEn
 		Menu::Item::Item(const NxFr::Delegate<void()>& Callback, const NxFr::Delegate<bool()>& Validate, NxFr::StringView Path, int64 Priority, ItemMode Mode, uint64 Index, void* Data)
 			: Callback(Callback), Validate(Validate), Path(Path), Priority(Priority), Mode(Mode), Index(Index), Data(Data)
 		{
-			NX_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%lld)", MenuPriorityOffsetBase);
-
-			if		(NxFr::StringUtility::Start(Path, MenuPathProject))		this->Priority -= MenuPriorityOffsetProject;
-			else if (NxFr::StringUtility::Start(Path, MenuPathTools))		this->Priority -= MenuPriorityOffsetTools;
-			else if (NxFr::StringUtility::Start(Path, MenuPathObject))		this->Priority -= MenuPriorityOffsetObject;
-			else if (NxFr::StringUtility::Start(Path, MenuPathWindow))		this->Priority -= MenuPriorityOffsetWindow;
-			else if (NxFr::StringUtility::Start(Path, MenuPathEdit))		this->Priority -= MenuPriorityOffsetEdit;
-			else if (NxFr::StringUtility::Start(Path, MenuPathFile))		this->Priority -= MenuPriorityOffsetFile;
-
 		}
 
 		bool Menu::Item::operator==(const Item& Other) const
@@ -181,6 +156,36 @@ namespace NxEn
 		bool Menu::Item::operator<=(const Item& Other) const
 		{
 			return Priority != Other.Priority ? Priority <= Other.Priority : Path <= Other.Path;
+		}
+
+		static const int64 MenuPriorityOffsetBase		= 10000;
+		static const int64 MenuPriorityOffsetDelta		= 1000;
+		static const int64 MenuPriorityOffsetProject	= MenuPriorityOffsetBase;
+		static const int64 MenuPriorityOffsetTools		= MenuPriorityOffsetProject + MenuPriorityOffsetDelta;
+		static const int64 MenuPriorityOffsetObject		= MenuPriorityOffsetTools + MenuPriorityOffsetDelta;
+		static const int64 MenuPriorityOffsetWindow		= MenuPriorityOffsetObject + MenuPriorityOffsetDelta;
+		static const int64 MenuPriorityOffsetEdit		= MenuPriorityOffsetWindow + MenuPriorityOffsetDelta;
+		static const int64 MenuPriorityOffsetFile		= MenuPriorityOffsetEdit + MenuPriorityOffsetDelta;
+
+		static const char* MenuPathProject	= "Project/";
+		static const char* MenuPathTools	= "Tools/";
+		static const char* MenuPathObject	= "Object/";
+		static const char* MenuPathWindow	= "Window/";
+		static const char* MenuPathEdit		= "Edit/";
+		static const char* MenuPathFile		= "File/";
+
+		int64 Menu::ComputePriority(NxFr::StringView Path, int64 Priority)
+		{
+			NX_ASSERT(Priority > -MenuPriorityOffsetBase, Default, "Priority cannot go lower than the global nexus priority offset (%lld)", MenuPriorityOffsetBase);
+
+			if		(NxFr::StringUtility::Start(Path, MenuPathProject))	Priority -= MenuPriorityOffsetProject;
+			else if (NxFr::StringUtility::Start(Path, MenuPathTools))	Priority -= MenuPriorityOffsetTools;
+			else if (NxFr::StringUtility::Start(Path, MenuPathObject))	Priority -= MenuPriorityOffsetObject;
+			else if (NxFr::StringUtility::Start(Path, MenuPathWindow))	Priority -= MenuPriorityOffsetWindow;
+			else if (NxFr::StringUtility::Start(Path, MenuPathEdit))	Priority -= MenuPriorityOffsetEdit;
+			else if (NxFr::StringUtility::Start(Path, MenuPathFile))	Priority -= MenuPriorityOffsetFile;
+
+			return Priority;
 		}
 
 		Menu::Menu(bool Main)

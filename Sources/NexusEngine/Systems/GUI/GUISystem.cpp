@@ -283,7 +283,7 @@ namespace NxEn
 	void GUISystem::AddMenuWindowItems(const GUI::Menu::Item& Item)
 	{
 		auto& Menu = Window.GetMenu();
-		Menu.AppendItem(Item);
+		Menu.AddMenuItem(Item.GetPath(), Item.GetCallback(), GUI::Menu::ComputePriority(Item.GetPath(), Item.GetPriority()), Item.GetValidate());
 	}
 
 	void GUISystem::AddMenuWindowPanels()
@@ -297,28 +297,30 @@ namespace NxEn
 
 	void GUISystem::AddMenuWindowPanels(NxEn::GUI::Panel* Panel)
 	{
+		NxFr::String Path = "Window/Panels/" + Panel->GetTitle();
 		auto& Menu = Window.GetMenu();
-		Menu.AddMenuItem("Window/Panels/" + Panel->GetTitle(), [=]()
+		Menu.AddMenuItem(Path, [=]()
 		{
 			NxFr::String Cmd = "GUI.Panel " + Panel->GetObjectType().GetString();
 			Application::GetSystem<CommandsSystem>()->Execute(Cmd);
-		});
+		}, GUI::Menu::ComputePriority(Path, 0));
 	}
 
 	void GUISystem::AddMenuWindowLayouts()
 	{
+		NxFr::String Path = "Window/Layouts/Save";
 		auto& Menu = Window.GetMenu();
-		Menu.AddMenuItem("Window/Layouts/Save", []()
+		Menu.AddMenuItem(Path, []()
 		{
-			NxFr::String Path = NxFr::Path::OpenFileDialog("Save Layout", ExtensionLayout, "Layout", NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder));
-			if (Path.IsEmpty()) return;
+			NxFr::String LayoutPath = NxFr::Path::OpenFileDialog("Save Layout", ExtensionLayout, "Layout", NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder));
+			if (LayoutPath.IsEmpty()) return;
 
-			NxFr::String Cmd = "GUI.Layout.Save " + NxFr::Path::GetName(Path);
+			NxFr::String Cmd = "GUI.Layout.Save " + NxFr::Path::GetName(LayoutPath);
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
-		}, 1);
+		}, GUI::Menu::ComputePriority(Path, 1));
 
-		NxFr::String Path = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder);
-		NxFr::Directory Folder(Path);
+		NxFr::String FolderPath = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder);
+		NxFr::Directory Folder(FolderPath);
 		NxFr::List<NxFr::String> Layouts = Folder.GetFiles();
 
 		for (auto& Layout : Layouts)
@@ -336,13 +338,14 @@ namespace NxEn
 	{
 		//Force copy name to allow the lambda to capture it.
 		NxFr::String Copy = Name;
+		NxFr::String Path = "Window/Layouts/" + Name;
 
 		auto& Menu = Window.GetMenu();
-		Menu.AddMenuItem("Window/Layouts/" + Name, [=]()
+		Menu.AddMenuItem(Path, [=]()
 		{
 			NxFr::String Cmd = "GUI.Layout.Load " + Copy;
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
-		});
+		}, GUI::Menu::ComputePriority(Path, 0));
 	}
 
 	void GUISystem::LoadLayoutImGui(NxFr::StringView Path) const

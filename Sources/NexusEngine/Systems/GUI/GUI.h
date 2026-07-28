@@ -72,8 +72,6 @@ namespace NxEn
 
 		class NX_ENGINE_API Menu : public Element
 		{
-			friend class GUISystem;
-
 		public:
 			enum class ItemMode
 			{
@@ -111,13 +109,15 @@ namespace NxEn
 
 			NX_OBJECT(Menu)
 
+			static int64 ComputePriority(NxFr::StringView Path, int64 Priority);
+
 			Menu(bool Main = false);
 			virtual ~Menu();
 
 			virtual void Draw() override;
 
 			Menu& AddMenuItem	(NxFr::StringView Path,																	const NxFr::Delegate<void()>& Callback,				int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
-			Menu& AddMenuToggle(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
+			Menu& AddMenuToggle	(NxFr::StringView Path, void* Toggle,													const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			Menu& AddMenuEnum	(NxFr::StringView Path, void* Enum,		const NxFr::Array<NxFr::StringView>& Labels,	const NxFr::Delegate<void()>& Callback = nullptr,	int64 Priority = 0, const NxFr::Delegate<bool()>& Validate = nullptr);
 			Menu& Remove(NxFr::StringView Path);
 			Menu& Clear();
