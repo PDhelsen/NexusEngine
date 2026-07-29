@@ -6,6 +6,7 @@
 #include "NexusEngine/Systems/GUI/Styles.h"
 #include "NexusEngine/Systems/GUI/Utils.h"
 #include "NexusEngine/Systems/GUI/Misc/Constants.h"
+#include "NexusEngine/Systems/GUI/Misc/Templates.h"
 
 namespace NxEn
 {
