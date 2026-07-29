@@ -39,8 +39,6 @@ namespace NxEn
 			}
 		}
 
-		const Style Style::Default;
-
 		NxFr::Registry<float>& Style::GetVars()
 		{
 			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));

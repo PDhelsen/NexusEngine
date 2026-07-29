@@ -28,8 +28,6 @@ namespace NxEn
 				Text, Button, Panel
 			};
 
-			static const Style Default;
-
 			static NxFr::Registry<float>& GetVars();
 			static NxFr::Registry<NxFr::Color>& GetColors();
 			static NxFr::Registry<Style>& GetStyles();
