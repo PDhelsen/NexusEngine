@@ -8,7 +8,7 @@ namespace NxEn
 		Scope::Scope(NxFr::StringId Id)
 			: Id(Id), Instance(nullptr)
 		{
-			const Style& IdInstance = Style::GetStyle(Id);
+			const Style& IdInstance = *Style::GetStyles().TryGet(Id);
 			IdInstance.Push();
 			IdInstance.SetPosition();
 			IdInstance.SetWidth();
@@ -31,7 +31,7 @@ namespace NxEn
 		{
 			if (Id.IsValid())
 			{
-				Style::GetStyle(Id).Pop();
+				Style::GetStyles().TryGet(Id)->Pop();
 			}
 			else if (Instance)
 			{
@@ -41,73 +41,28 @@ namespace NxEn
 
 		const Style Style::Default;
 
-		NxFr::Dictionary<NxFr::StringId, float>& Style::GetVars()
+		NxFr::Registry<float>& Style::GetVars()
 		{
 			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-			static NxFr::Dictionary<NxFr::StringId, float> Vars;
+			static NxFr::Registry<float> Vars;
 			return Vars;
 		}
 
-		float& Style::GetVar(NxFr::StringId Id)
-		{
-			return GetVars()[Id];
-		}
-
-		void Style::RegisterVar(NxFr::StringId Id, float Instance)
-		{
-			GetVars().AppendOrAssign(Id, Instance);
-		}
-
-		void Style::UnregisterVar(NxFr::StringId Id)
-		{
-			GetVars().Remove(Id);
-		}
-
-		NxFr::Dictionary<NxFr::StringId, NxFr::Color>& Style::GetColors()
+		NxFr::Registry<NxFr::Color>& Style::GetColors()
 		{
 			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-			static NxFr::Dictionary<NxFr::StringId, NxFr::Color> Colors;
+			static NxFr::Registry<NxFr::Color> Colors;
 			return Colors;
 		}
 
-		NxFr::Color& Style::GetColor(NxFr::StringId Id)
-		{
-			return GetColors()[Id];
-		}
-
-		void Style::RegisterColor(NxFr::StringId Id, NxFr::Color Instance)
-		{
-			GetColors().AppendOrAssign(Id, Instance);
-		}
-
-		void Style::UnregisterColor(NxFr::StringId Id)
-		{
-			GetColors().Remove(Id);
-		}
-
-		NxFr::Dictionary<NxFr::StringId, Style>& Style::GetStyles()
+		NxFr::Registry<Style>& Style::GetStyles()
 		{
 			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
 
-			static NxFr::Dictionary<NxFr::StringId, Style> Styles;
+			static NxFr::Registry<Style> Styles;
 			return Styles;
-		}
-
-		Style& Style::GetStyle(NxFr::StringId Id)
-		{
-			return GetStyles()[Id];
-		}
-
-		void Style::RegisterStyle(NxFr::StringId Id, const Style& Instance)
-		{
-			GetStyles().AppendOrAssign(Id, Instance);
-		}
-
-		void Style::UnregisterStyle(NxFr::StringId Id)
-		{
-			GetStyles().Remove(Id);
 		}
 
 		Style Style::Copy(const Style* Original)
@@ -208,7 +163,7 @@ namespace NxEn
 		{
 			float Size = ImGui::CalcTextSize(Label.C()).x;
 			float Position = ImGui::GetCursorPosX() - Size;
-			ImGui::SetCursorPosX(Position + (WidthLabel > 0.0f ? WidthLabel : WidthLabel == 0.0f ? Size : GetVar(IdWidthLabel)));
+			ImGui::SetCursorPosX(Position + (WidthLabel > 0.0f ? WidthLabel : WidthLabel == 0.0f ? Size : Styles::WidthLabel()));
 		}
 	}
 }

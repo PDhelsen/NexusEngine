@@ -388,11 +388,11 @@ namespace NxEn
 
 				OnDraw();
 
-				ImGui::SetCursorPosX(GUI::Utils::Center(GUI::Style::GetVar(GUI::Style::IdWidthButton), Callbacks.GetCount()).x);
+				ImGui::SetCursorPosX(GUI::Utils::Center(GUI::Styles::WidthButton(), Callbacks.GetCount()).x);
 				for (uint64 Index = 0; Index < Callbacks.GetCount(); ++Index)
 				{
 					Item& Button = Callbacks[Index];
-					if (ImGui::Button(Button.Label.C(), { GUI::Style::GetVar(GUI::Style::IdWidthButton), 0.0f }))
+					if (ImGui::Button(Button.Label.C(), { GUI::Styles::WidthButton(), 0.0f }))
 					{
 						if (!Button.Callback.IsNull())
 						{

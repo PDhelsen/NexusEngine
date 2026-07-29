@@ -57,7 +57,7 @@ namespace NxEn
 	{
 		Menu.Draw();
 
-		ImGui::BeginChild("Pages", { GUI::Style::GetVar(GUI::Style::IdWidthLabel), 0.0f}, true);
+		ImGui::BeginChild("Pages", { GUI::Styles::WidthLabel(), 0.0f}, true);
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
 			NxFr::StringView Label = Settings[Index][0]->GetPage();

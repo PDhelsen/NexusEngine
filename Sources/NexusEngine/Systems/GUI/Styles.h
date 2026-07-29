@@ -28,38 +28,11 @@ namespace NxEn
 				Text, Button, Panel
 			};
 
-			inline static const NxFr::StringId IdWidthButton = "WidthButton"_Sid;
-			inline static const NxFr::StringId IdWidthLabel = "WidthLabel"_Sid;
-			inline static const NxFr::StringId IdWidthInpuText = "WidthInpuText"_Sid;
-			inline static const NxFr::StringId IdRed = "Red"_Sid;
-			inline static const NxFr::StringId IdYellow = "Yellow"_Sid;
-			inline static const NxFr::StringId IdGreen = "Green"_Sid;
-			inline static const NxFr::StringId IdCyan = "Cyan"_Sid;
-			inline static const NxFr::StringId IdBlue = "Blue"_Sid;
-			inline static const NxFr::StringId IdMagenta = "Magenta"_Sid;
-			inline static const NxFr::StringId IdText_Normal = "Text_Normal"_Sid;
-			inline static const NxFr::StringId IdText_Title = "Text_Title"_Sid;
-			inline static const NxFr::StringId IdButton_Normal = "Button_Normal"_Sid;
-			inline static const NxFr::StringId IdButton_Pressed = "Button_Pressed"_Sid;
-			inline static const NxFr::StringId IdInfo = "Info"_Sid;
-			inline static const NxFr::StringId IdWarning = "Warning"_Sid;
-			inline static const NxFr::StringId IdError = "Error"_Sid;
-			inline static const NxFr::StringId IdFatal = "Fatal"_Sid;
-
 			static const Style Default;
 
-			static NxFr::Dictionary<NxFr::StringId, float>& GetVars();
-			static float& GetVar(NxFr::StringId Id);
-			static void RegisterVar(NxFr::StringId Id, float Instance);
-			static void UnregisterVar(NxFr::StringId Id);
-			static NxFr::Dictionary<NxFr::StringId, NxFr::Color>& GetColors();
-			static NxFr::Color& GetColor(NxFr::StringId Id);
-			static void RegisterColor(NxFr::StringId Id, NxFr::Color Instance);
-			static void UnregisterColor(NxFr::StringId Id);
-			static NxFr::Dictionary<NxFr::StringId, Style>& GetStyles();
-			static Style& GetStyle(NxFr::StringId Id);
-			static void RegisterStyle(NxFr::StringId Id, const Style& Instance);
-			static void UnregisterStyle(NxFr::StringId Id);
+			static NxFr::Registry<float>& GetVars();
+			static NxFr::Registry<NxFr::Color>& GetColors();
+			static NxFr::Registry<Style>& GetStyles();
 
 			static Style Copy(const Style* Original);
 

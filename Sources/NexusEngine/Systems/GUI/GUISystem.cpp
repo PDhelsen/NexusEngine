@@ -564,7 +564,7 @@ namespace NxEn
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
 			float Var = NodeProperties.as<float>();
 
-			GUI::Style::RegisterVar(Id, Var);
+			GUI::Style::GetVars().Register(Id, Var);
 		}
 
 		const YAML::Node& Colors = Node["Colors"];
@@ -576,7 +576,7 @@ namespace NxEn
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
 			NxFr::Color Color = NodeProperties.as<NxFr::Color>();
 
-			GUI::Style::RegisterColor(Id, Color);
+			GUI::Style::GetColors().Register(Id, Color);
 		}
 
 		const YAML::Node& Styles = Node["Styles"];
@@ -588,7 +588,7 @@ namespace NxEn
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
 			GUI::Style Style = NodeProperties.as<GUI::Style>();
 
-			GUI::Style::RegisterStyle(Id, Style);
+			GUI::Style::GetStyles().Register(Id, Style);
 		}
 	}
 
@@ -744,25 +744,25 @@ namespace NxEn
 
 		Emitter << YAML::Key << "Vars" << YAML::Value;
 		Emitter << YAML::BeginMap;
-		for (auto& [Id, Var] : GUI::Style::GetVars())
+		for (auto It = GUI::Style::GetVars().Begin(); It != GUI::Style::GetVars().End(); ++It)
 		{
-			Emitter << YAML::Key << Id << YAML::Value << Var;
+			Emitter << YAML::Key << It->Key << YAML::Value << It->Value;
 		}
 		Emitter << YAML::EndMap;
 
 		Emitter << YAML::Key << "Colors" << YAML::Value;
 		Emitter << YAML::BeginMap;
-		for (auto& [Id, Color] : GUI::Style::GetColors())
+		for (auto It = GUI::Style::GetColors().Begin(); It != GUI::Style::GetColors().End(); ++It)
 		{
-			Emitter << YAML::Key << Id << YAML::Value << Color;
+			Emitter << YAML::Key << It->Key << YAML::Value << It->Value;
 		}
 		Emitter << YAML::EndMap;
 
 		Emitter << YAML::Key << "Styles" << YAML::Value;
 		Emitter << YAML::BeginMap;
-		for (auto& [Id, Style] : GUI::Style::GetStyles())
+		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
-			Emitter << YAML::Key << Id << YAML::Value << Style;
+			Emitter << YAML::Key << It->Key << YAML::Value << It->Value;
 		}
 		Emitter << YAML::EndMap;
 

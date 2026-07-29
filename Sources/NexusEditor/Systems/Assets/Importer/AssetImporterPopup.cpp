@@ -53,10 +53,10 @@ namespace NxEd
 
 	void AssetImporterPopup::OnDraw()
 	{
-		Style.Width = NxEn::GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Path").x + NxEn::GUI::Style::GetVar(NxEn::GUI::Style::IdWidthButton)), 0, true, true).x - ButtonWidth;
+		Style.Width = NxEn::GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Path").x + NxEn::GUI::Styles::WidthButton()), 0, true, true).x - ButtonWidth;
 		NxEn::GUI::Drawer<NxFr::String>::Field(Path, "Path", "", &Style);
 		ImGui::SameLine();
-		if (ImGui::Button("Pick", { NxEn::GUI::Style::GetVar(NxEn::GUI::Style::IdWidthButton), 0.0f }))
+		if (ImGui::Button("Pick", { NxEn::GUI::Styles::WidthButton(), 0.0f }))
 		{
 			Pick();
 		}

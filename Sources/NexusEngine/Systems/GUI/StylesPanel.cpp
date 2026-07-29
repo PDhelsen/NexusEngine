@@ -28,7 +28,7 @@ namespace NxEn
 		Menu.SetEnabled(true);
 		Style.Reset();
 
-		Style.Width = GUI::Style::GetVar(GUI::Style::IdWidthButton);
+		Style.Width = GUI::Styles::WidthButton();
 	}
 
 	void StylesPanel::OnDisable()
@@ -42,37 +42,37 @@ namespace NxEn
 		Menu.Draw();
 
 		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Vars", &GUI::Style::GetStyle(GUI::Style::IdText_Title));
-		for (auto& [Id, DataVar] : GUI::Style::GetVars())
+		GUI::Draw::Text("Vars", &GUI::Styles::Text_Title());
+		for (auto It = GUI::Style::GetVars().Begin(); It != GUI::Style::GetVars().End(); ++It)
 		{
-			GUI::Drawer<float>::Property(DataVar, Id, &Style);
+			GUI::Drawer<float>::Property(It->Value, It->Key, &Style);
 		}
 
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
 		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Colors", &GUI::Style::GetStyle(GUI::Style::IdText_Title));
-		for (auto& [Id, DataColor] : GUI::Style::GetColors())
+		GUI::Draw::Text("Colors", &GUI::Styles::Text_Title());
+		for (auto It = GUI::Style::GetColors().Begin(); It != GUI::Style::GetColors().End(); ++It)
 		{
-			Style.ColorText = DataColor;
-			GUI::Draw::Label(Id, &Style);
-			Style.Color = DataColor;
+			Style.ColorText = It->Value;
+			GUI::Draw::Label(It->Key, &Style);
+			Style.Color = It->Value;
 			Style.ColorText = NxFr::Colors::White;
-			GUI::Draw::Button(Id, &Style);
+			GUI::Draw::Button(It->Key, &Style);
 		}
 
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
 		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Styles", &GUI::Style::GetStyle(GUI::Style::IdText_Title));
-		for (auto& [Id, DataStyle] : GUI::Style::GetStyles())
+		GUI::Draw::Text("Styles", &GUI::Styles::Text_Title());
+		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
-			GUI::Style Visual = GUI::Style::Copy(&DataStyle);
-			Visual.Width = GUI::Style::GetVar(GUI::Style::IdWidthButton);
+			GUI::Style Visual = GUI::Style::Copy(&It->Value);
+			Visual.Width = GUI::Styles::WidthButton();
 			Visual.WidthLabel = -1.0f;
 
-			GUI::Draw::Label(Id, &Visual);
-			GUI::Draw::Button(Id, &Visual);
+			GUI::Draw::Label(It->Key, &Visual);
+			GUI::Draw::Button(It->Key, &Visual);
 		}
 	}
 }

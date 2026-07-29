@@ -9,10 +9,12 @@ namespace NxEn
 
 		switch (Verbosity)
 		{
-		case NxFr::LoggerVerbosity::Info: Id = GUI::Style::IdInfo; break;
-		case NxFr::LoggerVerbosity::Warning: Id = GUI::Style::IdWarning; break;
-		case NxFr::LoggerVerbosity::Error: Id = GUI::Style::IdError; break;
-		case NxFr::LoggerVerbosity::Fatal: Id = GUI::Style::IdFatal; break;
+		case NxFr::LoggerVerbosity::Info:
+		case NxFr::LoggerVerbosity::Warning:
+		case NxFr::LoggerVerbosity::Error:;
+		case NxFr::LoggerVerbosity::Fatal:
+			Id = NxFr::StringId(NxFr::StringUtility::ToString(Verbosity));
+			break;
 
 		case NxFr::LoggerVerbosity::None:
 		case NxFr::LoggerVerbosity::All:
@@ -114,11 +116,11 @@ namespace NxEn
 
 			if (ImGui::BeginMenuBar())
 			{
-				Style.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Style::GetVar(GUI::Style::IdWidthInpuText) + GUI::Style::GetVar(GUI::Style::IdWidthButton)), 2, false, true).x;
-				Style.Width = GUI::Style::GetVar(GUI::Style::IdWidthInpuText);
+				Style.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthInpuText() + GUI::Styles::WidthButton()), 2, false, true).x;
+				Style.Width = GUI::Styles::WidthInpuText();
 				GUI::Drawer<NxFr::String>::Field(Search, "Search", "", &Style);
 
-				if (ImGui::Button("Clear Logs", { GUI::Style::GetVar(GUI::Style::IdWidthButton), 0.0f }))
+				if (ImGui::Button("Clear Logs", { GUI::Styles::WidthButton(), 0.0f }))
 				{
 					ClearLogs();
 				}
@@ -135,7 +137,7 @@ namespace NxEn
 				Log& Log = Logs[Index];
 				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || NxFr::StringUtility::Contains(Log.Text, Search)))
 				{
-					GUI::Drawer<NxFr::String>::Property(Log.Text, "", &GUI::Style::GetStyle(Log.Style));
+					GUI::Drawer<NxFr::String>::Property(Log.Text, "", GUI::Style::GetStyles().TryGet(Log.Style));
 				}
 			}
 
@@ -154,7 +156,7 @@ namespace NxEn
 		{
 			Style.Position.x = -1.0f;
 			Style.WidthLabel = 0.0f;
-			Style.Width = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Style::GetVar(GUI::Style::IdWidthButton)), 1, false).x;
+			Style.Width = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Styles::WidthButton()), 1, false).x;
 			if (GUI::Drawer<NxFr::String>::Field(Command, "Command", "", &Style))
 			{
 				ExecuteCommand();
@@ -162,7 +164,7 @@ namespace NxEn
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Execute", { GUI::Style::GetVar(GUI::Style::IdWidthButton), 0.0f }))
+			if (ImGui::Button("Execute", { GUI::Styles::WidthButton(), 0.0f }))
 			{
 				ExecuteCommand();
 			}

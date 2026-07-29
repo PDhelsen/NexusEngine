@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/Styles.h"
+#include "NexusEngine/Systems/GUI/Misc/Constants.h"
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEn
@@ -174,7 +175,7 @@ namespace NxEn
 			static bool Field(NxFr::Array<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
-				float ButtonSize = Style::GetVar(Style::IdWidthButton);
+				float ButtonSize = Styles::WidthButton();
 				uint64 Count = Data.GetCount();
 				bool Result = false;
 
@@ -232,7 +233,7 @@ namespace NxEn
 			static bool Field(NxFr::List<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
-				float ButtonSize = Style::GetVar(Style::IdWidthButton);
+				float ButtonSize = Styles::WidthButton();
 				uint64 Count = Data.GetCount();
 				bool Result = false;
 
@@ -290,7 +291,7 @@ namespace NxEn
 			static bool Field(NxFr::Set<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
-				float ButtonSize = Style::GetVar(Style::IdWidthButton);
+				float ButtonSize = Styles::WidthButton();
 
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
@@ -351,7 +352,7 @@ namespace NxEn
 			static bool Field(NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
-				float ButtonSize = Style::GetVar(Style::IdWidthButton);
+				float ButtonSize = Styles::WidthButton();
 
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
