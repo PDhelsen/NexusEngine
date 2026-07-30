@@ -6,26 +6,22 @@ namespace NxEn
 {
 	namespace GUI
 	{
-		struct Style;
-
-		struct NX_ENGINE_API Scope
-		{
-		public:
-			Scope(NxFr::StringId Id);
-			Scope(const Style* Instance);
-			~Scope();
-
-		private:
-			NxFr::StringId Id;
-			const Style* Instance;
-		};
-
 		struct NX_ENGINE_API Style
 		{
 		public:
-			enum class Preset
+			enum class Type
 			{
 				Text, Button, Panel
+			};
+
+			struct NX_ENGINE_API Scope
+			{
+			public:
+				Scope(const Style* Instance);
+				~Scope();
+
+			private:
+				const Style* Instance;
 			};
 
 			static NxFr::Registry<float>& GetVars();
@@ -44,7 +40,7 @@ namespace NxEn
 			void SetWidth() const;
 			void SetWidthLabel(NxFr::StringView Label = "") const;
 
-			Preset StylePreset;
+			Type StyleType;
 			NxFr::Vector2f Position;
 			float Width;
 			float WidthLabel;
@@ -64,3 +60,5 @@ namespace NxEn
 		};
 	}
 }
+
+NX_ENUM_STRING(NxEn::GUI::Style::Type, 3, "Text", "Button", "Panel")

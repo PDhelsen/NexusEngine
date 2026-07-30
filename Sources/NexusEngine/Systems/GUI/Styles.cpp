@@ -5,17 +5,8 @@ namespace NxEn
 {
 	namespace GUI
 	{
-		Scope::Scope(NxFr::StringId Id)
-			: Id(Id), Instance(nullptr)
-		{
-			const Style& IdInstance = *Style::GetStyles().TryGet(Id);
-			IdInstance.Push();
-			IdInstance.SetPosition();
-			IdInstance.SetWidth();
-		}
-
-		Scope::Scope(const Style* Instance)
-			: Id(0), Instance(Instance)
+		Style::Scope::Scope(const Style* Instance)
+			: Instance(Instance)
 		{
 			if (!Instance)
 			{
@@ -27,16 +18,14 @@ namespace NxEn
 			Instance->SetWidth();
 		}
 
-		Scope::~Scope()
+		Style::Scope::~Scope()
 		{
-			if (Id.IsValid())
+			if (!Instance)
 			{
-				Style::GetStyles().TryGet(Id)->Pop();
+				return;
 			}
-			else if (Instance)
-			{
-				Instance->Pop();
-			}
+
+			Instance->Pop();
 		}
 
 		NxFr::Registry<float>& Style::GetVars()
@@ -81,7 +70,7 @@ namespace NxEn
 
 		Style::Style()
 			:
-			StylePreset(Preset::Text),
+			StyleType(Type::Text),
 			Position(-NxFr::Vector2f::One), Width(0.0f), WidthLabel(0.0f), Height(0.0f),
 			Color(NxFr::Colors::White), ColorText(NxFr::Colors::White), ColorBackground(NxFr::Colors::Black), ColorBorder(NxFr::Colors::Gray), Alpha(1.0f),
 			Align(NxFr::Vector2f(0.5f, 0.5f)), Spacing(NxFr::Vector2f(8.0f, 4.0f)), Padding(NxFr::Vector2f(4.0f , 3.0f)), Rounding(0.0f), Border(0.0f),
@@ -96,39 +85,23 @@ namespace NxEn
 
 		void Style::Reset()
 		{
-			ImGuiStyle& Style = ImGui::GetStyle();
-
-			Position = -NxFr::Vector2f::One;
-			Width = -1.0f;
-			WidthLabel = -1.0f;
-			Height = 0.0f;
-			Color = Style.Colors[21];
-			ColorText = Style.Colors[0];
-			ColorBackground = StylePreset == Preset::Panel ? Style.Colors[2] : Style.Colors[7];
-			ColorBorder = Style.Colors[5];
-			Alpha = Style.Alpha;
-			Align = Style.ButtonTextAlign;
-			Spacing = Style.ItemSpacing;
-			Padding = StylePreset == Preset::Panel ? Style.WindowPadding : Style.FramePadding;
-			Rounding = StylePreset == Preset::Panel ? Style.WindowRounding : Style.FrameRounding;
-			Border = StylePreset == Preset::Panel ? Style.WindowBorderSize : Style.FrameBorderSize;
-			Font = Style.FontScaleMain;
-			Flag = ImGuiInputTextFlags_EnterReturnsTrue;
+			NxFr::String Id = "Default" + NxFr::StringUtility::ToString(StyleType);
+			*this = *GetStyles().TryGet(NxFr::StringId(Id));
 		}
 
 		void Style::Push() const
 		{
 			ImGui::PushStyleColor(ImGuiCol_Button, Color);
 			ImGui::PushStyleColor(ImGuiCol_Text, ColorText);
-			ImGui::PushStyleColor(StylePreset == Preset::Panel ? ImGuiCol_WindowBg : ImGuiCol_FrameBg, ColorBackground);
+			ImGui::PushStyleColor(StyleType == Type::Panel ? ImGuiCol_WindowBg : ImGuiCol_FrameBg, ColorBackground);
 			ImGui::PushStyleColor(ImGuiCol_Border, ColorBorder);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Alpha);
 			ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, Align);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Spacing);
-			ImGui::PushStyleVar(StylePreset == Preset::Panel ? ImGuiStyleVar_WindowPadding : ImGuiStyleVar_FramePadding, Padding);
-			ImGui::PushStyleVar(StylePreset == Preset::Panel ? ImGuiStyleVar_WindowRounding : ImGuiStyleVar_FrameRounding, Rounding);
-			ImGui::PushStyleVar(StylePreset == Preset::Panel ? ImGuiStyleVar_WindowBorderSize : ImGuiStyleVar_FrameBorderSize, Border);
+			ImGui::PushStyleVar(StyleType == Type::Panel ? ImGuiStyleVar_WindowPadding : ImGuiStyleVar_FramePadding, Padding);
+			ImGui::PushStyleVar(StyleType == Type::Panel ? ImGuiStyleVar_WindowRounding : ImGuiStyleVar_FrameRounding, Rounding);
+			ImGui::PushStyleVar(StyleType == Type::Panel ? ImGuiStyleVar_WindowBorderSize : ImGuiStyleVar_FrameBorderSize, Border);
 
 			ImGui::SetWindowFontScale(Font);
 		}

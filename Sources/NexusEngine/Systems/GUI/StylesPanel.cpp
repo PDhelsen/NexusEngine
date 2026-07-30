@@ -42,7 +42,7 @@ namespace NxEn
 		Menu.Draw();
 
 		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Vars", &GUI::Styles::Text_Title());
+		GUI::Draw::Text("Vars", &GUI::Styles::TextTitle());
 		for (auto It = GUI::Style::GetVars().Begin(); It != GUI::Style::GetVars().End(); ++It)
 		{
 			GUI::Drawer<float>::Property(It->Value, It->Key, &Style);
@@ -51,7 +51,7 @@ namespace NxEn
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
 		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Colors", &GUI::Styles::Text_Title());
+		GUI::Draw::Text("Colors", &GUI::Styles::TextTitle());
 		for (auto It = GUI::Style::GetColors().Begin(); It != GUI::Style::GetColors().End(); ++It)
 		{
 			Style.ColorText = It->Value;
@@ -64,7 +64,7 @@ namespace NxEn
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
 		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Styles", &GUI::Styles::Text_Title());
+		GUI::Draw::Text("Styles", &GUI::Styles::TextTitle());
 		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
 			GUI::Style Visual = GUI::Style::Copy(&It->Value);

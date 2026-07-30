@@ -351,7 +351,7 @@ namespace YAML
 		static Node encode(const NxEn::GUI::Style& rhs)
 		{
 			Node node;
-			node["StylePreset"] = (int32)rhs.StylePreset;
+			node["StyleType"] = (int32)rhs.StyleType;
 			node["Width"] = rhs.Width;
 			node["WidthLabel"] = rhs.WidthLabel;
 			node["Height"] = rhs.Font;
@@ -372,7 +372,7 @@ namespace YAML
 
 		static bool decode(const Node& node, NxEn::GUI::Style& rhs)
 		{
-			rhs.StylePreset = (NxEn::GUI::Style::Preset)node["StylePreset"].as<int32>();
+			rhs.StyleType = (NxEn::GUI::Style::Type)node["StyleType"].as<int32>();
 			rhs.Width = node["Width"].as<float>();
 			rhs.WidthLabel = node["WidthLabel"].as<float>();
 			rhs.Height = node["Height"].as<float>();
@@ -395,7 +395,7 @@ namespace YAML
 	inline YAML::Emitter& operator<<(YAML::Emitter& out, const NxEn::GUI::Style& rhs)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "StylePreset" << YAML::Value << (int32)rhs.StylePreset;
+		out << YAML::Key << "StyleType" << YAML::Value << (int32)rhs.StyleType;
 		out << YAML::Key << "Width" << YAML::Value << rhs.Width;
 		out << YAML::Key << "WidthLabel" << YAML::Value << rhs.WidthLabel;
 		out << YAML::Key << "Height" << YAML::Value << rhs.Height;

@@ -62,8 +62,9 @@ namespace NxEn
 	void StatsPanel::DrawButtons()
 	{
 		{
-			GUI::Scope Style(!Instruments->IsRecording() ? &GUI::Styles::Button_Normal() : &GUI::Styles::Button_Pressed());
-			if (ImGui::Button("Instruments", { GUI::Styles::WidthButton() , 0 }))
+			Style = !Instruments->IsRecording() ? GUI::Styles::ButtonNormal() : GUI::Styles::ButtonPressed();
+			Style.Width = GUI::Styles::WidthButton();
+			if (GUI::Draw::Button("Instruments", &Style))
 			{
 				if (!Instruments->IsRecording())
 				{
@@ -79,8 +80,9 @@ namespace NxEn
 		ImGui::SameLine();
 
 		{
-			GUI::Scope Style(!Stats->IsRecording() ? &GUI::Styles::Button_Normal() : &GUI::Styles::Button_Pressed());
-			if (ImGui::Button("Stats", { GUI::Styles::WidthButton() , 0 }))
+			Style = !Instruments->IsRecording() ? GUI::Styles::ButtonNormal() : GUI::Styles::ButtonPressed();
+			Style.Width = GUI::Styles::WidthButton();
+			if (GUI::Draw::Button("Stats", &Style))
 			{
 				if (!Stats->IsRecording())
 				{

@@ -20,10 +20,13 @@ namespace NxEn
 			inline static const NxFr::Color& Blue() { return *Style::GetColors().TryGet("Blue"_Sid); }
 			inline static const NxFr::Color& Magenta() { return *Style::GetColors().TryGet("Magenta"_Sid); }
 
-			inline static const Style& Text_Normal() { return *Style::GetStyles().TryGet("Text_Normal"_Sid); }
-			inline static const Style& Text_Title() { return *Style::GetStyles().TryGet("Text_Title"_Sid); }
-			inline static const Style& Button_Normal() { return *Style::GetStyles().TryGet("Button_Normal"_Sid); }
-			inline static const Style& Button_Pressed() { return *Style::GetStyles().TryGet("Button_Pressed"_Sid); }
+			inline static const Style& DefaultText() { return *Style::GetStyles().TryGet("DefaultText"_Sid); }
+			inline static const Style& DefaultButton() { return *Style::GetStyles().TryGet("DefaultButton"_Sid); }
+			inline static const Style& DefaultPanel() { return *Style::GetStyles().TryGet("DefaultPanel"_Sid); }
+			inline static const Style& TextNormal() { return *Style::GetStyles().TryGet("TextNormal"_Sid); }
+			inline static const Style& TextTitle() { return *Style::GetStyles().TryGet("TextTitle"_Sid); }
+			inline static const Style& ButtonNormal() { return *Style::GetStyles().TryGet("ButtonNormal"_Sid); }
+			inline static const Style& ButtonPressed() { return *Style::GetStyles().TryGet("ButtonPressed"_Sid); }
 			inline static const Style& Info() { return *Style::GetStyles().TryGet("Info"_Sid); }
 			inline static const Style& Warning() { return *Style::GetStyles().TryGet("Warning"_Sid); }
 			inline static const Style& Error() { return *Style::GetStyles().TryGet("Error"_Sid); }

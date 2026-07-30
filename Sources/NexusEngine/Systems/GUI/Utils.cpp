@@ -54,7 +54,7 @@ namespace NxEn
 					return;
 				}
 
-				Scope _ = Visual;
+				GUI::Style::Scope _ = Visual;
 
 				Label(Data);
 
@@ -78,7 +78,7 @@ namespace NxEn
 
 			void Text(NxFr::StringView Data, const Style* Visual)
 			{
-				Scope _ = Visual;
+				GUI::Style::Scope _ = Visual;
 
 				Text(Data);
 			}
@@ -90,7 +90,7 @@ namespace NxEn
 
 			bool Input(NxFr::String& Data, NxFr::StringView Id, const Style* Visual)
 			{
-				Scope _ = Visual;
+				GUI::Style::Scope _ = Visual;
 				uint64 Flag = ImGuiInputTextFlags_EnterReturnsTrue;
 
 				if (Visual)
@@ -116,7 +116,7 @@ namespace NxEn
 
 			bool Button(NxFr::StringView Data, const Style* Visual)
 			{
-				Scope _ = Visual;
+				GUI::Style::Scope _ = Visual;
 
 				NxFr::Vector2f Size = NxFr::Vector2f::Zero;
 
