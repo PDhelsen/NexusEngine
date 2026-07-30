@@ -111,7 +111,7 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = 0.0f;
+				DrawerStyle.Label = 0.0f;
 
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 
@@ -132,9 +132,9 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = 0.0f;
+				DrawerStyle.Label = 0.0f;
 
-				DrawerStyle.Width = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
+				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
 				if (Drawer<uint64>::Field(Count, "Count:", ImGuiId + "Count", &DrawerStyle))
 				{
 					NxFr::ContainerUtility::Resize(Data, Count);
@@ -150,7 +150,7 @@ namespace NxEn
 					NxFr::ContainerUtility::Resize(Data, Data.GetCount() - 1);
 				}
 
-				DrawerStyle.Width = -1.0f;
+				DrawerStyle.Size.x = -1.0f;
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
@@ -169,7 +169,7 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = 0.0f;
+				DrawerStyle.Label = 0.0f;
 
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 
@@ -190,9 +190,9 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = 0.0f;
+				DrawerStyle.Label = 0.0f;
 
-				DrawerStyle.Width = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
+				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
 				if (Drawer<uint64>::Field(Count, "Count:", ImGuiId + "Count", &DrawerStyle))
 				{
 					NxFr::ContainerUtility::Resize(Data, Count);
@@ -208,7 +208,7 @@ namespace NxEn
 					Data.RemoveLast();
 				}
 
-				DrawerStyle.Width = -1.0f;
+				DrawerStyle.Size.x = -1.0f;
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
@@ -227,8 +227,8 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = 0.0f;
-				DrawerStyle.Width = -1.0f;
+				DrawerStyle.Label = 0.0f;
+				DrawerStyle.Size.x = -1.0f;
 
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 
@@ -246,8 +246,8 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = 0.0f;
-				DrawerStyle.Width = -1.0f;
+				DrawerStyle.Label = 0.0f;
+				DrawerStyle.Size.x = -1.0f;
 
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 				ImGui::SameLine();
@@ -287,8 +287,8 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = -1.0f;
-				DrawerStyle.Width = -1.0f;
+				DrawerStyle.Label = GUI::Styles::WidthLabel();
+				DrawerStyle.Size.x = -1.0f;
 
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 
@@ -307,8 +307,8 @@ namespace NxEn
 				Style DrawerStyle = Style::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.WidthLabel = -1.0f;
-				DrawerStyle.Width = -1.0f;
+				DrawerStyle.Label = GUI::Styles::WidthLabel();
+				DrawerStyle.Size.x = -1.0f;
 
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 				ImGui::SameLine();
@@ -351,9 +351,9 @@ namespace YAML
 		static Node encode(const NxEn::GUI::Style& rhs)
 		{
 			Node node;
-			node["StyleType"] = (int32)rhs.StyleType;
-			node["Width"] = rhs.Width;
-			node["WidthLabel"] = rhs.WidthLabel;
+			node["Position"] = rhs.Position;
+			node["Size"] = rhs.Size;
+			node["Label"] = rhs.Label;
 			node["Height"] = rhs.Font;
 			node["Color"] = rhs.Color;
 			node["ColorText"] = rhs.ColorText;
@@ -372,10 +372,9 @@ namespace YAML
 
 		static bool decode(const Node& node, NxEn::GUI::Style& rhs)
 		{
-			rhs.StyleType = (NxEn::GUI::Style::Type)node["StyleType"].as<int32>();
-			rhs.Width = node["Width"].as<float>();
-			rhs.WidthLabel = node["WidthLabel"].as<float>();
-			rhs.Height = node["Height"].as<float>();
+			rhs.Position = node["Position"].as<NxFr::Vector2f>();
+			rhs.Size = node["Size"].as<NxFr::Vector2f>();
+			rhs.Label = node["Label"].as<float>();
 			rhs.Color = node["Color"].as<NxFr::Color>();
 			rhs.ColorText = node["ColorText"].as<NxFr::Color>();
 			rhs.ColorBackground = node["ColorBackground"].as<NxFr::Color>();
@@ -395,10 +394,9 @@ namespace YAML
 	inline YAML::Emitter& operator<<(YAML::Emitter& out, const NxEn::GUI::Style& rhs)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "StyleType" << YAML::Value << (int32)rhs.StyleType;
-		out << YAML::Key << "Width" << YAML::Value << rhs.Width;
-		out << YAML::Key << "WidthLabel" << YAML::Value << rhs.WidthLabel;
-		out << YAML::Key << "Height" << YAML::Value << rhs.Height;
+		out << YAML::Key << "Position" << YAML::Value << rhs.Position;
+		out << YAML::Key << "Size" << YAML::Value << rhs.Size;
+		out << YAML::Key << "Label" << YAML::Value << rhs.Label;
 		out << YAML::Key << "Color" << YAML::Value << rhs.Color;
 		out << YAML::Key << "ColorText" << YAML::Value << rhs.ColorText;
 		out << YAML::Key << "ColorBackground" << YAML::Value << rhs.ColorBackground;

@@ -9,42 +9,24 @@ namespace NxEn
 		struct NX_ENGINE_API Style
 		{
 		public:
-			enum class Type
-			{
-				Text, Button, Panel
-			};
-
-			struct NX_ENGINE_API Scope
-			{
-			public:
-				Scope(const Style* Instance);
-				~Scope();
-
-			private:
-				const Style* Instance;
-			};
-
 			static NxFr::Registry<float>& GetVars();
 			static NxFr::Registry<NxFr::Color>& GetColors();
 			static NxFr::Registry<Style>& GetStyles();
 
 			static Style Copy(const Style* Original);
+			static void Push(const Style* Instance);
+			static void Pop(const Style* Instance);
+			static void SetPosition(const Style* Instance);
+			static void SetWidth(const Style* Instance);
+			static void SetWidth(const Style* Instance, NxFr::StringView Text, bool Label = false);
 
 			Style();
 			~Style();
-
 			void Reset();
-			void Push() const;
-			void Pop() const;
-			void SetPosition() const;
-			void SetWidth() const;
-			void SetWidthLabel(NxFr::StringView Label = "") const;
 
-			Type StyleType;
 			NxFr::Vector2f Position;
-			float Width;
-			float WidthLabel;
-			float Height;
+			NxFr::Vector2f Size;
+			float Label;
 			NxFr::Color Color;
 			NxFr::Color ColorText;
 			NxFr::Color ColorBackground;
@@ -60,5 +42,3 @@ namespace NxEn
 		};
 	}
 }
-
-NX_ENUM_STRING(NxEn::GUI::Style::Type, 3, "Text", "Button", "Panel")

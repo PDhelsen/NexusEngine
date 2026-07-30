@@ -135,11 +135,10 @@ Nexus:
     Blue: [0.15, 0.15, 0.45, 1]
     Magenta: [0.42, 0.05, 0.32, 1]
   Styles:
-    DefaultText:
-      StyleType: 0
-      Width: -1
-      WidthLabel: -1
-      Height: 0
+    Default:
+      Position: [-1.0, -1.0]
+      Size: [0.0, 0.0]
+      Label: -1
       Color: [0.26, 0.59, 0.98, 0.4]
       ColorText: [1, 1, 1, 1]
       ColorBackground: [0.16, 0.29, 0.48, 0.54]
@@ -150,48 +149,12 @@ Nexus:
       Padding: [4, 3]
       Rounding: 0
       Border: 0
-      Font: 1
-      Flag: 64
-    DefaultButton:
-      StyleType: 1
-      Width: -1
-      WidthLabel: -1
-      Height: 0
-      Color: [0.26, 0.59, 0.98, 0.4]
-      ColorText: [1, 1, 1, 1]
-      ColorBackground: [0.16, 0.29, 0.48, 0.54]
-      ColorBorder: [0.43, 0.43, 0.5, 0.5]
-      Alpha: 1
-      Align: [0.5, 0.5]
-      Spacing: [8, 4]
-      Padding: [4, 3]
-      Rounding: 0
-      Border: 0
-      Font: 1
-      Flag: 64
-    DefaultPanel:
-      StyleType: 2
-      Width: -1
-      WidthLabel: -1
-      Height: 0
-      Color: [0.26, 0.59, 0.98, 0.4]
-      ColorText: [1, 1, 1, 1]
-      ColorBackground: [0.06, 0.06, 0.06, 0.94]
-      ColorBorder: [0.43, 0.43, 0.5, 0.5]
-      Alpha: 1
-      Align: [0.5, 0.5]
-      Spacing: [8, 4]
-      Padding: [8, 8]
-      Rounding: 0
-      Border: 1
       Font: 1
       Flag: 64
     TextNormal:
-      StyleType: 0
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0, 0, 0, 0]
       ColorText: [1, 1, 1, 1]
       ColorBackground: [0, 0, 0, 0]
@@ -205,11 +168,9 @@ Nexus:
       Font: 1
       Flag: 0
     ButtonPressed:
-      StyleType: 1
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0.06, 0.53, 0.98, 1]
       ColorText: [1, 1, 1, 1]
       ColorBackground: [0.16, 0.29, 0.48, 0.54]
@@ -223,11 +184,9 @@ Nexus:
       Font: 1
       Flag: 0
     Warning:
-      StyleType: 1
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0.45, 0.35, 0.05, 1]
       ColorText: [0.95, 0.75, 0.05, 1]
       ColorBackground: [0.16, 0.29, 0.48, 0.54]
@@ -241,11 +200,9 @@ Nexus:
       Font: 1
       Flag: 0
     Info:
-      StyleType: 1
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0.45, 0.45, 0.45, 1]
       ColorText: [0.95, 0.95, 0.95, 1]
       ColorBackground: [0.16, 0.29, 0.48, 0.54]
@@ -259,11 +216,9 @@ Nexus:
       Font: 1
       Flag: 0
     ButtonNormal:
-      StyleType: 1
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0.26, 0.59, 0.98, 0.4]
       ColorText: [1, 1, 1, 1]
       ColorBackground: [0.16, 0.29, 0.48, 0.54]
@@ -277,11 +232,9 @@ Nexus:
       Font: 1
       Flag: 0
     TextTitle:
-      StyleType: 0
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0, 0, 0, 0]
       ColorText: [1, 1, 1, 1]
       ColorBackground: [0, 0, 0, 0]
@@ -295,11 +248,9 @@ Nexus:
       Font: 1.25
       Flag: 0
     Fatal:
-      StyleType: 1
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0.42, 0.05, 0.32, 1]
       ColorText: [0.85, 0.05, 0.65, 1]
       ColorBackground: [0.16, 0.29, 0.48, 0.54]
@@ -313,11 +264,9 @@ Nexus:
       Font: 1
       Flag: 0
     Error:
-      StyleType: 1
       Position: [-1.0, -1.0]
-      Width: -1.0
-      WidthLabel: -1.0
-      Height: 0
+      Size: [0.0, 0.0]
+      Label: -1.0
       Color: [0.45, 0.05, 0.05, 1]
       ColorText: [0.9, 0.1, 0.1, 1]
       ColorBackground: [0.16, 0.29, 0.48, 0.54]

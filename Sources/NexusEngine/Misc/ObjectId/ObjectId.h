@@ -47,7 +47,7 @@ namespace NxEn
 			GUI::Style DrawerStyle = GUI::Style::Copy(Visual);
 			GUI::Draw::Label(Label, &DrawerStyle);
 			DrawerStyle.Position.x = -1.0f;
-			DrawerStyle.Width = 150.0f;
+			DrawerStyle.Size.x = 150.0f;
 			DrawerStyle.Flag = DrawerStyle.Flag != 0 ? DrawerStyle.Flag : ImGuiInputTextFlags_EnterReturnsTrue;
 			bool Result = GUI::Draw::Input(Value, ImGuiId, &DrawerStyle);
 			ImGui::SameLine();

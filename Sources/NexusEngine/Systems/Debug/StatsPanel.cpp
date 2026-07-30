@@ -63,7 +63,7 @@ namespace NxEn
 	{
 		{
 			Style = !Instruments->IsRecording() ? GUI::Styles::ButtonNormal() : GUI::Styles::ButtonPressed();
-			Style.Width = GUI::Styles::WidthButton();
+			Style.Size.x = GUI::Styles::WidthButton();
 			if (GUI::Draw::Button("Instruments", &Style))
 			{
 				if (!Instruments->IsRecording())
@@ -81,7 +81,7 @@ namespace NxEn
 
 		{
 			Style = !Instruments->IsRecording() ? GUI::Styles::ButtonNormal() : GUI::Styles::ButtonPressed();
-			Style.Width = GUI::Styles::WidthButton();
+			Style.Size.x = GUI::Styles::WidthButton();
 			if (GUI::Draw::Button("Stats", &Style))
 			{
 				if (!Stats->IsRecording())
@@ -98,8 +98,8 @@ namespace NxEn
 
 	void StatsPanel::DrawFilter()
 	{
-		Style.Width = -1.0f;
-		Style.WidthLabel = 0.0f;
+		Style.Size.x = -1.0f;
+		Style.Label = 0.0f;
 
 		if (GUI::Drawer<NxFr::String>::Field(Filter.GetQuery(), "Filter:", "", &Style))
 		{
@@ -111,8 +111,8 @@ namespace NxEn
 
 	void StatsPanel::DrawStats(NxFr::StringView Label)
 	{
-		Style.Width = 0.0f;
-		Style.WidthLabel = -1.0f;
+		Style.Size.x = 0.0f;
+		Style.Label = GUI::Styles::WidthLabel();
 
 		NxFr::StringId Id = NxFr::StringId(Label);
 		const NxFr::Stats::Stat* Value = Values[Id];

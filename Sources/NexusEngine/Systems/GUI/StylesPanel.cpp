@@ -28,7 +28,7 @@ namespace NxEn
 		Menu.SetEnabled(true);
 		Style.Reset();
 
-		Style.Width = GUI::Styles::WidthButton();
+		Style.Size.x = GUI::Styles::WidthButton();
 	}
 
 	void StylesPanel::OnDisable()
@@ -68,8 +68,8 @@ namespace NxEn
 		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
 			GUI::Style Visual = GUI::Style::Copy(&It->Value);
-			Visual.Width = GUI::Styles::WidthButton();
-			Visual.WidthLabel = -1.0f;
+			Visual.Size.x = GUI::Styles::WidthButton();
+			Visual.Label = GUI::Styles::WidthLabel();
 
 			GUI::Draw::Label(It->Key, &Visual);
 			GUI::Draw::Button(It->Key, &Visual);

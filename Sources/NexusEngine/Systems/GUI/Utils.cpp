@@ -54,14 +54,13 @@ namespace NxEn
 					return;
 				}
 
-				GUI::Style::Scope _ = Visual;
+				GUI::Style::Push(Visual);
+				GUI::Style::SetPosition(Visual);
 
 				Label(Data);
 
-				if (Visual)
-				{
-					Visual->SetWidthLabel(Data);
-				}
+				GUI::Style::SetWidth(Visual, Data, true);
+				GUI::Style::Pop(Visual);
 			}
 
 			void Label(NxFr::StringView Data)
@@ -78,9 +77,12 @@ namespace NxEn
 
 			void Text(NxFr::StringView Data, const Style* Visual)
 			{
-				GUI::Style::Scope _ = Visual;
+				GUI::Style::Push(Visual);
+				GUI::Style::SetPosition(Visual);
 
 				Text(Data);
+
+				GUI::Style::Pop(Visual);
 			}
 
 			void Text(NxFr::StringView Data)
@@ -90,16 +92,16 @@ namespace NxEn
 
 			bool Input(NxFr::String& Data, NxFr::StringView Id, const Style* Visual)
 			{
-				GUI::Style::Scope _ = Visual;
-				uint64 Flag = ImGuiInputTextFlags_EnterReturnsTrue;
+				GUI::Style::Push(Visual);
+				GUI::Style::SetPosition(Visual);
+				GUI::Style::SetWidth(Visual);
+				uint64 Flag = Visual ? Visual->Flag : ImGuiInputTextFlags_EnterReturnsTrue;
 
-				if (Visual)
-				{
-					Visual->SetWidth();
-					Flag = Visual->Flag;
-				}
+				bool Result = Input(Data, Id, Flag);
 
-				return Input(Data, Id, Flag);
+				GUI::Style::Pop(Visual);
+
+				return Result;
 			}
 
 			bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag)
@@ -116,16 +118,16 @@ namespace NxEn
 
 			bool Button(NxFr::StringView Data, const Style* Visual)
 			{
-				GUI::Style::Scope _ = Visual;
+				GUI::Style::Push(Visual);
+				GUI::Style::SetPosition(Visual);
+				GUI::Style::SetWidth(Visual);
+				NxFr::Vector2f Size = Visual ? Visual->Size : NxFr::Vector2f::Zero;
 
-				NxFr::Vector2f Size = NxFr::Vector2f::Zero;
+				bool Result = Button(Data, Size);
 
-				if (Visual)
-				{
-					Size.x = Visual->Width;
-				}
+				GUI::Style::Pop(Visual);
 
-				return Button(Data, Size);
+				return Result;
 			}
 
 			bool Button(NxFr::StringView Data, NxFr::Vector2f Size)

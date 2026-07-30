@@ -107,7 +107,7 @@ namespace NxEd
 			ImGui::SameLine();
 
 			Style.Position.x = Origin + Offset;
-			Style.Width = Width;
+			Style.Size.x = Width;
 			bool IsLoaded = IsSceneLoaded(Info.Id, WorldId);
 			if (NxEn::GUI::Draw::Button((IsLoaded ? "Unload" : "Load") + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), &Style))
 			{

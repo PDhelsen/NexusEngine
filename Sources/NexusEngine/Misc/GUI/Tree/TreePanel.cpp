@@ -73,7 +73,7 @@ namespace NxEn
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
 		Style.Reset();
-		Style.WidthLabel = 0.0f;
+		Style.Label = 0.0f;
 
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 

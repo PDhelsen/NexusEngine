@@ -48,12 +48,12 @@ namespace NxEd
 		Path.Clear();
 
 		Style.Reset();
-		Style.WidthLabel = ButtonWidth;
+		Style.Label = ButtonWidth;
 	}
 
 	void AssetImporterPopup::OnDraw()
 	{
-		Style.Width = NxEn::GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Path").x + NxEn::GUI::Styles::WidthButton()), 0, true, true).x - ButtonWidth;
+		Style.Size.x = NxEn::GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Path").x + NxEn::GUI::Styles::WidthButton()), 0, true, true).x - ButtonWidth;
 		NxEn::GUI::Drawer<NxFr::String>::Field(Path, "Path", "", &Style);
 		ImGui::SameLine();
 		if (ImGui::Button("Pick", { NxEn::GUI::Styles::WidthButton(), 0.0f }))
@@ -61,7 +61,7 @@ namespace NxEd
 			Pick();
 		}
 
-		Style.Width = -1.0f;
+		Style.Size.x = -1.0f;
 		NxEn::GUI::Drawer<NxFr::String>::Field(Type, "Type", "", &Style);
 	}
 

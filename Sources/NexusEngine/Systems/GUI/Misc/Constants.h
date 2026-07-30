@@ -20,9 +20,7 @@ namespace NxEn
 			inline static const NxFr::Color& Blue() { return *Style::GetColors().TryGet("Blue"_Sid); }
 			inline static const NxFr::Color& Magenta() { return *Style::GetColors().TryGet("Magenta"_Sid); }
 
-			inline static const Style& DefaultText() { return *Style::GetStyles().TryGet("DefaultText"_Sid); }
-			inline static const Style& DefaultButton() { return *Style::GetStyles().TryGet("DefaultButton"_Sid); }
-			inline static const Style& DefaultPanel() { return *Style::GetStyles().TryGet("DefaultPanel"_Sid); }
+			inline static const Style& Default() { return *Style::GetStyles().TryGet("Default"_Sid); }
 			inline static const Style& TextNormal() { return *Style::GetStyles().TryGet("TextNormal"_Sid); }
 			inline static const Style& TextTitle() { return *Style::GetStyles().TryGet("TextTitle"_Sid); }
 			inline static const Style& ButtonNormal() { return *Style::GetStyles().TryGet("ButtonNormal"_Sid); }
