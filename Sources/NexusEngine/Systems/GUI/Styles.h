@@ -13,13 +13,6 @@ namespace NxEn
 			static NxFr::Registry<NxFr::Color>& GetColors();
 			static NxFr::Registry<Style>& GetStyles();
 
-			static Style Copy(const Style* Original);
-			static void Push(const Style* Instance);
-			static void Pop(const Style* Instance);
-			static void SetPosition(const Style* Instance);
-			static void SetWidth(const Style* Instance);
-			static void SetWidth(const Style* Instance, NxFr::StringView Text, bool Label = false);
-
 			Style();
 			~Style();
 			void Reset();

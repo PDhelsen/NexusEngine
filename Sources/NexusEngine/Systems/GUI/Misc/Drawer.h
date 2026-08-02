@@ -16,7 +16,7 @@ namespace NxEn
 		{
 			static void Property(const NxFr::String& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				Draw::Text(Data, &DrawerStyle);
@@ -26,7 +26,7 @@ namespace NxEn
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				DrawerStyle.Flag = DrawerStyle.Flag != 0 ? DrawerStyle.Flag : ImGuiInputTextFlags_EnterReturnsTrue;
@@ -41,7 +41,7 @@ namespace NxEn
 		{
 			static void Property(const NxFr::StringView& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				Draw::Text(Data, &DrawerStyle);
@@ -59,7 +59,7 @@ namespace NxEn
 		{
 			static void Property(const char*& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				Draw::Text(Data, &DrawerStyle);
@@ -79,7 +79,7 @@ namespace NxEn
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label);
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 
@@ -93,7 +93,7 @@ namespace NxEn
 			{
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				DrawerStyle.Flag = DrawerStyle.Flag != 0 ? DrawerStyle.Flag : ImGuiInputTextFlags_EnterReturnsTrue;
@@ -108,7 +108,7 @@ namespace NxEn
 		{
 			static void Property(const NxFr::Array<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -129,7 +129,7 @@ namespace NxEn
 				uint64 Count = Data.GetCount();
 				bool Result = false;
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -166,7 +166,7 @@ namespace NxEn
 		{
 			static void Property(const NxFr::List<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -187,7 +187,7 @@ namespace NxEn
 				uint64 Count = Data.GetCount();
 				bool Result = false;
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -224,7 +224,7 @@ namespace NxEn
 		{
 			static void Property(const NxFr::Set<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -243,7 +243,7 @@ namespace NxEn
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 				float ButtonSize = Styles::WidthButton();
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -284,7 +284,7 @@ namespace NxEn
 		{
 			static void Property(const NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = GUI::Styles::WidthLabel();
@@ -304,7 +304,7 @@ namespace NxEn
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 				float ButtonSize = Styles::WidthButton();
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = GUI::Styles::WidthLabel();

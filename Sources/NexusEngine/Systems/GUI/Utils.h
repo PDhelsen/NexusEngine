@@ -14,6 +14,12 @@ namespace NxEn
 			NX_ENGINE_API float Center(NxFr::StringView Text);
 			NX_ENGINE_API NxFr::String GenerateId(NxFr::StringView Label = "", NxFr::StringView Id = "");
 			NX_ENGINE_API bool IsPanelActive();
+			NX_ENGINE_API Style Copy(const Style* Original);
+			NX_ENGINE_API void Push(const Style* Instance);
+			NX_ENGINE_API void Pop(const Style* Instance);
+			NX_ENGINE_API void SetPosition(const Style* Instance);
+			NX_ENGINE_API void SetWidth(const Style* Instance);
+			NX_ENGINE_API void SetWidth(const Style* Instance, NxFr::StringView Text, bool Label = false);
 		}
 
 		namespace Draw
@@ -35,7 +41,7 @@ namespace NxEn
 			{
 				NxFr::String Buffer = NxFr::StringUtility::ToString<T>(Data);
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				Draw::Text(Buffer, &DrawerStyle);
@@ -46,7 +52,7 @@ namespace NxEn
 				NxFr::String Buffer = NxFr::StringUtility::ToString<T>(Data);
 				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
 
-				Style DrawerStyle = Style::Copy(Visual);
+				Style DrawerStyle = Utils::Copy(Visual);
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				DrawerStyle.Flag = DrawerStyle.Flag != 0 ? DrawerStyle.Flag : ImGuiInputTextFlags_EnterReturnsTrue;

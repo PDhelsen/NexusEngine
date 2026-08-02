@@ -43,6 +43,97 @@ namespace NxEn
 					(ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows) && (ImGui::IsMouseClicked(0) || ImGui::IsMouseClicked(1))) ||
 					(ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows) && ImGui::IsAnyItemActive());
 			}
+
+			Style Copy(const Style* Original)
+			{
+				Style Copy;
+
+				if (Original)
+				{
+					Copy = *Original;
+				}
+				else
+				{
+					Copy.Reset();
+					Copy.Label = GUI::Styles::WidthLabel();
+				}
+
+				return Copy;
+			}
+
+			void Push(const Style* Instance)
+			{
+				if (!Instance)
+				{
+					return;
+				}
+
+				ImGui::PushStyleColor(ImGuiCol_Button, Instance->Color);
+				ImGui::PushStyleColor(ImGuiCol_Text, Instance->ColorText);
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, Instance->ColorBackground);
+				ImGui::PushStyleColor(ImGuiCol_Border, Instance->ColorBorder);
+
+				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Instance->Alpha);
+				ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, Instance->Align);
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Instance->Spacing);
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Instance->Padding);
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Instance->Rounding);
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, Instance->Border);
+
+				ImGui::SetWindowFontScale(Instance->Font);
+			}
+
+			void Pop(const Style* Instance)
+			{
+				if (!Instance)
+				{
+					return;
+				}
+
+				ImGui::PopStyleColor(4);
+				ImGui::PopStyleVar(6);
+				ImGui::SetWindowFontScale(1);
+			}
+
+			void SetPosition(const Style* Instance)
+			{
+				if (!Instance)
+				{
+					return;
+				}
+
+				if (Instance->Position.x >= 0.0f)
+				{
+					ImGui::SetCursorPosX(Instance->Position.x);
+				}
+				if (Instance->Position.y >= 0.0f)
+				{
+					ImGui::SetCursorPosY(Instance->Position.y);
+				}
+			}
+
+			void SetWidth(const Style* Instance)
+			{
+				if (!Instance)
+				{
+					return;
+				}
+
+				ImGui::SetNextItemWidth(Instance->Size.x >= 0.0f ? Instance->Size.x : ImGui::GetContentRegionAvail().x);
+			}
+
+			void SetWidth(const Style* Instance, NxFr::StringView Text, bool Label)
+			{
+				if (!Instance)
+				{
+					return;
+				}
+
+				float Size = ImGui::CalcTextSize(Text.C()).x;
+				float Position = ImGui::GetCursorPosX() - Size;
+				float Offset = Label ? Instance->Label : 0;
+				ImGui::SetCursorPosX(Position + (Offset > 0.0f ? Offset : Offset == 0.0f ? Size : ImGui::GetContentRegionAvail().x));
+			}
 		}
 
 		namespace Draw
@@ -54,13 +145,13 @@ namespace NxEn
 					return;
 				}
 
-				GUI::Style::Push(Visual);
-				GUI::Style::SetPosition(Visual);
+				Utils::Push(Visual);
+				Utils::SetPosition(Visual);
 
 				Label(Data);
 
-				GUI::Style::SetWidth(Visual, Data, true);
-				GUI::Style::Pop(Visual);
+				Utils::SetWidth(Visual, Data, true);
+				Utils::Pop(Visual);
 			}
 
 			void Label(NxFr::StringView Data)
@@ -77,12 +168,12 @@ namespace NxEn
 
 			void Text(NxFr::StringView Data, const Style* Visual)
 			{
-				GUI::Style::Push(Visual);
-				GUI::Style::SetPosition(Visual);
+				Utils::Push(Visual);
+				Utils::SetPosition(Visual);
 
 				Text(Data);
 
-				GUI::Style::Pop(Visual);
+				Utils::Pop(Visual);
 			}
 
 			void Text(NxFr::StringView Data)
@@ -92,14 +183,14 @@ namespace NxEn
 
 			bool Input(NxFr::String& Data, NxFr::StringView Id, const Style* Visual)
 			{
-				GUI::Style::Push(Visual);
-				GUI::Style::SetPosition(Visual);
-				GUI::Style::SetWidth(Visual);
+				Utils::Push(Visual);
+				Utils::SetPosition(Visual);
+				Utils::SetWidth(Visual);
 				uint64 Flag = Visual ? Visual->Flag : ImGuiInputTextFlags_EnterReturnsTrue;
 
 				bool Result = Input(Data, Id, Flag);
 
-				GUI::Style::Pop(Visual);
+				Utils::Pop(Visual);
 
 				return Result;
 			}
@@ -118,14 +209,14 @@ namespace NxEn
 
 			bool Button(NxFr::StringView Data, const Style* Visual)
 			{
-				GUI::Style::Push(Visual);
-				GUI::Style::SetPosition(Visual);
-				GUI::Style::SetWidth(Visual);
+				Utils::Push(Visual);
+				Utils::SetPosition(Visual);
+				Utils::SetWidth(Visual);
 				NxFr::Vector2f Size = Visual ? Visual->Size : NxFr::Vector2f::Zero;
 
 				bool Result = Button(Data, Size);
 
-				GUI::Style::Pop(Visual);
+				Utils::Pop(Visual);
 
 				return Result;
 			}
