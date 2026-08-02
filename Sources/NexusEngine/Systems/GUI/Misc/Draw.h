@@ -1,10 +1,8 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Systems/GUI/GUI.h"
-#include "NexusEngine/Systems/GUI/Styles.h"
-#include "NexusEngine/Systems/GUI/Utils.h"
-#include "NexusEngine/Systems/GUI/Misc/Constants.h"
+#include "NexusEngine/Systems/GUI/Draw.h"
+#include "NexusEngine/Systems/GUI/Misc/Styles.h"
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEn
@@ -16,7 +14,11 @@ namespace NxEn
 		{
 			static void Property(const NxFr::String& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				Draw::Text(Data, &DrawerStyle);
@@ -24,9 +26,13 @@ namespace NxEn
 
 			static bool Field(NxFr::String& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
+				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				DrawerStyle.Flag = DrawerStyle.Flag != 0 ? DrawerStyle.Flag : ImGuiInputTextFlags_EnterReturnsTrue;
@@ -41,7 +47,11 @@ namespace NxEn
 		{
 			static void Property(const NxFr::StringView& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				Draw::Text(Data, &DrawerStyle);
@@ -59,7 +69,11 @@ namespace NxEn
 		{
 			static void Property(const char*& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				Draw::Text(Data, &DrawerStyle);
@@ -77,9 +91,13 @@ namespace NxEn
 		{
 			static void Property(const bool& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Label);
+				NxFr::String ImGuiId = Utils::GenerateId("", Label);
 
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 
@@ -91,9 +109,13 @@ namespace NxEn
 
 			static bool Field(bool& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
+				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = -1.0f;
 				DrawerStyle.Flag = DrawerStyle.Flag != 0 ? DrawerStyle.Flag : ImGuiInputTextFlags_EnterReturnsTrue;
@@ -108,7 +130,11 @@ namespace NxEn
 		{
 			static void Property(const NxFr::Array<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -124,18 +150,22 @@ namespace NxEn
 
 			static bool Field(NxFr::Array<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
+				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 				uint64 Count = Data.GetCount();
 				bool Result = false;
 
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
 
-				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
-				if (Drawer<uint64>::Field(Count, "Count:", ImGuiId + "Count", &DrawerStyle))
+				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 2).x;
+				if (Drawer<uint64>::Field(Count, "Count:", "Count" + ImGuiId, &DrawerStyle))
 				{
 					NxFr::ContainerUtility::Resize(Data, Count);
 				}
@@ -166,7 +196,11 @@ namespace NxEn
 		{
 			static void Property(const NxFr::List<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -182,18 +216,22 @@ namespace NxEn
 
 			static bool Field(NxFr::List<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
+				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 				uint64 Count = Data.GetCount();
 				bool Result = false;
 
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
 
-				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 3, false).x;
-				if (Drawer<uint64>::Field(Count, "Count:", ImGuiId + "Count", &DrawerStyle))
+				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 2).x;
+				if (Drawer<uint64>::Field(Count, "Count:", "Count" + ImGuiId, &DrawerStyle))
 				{
 					NxFr::ContainerUtility::Resize(Data, Count);
 				}
@@ -224,7 +262,11 @@ namespace NxEn
 		{
 			static void Property(const NxFr::Set<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
@@ -240,18 +282,21 @@ namespace NxEn
 
 			static bool Field(NxFr::Set<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
+				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = 0.0f;
-				DrawerStyle.Size.x = -1.0f;
 
+				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 2).x;
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1, false).x);
 				if (ImGui::Button(("Add" + ImGuiId).C(), { ButtonSize, 0.0f }))
 				{
 					InputTextPopup* Popup = InputTextPopup::GetInstance();
@@ -284,7 +329,11 @@ namespace NxEn
 		{
 			static void Property(const NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
 			{
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
 				DrawerStyle.Label = GUI::Styles::WidthLabel();
@@ -301,18 +350,21 @@ namespace NxEn
 
 			static bool Field(NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Label, Id);
+				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 
-				Style DrawerStyle = Utils::Copy(Visual);
+				Style DrawerStyle = Visual ? *Visual : GUI::Styles::Default();
+				if (!Visual)
+				{
+					DrawerStyle.Label = GUI::Styles::WidthLabel();
+				}
 				Draw::Label(Label, &DrawerStyle);
 				DrawerStyle.Position.x = ImGui::GetCursorPosX();
-				DrawerStyle.Label = GUI::Styles::WidthLabel();
-				DrawerStyle.Size.x = -1.0f;
+				DrawerStyle.Label = 0.0f;
 
+				DrawerStyle.Size.x = Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Count:").x + ButtonSize * 2.0f, 0.0f), 2).x;
 				Drawer<uint64>::Property(Data.GetCount(), "Count:", &DrawerStyle);
 				ImGui::SameLine();
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1, false).x);
 				if (ImGui::Button(("Add" + ImGuiId).C(), { ButtonSize, 0.0f }))
 				{
 					InputTextPopup* Popup = InputTextPopup::GetInstance();

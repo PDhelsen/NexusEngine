@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
-#include "NexusEngine/Systems/GUI/Styles.h"
+#include "NexusEngine/Systems/GUI/Style.h"
 
 namespace YAML
 {

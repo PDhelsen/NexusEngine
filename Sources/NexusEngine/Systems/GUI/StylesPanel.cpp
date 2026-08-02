@@ -67,7 +67,7 @@ namespace NxEn
 		GUI::Draw::Text("Styles", &GUI::Styles::TextTitle());
 		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
-			GUI::Style Visual = GUI::Utils::Copy(&It->Value);
+			GUI::Style Visual = It->Value;
 			Visual.Size.x = GUI::Styles::WidthButton();
 			Visual.Label = GUI::Styles::WidthLabel();
 

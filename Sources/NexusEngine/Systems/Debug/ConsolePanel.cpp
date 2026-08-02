@@ -116,7 +116,7 @@ namespace NxEn
 
 			if (ImGui::BeginMenuBar())
 			{
-				Style.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthInpuText() + GUI::Styles::WidthButton()), 2, false, true).x;
+				Style.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthButton())).x;
 				Style.Size.x = GUI::Styles::WidthInpuText();
 				GUI::Drawer<NxFr::String>::Field(Search, "Search", "", &Style);
 
@@ -156,7 +156,7 @@ namespace NxEn
 		{
 			Style.Position.x = -1.0f;
 			Style.Label = 0.0f;
-			Style.Size.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Styles::WidthButton()), 1, false).x;
+			Style.Size.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Styles::WidthButton())).x;
 			if (GUI::Drawer<NxFr::String>::Field(Command, "Command", "", &Style))
 			{
 				ExecuteCommand();

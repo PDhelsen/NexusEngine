@@ -2,11 +2,12 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
-#include "NexusEngine/Systems/GUI/GUI.h"
-#include "NexusEngine/Systems/GUI/Styles.h"
+#include "NexusEngine/Systems/GUI/Style.h"
 #include "NexusEngine/Systems/GUI/Utils.h"
-#include "NexusEngine/Systems/GUI/Misc/Constants.h"
-#include "NexusEngine/Systems/GUI/Misc/Drawer.h"
+#include "NexusEngine/Systems/GUI/Draw.h"
+#include "NexusEngine/Systems/GUI/GUI.h"
+#include "NexusEngine/Systems/GUI/Misc/Styles.h"
+#include "NexusEngine/Systems/GUI/Misc/Draw.h"
 #include "NexusEngine/Systems/GUI/Misc/Serialization.h"
 
 namespace NxEn

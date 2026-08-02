@@ -94,7 +94,7 @@ namespace NxEd
 		Action ActionType = Action::None;
 
 		float Origin = ImGui::GetCursorPosX();
-		float Offset = NxEn::GUI::Utils::Fill().x - Width * 2.0f;
+		float Offset = NxEn::GUI::Utils::Fill(NxFr::Vector2f(Width * 2.0f, 0), 2).x;
 
 		NxFr::GUID WorldId = GetWorldId();
 		for (uint64 Index = 0; Index < ScenesInstances.GetCount(); ++Index)
@@ -106,7 +106,7 @@ namespace NxEd
 
 			ImGui::SameLine();
 
-			Style.Position.x = Origin + Offset;
+			Style.Position.x = Origin + Offset + ImGui::GetStyle().ItemSpacing.x;
 			Style.Size.x = Width;
 			bool IsLoaded = IsSceneLoaded(Info.Id, WorldId);
 			if (NxEn::GUI::Draw::Button((IsLoaded ? "Unload" : "Load") + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), &Style))
@@ -119,7 +119,7 @@ namespace NxEd
 			{
 				ImGui::SameLine();
 
-				Style.Position.x += Width;
+				Style.Position.x = -1.0f;
 				if (NxEn::GUI::Draw::Button("Save" + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), &Style))
 				{
 					ActionIndex = Index;

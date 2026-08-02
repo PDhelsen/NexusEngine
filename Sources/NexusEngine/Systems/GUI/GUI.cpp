@@ -382,13 +382,13 @@ namespace NxEn
 			{
 				if (!Message.IsEmpty())
 				{
-					ImGui::SetCursorPosX(GUI::Utils::Center(Message));
+					ImGui::SetCursorPosX(GUI::Utils::Center(Message).x);
 					ImGui::Text(Message.C());
 				}
 
 				OnDraw();
 
-				ImGui::SetCursorPosX(GUI::Utils::Center(GUI::Styles::WidthButton(), Callbacks.GetCount()).x);
+				ImGui::SetCursorPosX(GUI::Utils::Center(NxFr::Vector2f(GUI::Styles::WidthButton() * Callbacks.GetCount(), 0), Callbacks.GetCount() - 1).x);
 				for (uint64 Index = 0; Index < Callbacks.GetCount(); ++Index)
 				{
 					Item& Button = Callbacks[Index];
