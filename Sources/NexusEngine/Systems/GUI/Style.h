@@ -9,6 +9,16 @@ namespace NxEn
 		struct NX_ENGINE_API Style
 		{
 		public:
+			struct NX_ENGINE_API Scope
+			{
+			public:
+				Scope(const Style* Visual);
+				~Scope();
+
+			private:
+				const Style* Visual;
+			};
+
 			static NxFr::Registry<float>& GetVars();
 			static NxFr::Registry<NxFr::Color>& GetColors();
 			static NxFr::Registry<Style>& GetStyles();

@@ -99,7 +99,7 @@ namespace NxEn
 	void StatsPanel::DrawFilter()
 	{
 		Style.Size.x = -1.0f;
-		Style.Label = 0.0f;
+		Style.Label = -1.0f;
 
 		if (GUI::Drawer<NxFr::String>::Field(Filter.GetQuery(), "Filter:", "", &Style))
 		{

@@ -60,24 +60,49 @@ namespace NxEn
 					return;
 				}
 
-				if (Instance->Position.x >= 0.0f)
+				SetPosition(Instance->Position);
+			}
+
+			void SetPosition(NxFr::Vector2f Position)
+			{
+				if (Position.x >= 0.0f)
 				{
-					ImGui::SetCursorPosX(Instance->Position.x);
+					ImGui::SetCursorPosX(Position.x);
 				}
-				if (Instance->Position.y >= 0.0f)
+				if (Position.y >= 0.0f)
 				{
-					ImGui::SetCursorPosY(Instance->Position.y);
+					ImGui::SetCursorPosY(Position.y);
 				}
 			}
 
-			void SetWidth(const Style* Instance)
+			void SetSize(const Style* Instance)
 			{
 				if (!Instance)
 				{
 					return;
 				}
 
-				ImGui::SetNextItemWidth(Instance->Size.x >= 0.0f ? Instance->Size.x : ImGui::GetContentRegionAvail().x);
+				SetSize(Instance->Size);
+			}
+
+			void SetSize(NxFr::Vector2f Size)
+			{
+				ImGui::SetNextItemWidth(Size.x >= 0.0f ? Size.x : ImGui::GetContentRegionAvail().x);
+			}
+
+			void OffsetLabel(const Style* Instance)
+			{
+				if (!Instance)
+				{
+					return;
+				}
+
+				OffsetLabel(Instance->Label);
+			}
+
+			void OffsetLabel(float Label)
+			{
+				SetPosition(NxFr::Vector2f(Label, -1));
 			}
 
 			NxFr::Vector2f Fill(NxFr::Vector2f Reserved, uint64 Space)

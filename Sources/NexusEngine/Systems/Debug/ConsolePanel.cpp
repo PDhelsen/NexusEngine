@@ -118,6 +118,7 @@ namespace NxEn
 			{
 				Style.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthButton())).x;
 				Style.Size.x = GUI::Styles::WidthInpuText();
+				Style.Label = -1.0f;
 				GUI::Drawer<NxFr::String>::Field(Search, "Search", "", &Style);
 
 				if (ImGui::Button("Clear Logs", { GUI::Styles::WidthButton(), 0.0f }))
@@ -155,8 +156,8 @@ namespace NxEn
 		// Command
 		{
 			Style.Position.x = -1.0f;
-			Style.Label = 0.0f;
 			Style.Size.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Styles::WidthButton())).x;
+			Style.Label = -1.0f;
 			if (GUI::Drawer<NxFr::String>::Field(Command, "Command", "", &Style))
 			{
 				ExecuteCommand();

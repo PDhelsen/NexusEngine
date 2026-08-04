@@ -5,6 +5,17 @@ namespace NxEn
 {
 	namespace GUI
 	{
+		Style::Scope::Scope(const Style* Visual)
+			: Visual(Visual)
+		{
+			Utils::PushStyle(Visual);
+		}
+
+		Style::Scope::~Scope()
+		{
+			Utils::PopStyle(Visual);
+		}
+
 		NxFr::Registry<float>& Style::GetVars()
 		{
 			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
