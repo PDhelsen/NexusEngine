@@ -23,45 +23,6 @@ namespace NxEn
 		}
 
 		template<typename T>
-		void DrawProperty(T* Target, NxFr::StringView Label, const GUI::Style* Visual = nullptr)
-		{
-			NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
-			NxFr::StringView Name = *Target ? (*Target)->GetName() : NxFr::StringUtility::Empty;
-
-			GUI::Style DrawerStyle = GUI::Style::Copy(Visual);
-			GUI::Draw::Label(Label, &DrawerStyle);
-			DrawerStyle.Position.x = -1.0f;
-			GUI::Draw::Text(NxFr::StringUtility::ToString(Id), &DrawerStyle);
-			ImGui::SameLine();
-			GUI::Draw::Text(Name, &DrawerStyle);
-		}
-
-		template<typename T>
-		bool DrawField(T* Target, NxFr::StringView Label, const GUI::Style* Visual = nullptr)
-		{
-			NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
-			NxFr::StringView Name = *Target ? (*Target)->GetName() : (NxFr::StringView)NxFr::StringUtility::Empty;
-			NxFr::String Value = NxFr::StringUtility::ToString(Id);
-			NxFr::String ImGuiId = GUI::Utils::GenerateStringId(Value, Label);
-
-			GUI::Style DrawerStyle = GUI::Style::Copy(Visual);
-			GUI::Draw::Label(Label, &DrawerStyle);
-			DrawerStyle.Position.x = -1.0f;
-			DrawerStyle.Size.x = 150.0f;
-			DrawerStyle.Flag = DrawerStyle.Flag != 0 ? DrawerStyle.Flag : ImGuiInputTextFlags_EnterReturnsTrue;
-			bool Result = GUI::Draw::Input(Value, ImGuiId, &DrawerStyle);
-			ImGui::SameLine();
-			GUI::Draw::Text(Name, &DrawerStyle);
-
-			if (Result)
-			{
-				Resolve(Target, NxFr::StringUtility::FromString<NxFr::GUID>(Value));
-			}
-
-			return Result;
-		}
-
-		template<typename T>
 		void Clone(T* Target, T Instance)
 		{
 			Resolve(Target, Instance ? Instance->GetId() : Object::NullId);
@@ -79,4 +40,48 @@ namespace NxEn
 			Resolve(Target, Node.as<NxFr::GUID>());
 		}
 	};
+
+	namespace GUI
+	{
+		namespace Draw
+		{
+			template<typename T>
+			void PropertyOjbectId(T* Target, NxFr::StringView Label, const Transform& Visual = {})
+			{
+				NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
+				NxFr::StringView Name = *Target ? (*Target)->GetName() : (NxFr::StringView)NxFr::StringUtility::Empty;
+
+				Utils::SetPosition(Visual.Position);
+				::NxEn::GUI::Draw::Label(Label);
+				Utils::OffsetLabel(Visual.Label);
+				::NxEn::GUI::Draw::Text(NxFr::StringUtility::ToString(Id));
+				ImGui::SameLine();
+				::NxEn::GUI::Draw::Text(Name);
+			}
+
+			template<typename T>
+			bool FieldOjbectId(T* Target, NxFr::StringView Label, const Transform& Visual = {})
+			{
+				NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
+				NxFr::StringView Name = *Target ? (*Target)->GetName() : (NxFr::StringView)NxFr::StringUtility::Empty;
+				NxFr::String Value = NxFr::StringUtility::ToString(Id);
+				NxFr::String ImGuiId = GUI::Utils::GenerateStringId(Value, Label);
+
+				Utils::SetPosition(Visual.Position);
+				::NxEn::GUI::Draw::Label(Label);
+				Utils::OffsetLabel(Visual.Label);
+				Utils::SetSize(NxFr::Vector2f(ImGui::CalcTextSize(Value.C()).x, 0));
+				bool Result = GUI::Draw::Input(Value, ImGuiId);
+				ImGui::SameLine();
+				::NxEn::GUI::Draw::Text(Name);
+
+				if (Result)
+				{
+					ObjectId::Resolve(Target, NxFr::StringUtility::FromString<NxFr::GUID>(Value));
+				}
+
+				return Result;
+			}
+		}
+	}
 }

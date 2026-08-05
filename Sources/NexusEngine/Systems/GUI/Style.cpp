@@ -6,7 +6,7 @@ namespace NxEn
 	namespace GUI
 	{
 		Transform::Transform()
-			: Position(-NxFr::Vector2f::One), Size(NxFr::Vector2f::Zero), Label(Styles::WidthLabel())
+			: Position(-NxFr::Vector2f::One), Size(-NxFr::Vector2f::One), Label(Styles::WidthLabel())
 		{
 		}
 
