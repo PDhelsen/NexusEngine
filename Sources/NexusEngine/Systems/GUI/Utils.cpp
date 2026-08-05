@@ -14,9 +14,19 @@ namespace NxEn
 					(ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows) && ImGui::IsAnyItemActive());
 			}
 
-			NxFr::String GenerateId(NxFr::StringView Id, NxFr::StringView Label)
+			NxFr::String GenerateStringId(NxFr::StringView Id, NxFr::StringView Label)
 			{
 				return "##" + (!Id.IsEmpty() ? Id : Label);
+			}
+
+			NxFr::GUID GenerateId(NxFr::StringView Id, NxFr::StringView Label)
+			{
+				return NxFr::Hash<>::HashObject(GenerateStringId(Id, Label));
+			}
+
+			NxFr::StringId GenerateIdTest(NxFr::StringView Id, NxFr::StringView Label)
+			{
+				return NxFr::StringId("##" + (!Id.IsEmpty() ? Id : Label));
 			}
 
 			void PushStyle(const Style* Instance)

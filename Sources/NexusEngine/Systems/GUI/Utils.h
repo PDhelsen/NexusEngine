@@ -10,7 +10,8 @@ namespace NxEn
 		namespace Utils
 		{
 			NX_ENGINE_API bool IsPanelActive();
-			NX_ENGINE_API NxFr::String GenerateId(NxFr::StringView Id, NxFr::StringView Label = "");
+			NX_ENGINE_API NxFr::String GenerateStringId(NxFr::StringView Id, NxFr::StringView Label = "");
+			NX_ENGINE_API NxFr::GUID GenerateId(NxFr::StringView Id, NxFr::StringView Label = "");
 
 			NX_ENGINE_API void PushStyle(const Style* Instance);
 			NX_ENGINE_API void PopStyle(const Style* Instance);

@@ -44,7 +44,7 @@ namespace NxEn
 			static bool Field(T& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
 				NxFr::String Buffer = NxFr::StringUtility::ToString<T>(Data);
-				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
+				NxFr::String ImGuiId = Utils::GenerateStringId(Id, Label);
 
 				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);

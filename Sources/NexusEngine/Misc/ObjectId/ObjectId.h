@@ -42,7 +42,7 @@ namespace NxEn
 			NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
 			NxFr::StringView Name = *Target ? (*Target)->GetName() : (NxFr::StringView)NxFr::StringUtility::Empty;
 			NxFr::String Value = NxFr::StringUtility::ToString(Id);
-			NxFr::String ImGuiId = GUI::Utils::GenerateId(Value, Label);
+			NxFr::String ImGuiId = GUI::Utils::GenerateStringId(Value, Label);
 
 			GUI::Style DrawerStyle = GUI::Style::Copy(Visual);
 			GUI::Draw::Label(Label, &DrawerStyle);

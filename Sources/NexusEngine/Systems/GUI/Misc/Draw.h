@@ -22,7 +22,7 @@ namespace NxEn
 
 			static bool Field(NxFr::String& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
+				NxFr::String ImGuiId = Utils::GenerateStringId(Id, Label);
 
 				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
@@ -75,7 +75,7 @@ namespace NxEn
 		{
 			static void Property(const bool& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateId("", Label);
+				NxFr::String ImGuiId = Utils::GenerateStringId("", Label);
 
 				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
@@ -88,7 +88,7 @@ namespace NxEn
 
 			static bool Field(bool& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
+				NxFr::String ImGuiId = Utils::GenerateStringId(Id, Label);
 
 				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
@@ -123,7 +123,7 @@ namespace NxEn
 
 			static bool Field(NxFr::Array<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
+				ImGui::PushID(Utils::GenerateId(Id, Label));
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
@@ -136,19 +136,19 @@ namespace NxEn
 				Draw::Label("Count");
 				Utils::SetSize(NxFr::Vector2f(Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 2).x, 0));
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
-				if (Draw::Input(Count, ImGuiId, ImGuiInputTextFlags_EnterReturnsTrue))
+				if (Draw::Input(Count, "##Count", ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					NxFr::ContainerUtility::Resize(Data, NxFr::StringUtility::FromString<uint64>(Count));
 					Result = true;
 				}
 				ImGui::SameLine();
-				if (Draw::Button("Add" + ImGuiId, NxFr::Vector2f(ButtonSize, 0)))
+				if (Draw::Button("Add", NxFr::Vector2f(ButtonSize, 0)))
 				{
 					NxFr::ContainerUtility::Resize(Data, Data.GetCount() + 1);
 					Result = true;
 				}
 				ImGui::SameLine();
-				if (Draw::Button("Remove" + ImGuiId, NxFr::Vector2f(ButtonSize, 0)))
+				if (Draw::Button("Remove", NxFr::Vector2f(ButtonSize, 0)))
 				{
 					NxFr::ContainerUtility::Resize(Data, Data.GetCount() - 1);
 					Result = true;
@@ -158,9 +158,10 @@ namespace NxEn
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, ImGuiId + IndexStr, ItemVisual);
+					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, IndexStr, ItemVisual);
 				}
 
+				ImGui::PopID();
 				return Result;
 			}
 		};
@@ -189,7 +190,7 @@ namespace NxEn
 
 			static bool Field(NxFr::List<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
+				ImGui::PushID(Utils::GenerateId(Id, Label));
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
@@ -202,19 +203,19 @@ namespace NxEn
 				Draw::Label("Count");
 				Utils::SetSize(NxFr::Vector2f(Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 2).x, 0));
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
-				if (Draw::Input(Count, ImGuiId, ImGuiInputTextFlags_EnterReturnsTrue))
+				if (Draw::Input(Count, "##Count", ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					NxFr::ContainerUtility::Resize(Data, NxFr::StringUtility::FromString<uint64>(Count));
 					Result = true;
 				}
 				ImGui::SameLine();
-				if (Draw::Button("Add" + ImGuiId, NxFr::Vector2f(ButtonSize, 0)))
+				if (Draw::Button("Add", NxFr::Vector2f(ButtonSize, 0)))
 				{
 					Data.AppendConstruct();
 					Result = true;
 				}
 				ImGui::SameLine();
-				if (Draw::Button("Remove" + ImGuiId, NxFr::Vector2f(ButtonSize, 0)))
+				if (Draw::Button("Remove", NxFr::Vector2f(ButtonSize, 0)))
 				{
 					Data.RemoveLast();
 					Result = true;
@@ -224,9 +225,10 @@ namespace NxEn
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, ImGuiId + IndexStr, ItemVisual);
+					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, IndexStr, ItemVisual);
 				}
 
+				ImGui::PopID();
 				return Result;
 			}
 		};
@@ -254,7 +256,7 @@ namespace NxEn
 
 			static bool Field(NxFr::Set<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
+				ImGui::PushID(Utils::GenerateId(Id, Label));
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
@@ -269,7 +271,7 @@ namespace NxEn
 				Draw::Text(Count);
 				ImGui::SameLine();
 				Utils::SetPosition(NxFr::Vector2f(ImGui::GetCursorPosX() + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1).x, -1.0f));
-				if (ImGui::Button(("Add" + ImGuiId).C(), { ButtonSize, 0.0f }))
+				if (ImGui::Button("Add", { ButtonSize, 0.0f }))
 				{
 					InputTextPopup* Popup = InputTextPopup::GetInstance();
 					Popup->RegisterCallback([&](NxFr::StringView Value)
@@ -278,7 +280,7 @@ namespace NxEn
 					});
 				}
 				ImGui::SameLine();
-				if (ImGui::Button(("Remove" + ImGuiId).C(), { ButtonSize, 0.0f }))
+				if (ImGui::Button("Remove", { ButtonSize, 0.0f }))
 				{
 					InputTextPopup* Popup = InputTextPopup::GetInstance();
 					Popup->RegisterCallback([&](NxFr::StringView Value)
@@ -293,6 +295,7 @@ namespace NxEn
 					Result |= GUI::Drawer<T>::Property(It, "", ItemVisual);
 				}
 
+				ImGui::PopID();
 				return false;
 			}
 		};
@@ -321,7 +324,7 @@ namespace NxEn
 
 			static bool Field(NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
+				ImGui::PushID(Utils::GenerateId(Id, Label));
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
@@ -336,7 +339,7 @@ namespace NxEn
 				Draw::Text(Count);
 				ImGui::SameLine();
 				Utils::SetPosition(NxFr::Vector2f(ImGui::GetCursorPosX() + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1).x, -1.0f));
-				if (ImGui::Button(("Add" + ImGuiId).C(), { ButtonSize, 0.0f }))
+				if (ImGui::Button("Add", { ButtonSize, 0.0f }))
 				{
 					InputTextPopup* Popup = InputTextPopup::GetInstance();
 					Popup->RegisterCallback([&](NxFr::StringView Value)
@@ -345,7 +348,7 @@ namespace NxEn
 					});
 				}
 				ImGui::SameLine();
-				if (ImGui::Button(("Remove" + ImGuiId).C(), { ButtonSize, 0.0f }))
+				if (ImGui::Button("Remove", { ButtonSize, 0.0f }))
 				{
 					InputTextPopup* Popup = InputTextPopup::GetInstance();
 					Popup->RegisterCallback([&](NxFr::StringView Value)
@@ -358,9 +361,10 @@ namespace NxEn
 				for (auto& It : Data)
 				{
 					NxFr::String KeyStr = NxFr::StringUtility::ToString(It.Key);
-					GUI::Drawer<T>::Field(It.Value, KeyStr, ImGuiId + KeyStr, ItemVisual);
+					GUI::Drawer<T>::Field(It.Value, KeyStr, KeyStr, ItemVisual);
 				}
 
+				ImGui::PopID();
 				return false;
 			}
 		};
