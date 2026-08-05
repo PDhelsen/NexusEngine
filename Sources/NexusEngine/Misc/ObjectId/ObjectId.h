@@ -3,6 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/GUISystem.h"
 
+
 namespace NxEn
 {
 	namespace ObjectId
@@ -51,12 +52,12 @@ namespace NxEn
 				NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
 				NxFr::StringView Name = *Target ? (*Target)->GetName() : (NxFr::StringView)NxFr::StringUtility::Empty;
 
-				Utils::SetPosition(Visual.Position);
-				::NxEn::GUI::Draw::Label(Label);
-				Utils::OffsetLabel(Visual.Label);
-				::NxEn::GUI::Draw::Text(NxFr::StringUtility::ToString(Id));
+				Transform ItemVisual = Visual;
+				ItemVisual.Size.x = GUI::Styles::WidthLabel();
+
+				GUI::Drawer<NxFr::GUID>::Property(Id, Label, ItemVisual);
 				ImGui::SameLine();
-				::NxEn::GUI::Draw::Text(Name);
+				Text(Name);
 			}
 
 			template<typename T>
@@ -64,20 +65,19 @@ namespace NxEn
 			{
 				NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
 				NxFr::StringView Name = *Target ? (*Target)->GetName() : (NxFr::StringView)NxFr::StringUtility::Empty;
-				NxFr::String Value = NxFr::StringUtility::ToString(Id);
-				NxFr::String ImGuiId = GUI::Utils::GenerateStringId(Value, Label);
+				NxFr::String Buffer = NxFr::StringUtility::ToString(Id);
+				NxFr::String ImGuiId = GUI::Utils::GenerateStringId(Buffer, Label);
 
-				Utils::SetPosition(Visual.Position);
-				::NxEn::GUI::Draw::Label(Label);
-				Utils::OffsetLabel(Visual.Label);
-				Utils::SetSize(NxFr::Vector2f(ImGui::CalcTextSize(Value.C()).x, 0));
-				bool Result = GUI::Draw::Input(Value, ImGuiId);
+				Transform ItemVisual = Visual;
+				ItemVisual.Size.x = GUI::Styles::WidthLabel();
+
+				bool Result = GUI::Drawer<NxFr::GUID>::Field(Id, Label, ImGuiId, ItemVisual);
 				ImGui::SameLine();
-				::NxEn::GUI::Draw::Text(Name);
+				Text(Name);
 
 				if (Result)
 				{
-					ObjectId::Resolve(Target, NxFr::StringUtility::FromString<NxFr::GUID>(Value));
+					ObjectId::Resolve(Target, NxFr::StringUtility::FromString<NxFr::GUID>(Buffer));
 				}
 
 				return Result;

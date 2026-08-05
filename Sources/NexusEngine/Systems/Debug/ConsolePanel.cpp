@@ -144,8 +144,9 @@ namespace NxEn
 				Log& Log = Logs[Index];
 				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || NxFr::StringUtility::Contains(Log.Text, Search)))
 				{
-					GUI::Style::Scope _ = GUI::Style::GetStyles().TryGet(Log.Style);
-					GUI::Drawer<NxFr::String>::Property(Log.Text, "", Visual);
+					GUI::Style::Scope Color = GUI::Style::GetStyles().TryGet(Log.Style);
+
+					GUI::Draw::TextSelectable(Log.Text);
 				}
 			}
 

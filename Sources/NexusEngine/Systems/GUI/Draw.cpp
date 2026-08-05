@@ -45,6 +45,24 @@ namespace NxEn
 				ImGui::Text(Data.C());
 			}
 
+			void TextSelectable(NxFr::StringView Data, const Transform& Visual)
+			{
+				Utils::SetPosition(Visual.Position);
+				Utils::SetSize(Visual.Size);
+
+				TextSelectable(Data);
+			}
+
+			void TextSelectable(NxFr::StringView Data)
+			{
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0, 0, 0, 0));
+
+				NxFr::String& Temp = NxFr::StringView::GetTempExactString(Data);
+				ImGui::InputText(Utils::GenerateStringId("", Data).C(), Temp.Characters(), Temp.GetCapacity(), 0);
+
+				ImGui::PopStyleColor(1);
+			}
+
 			bool Input(NxFr::String& Data, NxFr::StringView Id, const Transform& Visual)
 			{
 				Utils::SetPosition(Visual.Position);
