@@ -30,7 +30,7 @@ namespace NxEn
 	static ConsolePanel* Panel = GUI::Panel::Create<ConsolePanel>();
 
 	ConsolePanel::ConsolePanel()
-		: Menu(), Style(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128), Scroll(false)
+		: Menu(), Logs(), FlagsVerbosity(), FlagsChannels(), Command(128), Search(128), Scroll(false)
 	{
 	}
 
@@ -62,7 +62,6 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
-		Style.Reset();
 
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
@@ -110,16 +109,19 @@ namespace NxEn
 
 	void ConsolePanel::OnDraw()
 	{
+		NxEn::GUI::Transform Visual;
+
 		// Menu
 		{
 			Menu.Draw();
 
+			Visual.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthButton())).x;
+			Visual.Size.x = GUI::Styles::WidthInpuText();
+			Visual.Label = -1.0f;
+
 			if (ImGui::BeginMenuBar())
 			{
-				Style.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthButton())).x;
-				Style.Size.x = GUI::Styles::WidthInpuText();
-				Style.Label = -1.0f;
-				GUI::Drawer<NxFr::String>::Field(Search, "Search", "", &Style);
+				GUI::Drawer<NxFr::String>::Field(Search, "Search", "", Visual);
 
 				if (ImGui::Button("Clear Logs", { GUI::Styles::WidthButton(), 0.0f }))
 				{
@@ -131,6 +133,10 @@ namespace NxEn
 
 		// Logs
 		{
+			Visual.Position = -NxFr::Vector2f::One;
+			Visual.Size = NxFr::Vector2f::Zero;
+			Visual.Label = -1.0f;
+
 			ImGui::BeginChild("Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(ImGui::GetTextLineHeightWithSpacing()), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
 
 			for (uint64 Index = 0; Index < Logs.GetCount(); ++Index)
@@ -138,7 +144,8 @@ namespace NxEn
 				Log& Log = Logs[Index];
 				if (Log.Verbosity && Log.Channel && (Search.IsEmpty() || NxFr::StringUtility::Contains(Log.Text, Search)))
 				{
-					GUI::Drawer<NxFr::String>::Property(Log.Text, "", GUI::Style::GetStyles().TryGet(Log.Style));
+					GUI::Style::Scope _ = GUI::Style::GetStyles().TryGet(Log.Style);
+					GUI::Drawer<NxFr::String>::Property(Log.Text, "", Visual);
 				}
 			}
 
@@ -155,10 +162,11 @@ namespace NxEn
 
 		// Command
 		{
-			Style.Position.x = -1.0f;
-			Style.Size.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Styles::WidthButton())).x;
-			Style.Label = -1.0f;
-			if (GUI::Drawer<NxFr::String>::Field(Command, "Command", "", &Style))
+			Visual.Position.x = -1.0f;
+			Visual.Size.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Command:").x + GUI::Styles::WidthButton())).x;
+			Visual.Label = -1.0f;
+
+			if (GUI::Drawer<NxFr::String>::Field(Command, "Command", "", Visual))
 			{
 				ExecuteCommand();
 			}

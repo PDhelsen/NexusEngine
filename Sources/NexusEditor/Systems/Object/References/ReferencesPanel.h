@@ -62,7 +62,6 @@ namespace NxEd
 		inline void ClampZoom() { Zoom = NxFr::Math::Clamp(Zoom, 0.2f, 4.0f); }
 
 	private:
-		NxEn::GUI::Style Style;
 		NxEn::GUI::Menu Menu;
 		NxFr::Vector2f Anchor;
 		NxFr::Vector2f Mouse;

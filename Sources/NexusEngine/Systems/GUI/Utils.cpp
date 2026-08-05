@@ -53,16 +53,6 @@ namespace NxEn
 				ImGui::SetWindowFontScale(1);
 			}
 
-			void SetPosition(const Style* Instance)
-			{
-				if (!Instance)
-				{
-					return;
-				}
-
-				SetPosition(Instance->Position);
-			}
-
 			void SetPosition(NxFr::Vector2f Position)
 			{
 				if (Position.x >= 0.0f)
@@ -75,34 +65,17 @@ namespace NxEn
 				}
 			}
 
-			void SetSize(const Style* Instance)
-			{
-				if (!Instance)
-				{
-					return;
-				}
-
-				SetSize(Instance->Size);
-			}
-
 			void SetSize(NxFr::Vector2f Size)
 			{
 				ImGui::SetNextItemWidth(Size.x >= 0.0f ? Size.x : ImGui::GetContentRegionAvail().x);
 			}
 
-			void OffsetLabel(const Style* Instance)
-			{
-				if (!Instance)
-				{
-					return;
-				}
-
-				OffsetLabel(Instance->Label);
-			}
-
 			void OffsetLabel(float Label)
 			{
-				SetPosition(NxFr::Vector2f(Label, -1));
+				if (Label >= 0.0f)
+				{
+					ImGui::SetCursorPosX(Label);
+				}
 			}
 
 			NxFr::Vector2f Fill(NxFr::Vector2f Reserved, uint64 Space)

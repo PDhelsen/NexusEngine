@@ -68,7 +68,6 @@ namespace NxEd
 
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
-		Style.Reset();
 
 		Refresh();
 	}
@@ -85,31 +84,28 @@ namespace NxEd
 
 	void ScenesPanel::OnDraw()
 	{
-		static const float Width = 100.0f;
-
-		Style.Position.x = -1.0f;
+		NxEn::GUI::Transform Visual = NxEn::GUI::Transform(-NxFr::Vector2f::One, NxFr::Vector2f(NxEn::GUI::Styles::WidthButton(), 0.0f), -1.0f);
 		Menu.Draw();
 
 		int64 ActionIndex = -1;
 		Action ActionType = Action::None;
 
 		float Origin = ImGui::GetCursorPosX();
-		float Offset = NxEn::GUI::Utils::Fill(NxFr::Vector2f(Width * 2.0f, 0), 2).x;
+		float Offset = NxEn::GUI::Utils::Fill(NxFr::Vector2f(Visual.Size.x * 2.0f, 0), 2).x;
 
 		NxFr::GUID WorldId = GetWorldId();
 		for (uint64 Index = 0; Index < ScenesInstances.GetCount(); ++Index)
 		{
 			const SceneInfo& Info = ScenesInstances[Index];
 
-			Style.Position.x = Origin;
-			NxEn::GUI::Draw::Label(Info.Path, &Style);
+			Visual.Position.x = Origin;
+			NxEn::GUI::Draw::Label(Info.Path, Visual);
 
 			ImGui::SameLine();
 
-			Style.Position.x = Origin + Offset + ImGui::GetStyle().ItemSpacing.x;
-			Style.Size.x = Width;
+			Visual.Position.x = Origin + Offset + ImGui::GetStyle().ItemSpacing.x;
 			bool IsLoaded = IsSceneLoaded(Info.Id, WorldId);
-			if (NxEn::GUI::Draw::Button((IsLoaded ? "Unload" : "Load") + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), &Style))
+			if (NxEn::GUI::Draw::Button((IsLoaded ? "Unload" : "Load") + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), Visual))
 			{
 				ActionIndex = Index;
 				ActionType = Action::Toggle;
@@ -119,8 +115,8 @@ namespace NxEd
 			{
 				ImGui::SameLine();
 
-				Style.Position.x = -1.0f;
-				if (NxEn::GUI::Draw::Button("Save" + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), &Style))
+				Visual.Position.x = -1.0f;
+				if (NxEn::GUI::Draw::Button("Save" + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), Visual))
 				{
 					ActionIndex = Index;
 					ActionType = Action::Save;

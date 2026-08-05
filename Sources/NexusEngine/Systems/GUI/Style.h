@@ -6,6 +6,17 @@ namespace NxEn
 {
 	namespace GUI
 	{
+		struct NX_ENGINE_API Transform
+		{
+			Transform();
+			Transform(NxFr::Vector2f Position, NxFr::Vector2f Size, float Label);
+			~Transform();
+
+			NxFr::Vector2f Position;
+			NxFr::Vector2f Size;
+			float Label;
+		};
+
 		struct NX_ENGINE_API Style
 		{
 		public:
@@ -27,9 +38,6 @@ namespace NxEn
 			~Style();
 			void Reset();
 
-			NxFr::Vector2f Position;
-			NxFr::Vector2f Size;
-			float Label;
 			NxFr::Color Color;
 			NxFr::Color ColorText;
 			NxFr::Color ColorBackground;

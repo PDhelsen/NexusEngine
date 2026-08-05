@@ -11,7 +11,7 @@ namespace NxEn
 	static ProjectPanel* PanelProject = GUI::Panel::Create<ProjectPanel>();
 
 	ProjectPanel::ProjectPanel()
-		: Style(), Infos(nullptr)
+		: Infos(nullptr)
 	{
 	}
 
@@ -29,20 +29,20 @@ namespace NxEn
 	void ProjectPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Style.Reset();
 
 		Infos = &Application::GetInstance()->GetProject();
 	}
 
 	void ProjectPanel::OnDraw()
 	{
-		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetMode()), "Mode", &Style);
+		GUI::Transform Visual;
+		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetMode()), "Mode", Visual);
 		ImGui::Separator();
-		GUI::Drawer<NxFr::String>::Property(Infos->GetName(), "Name", &Style);
-		GUI::Drawer<NxFr::String>::Property(Infos->GetRootPath(), "Root", &Style);
-		GUI::Drawer<NxFr::String>::Property(Infos->GetProjectPath(), "Path", &Style);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetName(), "Name", Visual);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetRootPath(), "Root", Visual);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetProjectPath(), "Path", Visual);
 		ImGui::Separator();
-		GUI::Drawer<NxFr::String>::Property(Infos->GetExecutablePath(), "Executable", &Style);
-		GUI::Drawer<NxFr::String>::Property(Infos->GetDllPath(), "Dll", &Style);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetExecutablePath(), "Executable", Visual);
+		GUI::Drawer<NxFr::String>::Property(Infos->GetDllPath(), "Dll", Visual);
 	}
 }

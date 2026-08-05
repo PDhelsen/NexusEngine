@@ -5,6 +5,20 @@ namespace NxEn
 {
 	namespace GUI
 	{
+		Transform::Transform()
+			: Position(-NxFr::Vector2f::One), Size(NxFr::Vector2f::Zero), Label(Styles::WidthLabel())
+		{
+		}
+
+		Transform::Transform(NxFr::Vector2f Position, NxFr::Vector2f Size, float Label)
+			: Position(Position), Size(Size), Label(Label)
+		{
+		}
+
+		Transform::~Transform()
+		{
+		}
+
 		Style::Scope::Scope(const Style* Visual)
 			: Visual(Visual)
 		{
@@ -42,7 +56,6 @@ namespace NxEn
 
 		Style::Style()
 			:
-			Position(-NxFr::Vector2f::One), Size(NxFr::Vector2f::Zero), Label(0.0f),
 			Color(NxFr::Colors::White), ColorText(NxFr::Colors::White), ColorBackground(NxFr::Colors::Black), ColorBorder(NxFr::Colors::Gray), Alpha(1.0f),
 			Align(NxFr::Vector2f(0.5f, 0.5f)), Spacing(NxFr::Vector2f(8.0f, 4.0f)), Padding(NxFr::Vector2f(4.0f , 3.0f)), Rounding(0.0f), Border(0.0f),
 			Font(1.0f),

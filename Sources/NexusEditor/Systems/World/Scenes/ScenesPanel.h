@@ -42,7 +42,6 @@ namespace NxEd
 			NxFr::String Path;
 		};
 
-		NxEn::GUI::Style Style;
 		NxEn::GUI::Menu Menu;
 
 		NxEn::AssetsSystem* Assets;

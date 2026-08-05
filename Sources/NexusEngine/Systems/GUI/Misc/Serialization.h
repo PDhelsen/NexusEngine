@@ -11,9 +11,6 @@ namespace YAML
 		static Node encode(const NxEn::GUI::Style& rhs)
 		{
 			Node node;
-			node["Position"] = rhs.Position;
-			node["Size"] = rhs.Size;
-			node["Label"] = rhs.Label;
 			node["Height"] = rhs.Font;
 			node["Color"] = rhs.Color;
 			node["ColorText"] = rhs.ColorText;
@@ -32,9 +29,6 @@ namespace YAML
 
 		static bool decode(const Node& node, NxEn::GUI::Style& rhs)
 		{
-			rhs.Position = node["Position"].as<NxFr::Vector2f>();
-			rhs.Size = node["Size"].as<NxFr::Vector2f>();
-			rhs.Label = node["Label"].as<float>();
 			rhs.Color = node["Color"].as<NxFr::Color>();
 			rhs.ColorText = node["ColorText"].as<NxFr::Color>();
 			rhs.ColorBackground = node["ColorBackground"].as<NxFr::Color>();
@@ -54,9 +48,6 @@ namespace YAML
 	inline YAML::Emitter& operator<<(YAML::Emitter& out, const NxEn::GUI::Style& rhs)
 	{
 		out << YAML::BeginMap;
-		out << YAML::Key << "Position" << YAML::Value << rhs.Position;
-		out << YAML::Key << "Size" << YAML::Value << rhs.Size;
-		out << YAML::Key << "Label" << YAML::Value << rhs.Label;
 		out << YAML::Key << "Color" << YAML::Value << rhs.Color;
 		out << YAML::Key << "ColorText" << YAML::Value << rhs.ColorText;
 		out << YAML::Key << "ColorBackground" << YAML::Value << rhs.ColorBackground;

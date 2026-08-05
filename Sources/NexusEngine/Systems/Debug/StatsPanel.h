@@ -25,8 +25,6 @@ namespace NxEn
 		void DrawStats(NxFr::StringView Label);
 		bool FilterStats(NxFr::StringView Label);
 
-		GUI::Style Style;
-
 		NxFr::Instruments* Instruments;
 		NxFr::Stats* Stats;
 		NxFr::List<NxFr::String> Ids;

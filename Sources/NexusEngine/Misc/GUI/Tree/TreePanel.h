@@ -58,7 +58,6 @@ namespace NxEn
 
 	protected:
 		GUI::Menu Menu;
-		GUI::Style Style;
 
 		NxEn::InputSystem* Inputs;
 

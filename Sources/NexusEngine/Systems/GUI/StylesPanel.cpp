@@ -26,9 +26,7 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
-		Style.Reset();
 
-		Style.Size.x = GUI::Styles::WidthButton();
 	}
 
 	void StylesPanel::OnDisable()
@@ -39,40 +37,50 @@ namespace NxEn
 
 	void StylesPanel::OnDraw()
 	{
+		GUI::Transform Visual = GUI::Transform(-NxFr::Vector2f::One, NxFr::Vector2f(GUI::Styles::WidthButton(), 0), GUI::Styles::WidthLabel());
+		GUI::Style Style = GUI::Styles::Default();
+		const GUI::Style* Title = &GUI::Styles::TextTitle();
+
 		Menu.Draw();
 
-		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Vars", &GUI::Styles::TextTitle());
+		GUI::Utils::PushStyle(Title);
+		GUI::Draw::Text("Vars");
+		GUI::Utils::PopStyle(Title);
 		for (auto It = GUI::Style::GetVars().Begin(); It != GUI::Style::GetVars().End(); ++It)
 		{
-			GUI::Drawer<float>::Property(It->Value, It->Key, &Style);
+			GUI::Drawer<float>::Property(It->Value, It->Key, Visual);
 		}
 
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
-		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Colors", &GUI::Styles::TextTitle());
+		GUI::Utils::PushStyle(Title);
+		GUI::Draw::Text("Colors");
+		GUI::Utils::PopStyle(Title);
 		for (auto It = GUI::Style::GetColors().Begin(); It != GUI::Style::GetColors().End(); ++It)
 		{
 			Style.ColorText = It->Value;
-			GUI::Draw::Label(It->Key, &Style);
+			GUI::Utils::PushStyle(&Style);
+			GUI::Draw::Label(It->Key, Visual);
+			GUI::Utils::PopStyle(&Style);
+
 			Style.Color = It->Value;
 			Style.ColorText = NxFr::Colors::White;
-			GUI::Draw::Button(It->Key, &Style);
+			GUI::Utils::PushStyle(&Style);
+			GUI::Draw::Button(It->Key, Visual);
+			GUI::Utils::PopStyle(&Style);
 		}
 
 		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
 
-		Style.ColorText = NxFr::Colors::White;
-		GUI::Draw::Text("Styles", &GUI::Styles::TextTitle());
+		GUI::Utils::PushStyle(Title);
+		GUI::Draw::Text("Styles");
+		GUI::Utils::PopStyle(Title);
 		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
-			GUI::Style Visual = It->Value;
-			Visual.Size.x = GUI::Styles::WidthButton();
-			Visual.Label = GUI::Styles::WidthLabel();
+			GUI::Style::Scope _ = &It->Value;
 
-			GUI::Draw::Label(It->Key, &Visual);
-			GUI::Draw::Button(It->Key, &Visual);
+			GUI::Draw::Label(It->Key, Visual);
+			GUI::Draw::Button(It->Key, Visual);
 		}
 	}
 }

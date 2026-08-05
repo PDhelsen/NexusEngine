@@ -6,7 +6,7 @@
 namespace NxEn
 {
 	TreePanel::TreePanel()
-		: Menu(), Style(),
+		: Menu(),
 		Inputs(nullptr),
 		Root(nullptr),
 		Selection(), Selected(nullptr),
@@ -72,8 +72,6 @@ namespace NxEn
 	{
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
-		Style.Reset();
-		Style.Label = 0.0f;
 
 		SetGuiFlag(ImGuiWindowFlags_MenuBar);
 
@@ -125,18 +123,19 @@ namespace NxEn
 
 	void TreePanel::DrawHeader()
 	{
+		GUI::Transform Visual = GUI::Transform(-NxFr::Vector2f::One, -NxFr::Vector2f::One, -1.0f);
 		Menu.Draw();
 
 		if (ImGui::BeginMenuBar())
 		{
-			if (NxEn::GUI::Drawer<NxFr::String>::Field(Filter, "Filter:", "", &Style))
+			if (NxEn::GUI::Drawer<NxFr::String>::Field(Filter, "Filter:", "", Visual))
 			{
 				FindItem();
 			}
 		}
 		ImGui::EndMenuBar();
 
-		NxEn::GUI::Drawer<NxFr::String>::Property(Selected ? Selected->GetDescription() : "", "Selected", &Style);
+		NxEn::GUI::Drawer<NxFr::String>::Property(Selected ? Selected->GetDescription() : "", "Selected", Visual);
 
 		ImGui::Separator();
 	}

@@ -9,8 +9,6 @@ namespace NxEd
 		AssetImporterPopup::ShowWithPath("");
 	}));
 
-	const static float ButtonWidth = 100.0f;
-
 	void AssetImporterPopup::ShowWithPath(NxFr::StringView Path)
 	{
 		static AssetImporterPopup Instance;
@@ -46,23 +44,22 @@ namespace NxEd
 
 		Type.Clear();
 		Path.Clear();
-
-		Style.Reset();
-		Style.Label = ButtonWidth;
 	}
 
 	void AssetImporterPopup::OnDraw()
 	{
-		Style.Size.x = NxEn::GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Path").x + NxEn::GUI::Styles::WidthButton(), 0), 2).x;
-		NxEn::GUI::Drawer<NxFr::String>::Field(Path, "Path", "", &Style);
+		NxEn::GUI::Transform Visual;
+
+		Visual.Size.x = NxEn::GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Path").x + NxEn::GUI::Styles::WidthButton(), 0), 2).x;
+		NxEn::GUI::Drawer<NxFr::String>::Field(Path, "Path", "", Visual);
 		ImGui::SameLine();
 		if (ImGui::Button("Pick", { NxEn::GUI::Styles::WidthButton(), 0.0f }))
 		{
 			Pick();
 		}
 
-		Style.Size.x = -1.0f;
-		NxEn::GUI::Drawer<NxFr::String>::Field(Type, "Type", "", &Style);
+		Visual.Size.x = -1.0f;
+		NxEn::GUI::Drawer<NxFr::String>::Field(Type, "Type", "", Visual);
 	}
 
 	void AssetImporterPopup::Pick()

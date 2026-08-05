@@ -7,19 +7,18 @@ namespace NxEn
 	{
 		namespace Draw
 		{
-			void Label(NxFr::StringView Data, const Style* Visual)
+			void Label(NxFr::StringView Data, const Transform& Visual)
 			{
 				if (Data.IsEmpty())
 				{
 					return;
 				}
 
-				Style::Scope _ = Visual;
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 
 				Label(Data);
 
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 			}
 
 			void Label(NxFr::StringView Data)
@@ -34,10 +33,9 @@ namespace NxEn
 				ImGui::SameLine();
 			}
 
-			void Text(NxFr::StringView Data, const Style* Visual)
+			void Text(NxFr::StringView Data, const Transform& Visual)
 			{
-				Style::Scope _ = Visual;
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 
 				Text(Data);
 			}
@@ -47,14 +45,12 @@ namespace NxEn
 				ImGui::Text(Data.C());
 			}
 
-			bool Input(NxFr::String& Data, NxFr::StringView Id, const Style* Visual)
+			bool Input(NxFr::String& Data, NxFr::StringView Id, const Transform& Visual)
 			{
-				Style::Scope _ = Visual;
-				Utils::SetPosition(Visual);
-				Utils::SetSize(Visual);
-				uint64 Flag = Visual ? Visual->Flag : ImGuiInputTextFlags_EnterReturnsTrue;
+				Utils::SetPosition(Visual.Position);
+				Utils::SetSize(Visual.Size);
 
-				return Input(Data, Id, Flag);;
+				return Input(Data, Id, ImGuiInputTextFlags_EnterReturnsTrue);
 			}
 
 			bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag)
@@ -69,13 +65,11 @@ namespace NxEn
 				return Result;
 			}
 
-			bool Button(NxFr::StringView Data, const Style* Visual)
+			bool Button(NxFr::StringView Data, const Transform& Visual)
 			{
-				Style::Scope _ = Visual;
-				Utils::SetPosition(Visual);
-				NxFr::Vector2f Size = Visual ? Visual->Size : NxFr::Vector2f::Zero;
+				Utils::SetPosition(Visual.Position);
 
-				return Button(Data, Size);
+				return Button(Data, Visual.Size);
 			}
 
 			bool Button(NxFr::StringView Data, NxFr::Vector2f Size)
@@ -83,11 +77,10 @@ namespace NxEn
 				return ImGui::Button(Data.C(), Size);
 			}
 
-			bool CheckBox(NxFr::StringView Text, bool& Data, const Style* Visual)
+			bool CheckBox(NxFr::StringView Text, bool& Data, const Transform& Visual)
 			{
-				Style::Scope _ = Visual;
-				Utils::SetPosition(Visual);
-				Utils::SetSize(Visual);
+				Utils::SetPosition(Visual.Position);
+				Utils::SetSize(Visual.Size);
 
 				return CheckBox(Text, Data);
 			}
@@ -97,13 +90,11 @@ namespace NxEn
 				return ImGui::Checkbox(Text.C(), &Data);
 			}
 
-			void Space(const Style* Visual)
+			void Space(const Transform& Visual)
 			{
-				Style::Scope _ = Visual;
-				Utils::SetPosition(Visual);
-				NxFr::Vector2f Size = Visual ? Visual->Size : NxFr::Vector2f::Zero;
+				Utils::SetPosition(Visual.Position);
 
-				return Space(Size);
+				return Space(Visual.Size);
 			}
 
 			void Space(NxFr::Vector2f Size)
@@ -111,11 +102,10 @@ namespace NxEn
 				ImGui::Dummy(Size);
 			}
 
-			void Separator(const Style* Visual)
+			void Separator(const Transform& Visual)
 			{
-				Style::Scope _ = Visual;
-				Utils::SetPosition(Visual);
-				Utils::SetSize(Visual);
+				Utils::SetPosition(Visual.Position);
+				Utils::SetSize(Visual.Size);
 
 				Separator();
 			}

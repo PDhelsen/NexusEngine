@@ -20,8 +20,6 @@ namespace NxEn
 		void OnDraw() override;
 
 	private:
-		GUI::Style Style;
-
 		Project* Infos;
 	};
 }

@@ -82,7 +82,6 @@ namespace NxEd
 	{
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
-		Style.Reset();
 
 		Window = NxEn::Application::GetSystem<NxEn::WindowSystem>();
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
@@ -135,8 +134,8 @@ namespace NxEd
 		NxFr::Vector2f Size = NxFr::Vector2f(0.0f, ImGui::GetTextLineHeight() * 5.0f);
 		ImGui::BeginChild("References", Size, ImGuiChildFlags_Border);
 
-		NxEn::GUI::Drawer<uint64>::Property(Nodes.GetCount(), "Tracked", &Style);
-		if (NxEn::GUI::Drawer<NxFr::GUID>::Field(Selected, "Selected", "IdSelected", &Style))
+		NxEn::GUI::Drawer<uint64>::Property(Nodes.GetCount(), "Tracked");
+		if (NxEn::GUI::Drawer<NxFr::GUID>::Field(Selected, "Selected", "IdSelected"))
 		{
 			Select(Selected);
 		}

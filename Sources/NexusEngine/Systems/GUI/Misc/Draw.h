@@ -12,26 +12,23 @@ namespace NxEn
 		template<>
 		struct Drawer<NxFr::String>
 		{
-			static void Property(const NxFr::String& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const NxFr::String& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
-
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 				Draw::Text(Data);
 			}
 
-			static bool Field(NxFr::String& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(NxFr::String& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
 				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
-				Utils::SetSize(Visual);
-				bool Result = Draw::Input(Data, ImGuiId, Visual ? Visual->Flag : ImGuiInputTextFlags_EnterReturnsTrue);
+				Utils::OffsetLabel(Visual.Label);
+				Utils::SetSize(Visual.Size);
+				bool Result = Draw::Input(Data, ImGuiId);
 
 				return Result;
 			}
@@ -40,17 +37,15 @@ namespace NxEn
 		template<>
 		struct Drawer<NxFr::StringView>
 		{
-			static void Property(const NxFr::StringView& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const NxFr::StringView& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
-
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 				Draw::Text(Data);
 			}
 
-			static bool Field(NxFr::StringView& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(NxFr::StringView& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
 				NX_ASSERT(false, Default, "Unsupported");
 				return false;
@@ -60,17 +55,15 @@ namespace NxEn
 		template<>
 		struct Drawer<const char*>
 		{
-			static void Property(const char*& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const char*& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
-
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 				Draw::Text(Data);
 			}
 
-			static bool Field(const char*& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(const char*& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
 				NX_ASSERT(false, Default, "Unsupported");
 				return false;
@@ -80,28 +73,26 @@ namespace NxEn
 		template<>
 		struct Drawer<bool>
 		{
-			static void Property(const bool& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const bool& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
 				NxFr::String ImGuiId = Utils::GenerateId("", Label);
 
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 				ImGui::BeginDisabled();
 				bool Copy = Data;
 				Draw::CheckBox(ImGuiId, Copy);
 				ImGui::EndDisabled();
 			}
 
-			static bool Field(bool& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(bool& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
 				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 				bool Result = Draw::CheckBox(ImGuiId, Data);
 
 				return Result;
@@ -111,40 +102,34 @@ namespace NxEn
 		template<typename T>
 		struct Drawer<NxFr::Array<T>>
 		{
-			static void Property(const NxFr::Array<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const NxFr::Array<T>& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
-
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
 				Draw::Text(Count);
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x;
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x);
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Drawer<T>::Property(Data[Index], IndexStr, &ItemStyle);
+					Drawer<T>::Property(Data[Index], IndexStr, ItemVisual);
 				}
 			}
 
-			static bool Field(NxFr::Array<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(NxFr::Array<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
 				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
@@ -169,14 +154,11 @@ namespace NxEn
 					Result = true;
 				}
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x;
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x);
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, ImGuiId + IndexStr, &ItemStyle);
+					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, ImGuiId + IndexStr, ItemVisual);
 				}
 
 				return Result;
@@ -186,40 +168,34 @@ namespace NxEn
 		template<typename T>
 		struct Drawer<NxFr::List<T>>
 		{
-			static void Property(const NxFr::List<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const NxFr::List<T>& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
-
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
 				Draw::Text(Count);
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x;
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x);
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Drawer<T>::Property(Data[Index], IndexStr, &ItemStyle);
+					Drawer<T>::Property(Data[Index], IndexStr, ItemVisual);
 				}
 			}
 
-			static bool Field(NxFr::List<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(NxFr::List<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
 				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
@@ -244,14 +220,11 @@ namespace NxEn
 					Result = true;
 				}
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x;
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + ImGui::CalcTextSize("Count").x + ImGui::GetStyle().ItemSpacing.x);
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, ImGuiId + IndexStr, &ItemStyle);
+					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, ImGuiId + IndexStr, ItemVisual);
 				}
 
 				return Result;
@@ -261,39 +234,33 @@ namespace NxEn
 		template<typename T>
 		struct Drawer<NxFr::Set<T>>
 		{
-			static void Property(const NxFr::Set<T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const NxFr::Set<T>& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
-
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
 				Draw::Text(Count);
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + Styles::WidthLabel();
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
 				for (const auto& It : Data)
 				{
-					GUI::Drawer<T>::Property(It, "", &ItemStyle);
+					GUI::Drawer<T>::Property(It, "", ItemVisual);
 				}
 			}
 
-			static bool Field(NxFr::Set<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(NxFr::Set<T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
 				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
@@ -320,13 +287,10 @@ namespace NxEn
 					});
 				}
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + Styles::WidthLabel();
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
 				for (const auto& It : Data)
 				{
-					Result |= GUI::Drawer<T>::Property(It, "", &ItemStyle);
+					Result |= GUI::Drawer<T>::Property(It, "", ItemVisual);
 				}
 
 				return false;
@@ -336,40 +300,34 @@ namespace NxEn
 		template<typename K, typename T>
 		struct Drawer<NxFr::Dictionary<K, T>>
 		{
-			static void Property(const NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", const Style* Visual = nullptr)
+			static void Property(const NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
-
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
 				Draw::Text(Count);
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + Styles::WidthLabel();
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
 				for (const auto& It : Data)
 				{
 					NxFr::String KeyStr = NxFr::StringUtility::ToString(It.Key);
-					GUI::Drawer<T>::Property(It.Value, KeyStr, &ItemStyle);
+					GUI::Drawer<T>::Property(It.Value, KeyStr, ItemVisual);
 				}
 			}
 
-			static bool Field(NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Style* Visual = nullptr)
+			static bool Field(NxFr::Dictionary<K, T>& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				Style::Scope _ = Visual;
 				NxFr::String ImGuiId = Utils::GenerateId(Id, Label);
 				float ButtonSize = Styles::WidthButton();
 				bool Result = false;
 
-				Utils::SetPosition(Visual);
+				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
-				Utils::OffsetLabel(Visual);
+				Utils::OffsetLabel(Visual.Label);
 
 				float Position = ImGui::GetCursorPosX();
 
@@ -396,14 +354,11 @@ namespace NxEn
 					});
 				}
 
-				Style ItemStyle = Visual ? *Visual : Styles::Default();
-				ItemStyle.Position = NxFr::Vector2f(Position, -1);
-				ItemStyle.Size = -NxFr::Vector2f::One;
-				ItemStyle.Label = Position + Styles::WidthLabel();
+				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
 				for (auto& It : Data)
 				{
 					NxFr::String KeyStr = NxFr::StringUtility::ToString(It.Key);
-					GUI::Drawer<T>::Field(It.Value, KeyStr, ImGuiId + KeyStr, &ItemStyle);
+					GUI::Drawer<T>::Field(It.Value, KeyStr, ImGuiId + KeyStr, ItemVisual);
 				}
 
 				return false;

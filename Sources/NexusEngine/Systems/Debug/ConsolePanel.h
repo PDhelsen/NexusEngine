@@ -37,7 +37,6 @@ namespace NxEn
 		void ExecuteCommand();
 
 		GUI::Menu Menu;
-		GUI::Style Style;
 
 		NxFr::List<Log> Logs;
 		NxFr::Dictionary<NxFr::LoggerVerbosity, bool> FlagsVerbosity;

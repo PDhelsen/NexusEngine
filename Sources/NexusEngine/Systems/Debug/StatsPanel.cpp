@@ -8,7 +8,7 @@ namespace NxEn
 	static StatsPanel* Panel = GUI::Panel::Create<StatsPanel>();
 
 	StatsPanel::StatsPanel()
-		: Style(), Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filter()
+		: Instruments(nullptr), Stats(nullptr), Ids(), Values(), Filter()
 	{
 	}
 
@@ -26,7 +26,6 @@ namespace NxEn
 	void StatsPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Style.Reset();
 
 		DebugSystem* Debug = Application::GetSystem<DebugSystem>();
 		Instruments = Debug->GetInstruments();
@@ -62,9 +61,8 @@ namespace NxEn
 	void StatsPanel::DrawButtons()
 	{
 		{
-			Style = !Instruments->IsRecording() ? GUI::Styles::ButtonNormal() : GUI::Styles::ButtonPressed();
-			Style.Size.x = GUI::Styles::WidthButton();
-			if (GUI::Draw::Button("Instruments", &Style))
+			GUI::Style::Scope _ = !Instruments->IsRecording() ? &GUI::Styles::ButtonNormal() : &GUI::Styles::ButtonPressed();
+			if (GUI::Draw::Button("Instruments", NxFr::Vector2f(GUI::Styles::WidthButton(), 0)))
 			{
 				if (!Instruments->IsRecording())
 				{
@@ -80,9 +78,8 @@ namespace NxEn
 		ImGui::SameLine();
 
 		{
-			Style = !Instruments->IsRecording() ? GUI::Styles::ButtonNormal() : GUI::Styles::ButtonPressed();
-			Style.Size.x = GUI::Styles::WidthButton();
-			if (GUI::Draw::Button("Stats", &Style))
+			GUI::Style::Scope _ = !Instruments->IsRecording() ? &GUI::Styles::ButtonNormal() : &GUI::Styles::ButtonPressed();
+			if (GUI::Draw::Button("Stats", NxFr::Vector2f(GUI::Styles::WidthButton(), 0)))
 			{
 				if (!Stats->IsRecording())
 				{
@@ -98,10 +95,8 @@ namespace NxEn
 
 	void StatsPanel::DrawFilter()
 	{
-		Style.Size.x = -1.0f;
-		Style.Label = -1.0f;
-
-		if (GUI::Drawer<NxFr::String>::Field(Filter.GetQuery(), "Filter:", "", &Style))
+		GUI::Transform Visual = GUI::Transform(-NxFr::Vector2f::One, -NxFr::Vector2f::One, -1.0f);
+		if (GUI::Drawer<NxFr::String>::Field(Filter.GetQuery(), "Filter:", "", Visual))
 		{
 			Filter.Configure();
 		}
@@ -111,18 +106,17 @@ namespace NxEn
 
 	void StatsPanel::DrawStats(NxFr::StringView Label)
 	{
-		Style.Size.x = 0.0f;
-		Style.Label = GUI::Styles::WidthLabel();
+		GUI::Transform Visual = GUI::Transform(-NxFr::Vector2f::One, NxFr::Vector2f::Zero, GUI::Styles::WidthLabel());
 
 		NxFr::StringId Id = NxFr::StringId(Label);
 		const NxFr::Stats::Stat* Value = Values[Id];
 
 		switch (Value->GetType())
 		{
-		case NxFr::Stats::Type::Label: GUI::Drawer<NxFr::String>::Property(Value->GetValueLabel(), Label, &Style); break;
-		case NxFr::Stats::Type::Check: GUI::Drawer<bool>::Property(Value->GetValueCheck(), Label, &Style); break;
-		case NxFr::Stats::Type::Integer: GUI::Drawer<int64>::Property(Value->GetValueInteger(), Label, &Style); break;
-		case NxFr::Stats::Type::Decimal: GUI::Drawer<float>::Property(Value->GetValueDecimal(), Label, &Style); break;
+		case NxFr::Stats::Type::Label: GUI::Drawer<NxFr::String>::Property(Value->GetValueLabel(), Label, Visual); break;
+		case NxFr::Stats::Type::Check: GUI::Drawer<bool>::Property(Value->GetValueCheck(), Label, Visual); break;
+		case NxFr::Stats::Type::Integer: GUI::Drawer<int64>::Property(Value->GetValueInteger(), Label, Visual); break;
+		case NxFr::Stats::Type::Decimal: GUI::Drawer<float>::Property(Value->GetValueDecimal(), Label, Visual); break;
 		}
 	}
 

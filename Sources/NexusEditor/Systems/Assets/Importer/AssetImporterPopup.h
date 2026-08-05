@@ -25,8 +25,6 @@ namespace NxEd
 		void SetPath(NxFr::StringView FilePath);
 		void Import();
 
-		NxEn::GUI::Style Style;
-
 		NxFr::String Path;
 		NxFr::String Type;
 	};
