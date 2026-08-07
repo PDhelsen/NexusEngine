@@ -12,6 +12,11 @@ namespace NxEn
 			NX_ENGINE_API bool IsPanelActive();
 			NX_ENGINE_API NxFr::String GenerateStringId(NxFr::StringView Id, NxFr::StringView Label = "");
 			NX_ENGINE_API NxFr::GUID GenerateId(NxFr::StringView Id, NxFr::StringView Label = "");
+			NX_ENGINE_API NxFr::StringId ImGuiToNexusId(NxFr::StringView Name);
+			NX_ENGINE_API NxFr::StringView ImGuiToNexusName(NxFr::StringView Name);
+			NX_ENGINE_API NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::GUID Id);
+			NX_ENGINE_API NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::StringView Id);
+			NX_ENGINE_API NxFr::StringView ImGuiIdSeparator();
 
 			NX_ENGINE_API void PushStyle(const Style* Instance);
 			NX_ENGINE_API void PopStyle(const Style* Instance);

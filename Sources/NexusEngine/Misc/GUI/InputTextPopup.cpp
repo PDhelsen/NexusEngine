@@ -51,7 +51,7 @@ namespace NxEn
 	void InputTextPopup::OnDraw()
 	{
 		GUI::Utils::SetSize(-NxFr::Vector2f::One);
-		if (GUI::Draw::Input(Input, "##"))
+		if (GUI::Draw::Input(Input, GUI::Utils::ImGuiIdSeparator()))
 		{
 			Callback(Input);
 			Hide();

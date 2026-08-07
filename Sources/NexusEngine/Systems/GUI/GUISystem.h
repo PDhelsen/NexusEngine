@@ -5,7 +5,7 @@
 #include "NexusEngine/Systems/GUI/Style.h"
 #include "NexusEngine/Systems/GUI/Utils.h"
 #include "NexusEngine/Systems/GUI/Draw.h"
-#include "NexusEngine/Systems/GUI/GUI.h"
+#include "NexusEngine/Systems/GUI/Element.h"
 #include "NexusEngine/Systems/GUI/Misc/Styles.h"
 #include "NexusEngine/Systems/GUI/Misc/Draw.h"
 #include "NexusEngine/Systems/GUI/Misc/Serialization.h"
@@ -20,9 +20,6 @@ namespace NxEn
 		static NxFr::Registry<GUI::Panel*>& GetPanels();
 		static NxFr::Registry<GUI::Menu::Item>& GetMenuItems();
 
-		static NxFr::StringId ImGuiToNexusId(NxFr::StringView Name);
-		static NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::StringView Id);
-
 		GUISystem();
 		~GUISystem();
 
@@ -35,8 +32,7 @@ namespace NxEn
 		void SaveTheme(NxFr::StringView Name = "");
 
 		GUI::Window* GetWindow();
-		template<typename T> T* GetElement(NxFr::StringView Name) { return static_cast<T*>(GetElement(Name, T::GetClassType())); }
-		GUI::Element* GetElement(NxFr::StringView Name, NxFr::StringView Id);
+		GUI::Element* GetElement(NxFr::GUID Id);
 		template<typename T> T* GetPanel() { return static_cast<T*>(GetPanel(T::GetClassType())); }
 		GUI::Panel* GetPanel(NxFr::StringId Type);
 		GUI::Panel* GetActivePanel();

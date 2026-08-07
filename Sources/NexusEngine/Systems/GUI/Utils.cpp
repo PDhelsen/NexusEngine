@@ -16,7 +16,7 @@ namespace NxEn
 
 			NxFr::String GenerateStringId(NxFr::StringView Id, NxFr::StringView Label)
 			{
-				return "##" + (!Id.IsEmpty() ? Id : Label);
+				return ImGuiIdSeparator() + (!Id.IsEmpty() ? Id : Label);
 			}
 
 			NxFr::GUID GenerateId(NxFr::StringView Id, NxFr::StringView Label)
@@ -24,9 +24,30 @@ namespace NxEn
 				return NxFr::Hash<>::HashObject(GenerateStringId(Id, Label));
 			}
 
-			NxFr::StringId GenerateIdTest(NxFr::StringView Id, NxFr::StringView Label)
+			NxFr::StringId ImGuiToNexusId(NxFr::StringView Name)
 			{
-				return NxFr::StringId("##" + (!Id.IsEmpty() ? Id : Label));
+				NxFr::StringView Id = NxFr::StringUtility::Split(Name, ImGuiIdSeparator(), 1);
+				return NxFr::StringUtility::Split(Id, "/");
+			}
+
+			NxFr::StringView ImGuiToNexusName(NxFr::StringView Name)
+			{
+				return NxFr::StringUtility::Split(Name, ImGuiIdSeparator(), 0);
+			}
+
+			NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::GUID Id)
+			{
+				return NexusToImGuiId(Name, NxFr::StringUtility::ToString(Id));
+			}
+
+			NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::StringView Id)
+			{
+				return Name + ImGuiIdSeparator() + Id;
+			}
+
+			NxFr::StringView ImGuiIdSeparator()
+			{
+				return "##";
 			}
 
 			void PushStyle(const Style* Instance)

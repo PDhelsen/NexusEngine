@@ -50,7 +50,7 @@ namespace NxEd
 			return false;
 
 		NxFr::StringView Focused = Ctx->NavWindow->Name;
-		return Focused == Viewer->GetImGuiId() || Focused == Inspector->GetImGuiId() || Focused == Hierarchy->GetImGuiId();
+		return Focused == Viewer->GetNamedId() || Focused == Inspector->GetNamedId() || Focused == Hierarchy->GetNamedId();
 	}
 
 	bool Stage::IsMain() const
@@ -62,22 +62,21 @@ namespace NxEd
 	{
 		Element::OnInitialize();
 
-		NxFr::String IdString = NxFr::StringUtility::ToString(Target->GetId());
-		UpdateImGuiId(Target->GetName() + "##" + IdString);
+		SetNameId(Target->GetName(), Target->GetId());
 
 		Viewer = new ViewerPanel();
 		Viewer->Initialize();
-		Viewer->SetTitle("Viewer##" + IdString);
 		Viewer->SetManual(true);
+		Viewer->SetNameId("Viewer", Target->GetId());
 
 		Inspector = new InspectorPanel();
 		Inspector->Initialize();
-		Inspector->SetTitle("Inspector##" + IdString);
 		Inspector->SetManual(true);
+		Inspector->SetNameId("Inspector", Target->GetId());
 
 		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->CreatePanel(World);
-		Hierarchy->SetTitle("Hierarchy##" + IdString);
 		Hierarchy->SetManual(true);
+		Hierarchy->SetNameId("Hierarchy", +Target->GetId());
 	}
 
 	void Stage::OnShutdown()
@@ -161,9 +160,9 @@ namespace NxEd
 		ImGui::SetNextWindowSize(DockDefaultSize, Main ? ImGuiCond_FirstUseEver : ImGuiCond_Once);
 
 		bool IsOpen = IsVisible();
-		DockId = ImGui::GetID(GetImGuiId().C());
+		DockId = ImGui::GetID(GetNamedId().C());
 
-		ImGui::Begin(GetImGuiId().C(), &IsOpen);
+		ImGui::Begin(GetNamedId().C(), &IsOpen);
 		ImGui::DockSpace(DockId, NxFr::Vector2f::Zero, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoDocking);
 		ImGui::End();
 
@@ -188,13 +187,13 @@ namespace NxEd
 		ImGui::DockBuilderSetNodeSize(DockId, DockDefaultSize);
 
 		ImGui::DockBuilderSplitNode(DockId, ImGuiDir_Left, 0.5f, &ViewerId, &InspectorId);
-		ImGui::DockBuilderDockWindow(Viewer->GetImGuiId().C(), ViewerId);
-		ImGui::DockBuilderDockWindow(Inspector->GetImGuiId().C(), InspectorId);
+		ImGui::DockBuilderDockWindow(Viewer->GetNamedId().C(), ViewerId);
+		ImGui::DockBuilderDockWindow(Inspector->GetNamedId().C(), InspectorId);
 
 		if (Hierarchy->IsEnabled())
 		{
 			ImGui::DockBuilderSplitNode(DockId, ImGuiDir_Left, 0.25f, &HierarchyId, &ViewerId);
-			ImGui::DockBuilderDockWindow(Hierarchy->GetImGuiId().C(), HierarchyId);
+			ImGui::DockBuilderDockWindow(Hierarchy->GetNamedId().C(), HierarchyId);
 		}
 
 		ImGui::DockBuilderFinish(DockId);

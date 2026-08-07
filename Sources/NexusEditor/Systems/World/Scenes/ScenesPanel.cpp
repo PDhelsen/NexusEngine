@@ -105,7 +105,7 @@ namespace NxEd
 
 			Visual.Position.x = Origin + Offset + ImGui::GetStyle().ItemSpacing.x;
 			bool IsLoaded = IsSceneLoaded(Info.Id, WorldId);
-			if (NxEn::GUI::Draw::Button((IsLoaded ? "Unload" : "Load") + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), Visual))
+			if (NxEn::GUI::Draw::Button(NxEn::GUI::Utils::NexusToImGuiId(IsLoaded ? "Unload" : "Load", Info.Id), Visual))
 			{
 				ActionIndex = Index;
 				ActionType = Action::Toggle;
@@ -116,7 +116,7 @@ namespace NxEd
 				ImGui::SameLine();
 
 				Visual.Position.x = -1.0f;
-				if (NxEn::GUI::Draw::Button("Save" + NxFr::StringView("##") + NxFr::StringUtility::ToString(Info.Id), Visual))
+				if (NxEn::GUI::Draw::Button(NxEn::GUI::Utils::NexusToImGuiId("Save", Info.Id), Visual))
 				{
 					ActionIndex = Index;
 					ActionType = Action::Save;

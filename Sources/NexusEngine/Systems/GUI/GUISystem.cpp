@@ -32,9 +32,9 @@ namespace NxEn
 		Application::GetSystem<GUISystem>()->GetPanel(Id)->Show();
 	}));
 
-	static Command* CmdGuiElement = Command::Create("GUI.Element"_Sid, "Open gui element", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView Name, NxFr::StringView Type)
+	static Command* CmdGuiElement = Command::Create("GUI.Element"_Sid, "Open gui element", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
 	{
-		Application::GetSystem<GUISystem>()->GetElement(Name, Type)->Show();
+		Application::GetSystem<GUISystem>()->GetElement(NxFr::StringUtility::FromString<NxFr::GUID>(Id))->Show();
 	}));
 
 	static Command* CmdGuiLayoutSave = Command::Create("GUI.Layout.Save"_Sid, "Save gui layout", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Name)
@@ -57,17 +57,6 @@ namespace NxEn
 	{
 		static NxFr::Registry<GUI::Menu::Item> MenuItems;
 		return MenuItems;
-	}
-
-	NxFr::StringId GUISystem::ImGuiToNexusId(NxFr::StringView Name)
-	{
-		NxFr::StringView Id = NxFr::StringUtility::Split(Name, "##", 1);
-		return NxFr::StringUtility::Split(Id, "/");
-	}
-
-	NxFr::String GUISystem::NexusToImGuiId(NxFr::StringView Name, NxFr::StringView Id)
-	{
-		return Name + "##" + Id;
 	}
 
 	GUISystem::GUISystem()
@@ -175,12 +164,11 @@ namespace NxEn
 		return &Window;
 	}
 
-	GUI::Element* GUISystem::GetElement(NxFr::StringView Name, NxFr::StringView Id)
+	GUI::Element* GUISystem::GetElement(NxFr::GUID Id)
 	{
-		NxFr::String ImGuiId = NexusToImGuiId(Name, Id);
 		auto It = NxFr::ContainerUtility::Where<GUI::Element*>(Elements, [&](GUI::Element* Element)
 		{
-			return Element->GetImGuiId() == ImGuiId;
+			return Element->GetId() == Id;
 		});
 
 		return It.Get();
@@ -199,7 +187,7 @@ namespace NxEn
 		}
 
 		NxFr::StringView Name = ImGui::GetCurrentContext()->NavWindow->RootWindow->Name;
-		NxFr::StringId Id = ImGuiToNexusId(Name);
+		NxFr::StringId Id = GUI::Utils::ImGuiToNexusId(Name);
 		return GetPanel(Id);
 	}
 

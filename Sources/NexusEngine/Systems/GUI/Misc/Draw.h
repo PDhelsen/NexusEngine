@@ -166,7 +166,7 @@ namespace NxEn
 				Draw::Label("Count");
 				Utils::SetSize(NxFr::Vector2f(Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 2).x, 0));
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
-				if (Draw::Input(Count, "##Count", ImGuiInputTextFlags_EnterReturnsTrue))
+				if (Draw::Input(Count, Utils::ImGuiIdSeparator(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					NxFr::ContainerUtility::Resize(Data, NxFr::StringUtility::FromString<uint64>(Count));
 					Result = true;
@@ -233,7 +233,7 @@ namespace NxEn
 				Draw::Label("Count");
 				Utils::SetSize(NxFr::Vector2f(Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 2).x, 0));
 				NxFr::String Count = NxFr::StringUtility::ToString(Data.GetCount());
-				if (Draw::Input(Count, "##Count", ImGuiInputTextFlags_EnterReturnsTrue))
+				if (Draw::Input(Count, Utils::ImGuiIdSeparator(), ImGuiInputTextFlags_EnterReturnsTrue))
 				{
 					NxFr::ContainerUtility::Resize(Data, NxFr::StringUtility::FromString<uint64>(Count));
 					Result = true;

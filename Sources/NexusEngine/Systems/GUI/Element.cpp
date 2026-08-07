@@ -1,5 +1,5 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
-#include "NexusEngine/Systems/GUI/GUI.h"
+#include "NexusEngine/Systems/GUI/Element.h"
 
 namespace NxEn
 {
@@ -8,7 +8,7 @@ namespace NxEn
 #pragma region Element
 
 		Element::Element()
-			: Manual(false), WillClose(false)
+			: Id(0), Name(), NamedId(), Manual(false), WillClose(false)
 		{
 		}
 
@@ -18,21 +18,11 @@ namespace NxEn
 
 		void Element::Show()
 		{
-			if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-			{
-				return;
-			}
-
 			SetEnabled(true);
 		}
 
 		void Element::Hide()
 		{
-			if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-			{
-				return;
-			}
-
 			SetEnabled(false);
 		}
 
@@ -46,6 +36,18 @@ namespace NxEn
 			WillClose = true;
 			Hide();
 			Application::GetInstance()->GetTicker().AppendTick(Ticker::TickBucket::Cleanup, "Destroy Gui element", [=]() { SetEnabled(false); Shutdown(); delete this; }, true);
+		}
+
+		void Element::SetNameId(NxFr::StringView Name, NxFr::GUID Id)
+		{
+			if (Id == 0)
+			{
+				Id = GetObjectType();
+			}
+
+			NamedId = Utils::NexusToImGuiId(Name, NxFr::StringUtility::ToString(Id));
+			this->Name = Utils::ImGuiToNexusName(NamedId);
+			this->Id = Id;
 		}
 
 		void Element::OnEnable()
@@ -66,11 +68,6 @@ namespace NxEn
 			}
 
 			Application::GetSystem<GUISystem>()->UnregisterElement(this);
-		}
-
-		void Element::UpdateImGuiId(NxFr::StringView Name)
-		{
-			ImGuiId = Name + "##" + GetObjectType().C();
 		}
 
 #pragma endregion
@@ -95,7 +92,7 @@ namespace NxEn
 				ImGui::SetNextWindowDockID(ImGui::GetID(Dock.C()), ImGuiCond_FirstUseEver);
 			}
 
-			if (ImGui::Begin(GetImGuiId().C(), &IsOpen, GuiFlags))
+			if (ImGui::Begin(GetNamedId().C(), &IsOpen, GuiFlags))
 			{
 				OnDraw();
 			}
@@ -116,7 +113,7 @@ namespace NxEn
 		Panel& Panel::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title;
-			UpdateImGuiId(Title);
+			SetNameId(Title);
 			return *this;
 		}
 
@@ -264,6 +261,11 @@ namespace NxEn
 		{
 			Items.Clear();
 			return *this;
+		}
+
+		void Menu::OnInitialize()
+		{
+			SetNameId("Menu");
 		}
 
 		void Menu::OnShutdown()
@@ -419,7 +421,7 @@ namespace NxEn
 		Popup& Popup::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title;
-			UpdateImGuiId(Title);
+			SetNameId(Title);
 			return *this;
 		}
 
@@ -504,7 +506,7 @@ namespace NxEn
 		ProgressBar& ProgressBar::SetTitle(NxFr::StringView Title)
 		{
 			this->Title = Title;
-			UpdateImGuiId(Title);
+			SetNameId(Title);
 			return *this;
 		}
 
@@ -565,7 +567,7 @@ namespace NxEn
 		{
 			MainMenu.Draw();
 
-			ImGui::DockSpaceOverViewport(ImGui::GetID(GetImGuiId().C()));
+			ImGui::DockSpaceOverViewport(ImGui::GetID(GetNamedId().C()));
 
 			OnDraw();
 		}
@@ -575,7 +577,7 @@ namespace NxEn
 			Element::OnInitialize();
 			MainMenu.Initialize();
 
-			UpdateImGuiId("");
+			SetNameId("Window");
 
 			GuiFlags =
 				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
@@ -587,16 +589,6 @@ namespace NxEn
 		{
 			MainMenu.Shutdown();
 			Element::OnShutdown();
-		}
-
-		void Window::OnEnable()
-		{
-			MainMenu.SetEnabled(true);
-		}
-
-		void Window::OnDisable()
-		{
-			MainMenu.SetEnabled(false);
 		}
 
 #pragma endregion

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
-#include "NexusEngine/Systems/GUI/GUI.h"
+#include "NexusEngine/Systems/GUI/Element.h"
 
 namespace NxEd
 {

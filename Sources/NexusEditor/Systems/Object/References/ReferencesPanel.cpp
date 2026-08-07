@@ -92,7 +92,7 @@ namespace NxEd
 		AssetsBrowserPanel* Browser = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		if (Browser)
 		{
-			Edit::Context* Ctx = Edit->GetContext(Browser->GetImGuiId());
+			Edit::Context* Ctx = Edit->GetContext(Browser->GetNamedId());
 			if (Ctx)
 			{
 				Ctx->GetOnSelectionChanged() += { this, &ReferencesPanel::OnSelectionChanged };
@@ -110,7 +110,7 @@ namespace NxEd
 		AssetsBrowserPanel* Browser = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		if (Browser)
 		{
-			Edit::Context* Ctx = Edit->GetContext(Browser->GetImGuiId());
+			Edit::Context* Ctx = Edit->GetContext(Browser->GetNamedId());
 			if (Ctx)
 			{
 				Ctx->GetOnSelectionChanged() -= { this, &ReferencesPanel::OnSelectionChanged };

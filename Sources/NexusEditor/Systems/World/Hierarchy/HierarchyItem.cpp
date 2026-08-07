@@ -39,7 +39,7 @@ namespace NxEd
 			Metadata && Metadata->GetType() == NxEn::Prefab::GetClassType() ? "P" :
 			"G";
 
-		ImGuiText = Prefix + " " + Target->GetName() + "##" + NxFr::StringUtility::ToString(Target->GetId());
+		ImGuiText = NxEn::GUI::Utils::NexusToImGuiId(Prefix + " " + Target->GetName(), Target->GetId());
 
 		Cache.SetFirst(Target->GetName());
 		Cache.SetSecond(Target->GetTemplateId());

@@ -8,8 +8,6 @@ namespace NxEn
 	{
 		class NX_ENGINE_API Element : public Object
 		{
-			friend class GUISystem;
-
 		public:
 			NX_OBJECT(Element)
 
@@ -20,7 +18,10 @@ namespace NxEn
 			void Hide();
 			void Close();
 
-			NxFr::StringView GetImGuiId() const { return ImGuiId; }
+			NxFr::GUID GetId() const override { return Id; }
+			NxFr::StringView GetName() const override { return Name; }
+			NxFr::StringView GetNamedId() const { return NamedId; }
+			void SetNameId(NxFr::StringView Name, NxFr::GUID Id = 0);
 			bool IsManual() const { return Manual; }
 			void SetManual(bool Manual) { this->Manual = Manual; }
 
@@ -28,10 +29,11 @@ namespace NxEn
 			virtual void OnEnable() override;
 			virtual void OnDisable() override;
 
-			void UpdateImGuiId(NxFr::StringView Name);
-
 		private:
-			NxFr::String ImGuiId;
+			NxFr::GUID Id;
+			NxFr::StringView Name;
+			NxFr::String NamedId;
+
 			bool Manual;
 			bool WillClose;
 		};
@@ -126,6 +128,7 @@ namespace NxEn
 			uint64 GetMenuItemCount() const { return Items.GetCount(); }
 
 		protected:
+			virtual void OnInitialize() override;
 			virtual void OnShutdown() override;
 
 			void AppendItem(const Item& It);
@@ -227,8 +230,6 @@ namespace NxEn
 		protected:
 			void OnInitialize() override;
 			void OnShutdown() override;
-			void OnEnable() override;
-			void OnDisable() override;
 
 		private:
 			ImGuiWindowFlags GuiFlags;

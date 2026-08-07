@@ -20,7 +20,7 @@ namespace NxEd
 
 	void AssetsBrowserItem::CacheImGuiText()
 	{
-		ImGuiText = GetPrefix() + " " + GetPrettyName() + "##" + NxFr::StringUtility::ToString(Id);
+		ImGuiText = NxEn::GUI::Utils::NexusToImGuiId(GetPrefix() + " " + GetPrettyName(), Id);
 	}
 
 	void AssetsBrowserItemDirectory::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath)
