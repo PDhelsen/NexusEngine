@@ -285,7 +285,7 @@ namespace NxEn
 		Availables.Append(Element);
 	}
 
-	GUI::Element* GUISystem::ReuseElement(NxFr::StringId Type)
+	GUI::Element* GUISystem::AcquireElement(NxFr::StringId Type)
 	{
 		GUI::Element* Instance = nullptr;
 

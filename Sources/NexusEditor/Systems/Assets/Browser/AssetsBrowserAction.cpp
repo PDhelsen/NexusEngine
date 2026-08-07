@@ -10,7 +10,7 @@ namespace NxEd
 {
 	void AssetsBrowserActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>&Items)
 	{
-		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
+		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();
@@ -35,7 +35,7 @@ namespace NxEd
 
 	void AssetsBrowserActionRename::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
+		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			AssetsBrowser* Browser = NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser();

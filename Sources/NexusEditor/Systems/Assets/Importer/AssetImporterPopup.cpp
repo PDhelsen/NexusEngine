@@ -6,7 +6,7 @@ namespace NxEd
 {
 	static const NxEn::GUI::Menu::Item* MenuItemSettings = NxEn::GUI::Menu::Create("Object/Assets/Importer", NxFr::Delegate<void()>([]()
 	{
-		NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<AssetImporterPopup>();
+		NxEn::GUI::Element::Acquire<AssetImporterPopup>();
 	}));
 
 	AssetImporterPopup::AssetImporterPopup()

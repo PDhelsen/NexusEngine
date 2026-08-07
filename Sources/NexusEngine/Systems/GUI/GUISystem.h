@@ -28,20 +28,6 @@ namespace NxEn
 		GUISystem();
 		~GUISystem();
 
-		template<typename T>
-		T* TryReuseElement(bool Enabled = true)
-		{
-			GUI::Element* Instance = ReuseElement(T::GetClassType());
-			if (Instance == nullptr)
-			{
-				Instance = new T();
-			}
-
-			Instance->Initialize();
-			Instance->SetEnabled(Enabled);
-			return static_cast<T*>(Instance);
-		}
-
 		void LoadLayout(NxFr::StringView Name = "");
 		void SaveLayout(NxFr::StringView Name = "");
 		void LoadTheme(NxFr::StringView Name = "");
@@ -65,7 +51,7 @@ namespace NxEn
 		void DrawElement(GUI::Element* Element, bool State);
 		void DestroyElement(GUI::Element* Element);
 		void RecycleElement(GUI::Element* Element);
-		GUI::Element* ReuseElement(NxFr::StringId Type);
+		GUI::Element* AcquireElement(NxFr::StringId Type);
 
 		void AddMenuWindowItems();
 		void AddMenuWindowItems(const GUI::Menu::Item& Item);

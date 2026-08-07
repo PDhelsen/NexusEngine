@@ -29,6 +29,20 @@ namespace NxEn
 		class NX_ENGINE_API Element : public Object
 		{
 		public:
+			template<typename T>
+			static T* Acquire(bool Enabled = true)
+			{
+				GUI::Element* Instance = Acquire(T::GetClassType());
+				if (Instance == nullptr)
+				{
+					Instance = new T();
+				}
+
+				Instance->Initialize();
+				Instance->SetEnabled(Enabled);
+				return static_cast<T*>(Instance);
+			}
+
 			NX_OBJECT(Element)
 
 			Element();
@@ -58,6 +72,8 @@ namespace NxEn
 			virtual void OnDisable() override;
 
 		private:
+			static GUI::Element* Acquire(NxFr::StringId Type);
+
 			NxFr::GUID Id;
 			NxFr::StringView Name;
 			NxFr::String NamedId;

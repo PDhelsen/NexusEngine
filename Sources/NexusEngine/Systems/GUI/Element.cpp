@@ -110,5 +110,10 @@ namespace NxEn
 		{
 			Application::GetSystem<GUISystem>()->DrawElement(this, false);
 		}
+
+		GUI::Element* Element::Acquire(NxFr::StringId Type)
+		{
+			return Application::GetSystem<GUISystem>()->AcquireElement(Type);
+		}
 	}
 }

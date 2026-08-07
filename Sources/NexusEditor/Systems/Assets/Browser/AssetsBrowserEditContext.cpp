@@ -29,7 +29,7 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Rename()
 	{
-		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
+		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			NxFr::Set<NxFr::GUID> Instances = FilterSelection();

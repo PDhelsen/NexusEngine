@@ -4,6 +4,7 @@
 #include "NexusEngine/Systems/GUI/Draw.h"
 #include "NexusEngine/Systems/GUI/Misc/Styles.h"
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
+#include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEn
 {
@@ -303,20 +304,20 @@ namespace NxEn
 				Utils::SetPosition(NxFr::Vector2f(Utils::Align().x + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1).x, -1.0f));
 				if (Draw::Button("Add", NxFr::Vector2f(ButtonSize, 0.0f)))
 				{
-					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
-					//Popup->RegisterCallback([&](NxFr::StringView Value)
-					//{
-					//	Data.Append(NxFr::StringUtility::FromString<T>(Value));
-					//});
+					InputTextPopup* Popup = GUI::Element::Acquire<InputTextPopup>();
+					Popup->RegisterCallback([&](NxFr::StringView Value)
+					{
+						Data.Append(NxFr::StringUtility::FromString<T>(Value));
+					});
 				}
 				Utils::SameLine();
 				if (Draw::Button("Remove", NxFr::Vector2f(ButtonSize, 0.0f)))
 				{
-					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
-					//Popup->RegisterCallback([&](NxFr::StringView Value)
-					//{
-					//	Data.Remove(NxFr::StringUtility::FromString<T>(Value));
-					//});
+					InputTextPopup* Popup = GUI::Element::Acquire<InputTextPopup>();
+					Popup->RegisterCallback([&](NxFr::StringView Value)
+					{
+						Data.Remove(NxFr::StringUtility::FromString<T>(Value));
+					});
 				}
 
 				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
@@ -371,20 +372,20 @@ namespace NxEn
 				Utils::SetPosition(NxFr::Vector2f(Utils::Align().x + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1).x, -1.0f));
 				if (Draw::Button("Add", NxFr::Vector2f(ButtonSize, 0.0f)))
 				{
-					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
-					//Popup->RegisterCallback([&](NxFr::StringView Value)
-					//{
-					//	Data.AppendConstruct(NxFr::StringUtility::FromString<K>(Value));
-					//});
+					InputTextPopup* Popup = GUI::Element::Acquire<InputTextPopup>();
+					Popup->RegisterCallback([&](NxFr::StringView Value)
+					{
+						Data.AppendConstruct(NxFr::StringUtility::FromString<K>(Value));
+					});
 				}
 				Utils::SameLine();
 				if (Draw::Button("Remove", NxFr::Vector2f(ButtonSize, 0.0f)))
 				{
-					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
-					//Popup->RegisterCallback([&](NxFr::StringView Value)
-					//{
-					//	Data.Remove(NxFr::StringUtility::FromString<K>(Value));
-					//});
+					InputTextPopup* Popup = GUI::Element::Acquire<InputTextPopup>();
+					Popup->RegisterCallback([&](NxFr::StringView Value)
+					{
+						Data.Remove(NxFr::StringUtility::FromString<K>(Value));
+					});
 				}
 
 				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
