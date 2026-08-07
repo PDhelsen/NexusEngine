@@ -36,6 +36,11 @@ namespace NxEn
 		AddButton("Cancel");
 	}
 
+	void InputTextPopup::OnShutdown()
+	{
+		UnregisterCallback();
+	}
+
 	void InputTextPopup::OnEnable()
 	{
 		Popup::OnEnable();
