@@ -9,7 +9,7 @@ namespace NxEd
 {
 	void HierarchyActionCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
@@ -23,7 +23,7 @@ namespace NxEd
 
 	void HierarchyActionRename::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			for (auto& Item : Items)
@@ -84,7 +84,7 @@ namespace NxEd
 
 	void HierarchyActionPrefabCreate::Execute(const NxFr::Array<NxEn::TreeItem*>& Items)
 	{
-		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();

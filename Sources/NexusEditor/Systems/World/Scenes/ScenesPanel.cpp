@@ -141,7 +141,7 @@ namespace NxEd
 
 	void ScenesPanel::Create()
 	{
-		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			Assets->Create<NxEn::Scene>(Input, NxEn::Scene::Extension);

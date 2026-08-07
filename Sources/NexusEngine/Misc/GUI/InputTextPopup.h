@@ -9,8 +9,6 @@ namespace NxEn
 	public:
 		NX_OBJECT(InputTextPopup)
 
-		static InputTextPopup* GetInstance();
-
 		void RegisterCallback(const NxFr::Delegate<void(NxFr::StringView)>& Callback);
 		void UnregisterCallback();
 

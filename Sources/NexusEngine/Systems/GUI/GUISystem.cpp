@@ -60,7 +60,7 @@ namespace NxEn
 	}
 
 	GUISystem::GUISystem()
-		: Window(), Drawing(), Destroyed()
+		: Window(), Drawing(), Destroyed(), Availables()
 	{
 
 	}
@@ -211,6 +211,9 @@ namespace NxEn
 			Imgui::Shutdown();
 		}
 
+		Destroy(Destroyed);
+		Destroy(Availables);
+
 		GetPanels().Clear();
 		GetMenuItems().Clear();
 		
@@ -222,13 +225,7 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		for (auto& Element : Destroyed)
-		{
-			Element->SetEnabled(false);
-			Element->Shutdown();
-			delete Element;
-		}
-		Destroyed.Clear();
+		Destroy(Destroyed);
 
 		NX_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Drawing.GetCount());
 
@@ -240,12 +237,28 @@ namespace NxEn
 		Imgui::Tick();
 
 		Window.Draw();
+		Draw(Drawing);
+
+		Imgui::Render();
+	}
+
+	void GUISystem::Draw(NxFr::Set<GUI::Element*>& Elements)
+	{
 		for (auto& Element : Drawing)
 		{
 			Element->Draw();
 		}
+	}
 
-		Imgui::Render();
+	void GUISystem::Destroy(NxFr::Set<GUI::Element*>& Elements)
+	{
+		for (auto& Element : Elements)
+		{
+			Element->SetEnabled(false);
+			Element->Shutdown();
+			delete Element;
+		}
+		Elements.Clear();
 	}
 
 	void GUISystem::DrawElement(GUI::Element* Element, bool State)
@@ -263,6 +276,30 @@ namespace NxEn
 	void GUISystem::DestroyElement(GUI::Element* Element)
 	{
 		Destroyed.TryAppend(Element);
+	}
+
+	void GUISystem::RecycleElement(GUI::Element* Element)
+	{
+		Element->SetEnabled(false);
+		Element->Shutdown();
+		Availables.Append(Element);
+	}
+
+	GUI::Element* GUISystem::ReuseElement(NxFr::StringId Type)
+	{
+		GUI::Element* Instance = nullptr;
+
+		for (auto& Element : Availables)
+		{
+			if (Element->GetObjectType() == Type)
+			{
+				Instance = Element;
+				Availables.Remove(Instance);
+				break;
+			}
+		}
+
+		return Instance;
 	}
 
 	void GUISystem::AddMenuWindowItems()

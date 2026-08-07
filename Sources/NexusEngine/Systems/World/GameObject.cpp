@@ -188,7 +188,7 @@ namespace NxEn
 
 		if (GUI::Draw::Button("Add Behaviour", NxFr::Vector2f(HalfWindowSize, 0.0f)))
 		{
-			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+			NxEn::InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
 			Popup->RegisterCallback([&](NxFr::StringView Input)
 			{
 				WorldSystem* World = Application::GetSystem<WorldSystem>();
@@ -200,7 +200,7 @@ namespace NxEn
 
 		if (GUI::Draw::Button("Add Component", NxFr::Vector2f(HalfWindowSize, 0.0f)))
 		{
-			NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+			NxEn::InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
 			Popup->RegisterCallback([&](NxFr::StringView Input)
 			{
 				WorldSystem* World = Application::GetSystem<WorldSystem>();

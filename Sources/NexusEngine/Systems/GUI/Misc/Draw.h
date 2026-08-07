@@ -303,20 +303,20 @@ namespace NxEn
 				Utils::SetPosition(NxFr::Vector2f(ImGui::GetCursorPosX() + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1).x, -1.0f));
 				if (ImGui::Button("Add", { ButtonSize, 0.0f }))
 				{
-					InputTextPopup* Popup = InputTextPopup::GetInstance();
-					Popup->RegisterCallback([&](NxFr::StringView Value)
-					{
-						Data.Append(NxFr::StringUtility::FromString<T>(Value));
-					});
+					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
+					//Popup->RegisterCallback([&](NxFr::StringView Value)
+					//{
+					//	Data.Append(NxFr::StringUtility::FromString<T>(Value));
+					//});
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Remove", { ButtonSize, 0.0f }))
 				{
-					InputTextPopup* Popup = InputTextPopup::GetInstance();
-					Popup->RegisterCallback([&](NxFr::StringView Value)
-					{
-						Data.Remove(NxFr::StringUtility::FromString<T>(Value));
-					});
+					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
+					//Popup->RegisterCallback([&](NxFr::StringView Value)
+					//{
+					//	Data.Remove(NxFr::StringUtility::FromString<T>(Value));
+					//});
 				}
 
 				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
@@ -371,20 +371,20 @@ namespace NxEn
 				Utils::SetPosition(NxFr::Vector2f(ImGui::GetCursorPosX() + Utils::Fill(NxFr::Vector2f(ButtonSize * 2.0f, 0.0f), 1).x, -1.0f));
 				if (ImGui::Button("Add", { ButtonSize, 0.0f }))
 				{
-					InputTextPopup* Popup = InputTextPopup::GetInstance();
-					Popup->RegisterCallback([&](NxFr::StringView Value)
-					{
-						Data.AppendConstruct(NxFr::StringUtility::FromString<K>(Value));
-					});
+					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
+					//Popup->RegisterCallback([&](NxFr::StringView Value)
+					//{
+					//	Data.AppendConstruct(NxFr::StringUtility::FromString<K>(Value));
+					//});
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Remove", { ButtonSize, 0.0f }))
 				{
-					InputTextPopup* Popup = InputTextPopup::GetInstance();
-					Popup->RegisterCallback([&](NxFr::StringView Value)
-					{
-						Data.Remove(NxFr::StringUtility::FromString<K>(Value));
-					});
+					//InputTextPopup* Popup = Application::GetSystem<GUISystem>()->TryReuseElement<InputTextPopup>();
+					//Popup->RegisterCallback([&](NxFr::StringView Value)
+					//{
+					//	Data.Remove(NxFr::StringUtility::FromString<K>(Value));
+					//});
 				}
 
 				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());

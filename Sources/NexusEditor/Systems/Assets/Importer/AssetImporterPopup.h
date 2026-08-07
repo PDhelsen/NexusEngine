@@ -10,10 +10,10 @@ namespace NxEd
 	public:
 		NX_OBJECT(AssetImporterPopup)
 
-		static void ShowWithPath(NxFr::StringView Path);
-
 		AssetImporterPopup();
 		virtual ~AssetImporterPopup();
+
+		void SetPath(NxFr::StringView FilePath);
 
 	protected:
 		void OnInitialize() override;
@@ -22,7 +22,6 @@ namespace NxEd
 
 	private:
 		void Pick();
-		void SetPath(NxFr::StringView FilePath);
 		void Import();
 
 		NxFr::String Path;

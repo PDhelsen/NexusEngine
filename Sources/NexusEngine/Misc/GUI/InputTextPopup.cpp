@@ -3,19 +3,6 @@
 
 namespace NxEn
 {
-	InputTextPopup* InputTextPopup::GetInstance()
-	{
-		NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
-		static InputTextPopup Instance;
-		Instance.Initialize();
-
-		Instance.UnregisterCallback();
-		Instance.Input.Clear();
-		Instance.Show();
-		return &Instance;
-	}
-
 	void InputTextPopup::RegisterCallback(const NxFr::Delegate<void(NxFr::StringView)>& Callback)
 	{
 		this->Callback = Callback;
@@ -39,6 +26,7 @@ namespace NxEn
 	void InputTextPopup::OnShutdown()
 	{
 		UnregisterCallback();
+		Popup::OnShutdown();
 	}
 
 	void InputTextPopup::OnEnable()
@@ -51,6 +39,7 @@ namespace NxEn
 	{
 		Popup::OnDisable();
 		UnregisterCallback();
+		Input.Clear();
 	}
 
 	void InputTextPopup::OnDraw()

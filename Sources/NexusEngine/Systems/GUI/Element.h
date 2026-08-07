@@ -12,7 +12,8 @@ namespace NxEn
 
 			AutoDraw = 1 << 0,
 			WillClose = 1 << 1,
-			HideInsteadOfClose = 1 << 2
+			HideInsteadOfClose = 1 << 2,
+			RecycleInsteadOfClose = 1 << 3
 		};
 	}
 }
@@ -186,6 +187,7 @@ namespace NxEn
 
 		protected:
 			virtual void OnInitialize() override;
+			virtual void OnShutdown() override;
 
 		private:
 			NxFr::String Message;

@@ -35,6 +35,12 @@ namespace NxEn
 				return;
 			}
 
+			if (GetGuiFlag(ElementFlags::RecycleInsteadOfClose))
+			{
+				Application::GetSystem<GUISystem>()->RecycleElement(this);
+				return;
+			}
+
 			if (GetGuiFlag(ElementFlags::WillClose))
 			{
 				return;
@@ -465,9 +471,16 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			SetGuiFlag(ElementFlags::HideInsteadOfClose, true);
+			SetGuiFlag(ElementFlags::RecycleInsteadOfClose, true);
 			SetImGuiFlag(ImGuiWindowFlags_NoCollapse, true);
 			SetImGuiFlag(ImGuiWindowFlags_NoDocking, true);
+		}
+
+		void Popup::OnShutdown()
+		{
+			Clear();
+
+			Element::OnShutdown();
 		}
 
 #pragma endregion
@@ -532,6 +545,7 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
+			SetGuiFlag(ElementFlags::RecycleInsteadOfClose, true);
 			SetImGuiFlag(ImGuiWindowFlags_NoCollapse, true);
 			SetImGuiFlag(ImGuiWindowFlags_NoDocking, true);
 		}

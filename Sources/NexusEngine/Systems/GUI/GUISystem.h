@@ -25,6 +25,20 @@ namespace NxEn
 		GUISystem();
 		~GUISystem();
 
+		template<typename T>
+		T* TryReuseElement(bool Enabled = true)
+		{
+			GUI::Element* Instance = ReuseElement(T::GetClassType());
+			if (Instance == nullptr)
+			{
+				Instance = new T();
+			}
+
+			Instance->Initialize();
+			Instance->SetEnabled(Enabled);
+			return static_cast<T*>(Instance);
+		}
+
 		void LoadLayout(NxFr::StringView Name = "");
 		void SaveLayout(NxFr::StringView Name = "");
 		void LoadTheme(NxFr::StringView Name = "");
@@ -42,8 +56,13 @@ namespace NxEn
 		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
+		void Draw(NxFr::Set<GUI::Element*>& Elements);
+		void Destroy(NxFr::Set<GUI::Element*>& Elements);
+
 		void DrawElement(GUI::Element* Element, bool State);
 		void DestroyElement(GUI::Element* Element);
+		void RecycleElement(GUI::Element* Element);
+		GUI::Element* ReuseElement(NxFr::StringId Type);
 
 		void AddMenuWindowItems();
 		void AddMenuWindowItems(const GUI::Menu::Item& Item);
@@ -65,5 +84,6 @@ namespace NxEn
 		GUI::Window Window;
 		NxFr::Set<GUI::Element*> Drawing;
 		NxFr::Set<GUI::Element*> Destroyed;
+		NxFr::Set<GUI::Element*> Availables;
 	};
 }

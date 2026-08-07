@@ -27,7 +27,7 @@ namespace NxEd
 
 	void HierarchyEditContext::Rename()
 	{
-		NxEn::InputTextPopup* Popup = NxEn::InputTextPopup::GetInstance();
+		NxEn::InputTextPopup* Popup = NxEn::Application::GetSystem<NxEn::GUISystem>()->TryReuseElement<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
 			NxFr::Set<NxFr::GUID> Ids = FilterSelection();
