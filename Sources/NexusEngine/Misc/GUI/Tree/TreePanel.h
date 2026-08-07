@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Systems/GUI/Element.h"
+#include "NexusEngine/Systems/GUI/Elements/Panel.h"
 #include "NexusEngine/Misc/GUI/Tree/TreeItem.h"
 #include "NexusEngine/Misc/GUI/Tree/TreeAction.h"
 

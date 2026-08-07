@@ -40,39 +40,39 @@ namespace NxEd
 		NxEn::Application::GetSystem<EditSystem>()->Paste();
 	}));
 
-	static const NxEn::GUI::Menu::Item* MenuItemEditSelectAll = NxEn::GUI::Menu::Item::Create("Edit/Selection/SelectAll", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditSelectAll = NxEn::GUI::Menu::Create("Edit/Selection/SelectAll", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.SelectAll");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditUnselectAll = NxEn::GUI::Menu::Item::Create("Edit/Selection/UnselectAll", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditUnselectAll = NxEn::GUI::Menu::Create("Edit/Selection/UnselectAll", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.UnselectAll");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditInvert = NxEn::GUI::Menu::Item::Create("Edit/Selection/Invert", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditInvert = NxEn::GUI::Menu::Create("Edit/Selection/Invert", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Invert");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditRename = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Rename", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditRename = NxEn::GUI::Menu::Create("Edit/Clipboard/Rename", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Rename");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditDuplicate = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Duplicate", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditDuplicate = NxEn::GUI::Menu::Create("Edit/Clipboard/Duplicate", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Duplicate");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditDelete = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Delete", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditDelete = NxEn::GUI::Menu::Create("Edit/Clipboard/Delete", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Delete");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditCut = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Cut", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditCut = NxEn::GUI::Menu::Create("Edit/Clipboard/Cut", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Cut");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditCopy = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Copy", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditCopy = NxEn::GUI::Menu::Create("Edit/Clipboard/Copy", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Copy");
 	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditPaste = NxEn::GUI::Menu::Item::Create("Edit/Clipboard/Paste", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditPaste = NxEn::GUI::Menu::Create("Edit/Clipboard/Paste", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Paste");
 	}));

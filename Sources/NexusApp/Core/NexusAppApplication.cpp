@@ -59,7 +59,7 @@ namespace NxAp
 		Window->SetEnabled(State);
 
 		NxEn::ConsolePanel* Console = GUI->GetPanel<NxEn::ConsolePanel>();
-		Console->SetDock(Window->GetNamedId());
+		Console->SetDock(Window->GetDock());
 		Console->SetEnabled(State);
 	}
 }

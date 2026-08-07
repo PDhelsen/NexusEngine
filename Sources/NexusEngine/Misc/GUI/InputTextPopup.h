@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NexusEngine/Systems/GUI/Element.h"
+#include "NexusEngine/Systems/GUI/Elements/Popup.h"
 
 namespace NxEn
 {

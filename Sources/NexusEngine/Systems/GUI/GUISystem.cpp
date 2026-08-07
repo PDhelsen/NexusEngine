@@ -314,7 +314,7 @@ namespace NxEn
 	void GUISystem::AddMenuWindowItems(const GUI::Menu::Item& Item)
 	{
 		auto& Menu = Window.GetMenu();
-		Menu.AddMenuItem(Item.GetPath(), Item.GetCallback(), GUI::Menu::ComputePriority(Item.GetPath(), Item.GetPriority()), Item.GetValidate());
+		Menu.AddMenuItem(Item.Path, Item.Callback, GUI::Menu::MainMenuPriority(Item.Path, Item.Priority), Item.Validate);
 	}
 
 	void GUISystem::AddMenuWindowPanels()
@@ -334,7 +334,7 @@ namespace NxEn
 		{
 			NxFr::String Cmd = "GUI.Panel " + Panel->GetObjectType().GetString();
 			Application::GetSystem<CommandsSystem>()->Execute(Cmd);
-		}, GUI::Menu::ComputePriority(Path, 0));
+		}, GUI::Menu::MainMenuPriority(Path, 0));
 	}
 
 	void GUISystem::AddMenuWindowLayouts()
@@ -348,7 +348,7 @@ namespace NxEn
 
 			NxFr::String Cmd = "GUI.Layout.Save " + NxFr::Path::GetName(LayoutPath);
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
-		}, GUI::Menu::ComputePriority(Path, 1));
+		}, GUI::Menu::MainMenuPriority(Path, 1));
 
 		NxFr::String FolderPath = NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder);
 		NxFr::Directory Folder(FolderPath);
@@ -376,7 +376,7 @@ namespace NxEn
 		{
 			NxFr::String Cmd = "GUI.Layout.Load " + Copy;
 			NxEn::Application::GetSystem<CommandsSystem>()->Execute(Cmd);
-		}, GUI::Menu::ComputePriority(Path, 0));
+		}, GUI::Menu::MainMenuPriority(Path, 0));
 	}
 
 	void GUISystem::LoadLayoutImGui(NxFr::StringView Path) const

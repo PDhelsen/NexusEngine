@@ -3,7 +3,7 @@
 
 namespace NxEn
 {
-	static const NxEn::GUI::Menu::Item* MenuItemProject = GUI::Menu::Item::Create("File/Project", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemProject = GUI::Menu::Create("File/Project", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Execute("GUI.Panel ProjectPanel");
 	}));
