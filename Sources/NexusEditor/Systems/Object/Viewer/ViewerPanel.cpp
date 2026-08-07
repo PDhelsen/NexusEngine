@@ -42,8 +42,8 @@ namespace NxEd
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetTitle("Viewer");
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
+		SetNameId("Viewer");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
 	}
 
 	void ViewerPanel::OnShutdown()

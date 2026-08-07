@@ -22,7 +22,7 @@ namespace NxEd
 	void AssetsBrowserPanel::OnInitialize()
 	{
 		TreePanel::OnInitialize();
-		SetTitle("Assets");
+		SetNameId("Assets");
 
 		AppendAction<AssetsBrowserActionCreate>();
 		AppendAction<AssetsBrowserActionRename>();

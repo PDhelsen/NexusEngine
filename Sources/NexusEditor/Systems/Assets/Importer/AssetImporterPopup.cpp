@@ -31,7 +31,7 @@ namespace NxEd
 	{
 		Popup::OnInitialize();
 
-		SetTitle("Importer");
+		SetNameId("Importer");
 		SetMessage("");
 
 		AddButton("Import", { this, &AssetImporterPopup::Import });

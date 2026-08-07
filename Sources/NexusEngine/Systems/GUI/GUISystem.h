@@ -14,6 +14,8 @@ namespace NxEn
 {
 	class NX_ENGINE_API GUISystem : public System
 	{
+		friend class GUI::Element;
+
 	public:
 		NX_OBJECT(GUISystem)
 
@@ -22,9 +24,6 @@ namespace NxEn
 
 		GUISystem();
 		~GUISystem();
-
-		void RegisterElement(GUI::Element* Element);
-		void UnregisterElement(GUI::Element* Element);
 
 		void LoadLayout(NxFr::StringView Name = "");
 		void SaveLayout(NxFr::StringView Name = "");
@@ -43,6 +42,9 @@ namespace NxEn
 		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
+		void DrawElement(GUI::Element* Element, bool State);
+		void DestroyElement(GUI::Element* Element);
+
 		void AddMenuWindowItems();
 		void AddMenuWindowItems(const GUI::Menu::Item& Item);
 		void AddMenuWindowPanels();
@@ -61,6 +63,7 @@ namespace NxEn
 
 	private:
 		GUI::Window Window;
-		NxFr::Set<GUI::Element*> Elements;
+		NxFr::Set<GUI::Element*> Drawing;
+		NxFr::Set<GUI::Element*> Destroyed;
 	};
 }

@@ -24,8 +24,8 @@ namespace NxEn
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
-		SetTitle("Settings");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
+		SetNameId("Settings");
 
 		Menu.AddMenuItem("Load", []() { Application::GetSystem<SettingsSystem>()->LoadSettings(); });
 		Menu.AddMenuItem("Save", []() { Application::GetSystem<SettingsSystem>()->SaveSettings(); });

@@ -73,7 +73,7 @@ namespace NxEn
 		Panel::OnEnable();
 		Menu.SetEnabled(true);
 
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
 
 		Inputs = Application::GetSystem<InputSystem>();
 	}

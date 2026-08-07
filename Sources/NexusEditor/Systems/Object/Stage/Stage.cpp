@@ -66,16 +66,16 @@ namespace NxEd
 
 		Viewer = new ViewerPanel();
 		Viewer->Initialize();
-		Viewer->SetManual(true);
+		Viewer->SetAutoDraw(false);
 		Viewer->SetNameId("Viewer", Target->GetId());
 
 		Inspector = new InspectorPanel();
 		Inspector->Initialize();
-		Inspector->SetManual(true);
+		Inspector->SetAutoDraw(false);
 		Inspector->SetNameId("Inspector", Target->GetId());
 
 		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->CreatePanel(World);
-		Hierarchy->SetManual(true);
+		Hierarchy->SetAutoDraw(false);
 		Hierarchy->SetNameId("Hierarchy", +Target->GetId());
 	}
 

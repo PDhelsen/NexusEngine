@@ -8,7 +8,8 @@ namespace NxEn
 #pragma region Element
 
 		Element::Element()
-			: Id(0), Name(), NamedId(), Manual(false), WillClose(false)
+			: Id(0), Name(), NamedId(),
+			GuiFlags(ElementFlags::None), ImGuiFlags(0)
 		{
 		}
 
@@ -28,14 +29,19 @@ namespace NxEn
 
 		void Element::Close()
 		{
-			if (WillClose)
+			if (GetGuiFlag(ElementFlags::HideInsteadOfClose))
+			{
+				Hide();
+				return;
+			}
+
+			if (GetGuiFlag(ElementFlags::WillClose))
 			{
 				return;
 			}
 
-			WillClose = true;
-			Hide();
-			Application::GetInstance()->GetTicker().AppendTick(Ticker::TickBucket::Cleanup, "Destroy Gui element", [=]() { SetEnabled(false); Shutdown(); delete this; }, true);
+			Application::GetSystem<GUISystem>()->DestroyElement(this);
+			SetGuiFlag(ElementFlags::WillClose, true);
 		}
 
 		void Element::SetNameId(NxFr::StringView Name, NxFr::GUID Id)
@@ -50,24 +56,55 @@ namespace NxEn
 			this->Id = Id;
 		}
 
+		void Element::OnInitialize()
+		{
+			SetGuiFlag(ElementFlags::AutoDraw, true);
+			SetNameId(GetObjectType());
+		}
+
 		void Element::OnEnable()
 		{
-			if (Manual)
+			if (!IsAutoDraw())
 			{
 				return;
 			}
 
-			Application::GetSystem<GUISystem>()->RegisterElement(this);
+			Application::GetSystem<GUISystem>()->DrawElement(this, true);
 		}
 
 		void Element::OnDisable()
 		{
-			if (Manual)
-			{
-				return;
-			}
+			Application::GetSystem<GUISystem>()->DrawElement(this, false);
+		}
 
-			Application::GetSystem<GUISystem>()->UnregisterElement(this);
+		bool Element::GetGuiFlag(ElementFlags Flag) const
+		{
+			return NxFr::Enum::CheckFlag(GuiFlags, Flag);
+		}
+
+		void Element::SetGuiFlag(ElementFlags Flag, bool Value)
+		{
+			GuiFlags = NxFr::Enum::SetFlag(GuiFlags, Flag, Value);
+		}
+
+		bool Element::GetImGuiFlag(uint64 Flag) const
+		{
+			return NxFr::Integer::CheckFlag(ImGuiFlags, Flag);
+		}
+
+		void Element::SetImGuiFlag(uint64 Flag, bool Value)
+		{
+			ImGuiFlags = NxFr::Integer::SetFlag(ImGuiFlags, Flag, Value);
+		}
+
+		uint64 Element::GetImGuiFlags() const
+		{
+			return ImGuiFlags;
+		}
+
+		void Element::SetImGuiFlags(uint64 Flags)
+		{
+			ImGuiFlags = Flags;
 		}
 
 #pragma endregion
@@ -75,7 +112,6 @@ namespace NxEn
 #pragma region Panel
 
 		Panel::Panel()
-			: GuiFlags(0), Title("")
 		{
 		}
 
@@ -92,7 +128,7 @@ namespace NxEn
 				ImGui::SetNextWindowDockID(ImGui::GetID(Dock.C()), ImGuiCond_FirstUseEver);
 			}
 
-			if (ImGui::Begin(GetNamedId().C(), &IsOpen, GuiFlags))
+			if (ImGui::Begin(GetNamedId().C(), &IsOpen, GetImGuiFlags()))
 			{
 				OnDraw();
 			}
@@ -100,21 +136,8 @@ namespace NxEn
 
 			if (!IsOpen)
 			{
-				Hide();
+				Close();
 			}
-		}
-
-		Panel& Panel::SetGuiFlag(ImGuiWindowFlags GuiFlags)
-		{
-			this->GuiFlags |= GuiFlags;
-			return *this;
-		}
-
-		Panel& Panel::SetTitle(NxFr::StringView Title)
-		{
-			this->Title = Title;
-			SetNameId(Title);
-			return *this;
 		}
 
 		Panel& Panel::SetDock(NxFr::StringView Id)
@@ -127,8 +150,8 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			SetGuiFlag(ImGuiWindowFlags_NoCollapse);
-			SetTitle(GetObjectType().C());
+			SetGuiFlag(ElementFlags::HideInsteadOfClose, true);
+			SetImGuiFlag(ImGuiWindowFlags_NoCollapse, true);
 		}
 
 #pragma endregion
@@ -188,7 +211,6 @@ namespace NxEn
 		Menu::Menu(bool Main)
 			: Items(), Labels(), Main(Main)
 		{
-			SetManual(true);
 		}
 
 		Menu::~Menu()
@@ -265,7 +287,10 @@ namespace NxEn
 
 		void Menu::OnInitialize()
 		{
-			SetNameId("Menu");
+			Element::OnInitialize();
+
+			SetGuiFlag(ElementFlags::AutoDraw, false);
+			SetNameId(GetObjectType(), NxFr::Integer::GenerateGuid());
 		}
 
 		void Menu::OnShutdown()
@@ -369,7 +394,7 @@ namespace NxEn
 #pragma region Popup
 
 		Popup::Popup()
-			: GuiFlags(0), Title(""), Message(""), Callbacks()
+			: Message(""), Callbacks()
 		{
 		}
 
@@ -379,8 +404,8 @@ namespace NxEn
 
 		void Popup::Draw()
 		{
-			ImGui::OpenPopup(Title.C());
-			if (ImGui::BeginPopupModal(Title.C(), nullptr, GuiFlags))
+			ImGui::OpenPopup(GetNamedId().C());
+			if (ImGui::BeginPopupModal(GetNamedId().C(), nullptr, GetImGuiFlags()))
 			{
 				if (!Message.IsEmpty())
 				{
@@ -401,7 +426,7 @@ namespace NxEn
 							Button.Callback.Invoke();
 						}
 
-						Hide();
+						Close();
 
 						ImGui::CloseCurrentPopup();
 					}
@@ -410,19 +435,6 @@ namespace NxEn
 				}
 			}
 			ImGui::EndPopup();
-		}
-
-		Popup& Popup::SetGuiFlag(ImGuiWindowFlags GuiFlags)
-		{
-			this->GuiFlags |= GuiFlags;
-			return *this;
-		}
-
-		Popup& Popup::SetTitle(NxFr::StringView Title)
-		{
-			this->Title = Title;
-			SetNameId(Title);
-			return *this;
 		}
 
 		Popup& Popup::SetMessage(NxFr::StringView Message)
@@ -453,8 +465,9 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			SetGuiFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
-			SetTitle(GetObjectType().C());
+			SetGuiFlag(ElementFlags::HideInsteadOfClose, true);
+			SetImGuiFlag(ImGuiWindowFlags_NoCollapse, true);
+			SetImGuiFlag(ImGuiWindowFlags_NoDocking, true);
 		}
 
 #pragma endregion
@@ -462,7 +475,7 @@ namespace NxEn
 #pragma region Progress
 
 		ProgressBar::ProgressBar()
-			: GuiFlags(0), Title(""), Message(""), Callback(), Progress(0.0f)
+			: Message(""), Callback(), Progress(0.0f)
 		{
 		}
 
@@ -472,7 +485,7 @@ namespace NxEn
 
 		void ProgressBar::Draw()
 		{
-			if (ImGui::Begin(Title.C(), nullptr, GuiFlags))
+			if (ImGui::Begin(GetNamedId().C(), nullptr, GetImGuiFlags()))
 			{
 				if (!Message.IsEmpty())
 				{
@@ -493,21 +506,8 @@ namespace NxEn
 				{
 					Callback.Invoke();
 				}
-				Hide();
+				Close();
 			}
-		}
-
-		ProgressBar& ProgressBar::SetGuiFlag(ImGuiWindowFlags GuiFlags)
-		{
-			this->GuiFlags = GuiFlags;
-			return *this;
-		}
-
-		ProgressBar& ProgressBar::SetTitle(NxFr::StringView Title)
-		{
-			this->Title = Title;
-			SetNameId(Title);
-			return *this;
 		}
 
 		ProgressBar& ProgressBar::SetMessage(NxFr::StringView Message)
@@ -532,8 +532,8 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			SetGuiFlag(ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
-			SetTitle(GetObjectType().C());
+			SetImGuiFlag(ImGuiWindowFlags_NoCollapse, true);
+			SetImGuiFlag(ImGuiWindowFlags_NoDocking, true);
 		}
 
 		float ProgressBar::ComputePercentage(float TimeStep)
@@ -554,9 +554,9 @@ namespace NxEn
 #pragma region Window
 
 		Window::Window()
-			: GuiFlags(0), MainMenu(true)
+			: MainMenu(true)
 		{
-			SetManual(true);
+			SetAutoDraw(false);
 		}
 
 		Window::~Window()
@@ -577,12 +577,12 @@ namespace NxEn
 			Element::OnInitialize();
 			MainMenu.Initialize();
 
-			SetNameId("Window");
-
-			GuiFlags =
+			SetGuiFlag(ElementFlags::AutoDraw, false);
+			SetImGuiFlags(
 				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
 				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing |
-				ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings;
+				ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings
+				);
 		}
 
 		void Window::OnShutdown()

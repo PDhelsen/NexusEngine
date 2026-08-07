@@ -62,8 +62,8 @@ namespace NxEd
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
-		SetTitle("References");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
+		SetNameId("References");
 		Lock = false;
 
 		Menu.AddMenuItem("Refresh", { this, &ReferencesPanel::Refresh }, 0);

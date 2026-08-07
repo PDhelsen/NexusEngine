@@ -10,8 +10,8 @@ namespace NxEn
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
-		SetTitle("Styles");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
+		SetNameId("Styles");
 
 		Menu.AddMenuItem("Reload", []() { Application::GetSystem<GUISystem>()->LoadTheme(); });
 	}

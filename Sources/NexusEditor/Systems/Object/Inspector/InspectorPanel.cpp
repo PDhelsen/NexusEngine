@@ -42,8 +42,8 @@ namespace NxEd
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetTitle("Inspector");
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
+		SetNameId("Inspector");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
 
 		Menu.AddMenuToggle("Lock", &Lock);
 	}

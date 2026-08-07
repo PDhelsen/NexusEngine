@@ -6,6 +6,23 @@ namespace NxEn
 {
 	namespace GUI
 	{
+		enum class ElementFlags : uint8
+		{
+			None = 0,
+
+			AutoDraw = 1 << 0,
+			WillClose = 1 << 1,
+			HideInsteadOfClose = 1 << 2
+		};
+	}
+}
+
+NX_FLAG(NxEn::GUI::ElementFlags, uint8)
+
+namespace NxEn
+{
+	namespace GUI
+	{
 		class NX_ENGINE_API Element : public Object
 		{
 		public:
@@ -22,20 +39,27 @@ namespace NxEn
 			NxFr::StringView GetName() const override { return Name; }
 			NxFr::StringView GetNamedId() const { return NamedId; }
 			void SetNameId(NxFr::StringView Name, NxFr::GUID Id = 0);
-			bool IsManual() const { return Manual; }
-			void SetManual(bool Manual) { this->Manual = Manual; }
+			bool IsAutoDraw() const { return GetGuiFlag(ElementFlags::AutoDraw); }
+			void SetAutoDraw(bool Auto) { SetGuiFlag(ElementFlags::AutoDraw, Auto); }
 
 		protected:
+			virtual void OnInitialize() override;
 			virtual void OnEnable() override;
 			virtual void OnDisable() override;
+
+			NX_FORCE_INLINE bool GetGuiFlag(ElementFlags Flag) const;
+			NX_FORCE_INLINE void SetGuiFlag(ElementFlags Flag, bool Value);
+			NX_FORCE_INLINE bool GetImGuiFlag(uint64 Flag) const;
+			NX_FORCE_INLINE void SetImGuiFlag(uint64 Flag, bool Value);
+			NX_FORCE_INLINE uint64 GetImGuiFlags() const;
+			NX_FORCE_INLINE void SetImGuiFlags(uint64 Flags);
 
 		private:
 			NxFr::GUID Id;
 			NxFr::StringView Name;
 			NxFr::String NamedId;
-
-			bool Manual;
-			bool WillClose;
+			ElementFlags GuiFlags;
+			uint64 ImGuiFlags;
 		};
 
 		class NX_ENGINE_API Panel : public Element
@@ -56,19 +80,12 @@ namespace NxEn
 
 			virtual void Draw() override;
 
-			Panel& SetGuiFlag(ImGuiWindowFlags GuiFlags);
-			Panel& SetTitle(NxFr::StringView Title);
 			Panel& SetDock(NxFr::StringView Id);
-
-			ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
-			NxFr::StringView GetTitle() const { return Title; }
 
 		protected:
 			virtual void OnInitialize() override;
 
 		private:
-			ImGuiWindowFlags GuiFlags;
-			NxFr::String Title;
 			NxFr::String Dock;
 		};
 
@@ -158,15 +175,11 @@ namespace NxEn
 
 			virtual void Draw() override;
 
-			Popup& SetGuiFlag(ImGuiWindowFlags GuiFlags);
-			Popup& SetTitle(NxFr::StringView Title);
 			Popup& SetMessage(NxFr::StringView Message);
 			Popup& AddButton(NxFr::StringView Label);
 			Popup& AddButton(NxFr::StringView Label, const NxFr::Delegate<void()>& Callback);
 			Popup& Clear();
 
-			ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
-			NxFr::StringView GetTitle() const { return Title; }
 			NxFr::StringView GetMessage() const { return Message; }
 			NxFr::StringView GetButton(uint64 Index = 0) const { return Callbacks[Index].Label; }
 			uint64 GetButtonCount() const { return Callbacks.GetCount(); }
@@ -175,8 +188,6 @@ namespace NxEn
 			virtual void OnInitialize() override;
 
 		private:
-			ImGuiWindowFlags GuiFlags;
-			NxFr::String Title;
 			NxFr::String Message;
 			NxFr::List<Item> Callbacks;
 		};
@@ -191,14 +202,10 @@ namespace NxEn
 
 			virtual void Draw() override;
 
-			ProgressBar& SetGuiFlag(ImGuiWindowFlags GuiFlags);
-			ProgressBar& SetTitle(NxFr::StringView Title);
 			ProgressBar& SetMessage(NxFr::StringView Message);
 			ProgressBar& SetCallback(const NxFr::Delegate<void()>& Callback);
 			ProgressBar& SetProgress(float Progress);
 
-			ImGuiWindowFlags GetGuiFlags() const { return GuiFlags; }
-			NxFr::StringView GetTitle() const { return Title; }
 			NxFr::StringView GetMessage() const { return Message; }
 			float GetProgress() const { return Progress; }
 
@@ -208,8 +215,6 @@ namespace NxEn
 			float ComputePercentage(float TimeStep);
 
 		private:
-			ImGuiWindowFlags GuiFlags;
-			NxFr::String Title;
 			NxFr::String Message;
 			NxFr::Delegate<void()> Callback;
 			float Progress;
@@ -232,7 +237,6 @@ namespace NxEn
 			void OnShutdown() override;
 
 		private:
-			ImGuiWindowFlags GuiFlags;
 			Menu MainMenu;
 		};
 	}

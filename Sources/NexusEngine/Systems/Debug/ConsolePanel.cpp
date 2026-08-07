@@ -48,8 +48,8 @@ namespace NxEn
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
-		SetTitle("Console");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
+		SetNameId("Console");
 	}
 
 	void ConsolePanel::OnShutdown()

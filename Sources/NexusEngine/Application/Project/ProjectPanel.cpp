@@ -23,7 +23,7 @@ namespace NxEn
 	{
 		Panel::OnInitialize();
 
-		SetTitle("Project");
+		SetNameId("Project");
 	}
 
 	void ProjectPanel::OnEnable()

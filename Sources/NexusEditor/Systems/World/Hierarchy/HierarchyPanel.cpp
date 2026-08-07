@@ -23,7 +23,7 @@ namespace NxEd
 	void HierarchyPanel::OnInitialize()
 	{
 		TreePanel::OnInitialize();
-		SetTitle("Hierarchy");
+		SetNameId("Hierarchy");
 
 		AppendAction<HierarchyActionCreate>();
 		AppendAction<HierarchyActionRename>();

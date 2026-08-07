@@ -52,8 +52,8 @@ namespace NxEd
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetGuiFlag(ImGuiWindowFlags_MenuBar);
-		SetTitle("Scenes");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
+		SetNameId("Scenes");
 
 		Menu.AddMenuItem("Refresh", { this, &ScenesPanel::Refresh }, 0);
 		Menu.AddMenuItem("Create", { this, &ScenesPanel::Create }, 1);

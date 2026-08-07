@@ -60,25 +60,13 @@ namespace NxEn
 	}
 
 	GUISystem::GUISystem()
-		: Window(), Elements()
+		: Window(), Drawing(), Destroyed()
 	{
 
 	}
 
 	GUISystem::~GUISystem()
 	{
-	}
-
-	void GUISystem::RegisterElement(GUI::Element* Element)
-	{
-		Elements.Append(Element);
-		NX_LOG(Info, System, "Register GUI element: %s", Element->GetName().C());
-	}
-
-	void GUISystem::UnregisterElement(GUI::Element* Element)
-	{
-		Elements.Remove(Element);
-		NX_LOG(Info, System, "Unegister GUI element: %s", Element->GetName().C());
 	}
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
@@ -166,7 +154,7 @@ namespace NxEn
 
 	GUI::Element* GUISystem::GetElement(NxFr::GUID Id)
 	{
-		auto It = NxFr::ContainerUtility::Where<GUI::Element*>(Elements, [&](GUI::Element* Element)
+		auto It = NxFr::ContainerUtility::Where<GUI::Element*>(Drawing, [&](GUI::Element* Element)
 		{
 			return Element->GetId() == Id;
 		});
@@ -234,7 +222,15 @@ namespace NxEn
 	{
 		System::OnTick(TimeStep);
 
-		NX_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Elements.GetCount());
+		for (auto& Element : Destroyed)
+		{
+			Element->SetEnabled(false);
+			Element->Shutdown();
+			delete Element;
+		}
+		Destroyed.Clear();
+
+		NX_STAT_INTEGER(NxFr::StatsHeader::GuiElementsId, Drawing.GetCount());
 
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
@@ -244,19 +240,29 @@ namespace NxEn
 		Imgui::Tick();
 
 		Window.Draw();
-		for (auto& Element : Elements)
+		for (auto& Element : Drawing)
 		{
-			if (Element->IsManual())
-			{
-				continue;
-			}
-
 			Element->Draw();
 		}
 
-		// ImGui::ShowDemoWindow();
-
 		Imgui::Render();
+	}
+
+	void GUISystem::DrawElement(GUI::Element* Element, bool State)
+	{
+		if (State)
+		{
+			Drawing.TryAppend(Element);
+		}
+		else
+		{
+			Drawing.TryRemove(Element);
+		}
+	}
+
+	void GUISystem::DestroyElement(GUI::Element* Element)
+	{
+		Destroyed.TryAppend(Element);
 	}
 
 	void GUISystem::AddMenuWindowItems()
@@ -285,7 +291,7 @@ namespace NxEn
 
 	void GUISystem::AddMenuWindowPanels(NxEn::GUI::Panel* Panel)
 	{
-		NxFr::String Path = "Window/Panels/" + Panel->GetTitle();
+		NxFr::String Path = "Window/Panels/" + Panel->GetName();
 		auto& Menu = Window.GetMenu();
 		Menu.AddMenuItem(Path, [=]()
 		{
