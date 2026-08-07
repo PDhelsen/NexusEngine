@@ -63,6 +63,19 @@ namespace NxEn
 				ImGui::PopStyleColor(1);
 			}
 
+			bool Selectable(NxFr::StringView Data, bool State, const Transform& Visual)
+			{
+				Utils::SetPosition(Visual.Position);
+				Utils::SetSize(Visual.Size);
+
+				return Selectable(Data, State);
+			}
+
+			bool Selectable(NxFr::StringView Data, bool State)
+			{
+				return ImGui::Selectable(Data.C(), State);
+			}
+
 			bool Input(NxFr::String& Data, NxFr::StringView Id, const Transform& Visual)
 			{
 				Utils::SetPosition(Visual.Position);

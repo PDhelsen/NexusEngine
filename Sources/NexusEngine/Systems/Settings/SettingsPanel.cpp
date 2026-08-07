@@ -61,14 +61,14 @@ namespace NxEn
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
 			NxFr::StringView Label = Settings[Index][0]->GetPage();
-			if (ImGui::Selectable(Label.C(true), Page == Index))
+			if (GUI::Draw::Selectable(Label.C(true), Page == Index))
 			{
 				Page = Index;
 			}
 		}
 		ImGui::EndChild();
 
-		ImGui::SameLine();
+		GUI::Utils::SameLine();
 
 		ImGui::BeginChild("Settings", { 0.0f, 0.0f }, false);
 		for (uint64 Index = 0; Index < Settings[Page].GetCount(); ++Index)

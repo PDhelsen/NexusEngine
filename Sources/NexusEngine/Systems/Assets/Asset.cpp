@@ -25,6 +25,6 @@ namespace NxEn
 		GUI::Drawer<NxFr::GUID>::Property(Id, "Id");
 		GUI::Drawer<NxFr::String>::Property(Name, "Name");
 
-		ImGui::Separator();
+		GUI::Draw::Separator();
 	}
 }

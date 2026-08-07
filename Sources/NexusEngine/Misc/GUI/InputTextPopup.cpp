@@ -16,9 +16,9 @@ namespace NxEn
 	void InputTextPopup::OnInitialize()
 	{
 		Popup::OnInitialize();
-
 		Input.Reserve(128);
 		SetNameId("Input Text");
+
 		SetMessage("Enter text:");
 		AddButton("Cancel");
 	}
@@ -27,12 +27,6 @@ namespace NxEn
 	{
 		UnregisterCallback();
 		Popup::OnShutdown();
-	}
-
-	void InputTextPopup::OnEnable()
-	{
-		Popup::OnEnable();
-		Style.Reset();
 	}
 
 	void InputTextPopup::OnDisable()

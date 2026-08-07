@@ -28,6 +28,9 @@ namespace NxEn
 			NX_ENGINE_API NxFr::Vector2f Fill(NxFr::Vector2f Reserved = NxFr::Vector2f::Zero, uint64 Space = 0);
 			NX_ENGINE_API NxFr::Vector2f Center(NxFr::StringView Text);
 			NX_ENGINE_API NxFr::Vector2f Center(NxFr::Vector2f Size, uint64 Space = 0);
+			NX_ENGINE_API NxFr::Vector2f Split(uint64 Count);
+			NX_ENGINE_API NxFr::Vector2f Align();
+			NX_ENGINE_API void SameLine();
 		}
 	}
 }

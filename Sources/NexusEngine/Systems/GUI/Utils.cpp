@@ -131,6 +131,23 @@ namespace NxEn
 				NxFr::Vector2f Spacing = ImGui::GetStyle().ItemSpacing;
 				return Position + (Available - Size - Spacing * (float)Space) * 0.5f;
 			}
+
+			NxFr::Vector2f Split(uint64 Count)
+			{
+				NxFr::Vector2f Available = ImGui::GetContentRegionAvail();
+				NxFr::Vector2f Spacing = ImGui::GetStyle().ItemSpacing;
+				return (Available - Spacing * float(Count - 1)) * (1.0f / Count);
+			}
+
+			NxFr::Vector2f Align()
+			{
+				return ImGui::GetCursorPos();
+			}
+
+			void SameLine()
+			{
+				ImGui::SameLine();
+			}
 		}
 	}
 }

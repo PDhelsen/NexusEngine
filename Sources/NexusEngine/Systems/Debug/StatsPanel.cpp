@@ -43,7 +43,7 @@ namespace NxEn
 	void StatsPanel::OnDraw()
 	{
 		DrawButtons();
-		ImGui::SameLine();
+		GUI::Utils::SameLine();
 		DrawFilter();
 
 		for (uint64 Index = 0; Index < Ids.GetCount(); ++Index)
@@ -75,7 +75,7 @@ namespace NxEn
 			}
 		}
 
-		ImGui::SameLine();
+		GUI::Utils::SameLine();
 
 		{
 			GUI::Style::Scope _ = !Instruments->IsRecording() ? &GUI::Styles::ButtonNormal() : &GUI::Styles::ButtonPressed();
@@ -101,7 +101,7 @@ namespace NxEn
 			Filter.Configure();
 		}
 
-		ImGui::Separator();
+		GUI::Draw::Separator();
 	}
 
 	void StatsPanel::DrawStats(NxFr::StringView Label)

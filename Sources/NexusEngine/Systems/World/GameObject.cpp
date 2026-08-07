@@ -122,11 +122,11 @@ namespace NxEn
 
 	void GameObject::Draw()
 	{
-		float HalfWindowSize = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) * (1.0f / 2.0f);
-		float ThirdWindowSize = (ImGui::GetContentRegionAvail().x - 2.0f * ImGui::GetStyle().ItemSpacing.x) * (1.0f / 3.0f);
+		float HalfWindowSize = GUI::Utils::Split(2).x;
+		float ThirdWindowSize = GUI::Utils::Split(3).x;
 
 		OnDraw();
-		ImGui::Separator();
+		GUI::Draw::Separator();
 
 		for (uint64 Index = 0; Index < Behaviours.GetCount(); ++Index)
 		{
@@ -137,12 +137,12 @@ namespace NxEn
 			{
 				NxFr::ContainerUtility::Swap<NxFr::Handle<Behaviour>>(Behaviours, Index, Index - 1);
 			}
-			ImGui::SameLine();
+			GUI::Utils::SameLine();
 			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Behaviours.GetCount() - 1)
 			{
 				NxFr::ContainerUtility::Swap<NxFr::Handle<Behaviour>>(Behaviours, Index, Index + 1);
 			}
-			ImGui::SameLine();
+			GUI::Utils::SameLine();
 			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
 			{
 				Behaviours.Remove(Index);
@@ -152,7 +152,7 @@ namespace NxEn
 			}
 
 			B->Draw();
-			ImGui::Separator();
+			GUI::Draw::Separator();
 
 			ImGui::PopID();
 		}
@@ -166,12 +166,12 @@ namespace NxEn
 			{
 				NxFr::ContainerUtility::Swap<NxFr::Handle<Component>>(Components, Index, Index - 1);
 			}
-			ImGui::SameLine();
+			GUI::Utils::SameLine();
 			if (GUI::Draw::Button("Move Down", NxFr::Vector2f(ThirdWindowSize, 0.0f)) && Index < Components.GetCount() - 1)
 			{
 				NxFr::ContainerUtility::Swap<NxFr::Handle<Component>>(Components, Index, Index + 1);
 			}
-			ImGui::SameLine();
+			GUI::Utils::SameLine();
 			if (GUI::Draw::Button("Remove", NxFr::Vector2f(ThirdWindowSize, 0.0f)))
 			{
 				Components.Remove(Index);
@@ -181,7 +181,7 @@ namespace NxEn
 			}
 
 			C->Draw();
-			ImGui::Separator();
+			GUI::Draw::Separator();
 
 			ImGui::PopID();
 		}
@@ -196,7 +196,7 @@ namespace NxEn
 			});
 		}
 
-		ImGui::SameLine();
+		GUI::Utils::SameLine();
 
 		if (GUI::Draw::Button("Add Component", NxFr::Vector2f(HalfWindowSize, 0.0f)))
 		{

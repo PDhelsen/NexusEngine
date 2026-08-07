@@ -17,6 +17,8 @@ namespace NxEn
 			NX_ENGINE_API void Text(NxFr::StringView Data);
 			NX_ENGINE_API void TextSelectable(NxFr::StringView Data, const Transform& Visual);
 			NX_ENGINE_API void TextSelectable(NxFr::StringView Data);
+			NX_ENGINE_API bool Selectable(NxFr::StringView Data, bool State, const Transform& Visual);
+			NX_ENGINE_API bool Selectable(NxFr::StringView Data, bool State);
 			NX_ENGINE_API bool Input(NxFr::String& Data, NxFr::StringView Id, const Transform& Visual);
 			NX_ENGINE_API bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag = ImGuiInputTextFlags_EnterReturnsTrue);
 			NX_ENGINE_API bool Button(NxFr::StringView Data, const Transform& Visual);

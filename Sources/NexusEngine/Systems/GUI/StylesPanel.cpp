@@ -51,7 +51,7 @@ namespace NxEn
 			GUI::Drawer<float>::Property(It->Value, It->Key, Visual);
 		}
 
-		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
+		GUI::Draw::Space();
 
 		GUI::Utils::PushStyle(Title);
 		GUI::Draw::Text("Colors");
@@ -70,17 +70,17 @@ namespace NxEn
 			GUI::Utils::PopStyle(&Style);
 		}
 
-		ImGui::Dummy({ 0, ImGui::GetTextLineHeight() });
+		GUI::Draw::Space();
 
 		GUI::Utils::PushStyle(Title);
 		GUI::Draw::Text("Styles");
 		GUI::Utils::PopStyle(Title);
 		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
-			GUI::Style::Scope _ = &It->Value;
-
+			GUI::Utils::PushStyle(&It->Value);
 			GUI::Draw::Label(It->Key, Visual);
 			GUI::Draw::Button(It->Key, Visual);
+			GUI::Utils::PopStyle(&It->Value);
 		}
 	}
 }

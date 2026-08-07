@@ -9,6 +9,8 @@ namespace NxEn
 	{
 		namespace Styles
 		{
+			inline static const NxFr::Vector2f Spacing() { return ImGui::GetStyle().ItemSpacing; }
+
 			inline static const float& WidthButton() { return *Style::GetVars().TryGet("WidthButton"_Sid); }
 			inline static const float& WidthLabel() { return *Style::GetVars().TryGet("WidthLabel"_Sid); }
 			inline static const float& WidthInpuText() { return *Style::GetVars().TryGet("WidthInpuText"_Sid); }

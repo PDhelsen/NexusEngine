@@ -115,7 +115,7 @@ namespace NxEn
 		{
 			Menu.Draw();
 
-			Visual.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthButton())).x;
+			Visual.Position.x = GUI::Utils::Fill(NxFr::Vector2f(ImGui::CalcTextSize("Search:").x + GUI::Styles::WidthInpuText() + GUI::Styles::WidthButton())).x;
 			Visual.Size.x = GUI::Styles::WidthInpuText();
 			Visual.Label = -1.0f;
 
@@ -123,7 +123,7 @@ namespace NxEn
 			{
 				GUI::Drawer<NxFr::String>::Field(Search, "Search", "", Visual);
 
-				if (ImGui::Button("Clear Logs", { GUI::Styles::WidthButton(), 0.0f }))
+				if (GUI::Draw::Button("Clear Logs", NxFr::Vector2f(GUI::Styles::WidthButton(), 0.0f)))
 				{
 					ClearLogs();
 				}
@@ -137,7 +137,7 @@ namespace NxEn
 			Visual.Size = NxFr::Vector2f::Zero;
 			Visual.Label = -1.0f;
 
-			ImGui::BeginChild("Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(ImGui::GetTextLineHeightWithSpacing()), 2).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::BeginChild("Logs", { 0, GUI::Utils::Fill(NxFr::Vector2f(ImGui::GetTextLineHeight()), 3).y }, 0, ImGuiWindowFlags_HorizontalScrollbar);
 
 			for (uint64 Index = 0; Index < Logs.GetCount(); ++Index)
 			{
@@ -159,7 +159,7 @@ namespace NxEn
 			ImGui::EndChild();
 		}
 
-		ImGui::Separator();
+		GUI::Draw::Separator();
 
 		// Command
 		{
@@ -172,9 +172,9 @@ namespace NxEn
 				ExecuteCommand();
 			}
 
-			ImGui::SameLine();
+			GUI::Utils::SameLine();
 
-			if (ImGui::Button("Execute", { GUI::Styles::WidthButton(), 0.0f }))
+			if (GUI::Draw::Button("Execute", NxFr::Vector2f(GUI::Styles::WidthButton(), 0.0f)))
 			{
 				ExecuteCommand();
 			}

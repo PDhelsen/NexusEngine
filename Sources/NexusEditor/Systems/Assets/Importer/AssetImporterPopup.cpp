@@ -41,7 +41,6 @@ namespace NxEd
 
 		SetNameId("Importer");
 		SetMessage("");
-
 		AddButton("Import", { this, &AssetImporterPopup::Import });
 		AddButton("Pick", { this, &AssetImporterPopup::Pick });
 		AddButton("Cancel");

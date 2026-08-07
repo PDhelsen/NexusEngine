@@ -37,11 +37,11 @@ namespace NxEn
 	{
 		GUI::Transform Visual;
 		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetMode()), "Mode", Visual);
-		ImGui::Separator();
+		GUI::Draw::Separator();
 		GUI::Drawer<NxFr::String>::Property(Infos->GetName(), "Name", Visual);
 		GUI::Drawer<NxFr::String>::Property(Infos->GetRootPath(), "Root", Visual);
 		GUI::Drawer<NxFr::String>::Property(Infos->GetProjectPath(), "Path", Visual);
-		ImGui::Separator();
+		GUI::Draw::Separator();
 		GUI::Drawer<NxFr::String>::Property(Infos->GetExecutablePath(), "Executable", Visual);
 		GUI::Drawer<NxFr::String>::Property(Infos->GetDllPath(), "Dll", Visual);
 	}
