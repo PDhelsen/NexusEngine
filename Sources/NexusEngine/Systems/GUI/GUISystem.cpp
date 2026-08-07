@@ -182,7 +182,6 @@ namespace NxEn
 	void GUISystem::OnInitialize()
 	{
 		System::OnInitialize();
-		Window.Initialize();
 
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Configs, Folder)).Create();
 		NxFr::Directory(NxFr::Path::Combine(NxFr::Globals::Paths::Saved, Folder)).Create();
@@ -197,6 +196,7 @@ namespace NxEn
 
 		LoadTheme();
 
+		Window.Initialize();
 		AddMenuWindowItems();
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
@@ -204,20 +204,20 @@ namespace NxEn
 
 	void GUISystem::OnShutdown()
 	{
+		Destroy(Destroyed);
+		Destroy(Availables);
+		GetPanels().Clear();
+		GetMenuItems().Clear();
+
+		Window.Shutdown();
+
 		SaveTheme();
 
 		if (!Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			Imgui::Shutdown();
 		}
-
-		Destroy(Destroyed);
-		Destroy(Availables);
-
-		GetPanels().Clear();
-		GetMenuItems().Clear();
 		
-		Window.Shutdown();
 		System::OnShutdown();
 	}
 
