@@ -117,6 +117,11 @@ namespace NxEn
 
 			void Space(NxFr::Vector2f Size)
 			{
+				if (Size == NxFr::Vector2f::Zero)
+				{
+					Size = NxFr::Vector2f(0.0f, ImGui::GetTextLineHeight());
+				}
+
 				ImGui::Dummy(Size);
 			}
 

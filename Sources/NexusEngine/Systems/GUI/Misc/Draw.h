@@ -188,7 +188,7 @@ namespace NxEn
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, IndexStr, ItemVisual);
+					Result |= Drawer<T>::Field(Data[Index], IndexStr, IndexStr, ItemVisual);
 				}
 
 				ImGui::PopID();
@@ -255,7 +255,7 @@ namespace NxEn
 				for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 				{
 					NxFr::String IndexStr = NxFr::StringUtility::ToString(Index);
-					Result |= GUI::Drawer<T>::Field(Data[Index], IndexStr, IndexStr, ItemVisual);
+					Result |= Drawer<T>::Field(Data[Index], IndexStr, IndexStr, ItemVisual);
 				}
 
 				ImGui::PopID();
@@ -280,7 +280,7 @@ namespace NxEn
 				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
 				for (const auto& It : Data)
 				{
-					GUI::Drawer<T>::Property(It, "", ItemVisual);
+					Drawer<T>::Property(It, "", ItemVisual);
 				}
 			}
 
@@ -322,7 +322,7 @@ namespace NxEn
 				Transform ItemVisual = Transform(NxFr::Vector2f(Position, -1), -NxFr::Vector2f::One, Position + Styles::WidthLabel());
 				for (const auto& It : Data)
 				{
-					Result |= GUI::Drawer<T>::Property(It, "", ItemVisual);
+					Result |= Drawer<T>::Property(It, "", ItemVisual);
 				}
 
 				ImGui::PopID();
@@ -348,7 +348,7 @@ namespace NxEn
 				for (const auto& It : Data)
 				{
 					NxFr::String KeyStr = NxFr::StringUtility::ToString(It.Key);
-					GUI::Drawer<T>::Property(It.Value, KeyStr, ItemVisual);
+					Drawer<T>::Property(It.Value, KeyStr, ItemVisual);
 				}
 			}
 
@@ -391,7 +391,7 @@ namespace NxEn
 				for (auto& It : Data)
 				{
 					NxFr::String KeyStr = NxFr::StringUtility::ToString(It.Key);
-					GUI::Drawer<T>::Field(It.Value, KeyStr, KeyStr, ItemVisual);
+					Drawer<T>::Field(It.Value, KeyStr, KeyStr, ItemVisual);
 				}
 
 				ImGui::PopID();

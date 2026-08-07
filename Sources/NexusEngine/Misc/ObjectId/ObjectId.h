@@ -55,7 +55,7 @@ namespace NxEn
 				Transform ItemVisual = Visual;
 				ItemVisual.Size.x = GUI::Styles::WidthLabel();
 
-				GUI::Drawer<NxFr::GUID>::Property(Id, Label, ItemVisual);
+				Drawer<NxFr::GUID>::Property(Id, Label, ItemVisual);
 				ImGui::SameLine();
 				Text(Name);
 			}
@@ -66,12 +66,12 @@ namespace NxEn
 				NxFr::GUID Id = *Target ? (*Target)->GetId() : Object::NullId;
 				NxFr::StringView Name = *Target ? (*Target)->GetName() : (NxFr::StringView)NxFr::StringUtility::Empty;
 				NxFr::String Buffer = NxFr::StringUtility::ToString(Id);
-				NxFr::String ImGuiId = GUI::Utils::GenerateStringId(Buffer, Label);
+				NxFr::String ImGuiId = Utils::GenerateStringId(Buffer, Label);
 
 				Transform ItemVisual = Visual;
 				ItemVisual.Size.x = GUI::Styles::WidthLabel();
 
-				bool Result = GUI::Drawer<NxFr::GUID>::Field(Id, Label, ImGuiId, ItemVisual);
+				bool Result = Drawer<NxFr::GUID>::Field(Id, Label, ImGuiId, ItemVisual);
 				ImGui::SameLine();
 				Text(Name);
 
