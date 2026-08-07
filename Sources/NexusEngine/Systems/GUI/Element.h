@@ -194,34 +194,6 @@ namespace NxEn
 			NxFr::List<Item> Callbacks;
 		};
 
-		class NX_ENGINE_API ProgressBar : public Element
-		{
-		public:
-			NX_OBJECT(ProgressBar)
-
-			ProgressBar();
-			virtual ~ProgressBar();
-
-			virtual void Draw() override;
-
-			ProgressBar& SetMessage(NxFr::StringView Message);
-			ProgressBar& SetCallback(const NxFr::Delegate<void()>& Callback);
-			ProgressBar& SetProgress(float Progress);
-
-			NxFr::StringView GetMessage() const { return Message; }
-			float GetProgress() const { return Progress; }
-
-		protected:
-			virtual void OnInitialize() override;
-
-			float ComputePercentage(float TimeStep);
-
-		private:
-			NxFr::String Message;
-			NxFr::Delegate<void()> Callback;
-			float Progress;
-		};
-
 		class NX_ENGINE_API Window : public NxEn::GUI::Element
 		{
 		public:
