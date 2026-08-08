@@ -62,38 +62,38 @@ namespace NxEd
 
 	void ScenesPanel::OnEnable()
 	{
+		Panel::OnEnable();
+		Menu.Show();
+
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Worlds->GetOnWorldChange() += { this, &ScenesPanel::OnScenesChanged };
-
-		Panel::OnEnable();
-		Menu.SetEnabled(true);
 
 		Refresh();
 	}
 
 	void ScenesPanel::OnDisable()
 	{
-		Menu.SetEnabled(false);
-		Panel::OnDisable();
-
 		Worlds->GetOnWorldChange() -= { this, &ScenesPanel::OnScenesChanged };
 		Worlds = nullptr;
 		Assets = nullptr;
+
+		Menu.Hide();
+		Panel::OnDisable();
 	}
 
 	void ScenesPanel::OnDraw()
 	{
-		NxEn::GUI::Transform Visual = NxEn::GUI::Transform(-NxFr::Vector2f::One, NxFr::Vector2f(NxEn::GUI::Styles::WidthButton(), 0.0f), -1.0f);
 		Menu.Draw();
 
-		int64 ActionIndex = -1;
-		Action ActionType = Action::None;
-
+		NxEn::GUI::Transform Visual = NxEn::GUI::Transform(-NxFr::Vector2f::One, NxFr::Vector2f(NxEn::GUI::Styles::WidthButton(), 0.0f), -1.0f);
 		float Origin = NxEn::GUI::Utils::Align().x;
 		float Offset = NxEn::GUI::Utils::Fill(NxFr::Vector2f(Visual.Size.x * 2.0f, 0), 2).x;
 
+		int64 ActionIndex = -1;
+		Action ActionType = Action::None;
 		NxFr::GUID WorldId = GetWorldId();
+
 		for (uint64 Index = 0; Index < ScenesInstances.GetCount(); ++Index)
 		{
 			const SceneInfo& Info = ScenesInstances[Index];

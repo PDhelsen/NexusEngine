@@ -71,7 +71,7 @@ namespace NxEn
 	void TreePanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Menu.SetEnabled(true);
+		Menu.Show();
 
 		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
 
@@ -80,7 +80,7 @@ namespace NxEn
 
 	void TreePanel::OnDisable()
 	{
-		Menu.SetEnabled(false);
+		Menu.Hide();
 		Panel::OnDisable();
 	}
 

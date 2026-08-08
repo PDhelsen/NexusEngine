@@ -60,12 +60,12 @@ namespace NxEd
 		Mode = InspectorMode::None;
 
 		Panel::OnEnable();
-		Menu.SetEnabled(true);
+		Menu.Show();
 	}
 
 	void InspectorPanel::OnDisable()
 	{
-		Menu.SetEnabled(false);
+		Menu.Hide();
 		Panel::OnDisable();
 
 		Target.Object = nullptr;

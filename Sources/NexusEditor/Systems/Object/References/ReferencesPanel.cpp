@@ -81,7 +81,7 @@ namespace NxEd
 	void ReferencesPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Menu.SetEnabled(true);
+		Menu.Show();
 
 		Window = NxEn::Application::GetSystem<NxEn::WindowSystem>();
 		Inputs = NxEn::Application::GetSystem<NxEn::InputSystem>();
@@ -117,7 +117,7 @@ namespace NxEd
 			}
 		}
 
-		Menu.SetEnabled(false);
+		Menu.Hide();
 		Panel::OnDisable();
 	}
 

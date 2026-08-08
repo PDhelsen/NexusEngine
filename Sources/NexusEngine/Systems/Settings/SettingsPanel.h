@@ -23,7 +23,6 @@ namespace NxEn
 
 	private:
 		GUI::Menu Menu;
-		GUI::Style Style;
 
 		NxFr::Array<NxFr::Array<Setting*>> Settings;
 		uint64 Page;

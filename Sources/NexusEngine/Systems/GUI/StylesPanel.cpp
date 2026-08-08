@@ -5,13 +5,22 @@ namespace NxEn
 {
 	static StylesPanel* Panel = GUI::Panel::Create<StylesPanel>();
 
+	StylesPanel::StylesPanel()
+		: Menu()
+	{
+	}
+
+	StylesPanel::~StylesPanel()
+	{
+	}
+
 	void StylesPanel::OnInitialize()
 	{
 		Panel::OnInitialize();
 		Menu.Initialize();
 
-		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
 		SetNameId("Styles");
+		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
 
 		Menu.AddMenuItem("Reload", []() { Application::GetSystem<GUISystem>()->LoadTheme(); });
 	}
@@ -25,13 +34,12 @@ namespace NxEn
 	void StylesPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Menu.SetEnabled(true);
-
+		Menu.Show();
 	}
 
 	void StylesPanel::OnDisable()
 	{
-		Menu.SetEnabled(false);
+		Menu.Hide();
 		Panel::OnDisable();
 	}
 

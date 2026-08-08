@@ -55,14 +55,14 @@ namespace NxEd
 	void ViewerPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Menu.SetEnabled(true);
+		Menu.Show();
 	}
 
 	void ViewerPanel::OnDisable()
 	{
 		Clear();
 
-		Menu.SetEnabled(false);
+		Menu.Hide();
 		Panel::OnDisable();
 	}
 
@@ -74,6 +74,6 @@ namespace NxEd
 		}
 
 		Menu.Draw();
-		Context->OnDraw();
+		Context->Draw();
 	}
 }

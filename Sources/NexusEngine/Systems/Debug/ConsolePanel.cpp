@@ -50,6 +50,8 @@ namespace NxEn
 
 		SetImGuiFlag(ImGuiWindowFlags_MenuBar, true);
 		SetNameId("Console");
+
+		Menu.AddMenuToggle("Settings/AutoScroll", &SettingConsoleAutoScroll->GetValue());
 	}
 
 	void ConsolePanel::OnShutdown()
@@ -61,7 +63,7 @@ namespace NxEn
 	void ConsolePanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Menu.SetEnabled(true);
+		Menu.Show();
 
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
@@ -90,20 +92,17 @@ namespace NxEn
 			NxFr::String Path = NxFr::StringView("Channels/") + Id.C();
 			Menu.AddMenuToggle(Path, &FlagsChannels[Id], nullptr, Priority);
 		}
-
-		Menu.AddMenuToggle("Settings/AutoScroll", &SettingConsoleAutoScroll->GetValue());
 	}
 
 	void ConsolePanel::OnDisable()
 	{
 		FlagsVerbosity.Clear();
 		FlagsChannels.Clear();
-		Menu.Clear();
 
 		NxFr::Logger* Logger = Application::GetSystem<DebugSystem>()->GetLogger();
 		Logger->UnregisterCallback({ this, &ConsolePanel::AddLogs });
 
-		Menu.SetEnabled(false);
+		Menu.Hide();
 		Panel::OnDisable();
 	}
 

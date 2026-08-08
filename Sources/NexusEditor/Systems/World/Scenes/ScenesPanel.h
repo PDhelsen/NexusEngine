@@ -21,15 +21,6 @@ namespace NxEd
 
 		void OnScenesChanged(NxFr::StringId Action, NxFr::GUID SceneId, bool IsScene);
 
-		void Create();
-		void Save(const SceneInfo& Info);
-		void Toggle(const SceneInfo& Info);
-		void Load(const SceneInfo& Info);
-		void Unload(const SceneInfo& Info);
-
-		NxFr::GUID GetWorldId() const { return WorldsInstances[WorldIndex]; }
-		bool IsSceneLoaded(NxFr::GUID SceneId, NxFr::GUID WorldId) const { return Worlds->IsSceneInstantiated(SceneId, WorldId); }
-
 	private:
 		enum class Action
 		{
@@ -41,6 +32,15 @@ namespace NxEd
 			NxFr::GUID Id;
 			NxFr::String Path;
 		};
+
+		void Create();
+		void Save(const SceneInfo& Info);
+		void Toggle(const SceneInfo& Info);
+		void Load(const SceneInfo& Info);
+		void Unload(const SceneInfo& Info);
+
+		NxFr::GUID GetWorldId() const { return WorldsInstances[WorldIndex]; }
+		bool IsSceneLoaded(NxFr::GUID SceneId, NxFr::GUID WorldId) const { return Worlds->IsSceneInstantiated(SceneId, WorldId); }
 
 		NxEn::GUI::Menu Menu;
 

@@ -11,7 +11,7 @@ namespace NxEn
 	}));
 
 	SettingsPanel::SettingsPanel()
-		: Menu(), Style(), Settings(), Page(0)
+		: Menu(), Settings(), Page(0)
 	{
 	}
 
@@ -41,15 +41,14 @@ namespace NxEn
 	void SettingsPanel::OnEnable()
 	{
 		Panel::OnEnable();
-		Menu.SetEnabled(true);
-		Style.Reset();
+		Menu.Show();
 
 		Settings = Application::GetSystem<SettingsSystem>()->GetAllSettingsSorted();
 	}
 
 	void SettingsPanel::OnDisable()
 	{
-		Menu.SetEnabled(false);
+		Menu.Hide();
 		Panel::OnDisable();
 	}
 
@@ -61,7 +60,7 @@ namespace NxEn
 		for (uint64 Index = 0; Index < Settings.GetCount(); ++Index)
 		{
 			NxFr::StringView Label = Settings[Index][0]->GetPage();
-			if (GUI::Draw::Selectable(Label.C(true), Page == Index))
+			if (GUI::Draw::Selectable(Label, Page == Index))
 			{
 				Page = Index;
 			}

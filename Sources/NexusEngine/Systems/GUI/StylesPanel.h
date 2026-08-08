@@ -8,7 +8,10 @@ namespace NxEn
 	class NX_ENGINE_API StylesPanel : public GUI::Panel
 	{
 	public:
-		NX_OBJECT(StylePanel)
+		NX_OBJECT(StylesPanel)
+
+		StylesPanel();
+		~StylesPanel();
 
 	protected:
 		void OnInitialize() override;

@@ -607,7 +607,7 @@ namespace NxEn
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
 			float Var = NodeProperties.as<float>();
 
-			GUI::Style::GetVars().Register(Id, Var);
+			GUI::Style::GetVars().Register(Id, Var, true);
 		}
 
 		const YAML::Node& Colors = Node["Colors"];
@@ -619,7 +619,7 @@ namespace NxEn
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
 			NxFr::Color Color = NodeProperties.as<NxFr::Color>();
 
-			GUI::Style::GetColors().Register(Id, Color);
+			GUI::Style::GetColors().Register(Id, Color, true);
 		}
 
 		const YAML::Node& Styles = Node["Styles"];
@@ -631,7 +631,7 @@ namespace NxEn
 			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
 			GUI::Style Style = NodeProperties.as<GUI::Style>();
 
-			GUI::Style::GetStyles().Register(Id, Style);
+			GUI::Style::GetStyles().Register(Id, Style, true);
 		}
 	}
 

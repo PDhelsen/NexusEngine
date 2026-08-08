@@ -29,7 +29,7 @@ namespace NxEn
 				}
 
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text(Data.C());
+				ImGui::Text(Data.C(true));
 				ImGui::SameLine();
 			}
 
@@ -42,7 +42,7 @@ namespace NxEn
 
 			void Text(NxFr::StringView Data)
 			{
-				ImGui::Text(Data.C());
+				ImGui::Text(Data.C(true));
 			}
 
 			void TextSelectable(NxFr::StringView Data, const Transform& Visual)
@@ -73,7 +73,7 @@ namespace NxEn
 
 			bool Selectable(NxFr::StringView Data, bool State)
 			{
-				return ImGui::Selectable(Data.C(), State);
+				return ImGui::Selectable(Data.C(true), State);
 			}
 
 			bool Input(NxFr::String& Data, NxFr::StringView Id, const Transform& Visual)
@@ -87,7 +87,7 @@ namespace NxEn
 			bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag)
 			{
 				Data.Reserve(128);
-				bool Result = ImGui::InputText(Id.C(), Data.Characters(), Data.GetCapacity(), Flag);
+				bool Result = ImGui::InputText(Id.C(true), Data.Characters(), Data.GetCapacity(), Flag);
 				if (Result)
 				{
 					Data.Validate();
@@ -105,7 +105,7 @@ namespace NxEn
 
 			bool Button(NxFr::StringView Data, NxFr::Vector2f Size)
 			{
-				return ImGui::Button(Data.C(), Size);
+				return ImGui::Button(Data.C(true), Size);
 			}
 
 			bool CheckBox(NxFr::StringView Text, bool& Data, const Transform& Visual)
@@ -118,7 +118,7 @@ namespace NxEn
 
 			bool CheckBox(NxFr::StringView Text, bool& Data)
 			{
-				return ImGui::Checkbox(Text.C(), &Data);
+				return ImGui::Checkbox(Text.C(true), &Data);
 			}
 
 			void Space(const Transform& Visual)

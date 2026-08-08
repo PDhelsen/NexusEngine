@@ -35,6 +35,11 @@ namespace NxEn
 
 	void ProjectPanel::OnDraw()
 	{
+		if (!Infos)
+		{
+			return;
+		}
+
 		GUI::Transform Visual;
 		GUI::Drawer<NxFr::String>::Property(NxFr::StringUtility::ToString(Infos->GetMode()), "Mode", Visual);
 		GUI::Draw::Separator();
