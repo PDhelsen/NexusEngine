@@ -16,6 +16,11 @@ namespace NxEn
 
 		void Popup::Draw()
 		{
+			if (!IsEnabled())
+			{
+				return;
+			}
+
 			ImGui::OpenPopup(GetNamedId().C());
 			if (ImGui::BeginPopupModal(GetNamedId().C(), nullptr, GetImGuiFlags()))
 			{

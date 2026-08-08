@@ -15,6 +15,11 @@ namespace NxEn
 
 		void Panel::Draw()
 		{
+			if (!IsEnabled())
+			{
+				return;
+			}
+
 			bool IsOpen = true;
 
 			if (DockId != 0)

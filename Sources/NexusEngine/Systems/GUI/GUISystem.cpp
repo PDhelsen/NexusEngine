@@ -221,6 +221,18 @@ namespace NxEn
 		System::OnShutdown();
 	}
 
+	void GUISystem::OnEnable()
+	{
+		System::OnEnable();
+		Window.Show();
+	}
+
+	void GUISystem::OnDisable()
+	{
+		Window.Hide();
+		System::OnDisable();
+	}
+
 	void GUISystem::OnTick(float TimeStep)
 	{
 		System::OnTick(TimeStep);

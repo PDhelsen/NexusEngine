@@ -16,6 +16,11 @@ namespace NxEn
 
 		void Window::Draw()
 		{
+			if (!IsEnabled())
+			{
+				return;
+			}
+
 			Menu.Draw();
 
 			DockId = ImGui::GetID(GetNamedId().C());
@@ -42,6 +47,18 @@ namespace NxEn
 		{
 			Menu.Shutdown();
 			Element::OnShutdown();
+		}
+
+		void Window::OnEnable()
+		{
+			Element::OnEnable();
+			Menu.Show();
+		}
+
+		void Window::OnDisable()
+		{
+			Menu.Hide();
+			Element::OnDisable();
 		}
 	}
 }

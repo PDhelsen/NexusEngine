@@ -24,6 +24,8 @@ namespace NxEn
 		protected:
 			void OnInitialize() override;
 			void OnShutdown() override;
+			void OnEnable() override;
+			void OnDisable() override;
 
 		private:
 			Menu Menu;

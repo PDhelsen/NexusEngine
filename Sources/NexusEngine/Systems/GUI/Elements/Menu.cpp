@@ -66,6 +66,11 @@ namespace NxEn
 
 		void Menu::Draw()
 		{
+			if (!IsEnabled())
+			{
+				return;
+			}
+
 			if (GetGuiFlag(ElementFlags::MainMenuBar))
 			{
 				if (ImGui::BeginMainMenuBar())
