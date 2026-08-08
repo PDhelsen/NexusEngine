@@ -16,11 +16,10 @@ namespace NxEn
 	protected:
 		void OnInitialize() override;
 		void OnShutdown() override;
-		void OnDisable() override;
 		void OnDraw() override;
 
 	private:
-		NxFr::String Input;
 		NxFr::Delegate<void(NxFr::StringView)> Callback;
+		NxFr::String Input;
 	};
 }

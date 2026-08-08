@@ -27,23 +27,26 @@ namespace NxEn
 
 				OnDraw();
 
-				ImGui::SetCursorPosX(GUI::Utils::Center(NxFr::Vector2f(GUI::Styles::WidthButton() * Items.GetCount(), 0), Items.GetCount() - 1).x);
-				for (uint64 Index = 0; Index < Items.GetCount(); ++Index)
+				if (Items.GetCount() > 0)
 				{
-					Item& Button = Items[Index];
-					if (ImGui::Button(Button.Label.C(), { GUI::Styles::WidthButton(), 0.0f }))
+					ImGui::SetCursorPosX(GUI::Utils::Center(NxFr::Vector2f(GUI::Styles::WidthButton() * Items.GetCount(), 0), Items.GetCount() - 1).x);
+					for (uint64 Index = 0; Index < Items.GetCount(); ++Index)
 					{
-						if (!Button.Callback.IsNull())
+						Item& Button = Items[Index];
+						if (ImGui::Button(Button.Label.C(), { GUI::Styles::WidthButton(), 0.0f }))
 						{
-							Button.Callback.Invoke();
+							if (!Button.Callback.IsNull())
+							{
+								Button.Callback.Invoke();
+							}
+
+							Close();
+
+							ImGui::CloseCurrentPopup();
 						}
 
-						Close();
-
-						ImGui::CloseCurrentPopup();
+						ImGui::SameLine();
 					}
-
-					ImGui::SameLine();
 				}
 			}
 			ImGui::EndPopup();

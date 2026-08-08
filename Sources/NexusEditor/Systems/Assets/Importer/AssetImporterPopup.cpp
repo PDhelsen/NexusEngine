@@ -41,6 +41,7 @@ namespace NxEd
 
 		SetNameId("Importer");
 		SetMessage("");
+
 		AddButton("Import", { this, &AssetImporterPopup::Import });
 		AddButton("Pick", { this, &AssetImporterPopup::Pick });
 		AddButton("Cancel");
@@ -56,10 +57,8 @@ namespace NxEd
 
 	void AssetImporterPopup::OnDraw()
 	{
-		NxEn::GUI::Transform Visual;
-
-		NxEn::GUI::Drawer<NxFr::String>::Field(Path, "Path", "", Visual);
-		NxEn::GUI::Drawer<NxFr::String>::Field(Type, "Type", "", Visual);
+		NxEn::GUI::Drawer<NxFr::String>::Field(Path, "Path", "");
+		NxEn::GUI::Drawer<NxFr::String>::Field(Type, "Type", "");
 	}
 
 	void AssetImporterPopup::Pick()

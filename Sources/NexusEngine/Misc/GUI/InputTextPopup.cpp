@@ -17,32 +17,28 @@ namespace NxEn
 	{
 		Popup::OnInitialize();
 		Input.Reserve(128);
-		SetNameId("Input Text");
 
+		SetNameId("Input Text");
 		SetMessage("Enter text:");
+
 		AddButton("Cancel");
 	}
 
 	void InputTextPopup::OnShutdown()
 	{
 		UnregisterCallback();
-		Popup::OnShutdown();
-	}
-
-	void InputTextPopup::OnDisable()
-	{
-		Popup::OnDisable();
-		UnregisterCallback();
 		Input.Clear();
+
+		Popup::OnShutdown();
 	}
 
 	void InputTextPopup::OnDraw()
 	{
-		GUI::Utils::SetSize(-NxFr::Vector2f::One);
-		if (GUI::Draw::Input(Input, GUI::Utils::ImGuiIdSeparator()))
+		GUI::Transform Visual = GUI::Transform(-NxFr::Vector2f::One, -NxFr::Vector2f::One, 0);
+		if (GUI::Draw::Input(Input, GUI::Utils::ImGuiIdSeparator(), Visual))
 		{
 			Callback(Input);
-			Hide();
+			Close();
 		}
 	}
 }
