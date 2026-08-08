@@ -1,18 +1,15 @@
 #pragma once
 
 #include "NexusEngine/Core/NexusEngineCore.h"
+#include "NexusEngine/Application/Object/Object.h"
 
 namespace NxEn
 {
-	class NX_ENGINE_API Setting
+	class NX_ENGINE_API Setting : public Object
 	{
 	public:
 		Setting(NxFr::StringView Page, NxFr::StringView Name);
 		virtual ~Setting();
-
-		virtual void OnDraw() = 0;
-		virtual void OnSerialize(YAML::Node& Node) = 0;
-		virtual void OnDeserialize(const YAML::Node& Node) = 0;
 
 		virtual void Set(NxFr::StringView Value);
 		virtual void Set(uint64 Index, NxFr::StringView Value);
@@ -21,10 +18,15 @@ namespace NxEn
 		virtual NxFr::String Get(uint64 Index);
 		virtual NxFr::String Get(NxFr::StringView Key);
 
-		NxFr::GUID GetId() const { return Id.GetId(); }
+		NxFr::GUID GetId() const override { return Id.GetId(); }
 		NxFr::StringView GetKey() const { return Id.GetString(); }
 		NxFr::StringView GetPage() const { return Page; }
-		NxFr::StringView GetName() const { return Name; }
+		NxFr::StringView GetName() const override { return Name; }
+
+	protected:
+		virtual void OnDraw() override = 0;
+		virtual void OnSerialize(YAML::Node& Node) const override = 0;
+		virtual void OnDeserialize(const YAML::Node& Node) override = 0;
 
 	private:
 		NxFr::StringId Id;

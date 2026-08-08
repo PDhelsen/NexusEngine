@@ -17,9 +17,9 @@ namespace NxEn
 			GUI::Drawer<T>::Field(Data, GetName(), GetKey());
 		}
 
-		void OnSerialize(YAML::Node& Node) override
+		void OnSerialize(YAML::Node& Node) const override
 		{
-			Node[GetName()] = Data;
+			Node = Data;
 		}
 
 		void OnDeserialize(const YAML::Node& Node) override

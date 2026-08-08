@@ -69,7 +69,7 @@ namespace NxEn
 				if (Instances.TryGet(SettingName))
 				{
 					Setting* Instance = Instances[SettingName];
-					Instance->OnDeserialize(Value);
+					Instance->Deserialize(Value);
 				}
 			}
 		}
@@ -89,7 +89,7 @@ namespace NxEn
 			YAML::Node Root;
 			for (Setting* Instance : Page)
 			{
-				Instance->OnSerialize(Root);
+				Root[Instance->GetName()] = Instance->Serialize();
 			}
 			NxFr::Yaml::SerializeAndSave(Root, PagePath);
 		}
