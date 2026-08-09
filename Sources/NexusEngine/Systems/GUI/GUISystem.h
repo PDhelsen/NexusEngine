@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Systems/System.h"
+#include "NexusEngine/External/ImGui/API.h"
 #include "NexusEngine/Systems/GUI/Style.h"
 #include "NexusEngine/Systems/GUI/Utils.h"
 #include "NexusEngine/Systems/GUI/Draw.h"

@@ -4,7 +4,6 @@
 #include "NexusEngine/Systems/GUI/Draw.h"
 #include "NexusEngine/Systems/GUI/Misc/Styles.h"
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
-#include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEn
 {

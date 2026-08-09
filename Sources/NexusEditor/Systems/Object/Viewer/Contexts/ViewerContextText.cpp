@@ -2,70 +2,12 @@
 
 #include "NexusEngine/Systems/Assets/Assets/Document.h"
 #include "NexusEngine/Systems/Assets/Assets/Table.h"
+#include "NexusEngine/Misc/GUI/Misc/Draw.h"
 
 namespace NxEd
 {
 	static ViewerFactory::Factory* FactoryDocument = ViewerFactory::Register<NxEn::Document, ViewerContextText>();
 	static ViewerFactory::Factory* FactoryTable = ViewerFactory::Register<NxEn::Table, ViewerContextText>();
-
-	static void DrawYamlNode(YAML::Node Node, NxFr::StringView Label)
-	{
-		if (!Node)
-		{
-			ImGui::Text("%s: null", Label.C());
-			return;
-		}
-
-		switch (Node.Type())
-		{
-		case YAML::NodeType::Scalar:
-		{
-			ImGui::PushID(Label.C());
-			ImGui::Text("%s: %s", Label.C(), Node.as<NxFr::String>().C());
-			ImGui::PopID();
-			break;
-		}
-
-		case YAML::NodeType::Sequence:
-		{
-			ImGui::PushID(Label.C());
-			if (ImGui::TreeNode(Label.C()))
-			{
-				for (uint64 Index = 0; Index < Node.size(); ++Index)
-				{
-					ImGui::PushID(static_cast<int>(Index));
-					DrawYamlNode(Node[Index], "[" + NxFr::StringUtility::ToString(Index) + "]");
-					ImGui::PopID();
-				}
-				ImGui::TreePop();
-			}
-			ImGui::PopID();
-			break;
-		}
-
-		case YAML::NodeType::Map:
-		{
-			ImGui::PushID(Label.C());
-			if (ImGui::TreeNode(Label.C()))
-			{
-				for (auto It = Node.begin(); It != Node.end(); ++It)
-				{
-					NxFr::String Key = It->first.as<NxFr::String>();
-					ImGui::PushID(Key.C());
-					DrawYamlNode(It->second, Key);
-					ImGui::PopID();
-				}
-				ImGui::TreePop();
-			}
-			ImGui::PopID();
-			break;
-		}
-
-		default:
-			ImGui::Text("%s: <unknown>", Label.C());
-			break;
-		}
-	}
 
 	ViewerContextText::ViewerContextText()
 		: Mode(), Target()
@@ -113,11 +55,14 @@ namespace NxEd
 	{
 		if (Mode == ViewContextMode::Document)
 		{
-			NxEn::GUI::Drawer<NxFr::StringView>::Property(Target.Document->GetText());
+			NxEn::GUI::Drawer<NxFr::String>::Field(Target.Document->GetText());
 		}
 		else if (Mode == ViewContextMode::Table)
 		{
-			DrawYamlNode(Target.Table->GetRoot(), "Root");
+			if (NxEn::GUI::Drawer<YAML::Node>::Field(Target.Table->GetRoot(), "Root"))
+			{
+				Target.Table->SetDirty();
+			}
 		}
 	}
 }
