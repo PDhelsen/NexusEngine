@@ -15,7 +15,7 @@ namespace NxEn
 			WillClose = 1 << 1,
 			HideInsteadOfClose = 1 << 2,
 			RecycleInsteadOfClose = 1 << 3,
-			MainMenuBar = 1 << 4,
+			Main = 1 << 4,
 		};
 	}
 }

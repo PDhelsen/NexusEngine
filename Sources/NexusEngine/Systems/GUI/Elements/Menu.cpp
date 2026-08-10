@@ -71,7 +71,7 @@ namespace NxEn
 				return;
 			}
 
-			if (GetGuiFlag(ElementFlags::MainMenuBar))
+			if (GetGuiFlag(ElementFlags::Main))
 			{
 				if (ImGui::BeginMainMenuBar())
 				{
@@ -136,8 +136,8 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 
-			SetGuiFlag(ElementFlags::AutoDraw, false);
 			SetNameId(GetObjectType(), NxFr::Integer::GenerateGuid());
+			SetGuiFlag(ElementFlags::AutoDraw, false);
 		}
 
 		void Menu::OnShutdown()
