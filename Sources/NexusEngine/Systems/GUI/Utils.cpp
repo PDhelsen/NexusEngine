@@ -50,6 +50,11 @@ namespace NxEn
 				return "##";
 			}
 
+			uint32 NexusToImGuiColor(NxFr::Colors::Bits Color)
+			{
+				return IM_COL32(Color.r, Color.g, Color.b, Color.a);
+			}
+
 			void PushStyle(const Style* Instance)
 			{
 				if (!Instance)

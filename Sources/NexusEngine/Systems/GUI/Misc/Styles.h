@@ -15,6 +15,11 @@ namespace NxEn
 			inline static const float& WidthLabel() { return *Style::GetVars().TryGet("WidthLabel"_Sid); }
 			inline static const float& WidthInpuText() { return *Style::GetVars().TryGet("WidthInpuText"_Sid); }
 
+			inline static const NxFr::Color& White() { return *Style::GetColors().TryGet("White"_Sid); }
+			inline static const NxFr::Color& GrayLight() { return *Style::GetColors().TryGet("GrayLight"_Sid); }
+			inline static const NxFr::Color& Gray() { return *Style::GetColors().TryGet("Gray"_Sid); }
+			inline static const NxFr::Color& GrayDark() { return *Style::GetColors().TryGet("GrayDark"_Sid); }
+			inline static const NxFr::Color& Black() { return *Style::GetColors().TryGet("Black"_Sid); }
 			inline static const NxFr::Color& Red() { return *Style::GetColors().TryGet("Red"_Sid); }
 			inline static const NxFr::Color& Yellow() { return *Style::GetColors().TryGet("Yellow"_Sid); }
 			inline static const NxFr::Color& Green() { return *Style::GetColors().TryGet("Green"_Sid); }

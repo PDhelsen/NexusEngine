@@ -17,6 +17,7 @@ namespace NxEn
 			NX_ENGINE_API NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::GUID Id);
 			NX_ENGINE_API NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::StringView Id);
 			NX_ENGINE_API NxFr::StringView ImGuiIdSeparator();
+			NX_ENGINE_API uint32 NexusToImGuiColor(NxFr::Colors::Bits Color);
 
 			NX_ENGINE_API void PushStyle(const Style* Instance);
 			NX_ENGINE_API void PopStyle(const Style* Instance);
