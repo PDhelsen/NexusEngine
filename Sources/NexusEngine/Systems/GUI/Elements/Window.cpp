@@ -36,11 +36,6 @@ namespace NxEn
 
 			Menu.SetGuiFlag(ElementFlags::MainMenuBar, true);
 			SetGuiFlag(ElementFlags::AutoDraw, false);
-			SetImGuiFlags(
-				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse |
-				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing |
-				ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings
-			);
 		}
 
 		void Window::OnShutdown()

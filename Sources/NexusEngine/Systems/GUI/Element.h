@@ -56,8 +56,6 @@ namespace NxEn
 			NxFr::StringView GetName() const override { return Name; }
 			NxFr::StringView GetNamedId() const { return NamedId; }
 			void SetNameId(NxFr::StringView Name, NxFr::GUID Id = 0);
-			bool IsAutoDraw() const { return GetGuiFlag(ElementFlags::AutoDraw); }
-			void SetAutoDraw(bool Auto) { SetGuiFlag(ElementFlags::AutoDraw, Auto); }
 
 			NX_FORCE_INLINE bool GetGuiFlag(ElementFlags Flag) const;
 			NX_FORCE_INLINE void SetGuiFlag(ElementFlags Flag, bool Value);

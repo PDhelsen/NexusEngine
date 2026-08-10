@@ -98,7 +98,7 @@ namespace NxEn
 
 		void Element::OnEnable()
 		{
-			if (!IsAutoDraw())
+			if (!GetGuiFlag(ElementFlags::AutoDraw))
 			{
 				return;
 			}
