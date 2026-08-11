@@ -20,7 +20,7 @@ namespace NxEd
 		~Stage();
 
 		bool IsVisible() const;
-		bool IsFocused() const;
+		bool IsFocused() const override;
 		bool IsMain() const;
 
 		NxEn::Object* GetTarget() const { return Target; }
@@ -39,15 +39,11 @@ namespace NxEd
 
 		void OnSelectionChanged(NxFr::GUID Id, bool State);
 
-		void DrawDocking();
-		void DockPanels();
-
 	private:
 		NxEn::Object* Target;
 		NxEn::World* World;
 
-		uint32 DockId;
-		bool Layout;
+		NxEn::GUI::Dock Dock;
 		bool Main;
 
 		ViewerPanel* Viewer;

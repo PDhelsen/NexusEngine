@@ -22,11 +22,6 @@ namespace NxEn
 
 			bool IsOpen = true;
 
-			if (DockId != 0)
-			{
-				ImGui::SetNextWindowDockID(DockId, ImGuiCond_FirstUseEver);
-			}
-
 			if (ImGui::Begin(GetNamedId().C(), &IsOpen, GetImGuiFlags()))
 			{
 				OnDraw();

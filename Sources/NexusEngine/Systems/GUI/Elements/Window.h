@@ -3,6 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/Element.h"
 #include "NexusEngine/Systems/GUI/Elements/Menu.h"
+#include "NexusEngine/Systems/GUI/Elements/Dock.h"
 
 namespace NxEn
 {
@@ -19,7 +20,7 @@ namespace NxEn
 			virtual void Draw() override;
 
 			Menu& GetMenu() { return Menu; }
-			NxFr::GUID GetDock() { return DockId; }
+			Dock& GetDock() { return Dock; }
 
 		protected:
 			void OnInitialize() override;
@@ -29,7 +30,7 @@ namespace NxEn
 
 		private:
 			Menu Menu;
-			NxFr::GUID DockId;
+			Dock Dock;
 		};
 	}
 }

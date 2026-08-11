@@ -6,7 +6,7 @@ namespace NxEn
 	namespace GUI
 	{
 		Window::Window()
-			: Menu(), DockId(0)
+			: Menu(), Dock()
 		{
 		}
 
@@ -22,9 +22,7 @@ namespace NxEn
 			}
 
 			Menu.Draw();
-
-			DockId = ImGui::GetID(GetNamedId().C());
-			ImGui::DockSpaceOverViewport(DockId);
+			Dock.Draw();
 
 			OnDraw();
 		}
@@ -33,13 +31,23 @@ namespace NxEn
 		{
 			Element::OnInitialize();
 			Menu.Initialize();
+			Dock.Initialize();
 
-			Menu.SetGuiFlag(ElementFlags::MainMenuBar, true);
+			Menu.SetNameId("Main Menu");
+			Dock.SetNameId("Main Dock");
+
 			SetGuiFlag(ElementFlags::AutoDraw, false);
+			Menu.SetGuiFlag(ElementFlags::Main, true);
+			Dock.SetGuiFlag(ElementFlags::Main, true);
+			Dock.SetImGuiFlags(
+				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoDocking |
+				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing
+			);
 		}
 
 		void Window::OnShutdown()
 		{
+			Dock.Shutdown();
 			Menu.Shutdown();
 			Element::OnShutdown();
 		}
@@ -48,10 +56,12 @@ namespace NxEn
 		{
 			Element::OnEnable();
 			Menu.Show();
+			Dock.Show();
 		}
 
 		void Window::OnDisable()
 		{
+			Dock.Hide();
 			Menu.Hide();
 			Element::OnDisable();
 		}

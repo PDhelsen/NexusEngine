@@ -6,11 +6,8 @@
 
 namespace NxEd
 {
-	static NxFr::Vector2f DockDefaultPos = NxFr::Vector2f(200.0f, 200.0f);
-	static NxFr::Vector2f DockDefaultSize = NxFr::Vector2f(1600.0f, 800.0f);
-
 	Stage::Stage(NxEn::Object* Target)
-		: Target(Target), World(nullptr), DockId(0), Layout(false), Main(false), Viewer(nullptr), Inspector(nullptr), Hierarchy(nullptr)
+		: Target(Target), World(nullptr), Dock(), Main(false), Viewer(nullptr), Inspector(nullptr), Hierarchy(nullptr)
 	{
 		if (Target->GetObjectType() == NxEn::World::GetClassType())
 		{
@@ -40,17 +37,12 @@ namespace NxEd
 
 	bool Stage::IsVisible() const
 	{
-		return IsEnabled() && (Viewer->IsEnabled() || Inspector->IsEnabled() || Hierarchy->IsEnabled());
+		return Element::IsEnabled() && (Viewer->IsEnabled() || Inspector->IsEnabled() || Hierarchy->IsEnabled());
 	}
 
 	bool Stage::IsFocused() const
 	{
-		ImGuiContext* Ctx = ImGui::GetCurrentContext();
-		if (!Ctx || !Ctx->NavWindow)
-			return false;
-
-		NxFr::StringView Focused = Ctx->NavWindow->Name;
-		return Focused == Viewer->GetNamedId() || Focused == Inspector->GetNamedId() || Focused == Hierarchy->GetNamedId();
+		return Element::IsFocused() && (Viewer->IsFocused() || Inspector->IsFocused() || Hierarchy->IsFocused());
 	}
 
 	bool Stage::IsMain() const
@@ -62,7 +54,12 @@ namespace NxEd
 	{
 		Element::OnInitialize();
 
+		SetGuiFlag(NxEn::GUI::ElementFlags::HideInsteadOfClose, true);
 		SetNameId(Target->GetName(), Target->GetId());
+
+		Dock.Initialize();
+		Dock.SetGuiFlag(NxEn::GUI::ElementFlags::AutoDraw, false);
+		Dock.SetNameId(Target->GetName(), Target->GetId());
 
 		Viewer = new ViewerPanel();
 		Viewer->Initialize();
@@ -89,6 +86,8 @@ namespace NxEd
 		Viewer->Shutdown();
 		delete Viewer;
 
+		Dock.Shutdown();
+
 		Element::OnShutdown();
 	}
 
@@ -96,6 +95,7 @@ namespace NxEd
 	{
 		Element::OnEnable();
 
+		Dock.Show();
 		if (Target->GetObjectType() == NxEn::World::GetClassType() || Target->GetObjectType() == NxEn::Scene::GetClassType() || Target->GetObjectType() == NxEn::Prefab::GetClassType())
 		{
 			Viewer->Show(World);
@@ -108,14 +108,16 @@ namespace NxEd
 		}
 		Hierarchy->Show();
 
+		Dock.DockElement(Viewer);
+		Dock.DockElement(Inspector, ImGuiDir_Right, 0.25f);
+		Dock.DockElement(Hierarchy, ImGuiDir_Left, 0.25f);
+
 		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
 		Edit::Context* Ctx = Edit->GetContext(Target->GetId());
 		if (Ctx)
 		{
 			Ctx->GetOnSelectionChanged() += { this, & Stage::OnSelectionChanged };
 		}
-
-		Layout = true;
 	}
 
 	void Stage::OnDisable()
@@ -130,15 +132,14 @@ namespace NxEd
 		Hierarchy->Hide();
 		Inspector->Hide();
 		Viewer->Hide();
+		Dock.Hide();
 
 		Element::OnDisable();
 	}
 
 	void Stage::OnDraw()
 	{
-		DrawDocking();
-		DockPanels();
-
+		Dock.Draw();
 		Viewer->Draw();
 		Inspector->Draw();
 		Hierarchy->Draw();
@@ -152,50 +153,5 @@ namespace NxEd
 		{
 			Inspector->Show(Instance);
 		}
-	}
-
-	void Stage::DrawDocking()
-	{
-		ImGui::SetNextWindowPos(DockDefaultPos, Main ? ImGuiCond_FirstUseEver : ImGuiCond_Once);
-		ImGui::SetNextWindowSize(DockDefaultSize, Main ? ImGuiCond_FirstUseEver : ImGuiCond_Once);
-
-		bool IsOpen = IsVisible();
-		DockId = ImGui::GetID(GetNamedId().C());
-
-		ImGui::Begin(GetNamedId().C(), &IsOpen);
-		ImGui::DockSpace(DockId, NxFr::Vector2f::Zero, ImGuiDockNodeFlags_PassthruCentralNode | ImGuiDockNodeFlags_NoDocking);
-		ImGui::End();
-
-		if (!IsOpen)
-		{
-			Hide();
-		}
-	}
-
-	void Stage::DockPanels()
-	{
-		if (!Layout)
-		{
-			return;
-		}
-		Layout = false;
-
-		ImGuiID HierarchyId, ViewerId, InspectorId;
-
-		ImGui::DockBuilderRemoveNode(DockId);
-		ImGui::DockBuilderAddNode(DockId, ImGuiDockNodeFlags_DockSpace);
-		ImGui::DockBuilderSetNodeSize(DockId, DockDefaultSize);
-
-		ImGui::DockBuilderSplitNode(DockId, ImGuiDir_Left, 0.5f, &ViewerId, &InspectorId);
-		ImGui::DockBuilderDockWindow(Viewer->GetNamedId().C(), ViewerId);
-		ImGui::DockBuilderDockWindow(Inspector->GetNamedId().C(), InspectorId);
-
-		if (Hierarchy->IsEnabled())
-		{
-			ImGui::DockBuilderSplitNode(DockId, ImGuiDir_Left, 0.25f, &HierarchyId, &ViewerId);
-			ImGui::DockBuilderDockWindow(Hierarchy->GetNamedId().C(), HierarchyId);
-		}
-
-		ImGui::DockBuilderFinish(DockId);
 	}
 }

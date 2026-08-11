@@ -25,13 +25,8 @@ namespace NxEn
 
 			virtual void Draw() override;
 
-			void SetDock(NxFr::GUID Id) { DockId = Id; }
-
 		protected:
 			virtual void OnInitialize() override;
-
-		private:
-			NxFr::GUID DockId;
 		};
 	}
 }
