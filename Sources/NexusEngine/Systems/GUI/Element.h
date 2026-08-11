@@ -48,9 +48,11 @@ namespace NxEn
 			Element();
 			~Element();
 
-			void Show();
-			void Hide();
-			void Close();
+			virtual void Show();
+			virtual void Hide();
+			virtual void Close();
+
+			virtual bool IsFocused() const;
 
 			NxFr::GUID GetId() const override { return Id; }
 			NxFr::StringView GetName() const override { return Name; }

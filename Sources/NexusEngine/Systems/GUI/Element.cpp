@@ -48,6 +48,16 @@ namespace NxEn
 			SetGuiFlag(ElementFlags::WillClose, true);
 		}
 
+		bool Element::IsFocused() const
+		{
+			ImGuiContext* Ctx = ImGui::GetCurrentContext();
+			if (!Ctx || !Ctx->NavWindow)
+				return false;
+
+			NxFr::StringView Focused = Ctx->NavWindow->Name;
+			return Focused == NamedId;
+		}
+
 		void Element::SetNameId(NxFr::StringView Name, NxFr::GUID Id)
 		{
 			if (Id == 0)
