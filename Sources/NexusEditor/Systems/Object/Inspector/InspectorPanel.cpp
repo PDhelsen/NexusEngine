@@ -3,7 +3,7 @@
 namespace NxEd
 {
 	InspectorPanel::InspectorPanel()
-		: Target(nullptr), Mode(InspectorMode::None), Lock(false)
+		: Instance(nullptr), Lock(false)
 	{
 	}
 
@@ -11,30 +11,15 @@ namespace NxEd
 	{
 	}
 
-	void InspectorPanel::Show(NxEn::Object* Instance, bool Force)
+	void InspectorPanel::Show(NxEn::ObjectInstance<NxEn::Object> Target, bool Force)
 	{
-		if (!Instance || (Lock && !Force))
+		if (Lock && !Force)
 		{
 			return;
 		}
 
 		Panel::Show();
-
-		Target.Object = Instance;
-		Mode = InspectorMode::Object;
-	}
-
-	void InspectorPanel::Show(NxFr::Handle<NxEn::Object> Instance, bool Force)
-	{
-		if (!Instance || (Lock && !Force))
-		{
-			return;
-		}
-
-		Panel::Show();
-
-		Target.Handle = Instance;
-		Mode = InspectorMode::Handle;
+		Instance = Target;
 	}
 
 	void InspectorPanel::OnInitialize()
@@ -56,33 +41,21 @@ namespace NxEd
 
 	void InspectorPanel::OnEnable()
 	{
-		Target.Object = nullptr;
-		Mode = InspectorMode::None;
-
 		Panel::OnEnable();
 		Menu.Show();
 	}
 
 	void InspectorPanel::OnDisable()
 	{
+		Instance = nullptr;
+
 		Menu.Hide();
 		Panel::OnDisable();
-
-		Target.Object = nullptr;
-		Mode = InspectorMode::None;
 	}
 
 	void InspectorPanel::OnDraw()
 	{
 		Menu.Draw();
-
-		NxEn::Object* Instance = nullptr;
-		switch (Mode)
-		{
-		case NxEd::InspectorPanel::InspectorMode::None: Instance = nullptr; break;
-		case NxEd::InspectorPanel::InspectorMode::Object: Instance = Target.Object; break;
-		case NxEd::InspectorPanel::InspectorMode::Handle: Instance = Target.Handle.GetRedirectedPointer(); break;
-		}
 
 		if (!Instance)
 		{
