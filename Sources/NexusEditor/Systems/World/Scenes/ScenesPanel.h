@@ -6,8 +6,6 @@ namespace NxEd
 {
 	class NX_EDITOR_API ScenesPanel : public NxEn::GUI::Panel
 	{
-		struct SceneInfo;
-
 	public:
 		NX_OBJECT(ScenesPanel)
 
