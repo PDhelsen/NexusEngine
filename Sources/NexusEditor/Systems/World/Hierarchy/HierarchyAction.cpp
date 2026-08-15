@@ -1,7 +1,7 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyAction.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 
-#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+#include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
 #include "NexusEditor/Core/NexusEditorApplication.h"
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
 

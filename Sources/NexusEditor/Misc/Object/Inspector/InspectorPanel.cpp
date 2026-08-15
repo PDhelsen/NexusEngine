@@ -1,7 +1,14 @@
-#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+#include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
 
 namespace NxEd
 {
+	static InspectorPanel* Panel = NxEn::GUI::Panel::Create<InspectorPanel>();
+
+	static const NxEn::GUI::Menu::Item* MenuItemBrowser = NxEn::GUI::Menu::Create("Object/Objects/Inspector", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel InspectorPanel");
+	}));
+
 	InspectorPanel::InspectorPanel()
 		: Instance(nullptr), Lock(false)
 	{
@@ -13,12 +20,13 @@ namespace NxEd
 
 	void InspectorPanel::Show(NxEn::ObjectInstance<NxEn::Object> Target, bool Force)
 	{
+		Panel::Show();
+
 		if (Lock && !Force)
 		{
 			return;
 		}
 
-		Panel::Show();
 		Instance = Target;
 	}
 

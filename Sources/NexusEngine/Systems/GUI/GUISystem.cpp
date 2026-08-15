@@ -27,9 +27,9 @@ namespace NxEn
 		return NxFr::Path::Combine(Folder, Name + NxFr::Path::SeparatorExtension + Extension);
 	}
 
-	static Command* CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)
+	static Command* CmdGuiPanel = Command::Create("GUI.Panel"_Sid, "Open gui panel", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Type)
 	{
-		Application::GetSystem<GUISystem>()->GetPanel(Id)->Show();
+		Application::GetSystem<GUISystem>()->GetPanel(Type)->Show();
 	}));
 
 	static Command* CmdGuiElement = Command::Create("GUI.Element"_Sid, "Open gui element", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Id)

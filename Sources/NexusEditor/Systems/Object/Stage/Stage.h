@@ -4,7 +4,7 @@
 
 #include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
 #include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
-#include "NexusEditor/Systems/Object/Inspector/InspectorPanel.h"
+#include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
 
 namespace NxEd
