@@ -6,7 +6,7 @@ namespace NxEn
 	void NodePanel::Clear()
 	{
 		Nodes.Clear();
-		Ids.Clear();
+		NodesIds.Clear();
 		Selected = 0;
 		Hovered = 0;
 	}
@@ -23,7 +23,7 @@ namespace NxEn
 
 	void NodePanel::Select(NxFr::GUID Id)
 	{
-		if (!Ids.TryGet(Id))
+		if (!NodesIds.TryGet(Id))
 		{
 			return;
 		}
@@ -82,27 +82,40 @@ namespace NxEn
 
 	void NodePanel::AddNode(NxFr::GUID Id, NxFr::StringView Label)
 	{
-		if (Ids.TryGet(Id))
+		if (NodesIds.TryGet(Id))
 		{
+			NX_LOG(Warning, Default, "Node with Id %llu already exist", Id);
 			return;
 		}
 
 		Node& Instance = Nodes.AppendConstruct(
 			Id,
-			Label + NxFr::StringUtility::NewLine + NxFr::StringUtility::ToString(Id),
+			Label,
 			NxFr::Vector2f::Zero
 		);
-		Ids.Append(Id, &Instance);
+		NodesIds.Append(Id, &Instance);
 	}
 
 	void NodePanel::ConnectNode(NxFr::GUID Id, NxFr::GUID Dependency)
 	{
-		Nodes.Connect(Ids[Id], Ids[Dependency]);
+		if (!NodesIds.TryGet(Id))
+		{
+			NX_LOG(Warning, Default, "Node with Id %llu doesn't exist", Id);
+			return;
+		}
+
+		Nodes.Connect(NodesIds[Id], NodesIds[Dependency]);
 	}
 
 	void NodePanel::MoveNode(NxFr::GUID Id, NxFr::Vector2f Position)
 	{
-		Ids[Id]->Position = Position;
+		if (!NodesIds.TryGet(Id))
+		{
+			NX_LOG(Warning, Default, "Node with Id %llu doesn't exist", Id);
+			return;
+		}
+
+		NodesIds[Id]->Position = Position;
 	}
 
 	void NodePanel::DrawCanvas()

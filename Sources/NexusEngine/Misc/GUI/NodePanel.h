@@ -53,7 +53,7 @@ namespace NxEn
 		bool Inspect;
 
 		NxFr::Graph<Node> Nodes;
-		NxFr::Dictionary<NxFr::GUID, Node*> Ids;
+		NxFr::Dictionary<NxFr::GUID, Node*> NodesIds;
 		NxFr::GUID Hovered;
 		NxFr::GUID Selected;
 	};
