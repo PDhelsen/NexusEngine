@@ -16,7 +16,6 @@ namespace NxEn
 	void InputTextPopup::OnInitialize()
 	{
 		Popup::OnInitialize();
-		Input.Reserve(128);
 
 		SetNameId("Input Text");
 		SetMessage("Enter text:");

@@ -80,14 +80,35 @@ namespace NxEn
 			{
 				Utils::SetPosition(Visual.Position);
 				Utils::SetSize(Visual.Size);
-
-				return Input(Data, Id, ImGuiInputTextFlags_EnterReturnsTrue);
+				
+				return Input(Data, Id, Visual.Size);
 			}
 
-			bool Input(NxFr::String& Data, NxFr::StringView Id, uint64 Flag)
+			bool Input(NxFr::String& Data, NxFr::StringView Id, NxFr::Vector2f Size, uint64 Flag)
 			{
-				Data.Reserve(128);
-				bool Result = ImGui::InputText(Id.C(true), Data.Characters(), Data.GetCapacity(), Flag);
+				if (Size.y > ImGui::GetTextLineHeight())
+				{
+					Flag = NxFr::Integer::SetFlag<uint64>(Flag, ImGuiInputTextFlags_Multiline, true);
+					Flag = NxFr::Integer::SetFlag<uint64>(Flag, ImGuiInputTextFlags_EnterReturnsTrue, false);
+				}
+
+				if (!NxFr::Integer::CheckFlag<uint64>(Flag, ImGuiInputTextFlags_Multiline))
+				{
+					Size.y = 0.0f;
+				}
+
+				bool Result = ImGui::InputTextEx(Id.C(true), nullptr, Data.Characters(), Data.GetCapacity(), Size, Flag | ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* Callback)
+				{
+					if (Callback->EventFlag == ImGuiInputTextFlags_CallbackResize)
+					{
+						NxFr::String* Text =static_cast<NxFr::String*>(Callback->UserData);
+						Text->Reserve(NxFr::Math::Max<uint64>(Text->GetCapacity() * 2, Callback->BufTextLen + 1));
+						Callback->Buf = Text->Characters();
+					}
+
+					return 0;
+				}, &Data);
+
 				if (Result)
 				{
 					Data.Validate();
