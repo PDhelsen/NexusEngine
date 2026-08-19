@@ -21,6 +21,8 @@ namespace NxEn
 				return;
 			}
 
+			ImGui::SetNextWindowSize(NxFr::Vector2f::Zero, ImGuiCond_Always);
+
 			ImGui::OpenPopup(GetNamedId().C());
 			if (ImGui::BeginPopupModal(GetNamedId().C(), nullptr, GetImGuiFlags()))
 			{
