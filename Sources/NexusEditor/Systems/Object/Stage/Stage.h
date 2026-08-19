@@ -2,8 +2,7 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 
-#include "NexusEditor/Systems/Object/Viewer/ViewerPanel.h"
-#include "NexusEditor/Systems/Object/Viewer/ViewerContext.h"
+#include "NexusEditor/Misc/Object/Viewer/ViewerPanel.h"
 #include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
 

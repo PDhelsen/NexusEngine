@@ -2,7 +2,6 @@
 
 #include "NexusEditor/Systems/Edit/EditSystem.h"
 #include "NexusEditor/Core/NexusEditorApplication.h"
-#include "NexusEditor/Systems/Object/Viewer/Contexts/ViewerContext3D.h"
 
 namespace NxEd
 {
