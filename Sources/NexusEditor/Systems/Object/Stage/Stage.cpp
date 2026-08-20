@@ -72,7 +72,7 @@ namespace NxEd
 
 		Hierarchy = NxEn::Application::GetInstance<NexusEditorApplication>()->GetHierarchyManager()->CreatePanel(World);
 		Hierarchy->SetGuiFlag(NxEn::GUI::ElementFlags::AutoDraw, false);
-		Hierarchy->SetNameId("Hierarchy", +Target->GetId());
+		Hierarchy->SetNameId("Hierarchy", Target->GetId());
 	}
 
 	void Stage::OnShutdown()
