@@ -1,6 +1,7 @@
 Scene - Load scene in single mode: false
 Shortcuts:
   Edit.Copy: Ctrl+C
+  Edit.Create: Ctrl+N
   Edit.Cut: Ctrl+X
   Edit.Delete: Delete
   Edit.Duplicate: Ctrl+D

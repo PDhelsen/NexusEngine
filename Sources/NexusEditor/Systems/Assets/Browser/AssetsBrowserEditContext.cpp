@@ -6,17 +6,6 @@
 
 namespace NxEd
 {
-	AssetsBrowserEditContext::AssetsBrowserEditContext()
-		: Edit::Context(ContextId), Browser(nullptr), IsCutting(false)
-	{
-		OnSelectionChanged += { this, &AssetsBrowserEditContext::OnSelectItem };
-	}
-
-	AssetsBrowserEditContext::~AssetsBrowserEditContext()
-	{
-		OnSelectionChanged -= { this, &AssetsBrowserEditContext::OnSelectItem };
-	}
-
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetAll()
 	{
 		return NxFr::ContainerUtility::ToArrayKeys(Browser->Items);
@@ -27,13 +16,37 @@ namespace NxEd
 		return Browser->Items.GetCount();
 	}
 
+	void AssetsBrowserEditContext::Create()
+	{
+		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
+		Popup->RegisterCallback([=](NxFr::StringView Input)
+		{
+			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
+			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
+
+			NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+			for (auto Id : Ids)
+			{
+				AssetsBrowserItem* Instance = Browser->GetItem(Id);
+				if (Instance->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
+				{
+					NX_LOG(Error, System, "Can only create AssetsBrowserItem in directory");
+					continue;
+				}
+
+				NxFr::String Path = NxFr::Path::Combine(Instance->GetTargetPath(), Name);
+				Browser->Create(Type, Path);
+			}
+		});
+	}
+
 	void AssetsBrowserEditContext::Rename()
 	{
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-			for (auto Id : Instances)
+			NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+			for (auto Id : Ids)
 			{
 				AssetsBrowserItem* Instance = Browser->GetItem(Id);
 				Browser->Move(Instance->GetTargetPath(), NxFr::Path::ChangeName(Instance->GetTargetPath(), Input));
@@ -43,8 +56,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Duplicate()
 	{
-		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-		for (auto Id : Instances)
+		NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+		for (auto Id : Ids)
 		{
 			AssetsBrowserItem* Instance = Browser->GetItem(Id);
 			Browser->Duplicate(Instance->GetTargetPath(), Instance->GetTargetPath());
@@ -53,28 +66,12 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Delete()
 	{
-		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-		for (auto Id : Instances)
+		NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+		for (auto Id : Ids)
 		{
 			AssetsBrowserItem* Instance = Browser->GetItem(Id);
 			Browser->Delete(Instance->GetTargetPath());
 		}
-	}
-
-	void AssetsBrowserEditContext::Cut()
-	{
-		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-		Clipboard.Clear();
-		Clipboard.AppendRange(Instances);
-		IsCutting = true;
-	}
-
-	void AssetsBrowserEditContext::Copy()
-	{
-		NxFr::Set<NxFr::GUID> Instances = FilterSelection();
-		Clipboard.Clear();
-		Clipboard.AppendRange(Instances);
-		IsCutting = false;
 	}
 
 	void AssetsBrowserEditContext::Paste()
@@ -99,14 +96,18 @@ namespace NxEd
 				AssetsBrowserItem* Instance = Browser->GetItem(Id);
 				Browser->Delete(Instance->GetTargetPath());
 			}
-
-			Clipboard.Clear();
-			IsCutting = false;
 		}
+
+		Context::Paste();
 	}
 
-	NxFr::Set<NxFr::GUID> AssetsBrowserEditContext::FilterSelection()
+	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetSelection(bool Filtered) const
 	{
+		if (!Filtered)
+		{
+			return Context::GetSelection(Filtered);
+		}
+
 		NxFr::Set<NxFr::GUID> Result = Selection.GetCapacity();
 
 		for (auto Id : Selection)
@@ -131,12 +132,21 @@ namespace NxEd
 			}
 		}
 
-		return Result;
+		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
-	void AssetsBrowserEditContext::OnSelectItem(NxFr::GUID Id, bool State)
+	void AssetsBrowserEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
 	{
 		AssetsBrowserItem* Instance = Browser->GetItem(Id);
 		Browser->SelectItem(Instance, State, GetId());
+	}
+
+	AssetsBrowserEditContext::AssetsBrowserEditContext(AssetsBrowser* Browser)
+		: Edit::Context(ContextId), Browser(Browser), IsCutting(false)
+	{
+	}
+
+	AssetsBrowserEditContext::~AssetsBrowserEditContext()
+	{
 	}
 }

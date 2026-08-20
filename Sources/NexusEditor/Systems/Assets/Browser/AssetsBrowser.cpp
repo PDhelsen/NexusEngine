@@ -40,9 +40,9 @@ namespace NxEd
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
 		Panel->Browser = this;
-		Context.Browser = this;
+		Context = new AssetsBrowserEditContext(this);
 
-		Edit->RegisterContext(Context.GetId(), &Context);
+		Edit->RegisterContext(Context);
 
 		Refresh();
 	}
@@ -51,7 +51,7 @@ namespace NxEd
 	{
 		ClearItems();
 
-		Edit->UnregisterContext(Context.GetId());
+		Edit->UnregisterContext(Context->GetId());
 	}
 
 	void AssetsBrowser::Refresh()
@@ -234,7 +234,7 @@ namespace NxEd
 
 		Items.Clear();
 		Panel->Clear();
-		Edit->Unselect(Context.GetId());
+		Edit->Unselect(Context->GetId());
 	}
 
 	AssetsBrowserItem* AssetsBrowser::AppendItem(NxFr::StringView ItemPath)
@@ -273,7 +273,7 @@ namespace NxEd
 
 		Items.TryAppend(Item->Id, Item);
 		Panel->OnCreateItem(Item);
-		Edit->Select(Item->Id, Context.GetId());
+		Edit->Select(Item->Id, Context->GetId());
 	}
 
 	void AssetsBrowser::RemoveItem(AssetsBrowserItem* Item)
@@ -283,7 +283,7 @@ namespace NxEd
 			return;
 		}
 
-		Edit->Unselect(Item->Id, Context.GetId());
+		Edit->Unselect(Item->Id, Context->GetId());
 		Panel->OnDestroyItem(Item);
 		Items.TryRemove(Item->Id);
 		delete Item;
@@ -372,16 +372,9 @@ namespace NxEd
 		{
 			Panel->SelectItem(Item, State, true, false);
 		}
-		if (SelectionContextId != Context.GetId())
+		if (SelectionContextId != Context->GetId())
 		{
-			if (State)
-			{
-				Edit->Select(Item->GetItemId(), Context.GetId());
-			}
-			else
-			{
-				Edit->Unselect(Item->GetItemId(), Context.GetId());
-			}
+			Edit->SetSelected(Item->GetItemId(), State, Context->GetId());
 		}
 
 		SelectionContextId = 0;
@@ -450,6 +443,11 @@ namespace NxEd
 	{
 		NxFr::StringView Directory = NxFr::Path::GetFolder(Path, true);
 		return GetItem(ItemPathToId(Directory));
+	}
+
+	void AssetsBrowser::SetEditContext()
+	{
+		Edit->SetContext(Context->GetId());
 	}
 
 	NxFr::GUID AssetsBrowser::ItemPathToId(NxFr::StringView ItemPath)

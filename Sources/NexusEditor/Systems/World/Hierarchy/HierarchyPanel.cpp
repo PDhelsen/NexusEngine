@@ -53,7 +53,7 @@ namespace NxEd
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
 			NxFr::Handle<NxEn::GameObject> Target = static_cast<HierarchyItem*>(Root)->GetTarget();
-			Edit::Context::SetCurrent(Manager->Contexts[Target->GetWorldId()]);
+			Manager->SetEditContext(Target->GetWorldId());
 		}
 
 		TreePanel::OnDraw();

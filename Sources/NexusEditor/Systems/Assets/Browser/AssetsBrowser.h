@@ -50,6 +50,7 @@ namespace NxEd
 
 		AssetsBrowserItem* GetItem(NxFr::GUID Id);
 		AssetsBrowserItem* GetParent(NxFr::StringView Path);
+		void SetEditContext();
 
 		NxFr::GUID ItemPathToId(NxFr::StringView ItemPath);
 		NxFr::String ItemPathToFsPath(NxFr::StringView ItemPath);
@@ -64,7 +65,7 @@ namespace NxEd
 		NxFr::Dictionary<NxFr::GUID, AssetsBrowserItem*> Items;
 		AssetsBrowserItem* Root;
 		AssetsBrowserPanel* Panel;
-		AssetsBrowserEditContext Context;
+		AssetsBrowserEditContext* Context;
 
 		NxFr::StringId SelectionContextId;
 	};

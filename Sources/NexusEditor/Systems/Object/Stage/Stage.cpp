@@ -111,22 +111,22 @@ namespace NxEd
 		Dock.DockElement(Inspector, ImGuiDir_Right, 0.25f);
 		Dock.DockElement(Hierarchy, ImGuiDir_Left, 0.25f);
 
-		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
-		Edit::Context* Ctx = Edit->GetContext(Target->GetId());
-		if (Ctx)
-		{
-			Ctx->GetOnSelectionChanged() += { this, & Stage::OnSelectionChanged };
-		}
+		//EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
+		//Edit::Context* Ctx = Edit->GetContext(Target->GetId());
+		//if (Ctx)
+		//{
+		//	Ctx->GetOnSelectionChanged() += { this, & Stage::OnSelectionChanged };
+		//}
 	}
 
 	void Stage::OnDisable()
 	{
-		EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
-		Edit::Context* Ctx = Edit->GetContext(Target->GetId());
-		if (Ctx)
-		{
-			Ctx->GetOnSelectionChanged() -= { this, & Stage::OnSelectionChanged };
-		}
+		//EditSystem* Edit = NxEn::Application::GetSystem<EditSystem>();
+		//Edit::Context* Ctx = Edit->GetContext(Target->GetId());
+		//if (Ctx)
+		//{
+		//	Ctx->GetOnSelectionChanged() -= { this, & Stage::OnSelectionChanged };
+		//}
 
 		Hierarchy->Hide();
 		Inspector->Hide();

@@ -28,9 +28,11 @@ namespace NxEd
 		void ClearItems();
 		void AppendItem(NxFr::Handle<NxEn::GameObject> Instance);
 		void RemoveItem(NxFr::Handle<NxEn::GameObject> Instance);
+		void SelectItem(NxFr::Handle<NxEn::GameObject> Instance, bool State, NxFr::StringId SelectionId);
+
 		HierarchyItem* GetItem(NxFr::Handle<NxEn::GameObject> Instance);
 		HierarchyItem* GetItem(NxFr::GUID Id);
-		void SelectItem(NxFr::Handle<NxEn::GameObject> Instance, bool State, NxFr::StringId SelectionId);
+		void SetEditContext(NxFr::GUID Id);
 
 		NxEn::WorldSystem* Worlds;
 		EditSystem* Edit;

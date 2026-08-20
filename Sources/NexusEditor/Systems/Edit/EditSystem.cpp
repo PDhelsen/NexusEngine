@@ -3,17 +3,9 @@
 
 namespace NxEd
 {
-	static NxEn::Command* CmdEditSelectAll = NxEn::Command::Create("Edit.SelectAll"_Sid, "Select all objects in the current context", NxFr::Delegate<void()>([]()
+	static NxEn::Command* CmdEditCreate = NxEn::Command::Create("Edit.Create"_Sid, "Create object in the current context", NxFr::Delegate<void()>([]()
 	{
-		NxEn::Application::GetSystem<EditSystem>()->Select();
-	}));
-	static NxEn::Command* CmdEditUnselectAll = NxEn::Command::Create("Edit.UnselectAll"_Sid, "Unselect all objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Unselect();
-	}));
-	static NxEn::Command* CmdEditInvert = NxEn::Command::Create("Edit.Invert"_Sid, "Invert selection in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->InvertSelection();
+		NxEn::Application::GetSystem<EditSystem>()->Create();
 	}));
 	static NxEn::Command* CmdEditRename = NxEn::Command::Create("Edit.Rename"_Sid, "Rename selected objects in the current context", NxFr::Delegate<void()>([]()
 	{
@@ -39,18 +31,22 @@ namespace NxEd
 	{
 		NxEn::Application::GetSystem<EditSystem>()->Paste();
 	}));
+	static NxEn::Command* CmdEditSelectAll = NxEn::Command::Create("Edit.SelectAll"_Sid, "Select all objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Select();
+	}));
+	static NxEn::Command* CmdEditUnselectAll = NxEn::Command::Create("Edit.UnselectAll"_Sid, "Unselect all objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Unselect();
+	}));
+	static NxEn::Command* CmdEditInvertSelection = NxEn::Command::Create("Edit.InvertSelection"_Sid, "Invert selection in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->InvertSelection();
+	}));
 
-	static const NxEn::GUI::Menu::Item* MenuItemEditSelectAll = NxEn::GUI::Menu::Create("Edit/Selection/SelectAll", NxFr::Delegate<void()>([]()
+	static const NxEn::GUI::Menu::Item* MenuItemEditCreate = NxEn::GUI::Menu::Create("Edit/Clipboard/Create", NxFr::Delegate<void()>([]()
 	{
-		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.SelectAll");
-	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditUnselectAll = NxEn::GUI::Menu::Create("Edit/Selection/UnselectAll", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.UnselectAll");
-	}));
-	static const NxEn::GUI::Menu::Item* MenuItemEditInvert = NxEn::GUI::Menu::Create("Edit/Selection/Invert", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Invert");
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Create");
 	}));
 	static const NxEn::GUI::Menu::Item* MenuItemEditRename = NxEn::GUI::Menu::Create("Edit/Clipboard/Rename", NxFr::Delegate<void()>([]()
 	{
@@ -76,15 +72,28 @@ namespace NxEd
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Paste");
 	}));
-
-	void EditSystem::RegisterContext(NxFr::StringId Id, Edit::Context* Ctx)
+	static const NxEn::GUI::Menu::Item* MenuItemEditSelectAll = NxEn::GUI::Menu::Create("Edit/Selection/SelectAll", NxFr::Delegate<void()>([]()
 	{
-		if (Contexts.TryGet(Id))
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.SelectAll");
+	}));
+	static const NxEn::GUI::Menu::Item* MenuItemEditUnselectAll = NxEn::GUI::Menu::Create("Edit/Selection/UnselectAll", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.UnselectAll");
+	}));
+	static const NxEn::GUI::Menu::Item* MenuItemEditInvert = NxEn::GUI::Menu::Create("Edit/Selection/InvertSelection", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.InvertSelection");
+	}));
+
+	void EditSystem::RegisterContext(Edit::Context* Ctx)
+	{
+		if (Contexts.TryGet(Ctx->GetId()))
 		{
-			NX_LOG(Error, System, "Context %s already exist", Id.GetString().C());
+			NX_LOG(Error, System, "Context %s already exist", Ctx->GetId().GetString().C());
+			return;
 		}
 
-		Contexts.Append(Id, Ctx);
+		Contexts.Append(Ctx->GetId(), Ctx);
 	}
 
 	Edit::Context* EditSystem::UnregisterContext(NxFr::StringId Id)
@@ -100,10 +109,14 @@ namespace NxEd
 		return Ctx;
 	}
 
+	void EditSystem::SetContext(NxFr::StringId Id)
+	{
+		Context = Id;
+	}
+
 	Edit::Context* EditSystem::GetContext(NxFr::StringId Id) const
 	{
-		Edit::Context* Current = Edit::Context::GetCurrent();
-		Id = Id.GetId() == 0 && Current ? Current->Id : Id;
+		Id = Id.IsValid() ? Id : Context;
 		auto Instance = Contexts.TryGet(Id);
 		return Instance ? *Instance : nullptr;
 	}
@@ -128,6 +141,82 @@ namespace NxEd
 		}
 
 		return Ctx->GetCount();
+	}
+
+	void EditSystem::Create(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Create();
+	}
+
+	void EditSystem::Rename(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Rename();
+	}
+
+	void EditSystem::Duplicate(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Duplicate();
+	}
+
+	void EditSystem::Delete(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Delete();
+	}
+	void EditSystem::Cut(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Cut();
+	}
+
+	void EditSystem::Copy(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Copy();
+	}
+
+	void EditSystem::Paste(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Paste();
 	}
 
 	void EditSystem::Select(NxFr::GUID InstanceId, NxFr::StringId ContextId)
@@ -210,46 +299,6 @@ namespace NxEd
 		}
 	}
 
-	void EditSystem::InvertSelection(NxFr::GUID InstanceId, NxFr::StringId ContextId)
-	{
-		Edit::Context* Ctx = GetContext(ContextId);
-		if (!Ctx)
-		{
-			return;
-		}
-
-		Ctx->Invert(InstanceId);
-	}
-
-	void EditSystem::InvertSelection(NxFr::Collection<NxFr::GUID> InstancesId, NxFr::StringId ContextId)
-	{
-		Edit::Context* Ctx = GetContext(ContextId);
-		if (!Ctx)
-		{
-			return;
-		}
-
-		for (auto& It : InstancesId)
-		{
-			Ctx->Invert(It);
-		}
-	}
-
-	void EditSystem::InvertSelection(NxFr::StringId ContextId)
-	{
-		Edit::Context* Ctx = GetContext(ContextId);
-		if (!Ctx)
-		{
-			return;
-		}
-
-		NxFr::Array<NxFr::GUID> InstancesId = Ctx->GetAll();
-		for (auto It = InstancesId.Begin(); It != InstancesId.End(); ++It)
-		{
-			Ctx->Invert(*It);
-		}
-	}
-
 	bool EditSystem::IsSelected(NxFr::GUID InstanceId, NxFr::StringId ContextId) const
 	{
 		const Edit::Context* Ctx = GetContext(ContextId);
@@ -272,7 +321,7 @@ namespace NxEd
 		return Ctx->GetSelected();
 	}
 
-	NxFr::Array<NxFr::GUID> EditSystem::GetSelection(NxFr::StringId ContextId) const
+	NxFr::Array<NxFr::GUID> EditSystem::GetSelection(bool Filtered, NxFr::StringId ContextId) const
 	{
 		const Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -280,10 +329,10 @@ namespace NxEd
 			return NxFr::Array<NxFr::GUID>();
 		}
 
-		return Ctx->GetSelection();
+		return Ctx->GetSelection(Filtered);
 	}
 
-	uint64 EditSystem::SelectionCount(NxFr::StringId ContextId) const
+	uint64 EditSystem::SelectionCount(bool Filtered, NxFr::StringId ContextId) const
 	{
 		const Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -291,10 +340,10 @@ namespace NxEd
 			return 0;
 		}
 
-		return Ctx->GetSelectionCount();
+		return Ctx->GetSelectionCount(Filtered);
 	}
 
-	void EditSystem::Rename(NxFr::StringId ContextId)
+	void EditSystem::SetSelected(NxFr::GUID InstanceId, bool State, NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -302,10 +351,17 @@ namespace NxEd
 			return;
 		}
 
-		Ctx->Rename();
+		if (State)
+		{
+			Ctx->Select(InstanceId);
+		}
+		else
+		{
+			Ctx->Unselect(InstanceId);
+		}
 	}
 
-	void EditSystem::Duplicate(NxFr::StringId ContextId)
+	void EditSystem::SetSelected(NxFr::Collection<NxFr::GUID> InstancesId, bool State, NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -313,10 +369,20 @@ namespace NxEd
 			return;
 		}
 
-		Ctx->Duplicate();
+		for (auto& It : InstancesId)
+		{
+			if (State)
+			{
+				Ctx->Select(It);
+			}
+			else
+			{
+				Ctx->Unselect(It);
+			}
+		}
 	}
 
-	void EditSystem::Delete(NxFr::StringId ContextId)
+	void EditSystem::SetSelected(bool State, NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -324,9 +390,21 @@ namespace NxEd
 			return;
 		}
 
-		Ctx->Delete();
+		NxFr::Array<NxFr::GUID> InstancesId = Ctx->GetAll();
+		for (auto It = InstancesId.Begin(); It != InstancesId.End(); ++It)
+		{
+			if (State)
+			{
+				Ctx->Select(*It);
+			}
+			else
+			{
+				Ctx->Unselect(*It);
+			}
+		}
 	}
-	void EditSystem::Cut(NxFr::StringId ContextId)
+
+	void EditSystem::SetSelection(NxFr::GUID InstanceId, NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -334,10 +412,16 @@ namespace NxEd
 			return;
 		}
 
-		Ctx->Cut();
+		NxFr::Array<NxFr::GUID> SelectionIds = Ctx->GetSelection(false);
+		for (auto It = SelectionIds.Begin(); It != SelectionIds.End(); ++It)
+		{
+			Ctx->Unselect(*It);
+		}
+
+		Ctx->Select(InstanceId);
 	}
 
-	void EditSystem::Copy(NxFr::StringId ContextId)
+	void EditSystem::SetSelection(NxFr::Collection<NxFr::GUID> InstancesId, NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -345,10 +429,19 @@ namespace NxEd
 			return;
 		}
 
-		Ctx->Copy();
+		NxFr::Array<NxFr::GUID> SelectionIds = Ctx->GetSelection(false);
+		for (auto It = SelectionIds.Begin(); It != SelectionIds.End(); ++It)
+		{
+			Ctx->Unselect(*It);
+		}
+
+		for (auto& It : InstancesId)
+		{
+			Ctx->Select(It);
+		}
 	}
 
-	void EditSystem::Paste(NxFr::StringId ContextId)
+	void EditSystem::SetSelection(NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -356,6 +449,71 @@ namespace NxEd
 			return;
 		}
 
-		Ctx->Paste();
+		NxFr::Array<NxFr::GUID> InstancesId = Ctx->GetAll();
+		for (auto It = InstancesId.Begin(); It != InstancesId.End(); ++It)
+		{
+			Ctx->Select(*It);
+		}
+	}
+
+	void EditSystem::InvertSelection(NxFr::GUID InstanceId, NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		if (!Ctx->IsSelected(InstanceId))
+		{
+			Ctx->Select(InstanceId);
+		}
+		else
+		{
+			Ctx->Unselect(InstanceId);
+		}
+	}
+
+	void EditSystem::InvertSelection(NxFr::Collection<NxFr::GUID> InstancesId, NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		for (auto& It : InstancesId)
+		{
+			if (!Ctx->IsSelected(It))
+			{
+				Ctx->Select(It);
+			}
+			else
+			{
+				Ctx->Unselect(It);
+			}
+		}
+	}
+
+	void EditSystem::InvertSelection(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		NxFr::Array<NxFr::GUID> InstancesId = Ctx->GetAll();
+		for (auto It = InstancesId.Begin(); It != InstancesId.End(); ++It)
+		{
+			if (!Ctx->IsSelected(*It))
+			{
+				Ctx->Select(*It);
+			}
+			else
+			{
+				Ctx->Unselect(*It);
+			}
+		}
 	}
 }

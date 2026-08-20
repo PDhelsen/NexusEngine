@@ -16,15 +16,14 @@ namespace NxEd
 		NxFr::Array<NxFr::GUID> GetAll() override;
 		uint64 GetCount() override;
 
+		void Create() override;
 		void Rename() override;
 		void Duplicate() override;
 		void Delete() override;
-		void Cut() override;
-		void Copy() override;
 		void Paste() override;
 
-		NxFr::Set<NxFr::GUID> FilterSelection();
-		void OnSelectItem(NxFr::GUID Id, bool State);
+		NxFr::Array<NxFr::GUID> GetSelection(bool Filtered) const override;
+		void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const override;
 
 	private:
 		HierarchyEditContext(HierarchyManager* Manager, NxFr::StringId Id);

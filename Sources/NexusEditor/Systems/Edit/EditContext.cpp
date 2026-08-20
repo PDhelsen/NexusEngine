@@ -4,26 +4,36 @@ namespace NxEd
 {
 	namespace Edit
 	{
-		static Context* Current = nullptr;
-
-		Context* Context::GetCurrent()
-		{
-			return Current;
-		}
-
-		void Context::SetCurrent(Context* Instance)
-		{
-			Current = Instance;
-		}
-
 		Context::Context(NxFr::StringId Id)
-			: Id(Id), Selection(), Selected(0)
+			: Id(Id), Clipboard(), Selection(), Selected(0), IsCutting(false)
 		{
 		}
 
 		Context::~Context()
 		{
-			OnSelectionChanged.Clear();
+		}
+
+		void Context::Cut()
+		{
+			Clipboard.Clear();
+			Clipboard.AppendRange(GetSelection(true));
+			IsCutting = true;
+		}
+
+		void Context::Copy()
+		{
+			Clipboard.Clear();
+			Clipboard.AppendRange(GetSelection(true));
+			IsCutting = false;
+		}
+
+		void Context::Paste()
+		{
+			if (IsCutting)
+			{
+				Clipboard.Clear();
+				IsCutting = false;
+			}
 		}
 
 		void Context::Select(NxFr::GUID InstanceId)
@@ -36,10 +46,7 @@ namespace NxEd
 			Selection.Append(InstanceId);
 			Selected = InstanceId;
 
-			if (OnSelectionChanged)
-			{
-				OnSelectionChanged.Invoke(InstanceId, true);
-			}
+			OnSelectionChanged(InstanceId, true);
 		}
 
 		void Context::Unselect(NxFr::GUID InstanceId)
@@ -55,22 +62,7 @@ namespace NxEd
 				Selected = 0;
 			}
 
-			if (OnSelectionChanged)
-			{
-				OnSelectionChanged.Invoke(InstanceId, false);
-			}
-		}
-
-		void Context::Invert(NxFr::GUID InstanceId)
-		{
-			if (!IsSelected(InstanceId))
-			{
-				Select(InstanceId);
-			}
-			else
-			{
-				Unselect(InstanceId);
-			}
+			OnSelectionChanged(InstanceId, false);
 		}
 
 		bool Context::IsSelected(NxFr::GUID InstanceId) const
@@ -83,12 +75,12 @@ namespace NxEd
 			return Selected;
 		}
 
-		NxFr::Array<NxFr::GUID> Context::GetSelection() const
+		NxFr::Array<NxFr::GUID> Context::GetSelection(bool Filtered) const
 		{
 			return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Selection);
 		}
 
-		uint64 Context::GetSelectionCount() const
+		uint64 Context::GetSelectionCount(bool Filtered) const
 		{
 			return Selection.GetCount();
 		}
