@@ -145,7 +145,7 @@ namespace NxEn
 				{
 					GUI::Style::Scope Color = GUI::Style::GetStyles().TryGet(Log.Style);
 
-					GUI::Draw::TextSelectable(Log.Text);
+					GUI::Draw::TextSelectable(Log.Text, NxFr::StringUtility::ToString(Index));
 				}
 			}
 

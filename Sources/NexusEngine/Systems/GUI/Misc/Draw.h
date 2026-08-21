@@ -104,18 +104,19 @@ namespace NxEn
 		{
 			static void Property(const NxFr::GUID& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
+				NxFr::String ImGuiId = Utils::GenerateStringId("", Label);
 				NxFr::String Buffer = NxFr::StringUtility::ToString(Data);
 
 				Utils::SetPosition(Visual.Position);
 				Draw::Label(Label);
 				Utils::OffsetLabel(Visual.Label);
 				Utils::SetSize(Visual.Size);
-				Draw::TextSelectable(Buffer);
+				Draw::TextSelectable(Buffer, ImGuiId);
 			}
 
 			static bool Field(NxFr::GUID& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
-				NxFr::String ImGuiId = Utils::GenerateStringId("", Label);
+				NxFr::String ImGuiId = Utils::GenerateStringId(Id, Label);
 				NxFr::String Buffer = NxFr::StringUtility::ToString(Data);
 
 				Utils::SetPosition(Visual.Position);
