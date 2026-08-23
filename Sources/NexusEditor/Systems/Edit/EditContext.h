@@ -35,8 +35,8 @@ namespace NxEd
 			virtual void Unselect(NxFr::GUID InstanceId);
 			virtual bool IsSelected(NxFr::GUID InstanceId) const;
 			virtual NxFr::GUID GetSelected() const;
-			virtual NxFr::Array<NxFr::GUID> GetSelection(bool Filtered) const;
-			virtual uint64 GetSelectionCount(bool Filtered) const;
+			virtual NxFr::Array<NxFr::GUID> GetSelection() const;
+			virtual uint64 GetSelectionCount() const;
 			virtual void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const {};
 
 		protected:

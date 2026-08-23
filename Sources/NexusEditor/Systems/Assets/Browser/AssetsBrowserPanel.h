@@ -2,6 +2,7 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEngine/Misc/GUI/TreePanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 
 namespace NxEd
 {

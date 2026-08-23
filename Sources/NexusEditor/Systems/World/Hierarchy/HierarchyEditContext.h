@@ -23,7 +23,6 @@ namespace NxEd
 		void Delete() override;
 		void Paste() override;
 
-		NxFr::Array<NxFr::GUID> GetSelection(bool Filtered) const override;
 		void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const override;
 
 	private:

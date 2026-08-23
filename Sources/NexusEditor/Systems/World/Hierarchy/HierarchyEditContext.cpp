@@ -32,7 +32,7 @@ namespace NxEd
 		{
 			NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 
-			NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+			NxFr::Array<NxFr::GUID> Ids = GetSelection();
 			for (auto& Id : Ids)
 			{
 				NxFr::Handle<NxEn::GameObject> Parent = Manager->GetItem(Id)->GetTarget();
@@ -46,7 +46,7 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+			NxFr::Array<NxFr::GUID> Ids = GetSelection();
 			for (auto& Id : Ids)
 			{
 				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
@@ -66,10 +66,10 @@ namespace NxEd
 		NxFr::Handle<NxEn::GameObject> Parent = static_cast<HierarchyItem*>(Manager->GetItem(Selected))->GetTarget();
 		NxEn::World* World = Parent->GetWorld();
 
-		NxFr::Array<NxFr::GUID> InstanceIds = GetSelection(true);
+		NxFr::Array<NxFr::GUID> InstanceIds = GetSelection();
 		for (auto InstanceId : InstanceIds)
 		{
-			if (InstanceId == Selected)
+			if (InstanceId == Parent->GetId())
 			{
 				continue;
 			}
@@ -82,7 +82,7 @@ namespace NxEd
 	void HierarchyEditContext::Duplicate()
 	{
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+		NxFr::Array<NxFr::GUID> Ids = GetSelection();
 		for (auto& Id : Ids)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
@@ -93,7 +93,7 @@ namespace NxEd
 	void HierarchyEditContext::Delete()
 	{
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Array<NxFr::GUID> Ids = GetSelection(true);
+		NxFr::Array<NxFr::GUID> Ids = GetSelection();
 		for (auto& Id : Ids)
 		{
 			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
@@ -122,40 +122,6 @@ namespace NxEd
 		}
 
 		Context::Paste();
-	}
-
-	NxFr::Array<NxFr::GUID> HierarchyEditContext::GetSelection(bool Filtered) const
-	{
-		if (!Filtered)
-		{
-			return Context::GetSelection(Filtered);
-		}
-
-		NxFr::Set<NxFr::GUID> Result = Selection.GetCapacity();
-
-		for (auto Id : Selection)
-		{
-			NxFr::Handle<NxEn::GameObject> Target = Manager->Items[Id]->GetTarget();
-			NxFr::Handle<NxEn::GameObject> Parent = Target->GetParent();
-			bool Selected = false;
-
-			while (Parent)
-			{
-				if (Selection.TryGet(Parent->GetId()))
-				{
-					Selected = true;
-					break;
-				}
-				Parent = Parent->GetParent();
-			}
-
-			if (!Selected)
-			{
-				Result.Append(Id);
-			}
-		}
-
-		return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Result);
 	}
 
 	void HierarchyEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const

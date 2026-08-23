@@ -35,8 +35,8 @@ namespace NxEd
 		void Unselect(NxFr::StringId ContextId = 0);
 		bool IsSelected(NxFr::GUID InstanceId, NxFr::StringId ContextId = 0) const;
 		NxFr::GUID GetSelected(NxFr::StringId ContextId = 0) const;
-		NxFr::Array<NxFr::GUID> GetSelection(bool Filtered = true, NxFr::StringId ContextId = 0) const;
-		uint64 SelectionCount(bool Filtered = true, NxFr::StringId ContextId = 0) const;
+		NxFr::Array<NxFr::GUID> GetSelection(NxFr::StringId ContextId = 0) const;
+		uint64 SelectionCount(NxFr::StringId ContextId = 0) const;
 
 		void SetSelected(NxFr::GUID InstanceId, bool State, NxFr::StringId ContextId = 0);
 		void SetSelected(NxFr::Collection<NxFr::GUID> InstancesId, bool State, NxFr::StringId ContextId = 0);

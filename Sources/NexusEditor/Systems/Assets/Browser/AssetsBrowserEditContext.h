@@ -2,6 +2,23 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEditor/Systems/Edit/EditContext.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
+
+namespace NxEd
+{
+	enum class AssetsBrowserFilter : uint8
+	{
+		Unfiltered = 0,
+
+		TopMost = 1 << 1,
+		Recursive = 1 << 2,
+		MultiSelection = 1 << 3,
+		NoDirectory = 1 << 4,
+		Sorted = 1 << 5,
+	};
+}
+
+NX_FLAG(NxEd::AssetsBrowserFilter, uint8)
 
 namespace NxEd
 {
@@ -15,6 +32,8 @@ namespace NxEd
 		AssetsBrowserEditContext(AssetsBrowser* Browser);
 		~AssetsBrowserEditContext();
 
+		NxFr::Array<NxFr::GUID> FilterSelection(AssetsBrowserFilter Mode = AssetsBrowserFilter::Unfiltered, NxFr::GUID* Active = nullptr) const;
+
 	protected:
 		NxFr::Array<NxFr::GUID> GetAll() override;
 		uint64 GetCount() override;
@@ -24,9 +43,10 @@ namespace NxEd
 		void Move() override;
 		void Duplicate() override;
 		void Delete() override;
+		void Cut() override;
+		void Copy() override;
 		void Paste() override;
 
-		NxFr::Array<NxFr::GUID> GetSelection(bool Filtered) const override;
 		void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const override;
 
 	private:

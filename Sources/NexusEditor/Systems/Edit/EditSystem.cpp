@@ -340,7 +340,7 @@ namespace NxEd
 		return Ctx->GetSelected();
 	}
 
-	NxFr::Array<NxFr::GUID> EditSystem::GetSelection(bool Filtered, NxFr::StringId ContextId) const
+	NxFr::Array<NxFr::GUID> EditSystem::GetSelection(NxFr::StringId ContextId) const
 	{
 		const Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -348,10 +348,10 @@ namespace NxEd
 			return NxFr::Array<NxFr::GUID>();
 		}
 
-		return Ctx->GetSelection(Filtered);
+		return Ctx->GetSelection();
 	}
 
-	uint64 EditSystem::SelectionCount(bool Filtered, NxFr::StringId ContextId) const
+	uint64 EditSystem::SelectionCount(NxFr::StringId ContextId) const
 	{
 		const Edit::Context* Ctx = GetContext(ContextId);
 		if (!Ctx)
@@ -359,7 +359,7 @@ namespace NxEd
 			return 0;
 		}
 
-		return Ctx->GetSelectionCount(Filtered);
+		return Ctx->GetSelectionCount();
 	}
 
 	void EditSystem::SetSelected(NxFr::GUID InstanceId, bool State, NxFr::StringId ContextId)
@@ -431,7 +431,7 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::Array<NxFr::GUID> SelectionIds = Ctx->GetSelection(false);
+		NxFr::Array<NxFr::GUID> SelectionIds = Ctx->GetSelection();
 		for (auto It = SelectionIds.Begin(); It != SelectionIds.End(); ++It)
 		{
 			Ctx->Unselect(*It);
@@ -448,7 +448,7 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::Array<NxFr::GUID> SelectionIds = Ctx->GetSelection(false);
+		NxFr::Array<NxFr::GUID> SelectionIds = Ctx->GetSelection();
 		for (auto It = SelectionIds.Begin(); It != SelectionIds.End(); ++It)
 		{
 			Ctx->Unselect(*It);

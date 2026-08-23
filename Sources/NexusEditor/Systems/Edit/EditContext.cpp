@@ -16,14 +16,14 @@ namespace NxEd
 		void Context::Cut()
 		{
 			Clipboard.Clear();
-			Clipboard.AppendRange(GetSelection(true));
+			Clipboard.AppendRange(GetSelection());
 			IsCutting = true;
 		}
 
 		void Context::Copy()
 		{
 			Clipboard.Clear();
-			Clipboard.AppendRange(GetSelection(true));
+			Clipboard.AppendRange(GetSelection());
 			IsCutting = false;
 		}
 
@@ -75,12 +75,12 @@ namespace NxEd
 			return Selected;
 		}
 
-		NxFr::Array<NxFr::GUID> Context::GetSelection(bool Filtered) const
+		NxFr::Array<NxFr::GUID> Context::GetSelection() const
 		{
 			return NxFr::ContainerUtility::ToArray<NxFr::GUID>(Selection);
 		}
 
-		uint64 Context::GetSelectionCount(bool Filtered) const
+		uint64 Context::GetSelectionCount() const
 		{
 			return Selection.GetCount();
 		}
