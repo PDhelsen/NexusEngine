@@ -4,6 +4,8 @@
 
 #include "NexusEditor/Systems/Edit/EditSystem.h"
 
+#include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
+
 namespace NxEd
 {
 	static NxEn::SettingMap<NxFr::String>* SettingShortcuts = NxEn::SettingMap<NxFr::String>::Create("Editor", "Shortcuts", {});
@@ -70,6 +72,100 @@ namespace NxEd
 			Browser = new AssetsBrowser();
 			Hierarchy = new HierarchyManager();
 			Stages = new StageManager();
+
+			auto Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
+			Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
+			{
+				auto Context = (AssetsBrowserEditContext*)GetSystem<EditSystem>()->GetContext(AssetsBrowserEditContext::ContextId);
+				auto Ids = Context->FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					AssetsBrowserItem* Instance = Browser->GetItem(Id);
+					if (Instance->GetObjectType() == AssetsBrowserItemContent::GetClassType())
+					{
+						AssetImporter::Run(Instance->GetTargetPath());
+					}
+					else if (Instance->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
+					{
+						AssetImporter::Run(Instance->GetId());
+					}
+				}
+
+				Browser->Refresh();
+			}, .Priority = 1 });
+			Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Load / Reload", .Action = [&]()
+			{
+				auto Assets = GetSystem<NxEn::AssetsSystem>();
+				auto Context = (AssetsBrowserEditContext*)GetSystem<EditSystem>()->GetContext(AssetsBrowserEditContext::ContextId);
+				auto Ids = Context->FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					AssetsBrowserItem* Instance = Browser->GetItem(Id);
+					if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+					{
+						continue;
+					}
+
+					Assets->Reload(Instance->GetId());
+				}
+			}, .Priority = 1 });
+			Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Instantiate", .Action = [&]()
+			{
+				auto Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+				auto Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+				auto Context = (AssetsBrowserEditContext*)GetSystem<EditSystem>()->GetContext(AssetsBrowserEditContext::ContextId);
+				auto Ids = Context->FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					AssetsBrowserItem* Instance = Browser->GetItem(Id);
+					if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+					{
+						continue;
+					}
+
+					NxFr::GUID Id = Instance->GetId();
+					NxFr::StringId Type = Assets->GetMetadata(Id)->GetType();
+
+					if (Type == NxEn::Prefab::GetClassType())
+					{
+						NxEn::Prefab* Instance = Assets->Load<NxEn::Prefab>(Id);
+						Worlds->InstantiateGameObject(Instance->GetRoot());
+					}
+					else if (Type == NxEn::Scene::GetClassType())
+					{
+						NxEn::Scene* Instance = Assets->Load<NxEn::Scene>(Id);
+						Worlds->InstantiateScene(Instance);
+					}
+					else
+					{
+						NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
+					}
+				}
+			}, .Priority = 1 });
+			Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "View", .Action = [&]()
+			{
+				auto Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+				auto Context = (AssetsBrowserEditContext*)GetSystem<EditSystem>()->GetContext(AssetsBrowserEditContext::ContextId);
+				auto Ids = Context->FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					AssetsBrowserItem* Instance = Browser->GetItem(Id);
+					if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+					{
+						return;
+					}
+
+					NxFr::GUID Id = Instance->GetId();
+					NxEn::Object* Target = Assets->Load(Id);
+
+					Stage* StageView = Stages->GetStage(Target);
+					if (!StageView)
+					{
+						StageView = Stages->CreateStage(Target);
+					}
+					Stages->ShowStage(Target);
+				}
+			}, .Priority = 1 });
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
 		{

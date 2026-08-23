@@ -43,6 +43,12 @@ namespace NxEd
 		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		Panel->SetBrowser(this);
 
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Rename", .Action = [&]() { Edit->Rename(); }, .Priority = -1 });
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Duplicate", .Action = [&]() { Edit->Duplicate(); }, .Priority = -1 });
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Move", .Action = [&]() { Edit->Move(); }, .Priority = -1 });
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Delete", .Action = [&]() { Edit->Delete(); }, .Priority = -1 });
+
 		Refresh();
 	}
 
@@ -356,7 +362,7 @@ namespace NxEd
 
 		AssetsBrowserItem* Previous = GetItem(Item->Previous);
 		AssetsBrowserItem* Next = GetItem(Item->Next);
-		AssetsBrowserItem* Parent = GetItem(Item->Next);
+		AssetsBrowserItem* Parent = GetItem(Item->Parent);
 
 		if (Previous)
 		{
