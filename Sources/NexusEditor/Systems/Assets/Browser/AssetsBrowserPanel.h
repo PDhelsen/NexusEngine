@@ -12,6 +12,8 @@ namespace NxEd
 	public:
 		NX_OBJECT(AssetsBrowserPanel)
 
+		AssetsBrowserItem* GetItem(NxFr::GUID Id) override;
+
 		void SetBrowser(AssetsBrowser* Browser);
 
 		void Refresh() override;
@@ -21,7 +23,6 @@ namespace NxEd
 		void OnDraw() override;
 
 		void OnSelectItem(NxFr::GUID Id, bool State) override;
-		NxEn::Rework::TreeItem* GetItem(NxFr::GUID Id) override;
 
 	private:
 		AssetsBrowser* Browser;

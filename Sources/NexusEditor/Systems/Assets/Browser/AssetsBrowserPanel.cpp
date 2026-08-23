@@ -11,6 +11,11 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel AssetsBrowserPanel");
 	}));
 
+	AssetsBrowserItem* AssetsBrowserPanel::GetItem(NxFr::GUID Id)
+	{
+		return Browser->GetItem(Id);
+	}
+
 	void AssetsBrowserPanel::SetBrowser(AssetsBrowser* Browser)
 	{
 		this->Browser = Browser;
@@ -40,10 +45,5 @@ namespace NxEd
 	void AssetsBrowserPanel::OnSelectItem(NxFr::GUID Id, bool State)
 	{
 		Browser->Select(Id, State);
-	}
-
-	NxEn::Rework::TreeItem* AssetsBrowserPanel::GetItem(NxFr::GUID Id)
-	{
-		return Browser->GetItem(Id);
 	}
 }

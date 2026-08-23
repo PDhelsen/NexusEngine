@@ -12,9 +12,7 @@ namespace NxEn
 			bool operator<=(const TreeAction& Other) const { return Priority <= Other.Priority; }
 
 			NxFr::String Name;
-			NxFr::String Command;
-			bool MultiSelection;
-			bool Recursive;
+			NxFr::Delegate<void()> Action;
 			int64 Priority;
 		};
 
@@ -42,6 +40,10 @@ namespace NxEn
 		public:
 			NX_OBJECT(TreePanel)
 
+			virtual TreeItem* GetItem(NxFr::GUID Id) = 0;
+
+			virtual NxFr::Array<NxFr::GUID> GetSelected(NxFr::GUID* Active = nullptr);
+			virtual NxFr::GUID GetRoot();
 			virtual void SetRoot(NxFr::GUID Id);
 
 			virtual void Clear();
@@ -55,7 +57,6 @@ namespace NxEn
 
 			virtual void AddAction(const TreeAction& Action);
 			virtual void RemoveAction(NxFr::StringView Action);
-			NxFr::Array<NxFr::GUID> GetItemsForAction(NxFr::StringView Action);
 
 		protected:
 			virtual void OnInitialize() override;
@@ -67,19 +68,19 @@ namespace NxEn
 			virtual void OnCreateItem(NxFr::GUID Id);
 			virtual void OnDestroyItem(NxFr::GUID Id);
 			virtual void OnSelectItem(NxFr::GUID Id, bool State);
-			virtual TreeItem* GetItem(NxFr::GUID Id) = 0;
-			virtual NxFr::GUID GetIterator(NxFr::GUID Id);
 
 			void DrawHeader();
-			void DrawItem(TreeItem* Item);
-			void DrawAction(TreeItem* Item);
-			void HandleSelection(TreeItem* Item, bool Selected);
+			void DrawItem(NxFr::GUID Id);
+			void DrawAction(NxFr::StringView Label);
+			void HandleSelection(NxFr::GUID Id, bool Selected);
 			void ProcessAction();
+
+			NxFr::GUID GetIterator(NxFr::GUID Id);
+			NxFr::List<TreeAction>::I GetAction(NxFr::StringView Name);
 
 			GUI::Menu Menu;
 
 			InputSystem* Inputs;
-			CommandsSystem* Commands;
 
 			NxFr::GUID Root;
 			NxFr::Set<NxFr::GUID> Selection;
