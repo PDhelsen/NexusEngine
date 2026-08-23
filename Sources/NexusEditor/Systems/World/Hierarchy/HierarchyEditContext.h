@@ -18,6 +18,7 @@ namespace NxEd
 
 		void Create() override;
 		void Rename() override;
+		void Move() override;
 		void Duplicate() override;
 		void Delete() override;
 		void Paste() override;

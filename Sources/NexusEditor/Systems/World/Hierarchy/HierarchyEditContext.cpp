@@ -55,6 +55,30 @@ namespace NxEd
 		});
 	}
 
+	void HierarchyEditContext::Move()
+	{
+		if (Selected == 0)
+		{
+			return;
+		}
+
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Handle<NxEn::GameObject> Parent = static_cast<HierarchyItem*>(Manager->GetItem(Selected))->GetTarget();
+		NxEn::World* World = Parent->GetWorld();
+
+		NxFr::Array<NxFr::GUID> InstanceIds = GetSelection(true);
+		for (auto InstanceId : InstanceIds)
+		{
+			if (InstanceId == Selected)
+			{
+				continue;
+			}
+
+			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Manager->GetItem(InstanceId))->GetTarget();
+			System->AttachGameObject(Instance, Parent);
+		}
+	}
+
 	void HierarchyEditContext::Duplicate()
 	{
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();

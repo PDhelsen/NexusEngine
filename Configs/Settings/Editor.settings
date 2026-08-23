@@ -6,6 +6,7 @@ Shortcuts:
   Edit.Delete: Delete
   Edit.Duplicate: Ctrl+D
   Edit.Invert: Ctrl+I
+  Edit.Move: Ctrl+M
   Edit.Paste: Ctrl+V
   Edit.Rename: F2
   Edit.SelectAll: Ctrl+A

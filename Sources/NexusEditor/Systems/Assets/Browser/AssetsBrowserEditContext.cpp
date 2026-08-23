@@ -63,6 +63,33 @@ namespace NxEd
 		});
 	}
 
+	void AssetsBrowserEditContext::Move()
+	{
+		if (Selected == 0)
+		{
+			return;
+		}
+
+		AssetsBrowserItem* Target =  Browser->GetItem(Selected);
+		if (Target->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
+		{
+			NX_LOG(Error, System, "Can only move AssetsBrowserItem in directory");
+			return;
+		}
+
+		NxFr::Array<NxFr::GUID> InstanceIds = GetSelection(true);
+		for (auto InstanceId : InstanceIds)
+		{
+			if (InstanceId == Selected)
+			{
+				continue;
+			}
+
+			AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
+			Browser->Move(Instance->GetTargetPath(), NxFr::Path::ChangeFolder(Instance->GetTargetPath(), Target->GetTargetPath()));
+		}
+	}
+
 	void AssetsBrowserEditContext::Duplicate()
 	{
 		NxFr::Array<NxFr::GUID> InstanceIds = GetSelection(true);

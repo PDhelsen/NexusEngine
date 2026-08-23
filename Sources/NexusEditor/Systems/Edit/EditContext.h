@@ -24,6 +24,7 @@ namespace NxEd
 
 			virtual void Create() = 0;
 			virtual void Rename() = 0;
+			virtual void Move() = 0;
 			virtual void Duplicate() = 0;
 			virtual void Delete() = 0;
 			virtual void Cut();

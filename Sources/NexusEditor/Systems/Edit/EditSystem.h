@@ -20,6 +20,7 @@ namespace NxEd
 
 		void Create(NxFr::StringId ContextId = 0);
 		void Rename(NxFr::StringId ContextId = 0);
+		void Move(NxFr::StringId ContextId = 0);
 		void Duplicate(NxFr::StringId ContextId = 0);
 		void Delete(NxFr::StringId ContextId = 0);
 		void Cut(NxFr::StringId ContextId = 0);

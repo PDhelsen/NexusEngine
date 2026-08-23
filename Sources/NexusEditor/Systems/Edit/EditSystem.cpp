@@ -11,6 +11,10 @@ namespace NxEd
 	{
 		NxEn::Application::GetSystem<EditSystem>()->Rename();
 	}));
+	static NxEn::Command* CmdEditMove = NxEn::Command::Create("Edit.Move"_Sid, "Move selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Move();
+	}));
 	static NxEn::Command* CmdEditDuplicate = NxEn::Command::Create("Edit.Duplicate"_Sid, "Duplicate selected objects in the current context", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<EditSystem>()->Duplicate();
@@ -51,6 +55,10 @@ namespace NxEd
 	static const NxEn::GUI::Menu::Item* MenuItemEditRename = NxEn::GUI::Menu::Create("Edit/Clipboard/Rename", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Rename");
+	}));
+	static const NxEn::GUI::Menu::Item* MenuItemEditMove = NxEn::GUI::Menu::Create("Edit/Clipboard/Move", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Move");
 	}));
 	static const NxEn::GUI::Menu::Item* MenuItemEditDuplicate = NxEn::GUI::Menu::Create("Edit/Clipboard/Duplicate", NxFr::Delegate<void()>([]()
 	{
@@ -163,6 +171,17 @@ namespace NxEd
 		}
 
 		Ctx->Rename();
+	}
+
+	void EditSystem::Move(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Move();
 	}
 
 	void EditSystem::Duplicate(NxFr::StringId ContextId)
