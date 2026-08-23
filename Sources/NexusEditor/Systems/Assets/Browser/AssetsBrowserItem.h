@@ -1,30 +1,37 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
-#include "NexusEngine/Misc/GUI/Tree/TreeItem.h"
+#include "NexusEngine/Misc/GUI/TreePanel.h"
 
 namespace NxEd
 {
-	class NX_EDITOR_API AssetsBrowserItem : public NxEn::TreeItem
+	class NX_EDITOR_API AssetsBrowserItem : public NxEn::Rework::TreeItem
 	{
 		friend class AssetsBrowser;
-		friend class AssetsBrowserPanel;
-		friend class AssetsBrowserEditContext;
 
 	public:
 		NX_OBJECT(AssetsBrowserItem)
 
-		NxFr::StringView GetName() const override { return ImGuiText; }
-		NxFr::StringView GetDescription() const { return GetItemName(); }
-
-		NxFr::StringView GetItemName() const override { return Path; }
-		NxFr::StringId GetItemType() const override { return Type; }
-		NxFr::GUID GetItemId() const override { return Id; }
+		NxFr::GUID GetId() const override { return Id; }
+		NxFr::StringView GetName() const override { return GetPrettyName(); }
+		NxFr::StringView GetLabel() const override { return Label; }
+		NxFr::StringView GetDescription() const override { return Path; }
+		NxFr::StringId GetType() const override { return Type; }
 
 		NxFr::StringView GetTargetPath() const { return Path; }
 		NxFr::StringView GetTargetName() const { return NxFr::Path::GetNameAndExtension(Path); }
 		NxFr::StringView GetPrettyPath() const { return NxFr::Path::GetPathWithoutExtension(Path); }
 		NxFr::StringView GetPrettyName() const { return NxFr::Path::GetName(Path); }
+
+		NxFr::GUID GetParent() const override { return Parent; }
+		NxFr::GUID GetPrevious() const override { return Previous; }
+		NxFr::GUID GetNext() const override { return Next; }
+		NxFr::GUID GetChild() const override { return Child; }
+
+		bool IsOpen() const override { return Opened; }
+		void Open(bool State) override { Opened = State; }
+
+		bool Compare(const TreeItem& Other) const override;
 
 	protected:
 		AssetsBrowserItem();
@@ -35,25 +42,19 @@ namespace NxEd
 		virtual void OnDuplicate(NxFr::StringView CurrentPath, NxFr::StringView TargetPath) = 0;
 		virtual void OnDelete(NxFr::StringView CurrentPath) = 0;
 
-		int8 Compare(const TreeItem& Other) const override;
-		void CacheImGuiText() override;
-
 		virtual NxFr::StringView GetPrefix() const = 0;
-
-		AssetsBrowserItem* GetParent() const override { return Parent; }
-		AssetsBrowserItem* GetPrevious() const override { return Previous; }
-		AssetsBrowserItem* GetNext() const override { return Next; }
-		AssetsBrowserItem* GetChild() const override { return Child; }
 
 	private:
 		NxFr::GUID Id;
+		NxFr::String Label;
 		NxFr::String Path;
 		NxFr::StringId Type;
+		bool Opened;
 
-		AssetsBrowserItem* Parent;
-		AssetsBrowserItem* Previous;
-		AssetsBrowserItem* Next;
-		AssetsBrowserItem* Child;
+		NxFr::GUID Parent;
+		NxFr::GUID Previous;
+		NxFr::GUID Next;
+		NxFr::GUID Child;
 	};
 
 	class AssetsBrowserItemDirectory : public AssetsBrowserItem

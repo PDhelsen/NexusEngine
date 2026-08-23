@@ -28,21 +28,20 @@ namespace NxEd
 	}));
 	static NxEn::Command* CmdAssetBrowserSelect = NxEn::Command::Create("Assets.Browser.Select"_Sid, "Select path in the browser", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Item)
 	{
-		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser()->Select(Item);
+		NxEn::Application::GetInstance<NexusEditorApplication>()->GetAssetsBrowser()->Select(Item, true);
 	}));
 
 	AssetsBrowser::AssetsBrowser()
 		: Assets(nullptr), Edit(nullptr),
 		Items(), Root(nullptr), Panel(nullptr), Context()
 	{
-		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
-		Panel->Browser = this;
 		Context = new AssetsBrowserEditContext(this);
-
 		Edit->RegisterContext(Context);
+		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
+		Panel->SetBrowser(this);
 
 		Refresh();
 	}
@@ -57,23 +56,23 @@ namespace NxEd
 	void AssetsBrowser::Refresh()
 	{
 		ClearItems();
+
 		Root = FetchItems(NxFr::Globals::Paths::Assets, nullptr);
-		PurgeItems(Root);
-
-		Root->ImGuiText = "Assets";
+		Root->Label = "Assets";
 		Root->Open(true);
+		Panel->SetRoot(Root->GetId());
 
-		Panel->Root = Panel->FetchRootItem();
+		PurgeItems(Root);
 	}
 
-	void AssetsBrowser::Select(NxFr::GUID Id)
+	void AssetsBrowser::Select(NxFr::GUID Id, bool State)
 	{
-		SelectItem(GetItem(Id), true, BrowserId);
+		SelectItem(GetItem(Id), State);
 	}
 
-	void AssetsBrowser::Select(NxFr::StringView ItemPath)
+	void AssetsBrowser::Select(NxFr::StringView ItemPath, bool State)
 	{
-		SelectItem(GetItem(ItemPathToId(ItemPath)), true, BrowserId);
+		SelectItem(GetItem(ItemPathToId(ItemPath)), State);
 	}
 
 	void AssetsBrowser::Create(NxFr::StringId Type, NxFr::StringView TargetPath)
@@ -171,6 +170,18 @@ namespace NxEd
 		return Result;
 	}
 
+	AssetsBrowserItem* AssetsBrowser::GetItem(NxFr::GUID Id)
+	{
+		AssetsBrowserItem** Item = Items.TryGet(Id);
+		return Item ? *Item : nullptr;
+	}
+
+	AssetsBrowserItem* AssetsBrowser::GetParent(NxFr::StringView Path)
+	{
+		NxFr::StringView Directory = NxFr::Path::GetFolder(Path, true);
+		return GetItem(ItemPathToId(Directory));
+	}
+
 	AssetsBrowserItem* AssetsBrowser::FetchItems(NxFr::StringView FsPath, AssetsBrowserItem* Parent)
 	{
 		NxFr::String ItemPath = FsPathToItemPath(FsPath);
@@ -199,19 +210,20 @@ namespace NxEd
 			return nullptr;
 		}
 
-		PurgeItems(Item->Child);
+		PurgeItems(GetItem(Item->Child));
 
 		if (Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
 		{
-			if (Item->Next && Item->GetPrettyName() == Item->Next->GetPrettyName())
+			AssetsBrowserItem* Next = GetItem(Item->Next);
+			AssetsBrowserItem* Previous = GetItem(Item->Previous);
+
+			if (Next && Item->GetPrettyName() == Next->GetPrettyName())
 			{
-				AssetsBrowserItem* Next = Item->Next;
 				DetachItem(Next);
 				RemoveItem(Next);
 			}
-			else if (Item->Previous && Item->GetPrettyName() == Item->Previous->GetPrettyName())
+			else if (Previous && Item->GetPrettyName() == Previous->GetPrettyName())
 			{
-				AssetsBrowserItem* Previous = Item->Previous;
 				DetachItem(Previous);
 				RemoveItem(Previous);
 			}
@@ -219,10 +231,10 @@ namespace NxEd
 
 		while (Item)
 		{
-			Item = PurgeItems(Item->Next);
+			Item = PurgeItems(GetItem(Item->Next));
 		}
 
-		return Item ? Item->Next : nullptr;
+		return Item ? GetItem(Item->Next) : nullptr;
 	}
 
 	void AssetsBrowser::ClearItems()
@@ -269,10 +281,10 @@ namespace NxEd
 		Item->Path = ItemPath;
 		Item->Id = ItemPathToId(ItemPath);
 		Item->Type = Item->GetObjectType() == AssetsBrowserItemAsset::GetClassType() ? Assets->GetMetadata(Item->Id)->GetType() : Item->GetObjectType();
-		Item->CacheImGuiText();
+		Item->Label = NxEn::GUI::Utils::NexusToImGuiId(Item->GetPrefix() + " " + Item->GetName(), Item->Id);
 
 		Items.TryAppend(Item->Id, Item);
-		Panel->OnCreateItem(Item);
+		Panel->OnCreateItem(Item->Id);
 		Edit->Select(Item->Id, Context->GetId());
 	}
 
@@ -284,7 +296,7 @@ namespace NxEd
 		}
 
 		Edit->Unselect(Item->Id, Context->GetId());
-		Panel->OnDestroyItem(Item);
+		Panel->OnDestroyItem(Item->Id);
 		Items.TryRemove(Item->Id);
 		delete Item;
 	}
@@ -296,38 +308,42 @@ namespace NxEd
 			return;
 		}
 
-		Item->Parent = Parent;
+		Item->Parent = Parent->Id;
 		if (Parent->Child)
 		{
-			if (*Item < *Parent->Child)
+			AssetsBrowserItem* ParentChild = GetItem(Parent->Child);
+			if (Item->Compare(*ParentChild))
 			{
 				Item->Next = Parent->Child;
-				Parent->Child->Previous = Item;
-				Parent->Child = Item;
+				ParentChild->Previous = Item->Id;
+				Parent->Child = Item->Id;
 			}
 			else
 			{
-				AssetsBrowserItem* Iterator = Parent->Child;
-				while (Iterator->Next && *Iterator->Next < *Item)
+				AssetsBrowserItem* Iterator = ParentChild;
+				AssetsBrowserItem* IteratorNext = GetItem(Iterator->Next);
+
+				while (IteratorNext && IteratorNext->Compare(*Item))
 				{
-					Iterator = Iterator->Next;
+					Iterator = IteratorNext;
+					IteratorNext = GetItem(Iterator->Next);
 				}
 
 				Item->Next = Iterator->Next;
-				Item->Previous = Iterator;
-				if (Iterator->Next)
+				Item->Previous = Iterator->Id;
+				if (IteratorNext)
 				{
-					Iterator->Next->Previous = Item;
+					IteratorNext->Previous = Item->Id;
 				}
-				Iterator->Next = Item;
+				Iterator->Next = Item->Id;
 			}
 		}
 		else
 		{
-			Parent->Child = Item;
+			Parent->Child = Item->Id;
 
-			Item->Previous = nullptr;
-			Item->Next = nullptr;
+			Item->Previous = 0;
+			Item->Next = 0;
 		}
 	}
 
@@ -338,46 +354,35 @@ namespace NxEd
 			return;
 		}
 
-		if (Item->Previous)
+		AssetsBrowserItem* Previous = GetItem(Item->Previous);
+		AssetsBrowserItem* Next = GetItem(Item->Next);
+		AssetsBrowserItem* Parent = GetItem(Item->Next);
+
+		if (Previous)
 		{
-			Item->Previous->Next = Item->Next;
+			Previous->Next = Item->Next;
 		}
-		if (Item->Next)
+		if (Next)
 		{
-			Item->Next->Previous = Item->Previous;
+			Next->Previous = Item->Previous;
 		}
-		if (Item->Parent)
+		if (Parent)
 		{
-			if (Item->Parent->Child == Item)
+			if (Parent->Child == Item->Id)
 			{
-				Item->Parent->Child = Item->Next;
+				Parent->Child = Item->Next;
 			}
 		}
 
-		Item->Parent = nullptr;
-		Item->Previous = nullptr;
-		Item->Next = nullptr;
+		Item->Parent = 0;
+		Item->Previous = 0;
+		Item->Next = 0;
 	}
 
-	void AssetsBrowser::SelectItem(AssetsBrowserItem* Item, bool State, NxFr::StringId SelectionId)
+	void AssetsBrowser::SelectItem(AssetsBrowserItem* Item, bool State)
 	{
-		if (SelectionContextId.GetId() != 0)
-		{
-			return;
-		}
-
-		SelectionContextId = SelectionId;
-
-		if (SelectionContextId != Panel->GetId())
-		{
-			Panel->SelectItem(Item, State, true, false);
-		}
-		if (SelectionContextId != Context->GetId())
-		{
-			Edit->SetSelected(Item->GetItemId(), State, Context->GetId());
-		}
-
-		SelectionContextId = 0;
+		Panel->Select(Item->Id, State, true, false);
+		Edit->SetSelected(Item->Id, State, Context->GetId());
 	}
 
 	void AssetsBrowser::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath, AssetsBrowserItem* Parent)
@@ -392,11 +397,11 @@ namespace NxEd
 
 	void AssetsBrowser::OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath, AssetsBrowserItem* Parent)
 	{
-		AssetsBrowserItem* Iterator = Item->Child;
+		AssetsBrowserItem* Iterator = GetItem(Item->Child);
 		while (Iterator)
 		{
 			OnMove(Iterator, NxFr::Path::ChangeFolder(Iterator->GetTargetPath(), TargetPath), Item);
-			Iterator = Iterator->Next;
+			Iterator = GetItem(Iterator->Next);
 		}
 
 		DetachItem(Item);
@@ -409,11 +414,11 @@ namespace NxEd
 	{
 		AssetsBrowserItem* Copy = AppendItem(TargetPath);
 
-		AssetsBrowserItem* Iterator = Item->Child;
+		AssetsBrowserItem* Iterator = GetItem(Item->Child);
 		while (Iterator)
 		{
 			OnDuplicate(Iterator, NxFr::Path::ChangeFolder(Iterator->GetTargetPath(), TargetPath), Copy);
-			Iterator = Iterator->Next;
+			Iterator = GetItem(Iterator->Next);
 		}
 
 		Item->OnDuplicate(ItemPathToCallbackPath(Item->Path, Item), ItemPathToCallbackPath(TargetPath, Item));
@@ -425,24 +430,12 @@ namespace NxEd
 	{
 		while (Item->Child)
 		{
-			OnDelete(Item->Child);
+			OnDelete(GetItem(Item->Child));
 		}
 
 		Item->OnDelete(ItemPathToCallbackPath(Item->Path, Item));
 		DetachItem(Item);
 		RemoveItem(Item);
-	}
-
-	AssetsBrowserItem* AssetsBrowser::GetItem(NxFr::GUID Id)
-	{
-		AssetsBrowserItem** Item = Items.TryGet(Id);
-		return Item ? *Item : nullptr;
-	}
-
-	AssetsBrowserItem* AssetsBrowser::GetParent(NxFr::StringView Path)
-	{
-		NxFr::StringView Directory = NxFr::Path::GetFolder(Path, true);
-		return GetItem(ItemPathToId(Directory));
 	}
 
 	void AssetsBrowser::SetEditContext()

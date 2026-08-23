@@ -5,15 +5,15 @@
 
 namespace NxEd
 {
-	class AssetsBrowser;
-	class AssetsBrowserItem;
-
 	class NX_EDITOR_API AssetsBrowserEditContext : public Edit::Context
 	{
 		friend class AssetsBrowser;
 
 	public:
 		inline static const NxFr::StringId ContextId = "AssetsBrowserContext"_Sid;
+
+		AssetsBrowserEditContext(AssetsBrowser* Browser);
+		~AssetsBrowserEditContext();
 
 	protected:
 		NxFr::Array<NxFr::GUID> GetAll() override;
@@ -29,11 +29,7 @@ namespace NxEd
 		void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const override;
 
 	private:
-		AssetsBrowserEditContext(AssetsBrowser* Browser);
-		~AssetsBrowserEditContext();
-
 		AssetsBrowser* Browser;
-		bool IsCutting;
 	};
 }
 

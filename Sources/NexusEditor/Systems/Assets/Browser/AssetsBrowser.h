@@ -19,8 +19,8 @@ namespace NxEd
 		~AssetsBrowser();
 
 		void Refresh();
-		void Select(NxFr::GUID Id);
-		void Select(NxFr::StringView ItemPath);
+		void Select(NxFr::GUID Id, bool State);
+		void Select(NxFr::StringView ItemPath, bool State);
 
 		void Create(NxFr::StringId Type, NxFr::StringView TargetPath);
 		void Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath);
@@ -30,6 +30,9 @@ namespace NxEd
 		bool Exist(NxFr::StringView ItemPath);
 		NxFr::StringView Validate(NxFr::StringView ItemPath);
 		NxFr::String MakeUniquePath(NxFr::StringView ItemPath);
+
+		AssetsBrowserItem* GetItem(NxFr::GUID Id);
+		AssetsBrowserItem* GetParent(NxFr::StringView Path);
 
 	private:
 		AssetsBrowserItem* FetchItems(NxFr::StringView FsPath, AssetsBrowserItem* Parent);
@@ -41,15 +44,13 @@ namespace NxEd
 		void RemoveItem(AssetsBrowserItem* Item);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent);
 		void DetachItem(AssetsBrowserItem* Item);
-		void SelectItem(AssetsBrowserItem* Item, bool State, NxFr::StringId SelectionId);
+		void SelectItem(AssetsBrowserItem* Item, bool State);
 
 		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath, AssetsBrowserItem* Parent);
 		void OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath, AssetsBrowserItem* Parent);
 		void OnDuplicate(AssetsBrowserItem* Item, NxFr::StringView TargetPath, AssetsBrowserItem* Parent);
 		void OnDelete(AssetsBrowserItem* Item);
 
-		AssetsBrowserItem* GetItem(NxFr::GUID Id);
-		AssetsBrowserItem* GetParent(NxFr::StringView Path);
 		void SetEditContext();
 
 		NxFr::GUID ItemPathToId(NxFr::StringView ItemPath);
@@ -66,7 +67,5 @@ namespace NxEd
 		AssetsBrowserItem* Root;
 		AssetsBrowserPanel* Panel;
 		AssetsBrowserEditContext* Context;
-
-		NxFr::StringId SelectionContextId;
 	};
 }

@@ -4,8 +4,8 @@
 namespace NxEd
 {
 	AssetsBrowserItem::AssetsBrowserItem()
-		: TreeItem(), Id(0), Path(""), Type(0),
-		Parent(nullptr), Previous(nullptr), Next(nullptr), Child(nullptr)
+		: Id(0), Label(""), Path(""), Type(0),
+		Parent(0), Previous(0), Next(0), Child(0)
 	{
 	}
 
@@ -13,14 +13,9 @@ namespace NxEd
 	{
 	}
 
-	int8 AssetsBrowserItem::Compare(const TreeItem& Other) const
+	bool AssetsBrowserItem::Compare(const TreeItem& Other) const
 	{
-		return NxFr::StringCApi::Compare(Path.C(), static_cast<const AssetsBrowserItem&>(Other).Path.C());
-	}
-
-	void AssetsBrowserItem::CacheImGuiText()
-	{
-		ImGuiText = NxEn::GUI::Utils::NexusToImGuiId(GetPrefix() + " " + GetPrettyName(), Id);
+		return Path.C() < static_cast<const AssetsBrowserItem&>(Other).Path;
 	}
 
 	void AssetsBrowserItemDirectory::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath)
@@ -79,7 +74,7 @@ namespace NxEd
 		NxFr::StringView AssetPath = NxFr::Path::GetPathWithoutExtension(TargetPath);
 
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		Assets->Move(GetItemId(), AssetPath);
+		Assets->Move(GetId(), AssetPath);
 	}
 
 	void AssetsBrowserItemAsset::OnDuplicate(NxFr::StringView CurrentPath, NxFr::StringView TargetPath)
@@ -87,12 +82,12 @@ namespace NxEd
 		NxFr::StringView AssetPath = NxFr::Path::GetPathWithoutExtension(TargetPath);
 
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		Assets->Copy(GetItemId(), AssetPath);
+		Assets->Copy(GetId(), AssetPath);
 	}
 
 	void AssetsBrowserItemAsset::OnDelete(NxFr::StringView CurrentPath)
 	{
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		Assets->Delete(GetItemId());
+		Assets->Delete(GetId());
 	}
 }
