@@ -205,7 +205,7 @@ namespace NxEn
 			return Visible;
 		}
 
-		void TreePanel::AddAction(const TreeAction& Action)
+		void TreePanel::AppendAction(const TreeAction& Action)
 		{
 			auto It = GetAction(Action.Name);
 			if (It != Actions.End())

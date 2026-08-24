@@ -4,7 +4,7 @@
 namespace NxEd
 {
 	AssetsBrowserItem::AssetsBrowserItem()
-		: Id(0), Label(""), Path(""), Type(0),
+		: Id(0), Label(""), Path(""), Type(0), Opened(false),
 		Parent(0), Previous(0), Next(0), Child(0)
 	{
 	}

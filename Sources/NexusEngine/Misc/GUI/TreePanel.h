@@ -55,7 +55,7 @@ namespace NxEn
 			virtual void SetVisible(NxFr::GUID Id, bool State = true);
 			virtual bool IsVisible(NxFr::GUID Id);
 
-			virtual void AddAction(const TreeAction& Action);
+			virtual void AppendAction(const TreeAction& Action);
 			virtual void RemoveAction(NxFr::StringView Action);
 
 		protected:
