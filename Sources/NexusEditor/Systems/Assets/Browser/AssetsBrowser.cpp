@@ -49,6 +49,11 @@ namespace NxEd
 		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Move", .Action = [&]() { Edit->Move(); }, .Priority = -1 });
 		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Delete", .Action = [&]() { Edit->Delete(); }, .Priority = -1 });
 
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Import / Report", .Action = [&]() { Context->Import(); }, .Priority = 1 });
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Load / Reload", .Action = [&]() { Context->Load(); }, .Priority = 1 });
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "Instantiate", .Action = [&]() { Context->Instantiate(); }, .Priority = 1 });
+		Panel->AddAction(NxEn::Rework::TreeAction{ .Name = "View", .Action = [&]() { Context->View(); }, .Priority = 1 });
+
 		Refresh();
 	}
 

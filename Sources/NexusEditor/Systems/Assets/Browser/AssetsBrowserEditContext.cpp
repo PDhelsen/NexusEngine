@@ -1,6 +1,9 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
+#include "NexusEditor/Core/NexusEditorApplication.h"
+#include "NexusEditor/Systems/Object/Stage/StageManager.h"
+#include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEd
@@ -284,5 +287,101 @@ namespace NxEd
 	void AssetsBrowserEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
 	{
 		Browser->Select(InstanceId, State);
+	}
+
+	void AssetsBrowserEditContext::Import() const
+	{
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		for (auto& Id : Ids)
+		{
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
+			if (Instance->GetObjectType() == AssetsBrowserItemContent::GetClassType())
+			{
+				AssetImporter::Run(Instance->GetTargetPath());
+			}
+			else if (Instance->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
+			{
+				AssetImporter::Run(Instance->GetId());
+			}
+		}
+
+		Browser->Refresh();
+	}
+
+	void AssetsBrowserEditContext::Load() const
+	{
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		for (auto& Id : Ids)
+		{
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
+			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+			{
+				continue;
+			}
+
+			Assets->Reload(Instance->GetId());
+		}
+	}
+
+	void AssetsBrowserEditContext::Instantiate() const
+	{
+		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		for (auto& Id : Ids)
+		{
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
+			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+			{
+				continue;
+			}
+
+			NxFr::GUID Id = Instance->GetId();
+			NxFr::StringId Type = Assets->GetMetadata(Id)->GetType();
+
+			if (Type == NxEn::Prefab::GetClassType())
+			{
+				NxEn::Prefab* Instance = Assets->Load<NxEn::Prefab>(Id);
+				Worlds->InstantiateGameObject(Instance->GetRoot());
+			}
+			else if (Type == NxEn::Scene::GetClassType())
+			{
+				NxEn::Scene* Instance = Assets->Load<NxEn::Scene>(Id);
+				Worlds->InstantiateScene(Instance);
+			}
+			else
+			{
+				NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
+			}
+		}
+	}
+
+	void AssetsBrowserEditContext::View() const
+	{
+		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
+
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		for (auto& Id : Ids)
+		{
+			AssetsBrowserItem* Instance = Browser->GetItem(Id);
+			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
+			{
+				return;
+			}
+
+			NxFr::GUID Id = Instance->GetId();
+			NxEn::Object* Target = Assets->Load(Id);
+
+			Stage* StageView = Stages->GetStage(Target);
+			if (!StageView)
+			{
+				StageView = Stages->CreateStage(Target);
+			}
+			Stages->ShowStage(Target);
+		}
 	}
 }
