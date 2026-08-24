@@ -14,6 +14,8 @@ namespace NxEd
 		Edit::Context* UnregisterContext(NxFr::StringId Id);
 		void SetContext(NxFr::StringId Id);
 		Edit::Context* GetContext(NxFr::StringId Id = 0) const;
+		template<typename T>
+		T* GetContext(NxFr::StringId Id = 0) const { return (T*)GetContext(Id); }
 
 		NxFr::Array<NxFr::GUID> GetAll(NxFr::StringId ContextId = 0);
 		uint64 GetCount(NxFr::StringId ContextId = 0);

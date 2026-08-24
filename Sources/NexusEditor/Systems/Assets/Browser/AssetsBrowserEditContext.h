@@ -59,11 +59,6 @@ namespace NxEd
 
 		void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const override;
 
-		void Import() const;
-		void Load() const;
-		void Instantiate() const;
-		void View() const;
-
 	private:
 		AssetsBrowser* Browser;
 	};

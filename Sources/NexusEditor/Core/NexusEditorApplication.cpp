@@ -1,8 +1,9 @@
 #include "NexusEditor/Core/NexusEditorApplication.h"
 
-#include "NexusEngine/Systems/Resources/Resources/Image.h"
-
 #include "NexusEditor/Systems/Edit/EditSystem.h"
+
+#include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
+#include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 namespace NxEd
 {
@@ -70,6 +71,84 @@ namespace NxEd
 			Browser = new AssetsBrowser();
 			Hierarchy = new HierarchyManager();
 			Stages = new StageManager();
+
+			AssetsBrowserPanel* Panel = GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
+			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
+			{
+				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
+
+				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::NoDirectory | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					AssetsBrowserItem* Instance = Browser->GetItem(Id);
+					if (Instance->GetObjectType() == AssetsBrowserItemContent::GetClassType())
+					{
+						AssetImporter::Run(Instance->GetTargetPath());
+					}
+					else if (Instance->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
+					{
+						AssetImporter::Run(Instance->GetId());
+					}
+				}
+
+				Browser->Refresh();
+			}, .Priority = 1 });
+			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Load / Reload", .Action = [&]()
+			{
+				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
+				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
+
+				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					Assets->Reload(Id);
+				}
+			}, .Priority = 1 });
+			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Instantiate", .Action = [&]()
+			{
+				NxEn::WorldSystem* Worlds = GetSystem<NxEn::WorldSystem>();
+				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
+				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
+
+				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					NxFr::StringId Type = Assets->GetMetadata(Id)->GetType();
+
+					if (Type == NxEn::Prefab::GetClassType())
+					{
+						NxEn::Prefab* Instance = Assets->Load<NxEn::Prefab>(Id);
+						Worlds->InstantiateGameObject(Instance->GetRoot());
+					}
+					else if (Type == NxEn::Scene::GetClassType())
+					{
+						NxEn::Scene* Instance = Assets->Load<NxEn::Scene>(Id);
+						Worlds->InstantiateScene(Instance);
+					}
+					else
+					{
+						NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
+					}
+				}
+			}, .Priority = 1 });
+			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "View", .Action = [&]()
+			{
+				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
+				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
+
+				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+				for (auto& Id : Ids)
+				{
+					NxEn::Object* Target = Assets->Load(Id);
+
+					Stage* StageView = Stages->GetStage(Target);
+					if (!StageView)
+					{
+						StageView = Stages->CreateStage(Target);
+					}
+					Stages->ShowStage(Target);
+				}
+			}, .Priority = 1 });
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
 		{
