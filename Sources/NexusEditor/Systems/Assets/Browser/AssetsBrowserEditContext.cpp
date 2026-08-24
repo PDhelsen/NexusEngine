@@ -20,10 +20,13 @@ namespace NxEd
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::FilterSelection(AssetsBrowserFilter Mode, NxFr::GUID* Active) const
 	{
 		const bool Unfiltered = Mode == AssetsBrowserFilter::Unfiltered;
-		const bool TopMost = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::TopMost);
-		const bool Recursive = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::Recursive);
-		const bool MultiSelection = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::MultiSelection);
 		const bool NoDirectory = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::NoDirectory);
+		const bool NoAssets = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::NoAssets);
+		const bool NoContent = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::NoContent);
+		const bool MultiSelection = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::MultiSelection);
+		const bool Recursive = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::Recursive);
+		const bool TopMost = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::TopMost);
+		const bool IgnoreSelected = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::IgnoreSelected);
 		const bool Sorted = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::Sorted);
 
 		NX_ASSERT(!(TopMost && Recursive), Default, "Can't filter TopMost and Recursive at the same time");
@@ -56,11 +59,12 @@ namespace NxEd
 
 				while (Parent)
 				{
-					if (Selection.TryGet(Parent->GetId()))
+					if (IsSelected(Parent->GetId()) && !(IgnoreSelected && Parent->GetId() == Selected))
 					{
 						ParentSelected = true;
 						break;
 					}
+
 					Parent = Browser->GetItem(Parent->GetParent());
 				}
 
@@ -100,9 +104,14 @@ namespace NxEd
 			Filtered = Roots;
 		}
 
-		if (NoDirectory)
+		if (IgnoreSelected)
 		{
-			NxFr::Set<NxFr::GUID> Directories;
+			Filtered.Remove(Selected);
+		}
+
+		if (NoDirectory || NoAssets || NoContent)
+		{
+			NxFr::Set<NxFr::GUID> ToRemove;
 			for (auto InstanceId : Filtered)
 			{
 				AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
@@ -111,13 +120,21 @@ namespace NxEd
 					continue;
 				}
 
-				if (Instance->GetClassType() == AssetsBrowserItemDirectory::GetClassType())
+				if (NoDirectory && Instance->GetObjectType() == AssetsBrowserItemDirectory::GetClassType())
 				{
-					Directories.Append(InstanceId);
+					ToRemove.Append(InstanceId);
+				}
+				else if (NoAssets && Instance->GetObjectType() == AssetsBrowserItemAsset::GetClassType())
+				{
+					ToRemove.Append(InstanceId);
+				}
+				else if (NoContent && Instance->GetObjectType() == AssetsBrowserItemContent::GetClassType())
+				{
+					ToRemove.Append(InstanceId);
 				}
 			}
 
-			Filtered.RemoveRange(Directories);
+			Filtered.TryRemoveRange(ToRemove);
 		}
 
 		NxFr::Array Result = NxFr::ContainerUtility::ToArray<NxFr::GUID>(Filtered);
@@ -162,16 +179,10 @@ namespace NxEd
 			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
 			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
 
-			NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::MultiSelection);
+			NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::DirectoryOnly | AssetsBrowserFilter::MultiSelection);
 			for (auto InstanceId : InstanceIds)
 			{
 				AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
-				if (Instance->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
-				{
-					NX_LOG(Error, System, "Can only create AssetsBrowserItem in directory");
-					continue;
-				}
-
 				NxFr::String Path = NxFr::Path::Combine(Instance->GetTargetPath(), Name);
 				Browser->Create(Type, Path);
 			}
@@ -183,7 +194,7 @@ namespace NxEd
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([=](NxFr::StringView Input)
 		{
-			NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::TopMost | AssetsBrowserFilter::MultiSelection);
+			NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::MultiSelection);
 			for (auto InstanceId : InstanceIds)
 			{
 				AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
@@ -194,8 +205,9 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Move()
 	{
-		if (Selected == 0)
+		if (Selected == 0 || Selection.GetCount() <= 1)
 		{
+			NX_LOG(Warning, System, "Can only move AssetsBrowserItem if a target directory is selected");
 			return;
 		}
 
@@ -206,14 +218,9 @@ namespace NxEd
 			return;
 		}
 
-		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::TopMost | AssetsBrowserFilter::MultiSelection);
+		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::TopMost | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::IgnoreSelected);
 		for (auto InstanceId : InstanceIds)
 		{
-			if (InstanceId == Target->GetId())
-			{
-				continue;
-			}
-
 			AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
 			Browser->Move(Instance->GetTargetPath(), NxFr::Path::ChangeFolder(Instance->GetTargetPath(), Target->GetTargetPath()));
 		}
@@ -291,7 +298,7 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Import() const
 	{
-		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::NoDirectory | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
 		for (auto& Id : Ids)
 		{
 			AssetsBrowserItem* Instance = Browser->GetItem(Id);
@@ -312,16 +319,10 @@ namespace NxEd
 	{
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 
-		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
 		for (auto& Id : Ids)
 		{
-			AssetsBrowserItem* Instance = Browser->GetItem(Id);
-			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
-			{
-				continue;
-			}
-
-			Assets->Reload(Instance->GetId());
+			Assets->Reload(Id);
 		}
 	}
 
@@ -330,16 +331,9 @@ namespace NxEd
 		NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 
-		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
 		for (auto& Id : Ids)
 		{
-			AssetsBrowserItem* Instance = Browser->GetItem(Id);
-			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
-			{
-				continue;
-			}
-
-			NxFr::GUID Id = Instance->GetId();
 			NxFr::StringId Type = Assets->GetMetadata(Id)->GetType();
 
 			if (Type == NxEn::Prefab::GetClassType())
@@ -364,16 +358,9 @@ namespace NxEd
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
 
-		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
+		NxFr::Array<NxFr::GUID> Ids = FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
 		for (auto& Id : Ids)
 		{
-			AssetsBrowserItem* Instance = Browser->GetItem(Id);
-			if (Instance->GetObjectType() != AssetsBrowserItemAsset::GetClassType())
-			{
-				return;
-			}
-
-			NxFr::GUID Id = Instance->GetId();
 			NxEn::Object* Target = Assets->Load(Id);
 
 			Stage* StageView = Stages->GetStage(Target);

@@ -6,19 +6,29 @@
 
 namespace NxEd
 {
-	enum class AssetsBrowserFilter : uint8
+	enum class AssetsBrowserFilter : uint16
 	{
 		Unfiltered = 0,
 
-		TopMost = 1 << 1,
-		Recursive = 1 << 2,
-		MultiSelection = 1 << 3,
-		NoDirectory = 1 << 4,
-		Sorted = 1 << 5,
+		NoDirectory = 1 << 1,
+		NoAssets = 1 << 2,
+		NoContent = 1 << 3,
+		DirectoryOnly = NoAssets | NoContent,
+		AssetsOnly = NoDirectory | NoContent,
+		ContentOnly = NoDirectory | NoAssets,
+
+		MultiSelection = 1 << 4,
+		Recursive = 1 << 5,
+		TopMost = 1 << 6,
+		IgnoreSelected = 1 << 7,
+
+		Sorted = 1 << 8,
+
+		Default = MultiSelection
 	};
 }
 
-NX_FLAG(NxEd::AssetsBrowserFilter, uint8)
+NX_FLAG(NxEd::AssetsBrowserFilter, uint16)
 
 namespace NxEd
 {
@@ -32,7 +42,7 @@ namespace NxEd
 		AssetsBrowserEditContext(AssetsBrowser* Browser);
 		~AssetsBrowserEditContext();
 
-		NxFr::Array<NxFr::GUID> FilterSelection(AssetsBrowserFilter Mode = AssetsBrowserFilter::Unfiltered, NxFr::GUID* Active = nullptr) const;
+		NxFr::Array<NxFr::GUID> FilterSelection(AssetsBrowserFilter Mode = AssetsBrowserFilter::Default, NxFr::GUID* Active = nullptr) const;
 
 	protected:
 		NxFr::Array<NxFr::GUID> GetAll() override;
