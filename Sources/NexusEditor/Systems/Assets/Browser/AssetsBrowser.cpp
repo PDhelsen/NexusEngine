@@ -55,6 +55,7 @@ namespace NxEd
 		ClearItems();
 
 		Edit->UnregisterContext(Context->GetId());
+		delete Context;
 	}
 
 	void AssetsBrowser::Refresh()
@@ -243,14 +244,15 @@ namespace NxEd
 
 	void AssetsBrowser::ClearItems()
 	{
+		Panel->Clear();
+		Edit->Unselect(Context->GetId());
+
 		for (auto [Id, Item] : Items)
 		{
 			delete Item;
 		}
 
 		Items.Clear();
-		Panel->Clear();
-		Edit->Unselect(Context->GetId());
 	}
 
 	AssetsBrowserItem* AssetsBrowser::AppendItem(NxFr::StringView ItemPath)

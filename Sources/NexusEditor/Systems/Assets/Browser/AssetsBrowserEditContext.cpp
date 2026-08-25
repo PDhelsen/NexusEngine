@@ -1,9 +1,6 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
-#include "NexusEditor/Core/NexusEditorApplication.h"
-#include "NexusEditor/Systems/Object/Stage/StageManager.h"
-#include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEd
@@ -174,7 +171,7 @@ namespace NxEd
 	void AssetsBrowserEditContext::Create()
 	{
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
-		Popup->RegisterCallback([=](NxFr::StringView Input)
+		Popup->RegisterCallback([&](NxFr::StringView Input)
 		{
 			NxFr::StringView Name = NxFr::StringUtility::Split(Input, " ", 0);
 			NxFr::StringView Type = NxFr::StringUtility::Split(Input, " ", 1);
@@ -192,7 +189,7 @@ namespace NxEd
 	void AssetsBrowserEditContext::Rename()
 	{
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
-		Popup->RegisterCallback([=](NxFr::StringView Input)
+		Popup->RegisterCallback([&](NxFr::StringView Input)
 		{
 			NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::MultiSelection);
 			for (auto InstanceId : InstanceIds)
@@ -262,6 +259,12 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Paste()
 	{
+		if (Selected == 0)
+		{
+			NX_LOG(Warning, System, "Can only move AssetsBrowserItem if a target directory is selected");
+			return;
+		}
+
 		AssetsBrowserItem* Target = Browser->GetItem(Selected);
 		if (Target->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
 		{
@@ -272,6 +275,11 @@ namespace NxEd
 		for (auto InstanceId : Clipboard)
 		{
 			AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
+			if (!Instance)
+			{
+				continue;
+			}
+
 			Browser->Duplicate(Instance->GetTargetPath(), NxFr::Path::ChangeFolder(Instance->GetTargetPath(), Target->GetTargetPath()));
 		}
 
@@ -280,6 +288,11 @@ namespace NxEd
 			for (auto InstanceId : Clipboard)
 			{
 				AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
+				if (!Instance)
+				{
+					continue;
+				}
+
 				Browser->Delete(Instance->GetTargetPath());
 			}
 		}

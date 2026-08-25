@@ -1,5 +1,4 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
 namespace NxEd
 {
