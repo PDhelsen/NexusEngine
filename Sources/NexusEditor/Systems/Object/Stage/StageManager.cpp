@@ -37,7 +37,7 @@ namespace NxEd
 		StageManager* Stages = NxEn::Application::GetInstance<NexusEditorApplication>()->GetStageManager();
 		Stage* Stage = Stages->CreateStage(Target->GetWorld());
 		Stages->ShowStage(Target->GetWorld());
-		Stage->GetHierarchy()->Select(Target);
+		Stage->GetHierarchy()->Select(Target->GetId());
 	}));
 
 	StageManager::StageManager()

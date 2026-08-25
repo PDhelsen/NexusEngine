@@ -2,15 +2,38 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEditor/Systems/Edit/EditContext.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
 
 namespace NxEd
 {
-	class HierarchyManager;
-	class HierarchyItem;
+	enum class HierarchyFilter : uint16
+	{
+		Unfiltered = 0,
 
+		MultiSelection = 1 << 1,
+		Recursive = 1 << 2,
+		TopMost = 1 << 3,
+		IgnoreSelected = 1 << 4,
+
+		Sorted = 1 << 5,
+
+		Default = MultiSelection
+	};
+}
+
+NX_FLAG(NxEd::HierarchyFilter, uint16)
+
+namespace NxEd
+{
 	class NX_EDITOR_API HierarchyEditContext : public Edit::Context
 	{
 		friend class HierarchyManager;
+
+	public:
+		HierarchyEditContext(HierarchyManager* Manager, NxFr::StringId Id);
+		~HierarchyEditContext();
+
+		NxFr::Array<NxFr::GUID> FilterSelection(HierarchyFilter Mode = HierarchyFilter::Default, NxFr::GUID* Active = nullptr) const;
 
 	protected:
 		NxFr::Array<NxFr::GUID> GetAll() override;
@@ -21,16 +44,14 @@ namespace NxEd
 		void Move() override;
 		void Duplicate() override;
 		void Delete() override;
+		void Cut() override;
+		void Copy() override;
 		void Paste() override;
 
 		void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const override;
 
 	private:
-		HierarchyEditContext(HierarchyManager* Manager, NxFr::StringId Id);
-		~HierarchyEditContext();
-
 		HierarchyManager* Manager;
-		bool IsCutting;
 	};
 }
 

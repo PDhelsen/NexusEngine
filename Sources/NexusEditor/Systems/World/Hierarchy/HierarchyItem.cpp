@@ -1,10 +1,9 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyItem.h"
-#include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 
 namespace NxEd
 {
-	HierarchyItem::HierarchyItem(HierarchyManager* Manager, NxFr::Handle<NxEn::GameObject> Target)
-		: Manager(Manager), Target(Target), Cache("", 0)
+	HierarchyItem::HierarchyItem()
+		: Target(), Opened(false), Label(""), Cache("", 0)
 	{
 	}
 
@@ -12,21 +11,18 @@ namespace NxEd
 	{
 	}
 
-	void HierarchyItem::OnDraw()
+	bool HierarchyItem::Compare(const TreeItem& Other) const
 	{
-		if (Cache.GetFirst() != Target->GetName() || Cache.GetSecond() != Target->GetTemplateId())
+		return Target->GetOrderIndex() < static_cast<const HierarchyItem&>(Other).Target->GetOrderIndex();
+	}
+
+	void HierarchyItem::CacheLabel() const
+	{
+		if (Target->GetName() == Cache.GetFirst() && Target->GetTemplateId() == Cache.GetSecond())
 		{
-			CacheImGuiText();
+			return;
 		}
-	}
 
-	int8 HierarchyItem::Compare(const TreeItem& Other) const
-	{
-		return Target->GetOrderIndex() - static_cast<const HierarchyItem&>(Other).Target->GetOrderIndex();
-	}
-
-	void HierarchyItem::CacheImGuiText()
-	{
 		NxEn::AssetMetadata* Metadata = nullptr;
 		if (Target->GetTemplateId())
 		{
@@ -39,29 +35,9 @@ namespace NxEd
 			Metadata && Metadata->GetType() == NxEn::Prefab::GetClassType() ? "P" :
 			"G";
 
-		ImGuiText = NxEn::GUI::Utils::NexusToImGuiId(Prefix + " " + Target->GetName(), Target->GetId());
+		Label = NxEn::GUI::Utils::NexusToImGuiId(Prefix + " " + Target->GetName(), Target->GetId());
 
 		Cache.SetFirst(Target->GetName());
 		Cache.SetSecond(Target->GetTemplateId());
-	}
-
-	HierarchyItem* HierarchyItem::GetParent() const
-	{
-		return Manager->GetItem(Target->GetParent());
-	}
-
-	HierarchyItem* HierarchyItem::GetPrevious() const
-	{
-		return Manager->GetItem(Target->GetPrevious());
-	}
-
-	HierarchyItem* HierarchyItem::GetNext() const
-	{
-		return Manager->GetItem(Target->GetNext());
-	}
-
-	HierarchyItem* HierarchyItem::GetChild() const
-	{
-		return Manager->GetItem(Target->GetChild());
 	}
 }
