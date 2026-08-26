@@ -22,7 +22,7 @@ namespace NxEd
 	NX_APPLICATION_IMPLEMENTATION(::NxEd::NexusEditorApplication)
 
 	NexusEditorApplication::NexusEditorApplication(const NxEn::Project& ProjectInfo)
-		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(nullptr), Browser(nullptr), Hierarchy(nullptr), Stages(nullptr)
+		: NexusEngineApplication(ProjectInfo), OnSave(), Inputs(nullptr), Browser(nullptr), Hierarchy(nullptr)
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 		Systems.CreateSystem<EditSystem>();
@@ -70,7 +70,6 @@ namespace NxEd
 		{
 			Browser = new AssetsBrowser();
 			Hierarchy = new HierarchyManager();
-			Stages = new StageManager();
 
 			AssetsBrowserPanel* Panel = GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
@@ -131,24 +130,6 @@ namespace NxEd
 					}
 				}
 			}, .Priority = 1 });
-			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "View", .Action = [&]()
-			{
-				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
-				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
-
-				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
-				for (auto& Id : Ids)
-				{
-					NxEn::Object* Target = Assets->Load(Id);
-
-					Stage* StageView = Stages->GetStage(Target);
-					if (!StageView)
-					{
-						StageView = Stages->CreateStage(Target);
-					}
-					Stages->ShowStage(Target);
-				}
-			}, .Priority = 1 });
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
 		{
@@ -184,7 +165,6 @@ namespace NxEd
 		});
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Destroy Assets & Worlds Managers", [&]()
 		{
-			delete Stages;
 			delete Hierarchy;
 			delete Browser;
 		});
@@ -215,8 +195,6 @@ namespace NxEd
 	{
 		NexusEngineApplication::OnRun();
 		NxEn::Ticker& Ticks = GetTicker();
-
-		Ticks.AppendTick(NxEn::Ticker::TickBucket::Engine, "Stages", [&]() { Stages->Tick(GetTime().GetDeltaTime()); });
 	}
 
 	void NexusEditorApplication::ApplySettings()
