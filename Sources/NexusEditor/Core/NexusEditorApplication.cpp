@@ -3,6 +3,7 @@
 #include "NexusEditor/Systems/Edit/EditSystem.h"
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
+#include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
 #include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 namespace NxEd
@@ -71,8 +72,8 @@ namespace NxEd
 			Browser = new AssetsBrowser();
 			Hierarchy = new HierarchyManager();
 
-			AssetsBrowserPanel* Panel = GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
-			Panel->AppendAction(NxEn::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
+			AssetsBrowserPanel* PanelBrowser = GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
+			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
 			{
 				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
 
@@ -92,7 +93,7 @@ namespace NxEd
 
 				Browser->Refresh();
 			}, .Priority = 1 });
-			Panel->AppendAction(NxEn::TreeAction{ .Name = "Load / Reload", .Action = [&]()
+			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "Load / Reload", .Action = [&]()
 			{
 				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
 				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
@@ -103,7 +104,7 @@ namespace NxEd
 					Assets->Reload(Id);
 				}
 			}, .Priority = 1 });
-			Panel->AppendAction(NxEn::TreeAction{ .Name = "Instantiate", .Action = [&]()
+			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "Instantiate", .Action = [&]()
 			{
 				NxEn::WorldSystem* Worlds = GetSystem<NxEn::WorldSystem>();
 				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
@@ -129,6 +130,88 @@ namespace NxEd
 						NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
 					}
 				}
+			}, .Priority = 1 });
+			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "Inspect", .Action = [&]()
+			{
+				NxFr::GUID Id = GetSystem<EditSystem>()->GetSelected(AssetsBrowserEditContext::ContextId);
+				NxEn::Asset* Instance = GetSystem<NxEn::AssetsSystem>()->Load(Id);
+
+				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();
+				Inspector->Show(Instance);
+			}, .Priority = 1 });
+
+			HierarchyPanel* PanelHierarchy = GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
+			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "Prefab - Create", .Action = [&]()
+			{
+				NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
+				Popup->RegisterCallback([=](NxFr::StringView Input)
+				{
+					HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>(HierarchyEditContext::ContextId);
+					NxEn::AssetsSystem * Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+					NxEn::WorldSystem * Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+
+					NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection();
+					for (auto& Id : Ids)
+					{
+						NxFr::Handle<NxEn::GameObject> Instance = Hierarchy->GetItem(Id)->GetTarget();
+						if (Assets->IsTracked(Instance->GetTemplateId()))
+						{
+							NX_LOG(Error, System, "%s is already a prefab", Instance->GetName().C());
+							continue;
+						}
+
+						NxFr::String Path = NxFr::Path::IsDirectory(Input) ? Input + Instance->GetName() : NxFr::String(Input);
+						NxEn::Prefab * Prefab = Assets->Create<NxEn::Prefab>(Path, NxEn::Prefab::Extension);
+						Worlds->PackPrefab(Prefab, Instance);
+					}
+				});
+			}, .Priority = 1 });
+			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "Prefab - Pack", .Action = [&]()
+			{
+				HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>(HierarchyEditContext::ContextId);
+				NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+				NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+
+				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection();
+				for (auto& Id : Ids)
+				{
+					NxFr::Handle<NxEn::GameObject> Instance = Hierarchy->GetItem(Id)->GetTarget();
+					if (!Assets->IsTracked(Instance->GetTemplateId()))
+					{
+						NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
+						continue;
+					}
+
+					NxEn::Prefab * Prefab = Assets->Load<NxEn::Prefab>(Instance->GetTemplateId());
+					Worlds->PackPrefab(Prefab, Instance);
+				}
+			}, .Priority = 1 });
+			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "Prefab - Unpack", .Action = [&]()
+			{
+				HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>(HierarchyEditContext::ContextId);
+				NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
+				NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+
+				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection();
+				for (auto& Id : Ids)
+				{
+					NxFr::Handle<NxEn::GameObject> Instance = Hierarchy->GetItem(Id)->GetTarget();
+					if (!Assets->IsTracked(Instance->GetTemplateId()))
+					{
+						NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
+						continue;
+					}
+
+					Worlds->UnpackPrefab(Instance);
+				}
+			}, .Priority = 1 });
+			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "Inspect", .Action = [&]()
+			{
+				NxFr::GUID Id = GetSystem<EditSystem>()->GetSelected(HierarchyEditContext::ContextId);
+				NxFr::Handle<NxEn::Object> Instance = GetSystem<NxEn::WorldSystem>()->GetObject(Id);
+
+				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();
+				Inspector->Show(Instance);
 			}, .Priority = 1 });
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()

@@ -4,14 +4,26 @@ namespace NxEd
 {
 	HierarchyManager::HierarchyManager()
 		: Worlds(nullptr), Edit(nullptr),
-		Items(), Panels(), Contexts()
+		Items(), Panel(nullptr), Context(nullptr)
 	{
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
+		Context = new HierarchyEditContext(this);
+		Edit->RegisterContext(Context);
+		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
+		Panel->SetManager(this);
+
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Rename", .Action = [&]() { Edit->Rename(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Duplicate", .Action = [&]() { Edit->Duplicate(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Move", .Action = [&]() { Edit->Move(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Delete", .Action = [&]() { Edit->Delete(); }, .Priority = -1 });
+
 		Worlds->GetOnWorldObjectChange() += { this, &HierarchyManager::OnHierarchyChanged };
 
 		FetchItems();
+		Panel->SetRoot(Worlds->GetWorld()->GetRoot()->GetId());
 	}
 
 	HierarchyManager::~HierarchyManager()
@@ -19,34 +31,9 @@ namespace NxEd
 		ClearItems();
 
 		Worlds->GetOnWorldObjectChange() -= { this, &HierarchyManager::OnHierarchyChanged };
-	}
 
-	HierarchyPanel* HierarchyManager::CreatePanel(NxEn::World* Target)
-	{
-		HierarchyPanel* Panel = new HierarchyPanel();
-		Panel->Initialize();
-		Panels.Append(Target->GetId(), Panel);
-
-		HierarchyEditContext* Context = new HierarchyEditContext(this, Target->GetId());
-		Edit->RegisterContext(Context);
-		Contexts.Append(Target->GetId(), Context);
-
-		Panel->SetManager(this);
-		Panel->SetRoot(Target->GetRoot()->GetId());
-		return Panel;
-	}
-
-	void HierarchyManager::DestroyPanel(NxEn::World* Target)
-	{
-		HierarchyEditContext* Context = Contexts[Target->GetId()];
-		Contexts.Remove(Target->GetId());
 		Edit->UnregisterContext(Context->GetId());
 		delete Context;
-
-		HierarchyPanel* Panel = Panels[Target->GetId()];
-		Panels.Remove(Target->GetId());
-		Panel->Shutdown();
-		delete Panel;
 	}
 
 	HierarchyItem* HierarchyManager::GetItem(NxFr::GUID GameObjectId)
@@ -69,15 +56,8 @@ namespace NxEd
 
 	void HierarchyManager::ClearItems()
 	{
-		for (auto [WorldId, Panel] : Panels)
-		{
-			Panel->Clear();
-		}
-
-		for (auto [WorldId, Context] : Contexts)
-		{
-			Edit->Unselect(Context->GetId());
-		}
+		Panel->Clear();
+		Edit->Unselect(Context->GetId());
 
 		for (auto [GameObjectId, Item] : Items)
 		{
@@ -92,10 +72,7 @@ namespace NxEd
 		HierarchyItem* Item = new HierarchyItem();
 		Item->Target = Instance;
 
-		for (auto [WorldId, Panel] : Panels)
-		{
-			Panel->OnCreateItem(Item->GetId());
-		}
+		Panel->OnCreateItem(Item->GetId());
 
 		NxFr::Handle<NxEn::GameObject> Iterator = Instance->GetChild();
 		while (Iterator)
@@ -118,10 +95,7 @@ namespace NxEd
 			Iterator = Iterator->GetNext();
 		}
 
-		for (auto [WorldId, Panel] : Panels)
-		{
-			Panel->OnDestroyItem(Item->GetId());
-		}
+		Panel->OnDestroyItem(Item->GetId());
 
 		Items.Remove(Item->GetId());
 		delete Item;
@@ -129,10 +103,8 @@ namespace NxEd
 
 	void HierarchyManager::SelectItem(NxFr::Handle<NxEn::GameObject> Instance, bool State)
 	{
-		NxFr::GUID WorldId = Instance->GetWorldId();
-
-		Panels[WorldId]->Select(Instance->GetId(), State, true, false);
-		Edit->SetSelected(Instance->GetId(), State, Contexts[WorldId]->GetId());
+		Panel->Select(Instance->GetId(), State, true, false);
+		Edit->SetSelected(Instance->GetId(), State, Context->GetId());
 	}
 
 	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId)
@@ -153,8 +125,8 @@ namespace NxEd
 		}
 	}
 
-	void HierarchyManager::SetEditContext(NxFr::GUID WorldId)
+	void HierarchyManager::SetEditContext()
 	{
-		Edit->SetContext(Contexts[WorldId]->GetId());
+		Edit->SetContext(Context->GetId());
 	}
 }

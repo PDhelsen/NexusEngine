@@ -5,8 +5,8 @@
 
 namespace NxEd
 {
-	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, NxFr::StringId Id)
-		: Edit::Context(Id), Manager(Manager)
+	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager)
+		: Edit::Context(ContextId), Manager(Manager)
 	{
 	}
 
@@ -130,7 +130,7 @@ namespace NxEd
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::GetAll()
 	{
 		NxFr::List<NxFr::GUID> Result;
-		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld(Id)->GetRoot();
+		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld()->GetRoot();
 
 		Result.Append(Root->GetId());
 		for (auto It = Root->BeginChild(); It != Root->EndChild(); ++It)
@@ -143,7 +143,7 @@ namespace NxEd
 
 	uint64 HierarchyEditContext::GetCount()
 	{
-		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld(Id)->GetRoot();
+		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld()->GetRoot();
 		return Root->GetChildCount(true) + 1;
 	}
 
@@ -188,7 +188,7 @@ namespace NxEd
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		NxFr::Handle<NxEn::GameObject> Parent = static_cast<HierarchyItem*>(Manager->GetItem(Selected))->GetTarget();
 
-		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost);
+		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost | HierarchyFilter::IgnoreSelected);
 		for (auto InstanceId : InstanceIds)
 		{
 			if (InstanceId == Parent->GetId())

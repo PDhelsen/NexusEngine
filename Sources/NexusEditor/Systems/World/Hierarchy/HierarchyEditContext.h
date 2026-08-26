@@ -30,7 +30,9 @@ namespace NxEd
 		friend class HierarchyManager;
 
 	public:
-		HierarchyEditContext(HierarchyManager* Manager, NxFr::StringId Id);
+		inline static const NxFr::StringId ContextId = "HierarchyContext"_Sid;
+
+		HierarchyEditContext(HierarchyManager* Manager);
 		~HierarchyEditContext();
 
 		NxFr::Array<NxFr::GUID> FilterSelection(HierarchyFilter Mode = HierarchyFilter::Default, NxFr::GUID* Active = nullptr) const;
