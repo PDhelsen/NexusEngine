@@ -6,7 +6,7 @@
 
 namespace NxEd
 {
-	class NX_EDITOR_API HierarchyPanel : public NxEn::Rework::TreePanel
+	class NX_EDITOR_API HierarchyPanel : public NxEn::TreePanel
 	{
 		friend class HierarchyManager;
 

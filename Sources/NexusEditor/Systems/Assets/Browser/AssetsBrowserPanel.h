@@ -6,7 +6,7 @@
 
 namespace NxEd
 {
-	class NX_EDITOR_API AssetsBrowserPanel : public NxEn::Rework::TreePanel
+	class NX_EDITOR_API AssetsBrowserPanel : public NxEn::TreePanel
 	{
 		friend class AssetsBrowser;
 

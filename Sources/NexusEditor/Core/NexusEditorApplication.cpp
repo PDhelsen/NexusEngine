@@ -72,7 +72,7 @@ namespace NxEd
 			Hierarchy = new HierarchyManager();
 
 			AssetsBrowserPanel* Panel = GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
-			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
+			Panel->AppendAction(NxEn::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
 			{
 				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
 
@@ -92,7 +92,7 @@ namespace NxEd
 
 				Browser->Refresh();
 			}, .Priority = 1 });
-			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Load / Reload", .Action = [&]()
+			Panel->AppendAction(NxEn::TreeAction{ .Name = "Load / Reload", .Action = [&]()
 			{
 				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
 				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
@@ -103,7 +103,7 @@ namespace NxEd
 					Assets->Reload(Id);
 				}
 			}, .Priority = 1 });
-			Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Instantiate", .Action = [&]()
+			Panel->AppendAction(NxEn::TreeAction{ .Name = "Instantiate", .Action = [&]()
 			{
 				NxEn::WorldSystem* Worlds = GetSystem<NxEn::WorldSystem>();
 				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();

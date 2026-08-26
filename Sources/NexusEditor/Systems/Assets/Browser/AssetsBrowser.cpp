@@ -41,11 +41,11 @@ namespace NxEd
 		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		Panel->SetBrowser(this);
 
-		Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });
-		Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Rename", .Action = [&]() { Edit->Rename(); }, .Priority = -1 });
-		Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Duplicate", .Action = [&]() { Edit->Duplicate(); }, .Priority = -1 });
-		Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Move", .Action = [&]() { Edit->Move(); }, .Priority = -1 });
-		Panel->AppendAction(NxEn::Rework::TreeAction{ .Name = "Delete", .Action = [&]() { Edit->Delete(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Rename", .Action = [&]() { Edit->Rename(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Duplicate", .Action = [&]() { Edit->Duplicate(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Move", .Action = [&]() { Edit->Move(); }, .Priority = -1 });
+		Panel->AppendAction(NxEn::TreeAction{ .Name = "Delete", .Action = [&]() { Edit->Delete(); }, .Priority = -1 });
 
 		Refresh();
 	}
