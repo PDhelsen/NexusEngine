@@ -10,14 +10,9 @@ namespace NxEd
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("GUI.Panel HierarchyPanel");
 	}));
 
-	HierarchyItem* HierarchyPanel::GetItem(NxFr::GUID Id)
+	HierarchyItem* HierarchyPanel::GetItem(NxFr::GUID InstanceId)
 	{
-		if (!Manager)
-		{
-			return nullptr;
-		}
-
-		return Manager->GetItem(Id);
+		return Manager->GetItem(InstanceId);
 	}
 
 	void HierarchyPanel::SetManager(HierarchyManager* Manager)
@@ -31,17 +26,16 @@ namespace NxEd
 		Filter += Query;
 
 		Filtered.Clear();
-		if (Filter.IsEmpty() || !Manager)
+		if (Filter.IsEmpty())
 		{
 			return;
 		}
 
-		NxEn::World* World = GetItem(Root)->GetTarget()->GetWorld();
-		NxFr::Array<NxFr::GUID> Ids = Manager->Worlds->FindGameObjects(Filter, World->GetId());
-		for (auto& Id : Ids)
+		NxFr::Array<NxFr::GUID> InstanceIds = Manager->Worlds->FindGameObjects(Filter, NxEn::WorldSystem::MainWorldId);
+		for (auto& InstanceId : InstanceIds)
 		{
-			SetVisible(Id);
-			Filtered.Append(Id);
+			SetVisible(InstanceId);
+			Filtered.Append(InstanceId);
 		}
 	}
 
@@ -53,7 +47,7 @@ namespace NxEd
 
 	void HierarchyPanel::OnDraw()
 	{
-		if (Manager && NxEn::GUI::Utils::IsPanelActive())
+		if (NxEn::GUI::Utils::IsPanelActive())
 		{
 			Manager->SetEditContext();
 		}
@@ -61,13 +55,8 @@ namespace NxEd
 		TreePanel::OnDraw();
 	}
 
-	void HierarchyPanel::OnSelectItem(NxFr::GUID Id, bool State)
+	void HierarchyPanel::OnSelectItem(NxFr::GUID InstanceId, bool State)
 	{
-		if (!Manager)
-		{
-			return;
-		}
-
-		Manager->SelectItem(GetItem(Id)->GetTarget(), State);
+		Manager->SelectItem(GetItem(InstanceId), State);
 	}
 }

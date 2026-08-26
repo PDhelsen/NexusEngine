@@ -14,6 +14,7 @@ namespace NxEd
 		friend class HierarchyEditContext;
 
 	public:
+		NX_NOCOPY_NOMOVE(HierarchyManager)
 		HierarchyManager();
 		~HierarchyManager();
 
@@ -25,7 +26,7 @@ namespace NxEd
 
 		void AppendItem(NxFr::Handle<NxEn::GameObject> Instance);
 		void RemoveItem(NxFr::Handle<NxEn::GameObject> Instance);
-		void SelectItem(NxFr::Handle<NxEn::GameObject> Instance, bool State);
+		void SelectItem(HierarchyItem* Item, bool State);
 
 		void OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId);
 		void SetEditContext();

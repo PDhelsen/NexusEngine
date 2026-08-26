@@ -23,7 +23,6 @@ namespace NxEd
 		Worlds->GetOnWorldObjectChange() += { this, &HierarchyManager::OnHierarchyChanged };
 
 		FetchItems();
-		Panel->SetRoot(Worlds->GetWorld()->GetRoot()->GetId());
 	}
 
 	HierarchyManager::~HierarchyManager()
@@ -44,14 +43,13 @@ namespace NxEd
 
 	void HierarchyManager::FetchItems()
 	{
-		NxFr::Array<NxFr::GUID> WorldsIds = Worlds->GetWorlds();
-		for (auto WorldId : WorldsIds)
-		{
-			NxEn::World* World = Worlds->GetWorld(WorldId);
-			NxFr::Handle<NxEn::GameObject> Root = World->GetRoot();
+		ClearItems();
 
-			AppendItem(Root);
-		}
+		NxEn::World* World = Worlds->GetWorld(NxEn::WorldSystem::MainWorldId);
+		NxFr::Handle<NxEn::GameObject> Root = World->GetRoot();
+
+		AppendItem(Root);
+		Panel->SetRoot(Root->GetId());
 	}
 
 	void HierarchyManager::ClearItems()
@@ -101,10 +99,10 @@ namespace NxEd
 		delete Item;
 	}
 
-	void HierarchyManager::SelectItem(NxFr::Handle<NxEn::GameObject> Instance, bool State)
+	void HierarchyManager::SelectItem(HierarchyItem* Item, bool State)
 	{
-		Panel->Select(Instance->GetId(), State, true, false);
-		Edit->SetSelected(Instance->GetId(), State, Context->GetId());
+		Panel->Select(Item->GetId(), State, true, false);
+		Edit->SetSelected(Item->GetId(), State, Context->GetId());
 	}
 
 	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId)

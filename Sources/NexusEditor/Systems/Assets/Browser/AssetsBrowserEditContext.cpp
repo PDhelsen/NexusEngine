@@ -73,11 +73,11 @@ namespace NxEd
 		}
 		else if (Recursive)
 		{
-			NxFr::Delegate<void(NxFr::GUID)> Traverse = [&](NxFr::GUID Id)
+			NxFr::Delegate<void(NxFr::GUID)> Traverse = [&](NxFr::GUID InstanceId)
 			{
-				Filtered.Append(Id);
+				Filtered.Append(InstanceId);
 
-				AssetsBrowserItem* Instance = Browser->GetItem(Id);
+				AssetsBrowserItem* Instance = Browser->GetItem(InstanceId);
 				if (!Instance)
 				{
 					return;
@@ -306,6 +306,6 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
 	{
-		Browser->Select(InstanceId, State);
+		Browser->SelectItem(Browser->GetItem(InstanceId), State);
 	}
 }

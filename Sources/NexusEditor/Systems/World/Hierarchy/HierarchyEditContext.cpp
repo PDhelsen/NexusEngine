@@ -32,7 +32,7 @@ namespace NxEd
 
 		if (Unfiltered)
 		{
-			return FilterSelection();
+			return GetSelection();
 		}
 
 		NxFr::Set<NxFr::GUID> Filtered = Selection.GetCapacity();
@@ -42,13 +42,13 @@ namespace NxEd
 		{
 			for (auto InstanceId : Roots)
 			{
-				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(InstanceId)->GetTarget();
+				HierarchyItem* Instance = Manager->GetItem(InstanceId);
 				if (!Instance)
 				{
 					continue;
 				}
 
-				NxFr::Handle<NxEn::GameObject> Parent = Instance->GetParent();
+				HierarchyItem* Parent = Manager->GetItem(Instance->GetParent());
 				bool ParentSelected = false;
 
 				while (Parent)
@@ -59,7 +59,7 @@ namespace NxEd
 						break;
 					}
 
-					Parent = Parent->GetParent();
+					Parent = Manager->GetItem(Parent->GetParent());
 				}
 
 				if (!ParentSelected)
@@ -70,19 +70,19 @@ namespace NxEd
 		}
 		else if (Recursive)
 		{
-			NxFr::Delegate<void(NxFr::GUID)> Traverse = [&](NxFr::GUID Id)
+			NxFr::Delegate<void(NxFr::GUID)> Traverse = [&](NxFr::GUID InstanceId)
 			{
-				Filtered.Append(Id);
+				Filtered.Append(InstanceId);
 
-				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(Id)->GetTarget();
+				HierarchyItem* Instance = Manager->GetItem(InstanceId);
 				if (!Instance)
 				{
 					return;
 				}
 
-				for (NxFr::Handle<NxEn::GameObject> Child = Instance->GetChild();
+				for (HierarchyItem* Child = Manager->GetItem(Instance->GetChild());
 					Child;
-					Child = Child->GetNext())
+					Child = Manager->GetItem(Child->GetNext()))
 				{
 					Traverse(Child->GetId());
 				}
@@ -109,18 +109,18 @@ namespace NxEd
 		{
 			NxFr::ContainerUtility::Sort<NxFr::GUID>(Result, [&](const NxFr::GUID& A, const NxFr::GUID& B)
 			{
-				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(A)->GetTarget();
+				HierarchyItem* Instance = Manager->GetItem(A);
 				if (!Instance)
 				{
 					return false;
 				}
-				NxFr::Handle<NxEn::GameObject> Target = Manager->GetItem(B)->GetTarget();
+				HierarchyItem* Target = Manager->GetItem(B);
 				if (!Target)
 				{
 					return true;
 				}
 
-				return Instance->GetOrderIndex() < Target->GetOrderIndex();
+				return Instance->Compare(*Target);
 			});
 		}
 
@@ -130,7 +130,9 @@ namespace NxEd
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::GetAll()
 	{
 		NxFr::List<NxFr::GUID> Result;
-		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld()->GetRoot();
+
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Handle<NxEn::GameObject> Root = System->GetWorld(NxEn::WorldSystem::MainWorldId)->GetRoot();
 
 		Result.Append(Root->GetId());
 		for (auto It = Root->BeginChild(); It != Root->EndChild(); ++It)
@@ -143,7 +145,9 @@ namespace NxEd
 
 	uint64 HierarchyEditContext::GetCount()
 	{
-		NxFr::Handle<NxEn::GameObject> Root = NxEn::Application::GetSystem<NxEn::WorldSystem>()->GetWorld()->GetRoot();
+		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
+		NxFr::Handle<NxEn::GameObject> Root = System->GetWorld(NxEn::WorldSystem::MainWorldId)->GetRoot();
+
 		return Root->GetChildCount(true) + 1;
 	}
 
@@ -157,8 +161,8 @@ namespace NxEd
 			NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection);
 			for (auto& InstanceId : InstanceIds)
 			{
-				NxFr::Handle<NxEn::GameObject> Parent = Manager->GetItem(InstanceId)->GetTarget();
-				System->CreateGameObject(Input, Parent, Parent->GetWorld()->GetId());
+				HierarchyItem* Parent = Manager->GetItem(InstanceId);
+				System->CreateGameObject(Input, Parent->GetTarget());
 			}
 		});
 	}
@@ -171,8 +175,8 @@ namespace NxEd
 			NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection);
 			for (auto& InstanceId : InstanceIds)
 			{
-				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(InstanceId)->GetTarget();
-				Instance->SetName(Input);
+				HierarchyItem* Instance = Manager->GetItem(InstanceId);
+				Instance->GetTarget()->SetName(Input);
 			}
 		});
 	}
@@ -186,18 +190,13 @@ namespace NxEd
 		}
 
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Handle<NxEn::GameObject> Parent = static_cast<HierarchyItem*>(Manager->GetItem(Selected))->GetTarget();
+		HierarchyItem* Parent = Manager->GetItem(Selected);
 
 		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost | HierarchyFilter::IgnoreSelected);
 		for (auto InstanceId : InstanceIds)
 		{
-			if (InstanceId == Parent->GetId())
-			{
-				continue;
-			}
-
-			NxFr::Handle<NxEn::GameObject> Instance = static_cast<HierarchyItem*>(Manager->GetItem(InstanceId))->GetTarget();
-			System->AttachGameObject(Instance, Parent);
+			HierarchyItem* Instance = Manager->GetItem(InstanceId);
+			System->AttachGameObject(Instance->GetTarget(), Parent->GetTarget());
 		}
 	}
 
@@ -208,8 +207,8 @@ namespace NxEd
 		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost);
 		for (auto& InstanceId : InstanceIds)
 		{
-			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(InstanceId)->GetTarget();
-			System->DuplicateGameObject(Instance);
+			HierarchyItem* Instance = Manager->GetItem(InstanceId);
+			System->DuplicateGameObject(Instance->GetTarget());
 		}
 	}
 
@@ -220,8 +219,8 @@ namespace NxEd
 		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost);
 		for (auto& InstanceId : InstanceIds)
 		{
-			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(InstanceId)->GetTarget();
-			System->DestroyGameObject(Instance);
+			HierarchyItem* Instance = Manager->GetItem(InstanceId);
+			System->DestroyGameObject(Instance->GetTarget());
 		}
 	}
 
@@ -248,30 +247,30 @@ namespace NxEd
 		}
 
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Handle<NxEn::GameObject> Target = Manager->GetItem(Selected)->GetTarget();
+		HierarchyItem* Parent = Manager->GetItem(Selected);
 
 		for (auto InstanceId : Clipboard)
 		{
-			NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(InstanceId)->GetTarget();
+			HierarchyItem* Instance = Manager->GetItem(InstanceId);
 			if (!Instance)
 			{
 				continue;
 			}
 
-			System->DuplicateGameObject(Instance, Target);
+			System->DuplicateGameObject(Instance->GetTarget(), Parent->GetTarget());
 		}
 
 		if (IsCutting)
 		{
 			for (auto InstanceId : Clipboard)
 			{
-				NxFr::Handle<NxEn::GameObject> Instance = Manager->GetItem(InstanceId)->GetTarget();
+				HierarchyItem* Instance = Manager->GetItem(InstanceId);
 				if (!Instance)
 				{
 					continue;
 				}
 
-				System->DestroyGameObject(Instance);
+				System->DestroyGameObject(Instance->GetTarget());
 			}
 		}
 
@@ -284,6 +283,6 @@ namespace NxEd
 
 	void HierarchyEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
 	{
-		Manager->SelectItem(Manager->GetItem(InstanceId)->GetTarget(), State);
+		Manager->SelectItem(Manager->GetItem(InstanceId), State);
 	}
 }

@@ -18,9 +18,8 @@ namespace NxEd
 		AssetsBrowser();
 		~AssetsBrowser();
 
+		AssetsBrowserItem* GetItem(NxFr::GUID Id);
 		void Refresh();
-		void Select(NxFr::GUID Id, bool State);
-		void Select(NxFr::StringView ItemPath, bool State);
 
 		void Create(NxFr::StringId Type, NxFr::StringView TargetPath);
 		void Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath);
@@ -31,10 +30,8 @@ namespace NxEd
 		NxFr::StringView Validate(NxFr::StringView ItemPath);
 		NxFr::String MakeUniquePath(NxFr::StringView ItemPath);
 
-		AssetsBrowserItem* GetItem(NxFr::GUID Id);
-		AssetsBrowserItem* GetParent(NxFr::StringView Path);
-
 	private:
+		void FetchItems();
 		AssetsBrowserItem* FetchItems(NxFr::StringView FsPath, AssetsBrowserItem* Parent);
 		AssetsBrowserItem* PurgeItems(AssetsBrowserItem* Item);
 		void ClearItems();
@@ -53,6 +50,7 @@ namespace NxEd
 
 		void SetEditContext();
 
+		NxFr::GUID PathToParent(NxFr::StringView Path);
 		NxFr::GUID ItemPathToId(NxFr::StringView ItemPath);
 		NxFr::String ItemPathToFsPath(NxFr::StringView ItemPath);
 		NxFr::String FsPathToItemPath(NxFr::StringView FsPath);
@@ -64,7 +62,6 @@ namespace NxEd
 		EditSystem* Edit;
 
 		NxFr::Dictionary<NxFr::GUID, AssetsBrowserItem*> Items;
-		AssetsBrowserItem* Root;
 		AssetsBrowserPanel* Panel;
 		AssetsBrowserEditContext* Context;
 	};

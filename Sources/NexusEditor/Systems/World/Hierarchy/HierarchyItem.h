@@ -17,6 +17,7 @@ namespace NxEd
 		NxFr::StringView GetLabel() const override { CacheLabel(); return Label; }
 		NxFr::StringView GetDescription() const override { return Target->GetName(); }
 		NxFr::StringId GetType() const override { return NxEn::GameObject::GetClassType(); }
+
 		NxFr::Handle<NxEn::GameObject> GetTarget() const { return Target; }
 
 		NxFr::GUID GetParent() const override { return Target->GetParent() ? Target->GetParent()->GetId() : 0; }
