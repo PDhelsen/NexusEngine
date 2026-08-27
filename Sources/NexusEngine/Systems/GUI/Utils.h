@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/Style.h"
+#include "NexusEngine/Systems/GUI/Element.h"
 
 namespace NxEn
 {
@@ -12,6 +13,7 @@ namespace NxEn
 			NX_ENGINE_API bool IsPanelActive();
 			NX_ENGINE_API NxFr::String GenerateStringId(NxFr::StringView Id, NxFr::StringView Label = "");
 			NX_ENGINE_API NxFr::GUID GenerateId(NxFr::StringView Id, NxFr::StringView Label = "");
+			NX_ENGINE_API NxFr::GUID GenerateElementId(Element* Instance, NxFr::StringView Name);
 			NX_ENGINE_API NxFr::StringId ImGuiToNexusId(NxFr::StringView Name);
 			NX_ENGINE_API NxFr::StringView ImGuiToNexusName(NxFr::StringView Name);
 			NX_ENGINE_API NxFr::String NexusToImGuiId(NxFr::StringView Name, NxFr::GUID Id);

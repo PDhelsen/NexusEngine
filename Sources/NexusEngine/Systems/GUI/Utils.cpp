@@ -24,6 +24,11 @@ namespace NxEn
 				return NxFr::Hash<>::HashObject(GenerateStringId(Id, Label));
 			}
 
+			NxFr::GUID GenerateElementId(Element* Instance, NxFr::StringView Name)
+			{
+				return NxFr::Hash<>::CombineHashes(Instance->GetObjectType(), NxFr::Hash<>::HashObject(Name));
+			}
+
 			NxFr::StringId ImGuiToNexusId(NxFr::StringView Name)
 			{
 				NxFr::StringView Id = NxFr::StringUtility::Split(Name, ImGuiIdSeparator(), 1);
