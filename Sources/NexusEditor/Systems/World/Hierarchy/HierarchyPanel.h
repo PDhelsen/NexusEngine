@@ -15,7 +15,7 @@ namespace NxEd
 	public:
 		NX_OBJECT(HierarchyPanel)
 
-		HierarchyItem* GetItem(NxFr::GUID Id) override;
+		HierarchyItem* GetItem(NxFr::GUID InstanceId) override;
 
 		void SetManager(HierarchyManager* Manager, HierarchyEditContext* Context);
 
@@ -25,7 +25,7 @@ namespace NxEd
 		void OnInitialize() override;
 		void OnDraw() override;
 
-		void OnSelectItem(NxFr::GUID Id, bool State) override;
+		void OnSelectItem(NxFr::GUID InstanceId, bool State) override;
 
 	private:
 		EditSystem* Edit;

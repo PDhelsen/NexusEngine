@@ -131,11 +131,15 @@ namespace NxEd
 
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::GetAll()
 	{
+		HierarchyItem* Instance = Manager->GetItem(Panel->GetRoot());
+		if (!Instance)
+		{
+			return NxFr::Array<NxFr::GUID>();
+		}
+
+		NxFr::Handle<NxEn::GameObject> Root = Instance->GetTarget();
+
 		NxFr::List<NxFr::GUID> Result;
-
-		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Handle<NxEn::GameObject> Root = System->GetWorld(NxEn::WorldSystem::MainWorldId)->GetRoot();
-
 		Result.Append(Root->GetId());
 		for (auto It = Root->BeginChild(); It != Root->EndChild(); ++It)
 		{
@@ -147,9 +151,13 @@ namespace NxEd
 
 	uint64 HierarchyEditContext::GetCount()
 	{
-		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
-		NxFr::Handle<NxEn::GameObject> Root = System->GetWorld(NxEn::WorldSystem::MainWorldId)->GetRoot();
+		HierarchyItem* Instance = Manager->GetItem(Panel->GetRoot());
+		if (!Instance)
+		{
+			return 0;
+		}
 
+		NxFr::Handle<NxEn::GameObject> Root = Instance->GetTarget();
 		return Root->GetChildCount(true) + 1;
 	}
 

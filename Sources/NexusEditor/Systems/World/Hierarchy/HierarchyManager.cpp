@@ -45,10 +45,16 @@ namespace NxEd
 	{
 		ClearItems();
 
-		NxEn::World* World = Worlds->GetWorld(NxEn::WorldSystem::MainWorldId);
-		NxFr::Handle<NxEn::GameObject> Root = World->GetRoot();
+		NxFr::Array<NxFr::GUID> WorldsIds = Worlds->GetWorlds();
+		for (auto WorldId : WorldsIds)
+		{
+			NxEn::World * World = Worlds->GetWorld(WorldId);
+			NxFr::Handle<NxEn::GameObject> Root = World->GetRoot();
 
-		AppendItem(Root);
+			AppendItem(Root);
+		}
+
+		NxFr::Handle<NxEn::GameObject> Root = Worlds->GetWorld(NxEn::WorldSystem::MainWorldId)->GetRoot();
 		Panel->SetRoot(Root->GetId());
 	}
 
