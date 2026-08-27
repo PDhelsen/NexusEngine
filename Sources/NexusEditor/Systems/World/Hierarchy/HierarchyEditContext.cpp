@@ -9,6 +9,7 @@ namespace NxEd
 	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel)
 		: Edit::Context(ContextId), Manager(Manager), Panel(Panel)
 	{
+		OnSelection += [this](NxFr::GUID InstanceId, bool State) { this->Panel->Select(InstanceId, State, true); };
 	}
 
 	HierarchyEditContext::~HierarchyEditContext()
@@ -280,10 +281,5 @@ namespace NxEd
 			Clipboard.Clear();
 			IsCutting = false;
 		}
-	}
-
-	void HierarchyEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
-	{
-		Panel->Select(InstanceId, State, true);
 	}
 }

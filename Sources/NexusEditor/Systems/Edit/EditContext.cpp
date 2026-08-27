@@ -7,10 +7,19 @@ namespace NxEd
 		Context::Context(NxFr::StringId Id)
 			: Id(Id), Clipboard(), Selection(), Selected(0), IsCutting(false)
 		{
+			OnDestroyed += [this](NxFr::GUID InstanceId)
+			{
+				Clipboard.TryRemove(InstanceId);
+				Selection.TryRemove(InstanceId);
+				if (Selected == InstanceId) Selected = 0;
+			};
 		}
 
 		Context::~Context()
 		{
+			OnCreated.Clear();
+			OnDestroyed.Clear();
+			OnSelection.Clear();
 		}
 
 		void Context::Cut()
@@ -46,7 +55,7 @@ namespace NxEd
 			Selection.Append(InstanceId);
 			Selected = InstanceId;
 
-			OnSelectionChanged(InstanceId, true);
+			OnSelection.Invoke(InstanceId, true);
 		}
 
 		void Context::Unselect(NxFr::GUID InstanceId)
@@ -62,7 +71,7 @@ namespace NxEd
 				Selected = 0;
 			}
 
-			OnSelectionChanged(InstanceId, false);
+			OnSelection.Invoke(InstanceId, false);
 		}
 
 		bool Context::IsSelected(NxFr::GUID InstanceId) const

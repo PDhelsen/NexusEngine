@@ -18,6 +18,10 @@ namespace NxEd
 
 			NxFr::StringId GetId() const { return Id; }
 
+			NxFr::Event<NxFr::GUID>& GetOnCreated() { return OnCreated; }
+			NxFr::Event<NxFr::GUID>& GetOnDestroyed() { return OnDestroyed; }
+			NxFr::Event<NxFr::GUID, bool>& GetOnSelection() { return OnSelection; }
+
 		protected:
 			virtual NxFr::Array<NxFr::GUID> GetAll() = 0;
 			virtual uint64 GetCount() = 0;
@@ -37,10 +41,13 @@ namespace NxEd
 			virtual NxFr::GUID GetSelected() const;
 			virtual NxFr::Array<NxFr::GUID> GetSelection() const;
 			virtual uint64 GetSelectionCount() const;
-			virtual void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const {};
 
 		protected:
 			NxFr::StringId Id;
+
+			NxFr::Event<NxFr::GUID> OnCreated;
+			NxFr::Event<NxFr::GUID> OnDestroyed;
+			NxFr::Event<NxFr::GUID, bool> OnSelection;
 
 			NxFr::Set<NxFr::GUID> Clipboard;
 			NxFr::Set<NxFr::GUID> Selection;

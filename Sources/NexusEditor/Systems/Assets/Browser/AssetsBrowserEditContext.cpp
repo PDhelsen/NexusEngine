@@ -9,6 +9,7 @@ namespace NxEd
 	AssetsBrowserEditContext::AssetsBrowserEditContext(AssetsBrowser* Browser, AssetsBrowserPanel* Panel)
 		: Edit::Context(ContextId), Browser(Browser), Panel(Panel)
 	{
+		OnSelection += [this](NxFr::GUID InstanceId, bool State) { this->Panel->Select(InstanceId, State, true); };
 	}
 
 	AssetsBrowserEditContext::~AssetsBrowserEditContext()
@@ -303,10 +304,5 @@ namespace NxEd
 			Clipboard.Clear();
 			IsCutting = false;
 		}
-	}
-
-	void AssetsBrowserEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
-	{
-		Panel->Select(InstanceId, State, true);
 	}
 }

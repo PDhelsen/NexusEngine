@@ -278,7 +278,9 @@ namespace NxEd
 		Item->Label = NxEn::GUI::Utils::NexusToImGuiId(Item->GetPrefix() + " " + Item->GetName(), Item->GetId());
 
 		Items.TryAppend(Item->GetId(), Item);
+
 		Panel->OnCreateItem(Item->GetId());
+		Context->OnCreated.Invoke(Item->GetId());
 	}
 
 	void AssetsBrowser::RemoveItem(AssetsBrowserItem* Item)
@@ -289,6 +291,8 @@ namespace NxEd
 		}
 
 		Panel->OnDestroyItem(Item->GetId());
+		Context->OnDestroyed.Invoke(Item->GetId());
+
 		Items.TryRemove(Item->GetId());
 		delete Item;
 	}

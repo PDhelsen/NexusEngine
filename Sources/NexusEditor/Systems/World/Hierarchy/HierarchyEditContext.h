@@ -51,8 +51,6 @@ namespace NxEd
 		void Copy() override;
 		void Paste() override;
 
-		void OnSelectionChanged(NxFr::GUID InstanceId, bool State) const override;
-
 	private:
 		HierarchyManager* Manager;
 		HierarchyPanel* Panel;

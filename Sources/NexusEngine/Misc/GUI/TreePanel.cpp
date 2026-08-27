@@ -268,13 +268,16 @@ namespace NxEn
 
 	void TreePanel::OnCreateItem(NxFr::GUID Id)
 	{
-		Select(Id, true);
 	}
 
 	void TreePanel::OnDestroyItem(NxFr::GUID Id)
 	{
-		Select(Id, false, false, false, false);
+		Selection.TryRemove(Id);
 		Filtered.TryRemove(Id);
+		if (Selected == Id)
+		{
+			Selected = 0;
+		}
 		if (Root == Id)
 		{
 			Root = 0;

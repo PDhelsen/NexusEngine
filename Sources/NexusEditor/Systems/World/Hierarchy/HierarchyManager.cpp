@@ -71,6 +71,7 @@ namespace NxEd
 		Item->Target = Instance;
 
 		Panel->OnCreateItem(Item->GetId());
+		Context->OnCreated.Invoke(Item->GetId());
 
 		NxFr::Handle<NxEn::GameObject> Iterator = Instance->GetChild();
 		while (Iterator)
@@ -94,6 +95,7 @@ namespace NxEd
 		}
 
 		Panel->OnDestroyItem(Item->GetId());
+		Context->OnDestroyed.Invoke(Item->GetId());
 
 		Items.Remove(Item->GetId());
 		delete Item;
