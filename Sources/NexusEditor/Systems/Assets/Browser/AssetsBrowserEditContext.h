@@ -35,11 +35,12 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserEditContext : public Edit::Context
 	{
 		friend class AssetsBrowser;
+		friend class AssetsBrowserPanel;
 
 	public:
 		inline static const NxFr::StringId ContextId = "AssetsBrowserContext"_Sid;
 
-		AssetsBrowserEditContext(AssetsBrowser* Browser);
+		AssetsBrowserEditContext(AssetsBrowser* Browser, AssetsBrowserPanel* Panel);
 		~AssetsBrowserEditContext();
 
 		NxFr::Array<NxFr::GUID> FilterSelection(AssetsBrowserFilter Mode = AssetsBrowserFilter::Default, NxFr::GUID* Active = nullptr) const;
@@ -61,6 +62,7 @@ namespace NxEd
 
 	private:
 		AssetsBrowser* Browser;
+		AssetsBrowserPanel* Panel;
 	};
 }
 

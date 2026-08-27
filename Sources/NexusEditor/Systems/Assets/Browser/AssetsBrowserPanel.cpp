@@ -1,4 +1,5 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
 namespace NxEd
@@ -15,9 +16,12 @@ namespace NxEd
 		return Browser->GetItem(InstanceId);
 	}
 
-	void AssetsBrowserPanel::SetBrowser(AssetsBrowser* Browser)
+	void AssetsBrowserPanel::SetBrowser(AssetsBrowser* Browser, AssetsBrowserEditContext* Context)
 	{
 		this->Browser = Browser;
+		this->Context = Context;
+
+		Edit = NxEn::Application::GetSystem<EditSystem>();
 	}
 
 	void AssetsBrowserPanel::Refresh()
@@ -35,7 +39,7 @@ namespace NxEd
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
-			Browser->SetEditContext();
+			Edit->SetContext(Context->GetId());
 		}
 
 		TreePanel::OnDraw();
@@ -43,6 +47,6 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnSelectItem(NxFr::GUID InstanceId, bool State)
 	{
-		Browser->SelectItem(Browser->GetItem(InstanceId), State);
+		Edit->SetSelected(InstanceId, State, Context->GetId());
 	}
 }

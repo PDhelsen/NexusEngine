@@ -32,10 +32,10 @@ namespace NxEd
 		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
-		Context = new AssetsBrowserEditContext(this);
-		Edit->RegisterContext(Context);
 		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
-		Panel->SetBrowser(this);
+		Context = new AssetsBrowserEditContext(this, Panel);
+		Panel->SetBrowser(this, Context);
+		Edit->RegisterContext(Context);
 
 		Panel->AppendAction(NxEn::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });
 		Panel->AppendAction(NxEn::TreeAction{ .Name = "Rename", .Action = [&]() { Edit->Rename(); }, .Priority = -1 });
@@ -279,7 +279,6 @@ namespace NxEd
 
 		Items.TryAppend(Item->GetId(), Item);
 		Panel->OnCreateItem(Item->GetId());
-		Edit->Select(Item->GetId(), Context->GetId());
 	}
 
 	void AssetsBrowser::RemoveItem(AssetsBrowserItem* Item)
@@ -289,7 +288,6 @@ namespace NxEd
 			return;
 		}
 
-		Edit->Unselect(Item->GetId(), Context->GetId());
 		Panel->OnDestroyItem(Item->GetId());
 		Items.TryRemove(Item->GetId());
 		delete Item;
@@ -373,12 +371,6 @@ namespace NxEd
 		Item->Next = 0;
 	}
 
-	void AssetsBrowser::SelectItem(AssetsBrowserItem* Item, bool State)
-	{
-		Panel->Select(Item->GetId(), State, true, false);
-		Edit->SetSelected(Item->GetId(), State, Context->GetId());
-	}
-
 	void AssetsBrowser::OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath, AssetsBrowserItem* Parent)
 	{
 		NxFr::String ItemPath = ItemPathToAssetPath(TargetPath);
@@ -430,11 +422,6 @@ namespace NxEd
 		Item->OnDelete(ItemPathToCallbackPath(Item->Path, Item));
 		DetachItem(Item);
 		RemoveItem(Item);
-	}
-
-	void AssetsBrowser::SetEditContext()
-	{
-		Edit->SetContext(Context->GetId());
 	}
 
 	NxFr::GUID AssetsBrowser::PathToParent(NxFr::StringView Path)

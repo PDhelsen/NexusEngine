@@ -41,14 +41,11 @@ namespace NxEd
 		void RemoveItem(AssetsBrowserItem* Item);
 		void AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent);
 		void DetachItem(AssetsBrowserItem* Item);
-		void SelectItem(AssetsBrowserItem* Item, bool State);
 
 		void OnCreate(NxFr::StringId Type, NxFr::StringView TargetPath, AssetsBrowserItem* Parent);
 		void OnMove(AssetsBrowserItem* Item, NxFr::StringView TargetPath, AssetsBrowserItem* Parent);
 		void OnDuplicate(AssetsBrowserItem* Item, NxFr::StringView TargetPath, AssetsBrowserItem* Parent);
 		void OnDelete(AssetsBrowserItem* Item);
-
-		void SetEditContext();
 
 		NxFr::GUID PathToParent(NxFr::StringView Path);
 		NxFr::GUID ItemPathToId(NxFr::StringView ItemPath);

@@ -254,8 +254,6 @@ namespace NxEn
 
 	void TreePanel::OnDisable()
 	{
-		Clear();
-
 		Menu.Hide();
 		Panel::OnDisable();
 	}

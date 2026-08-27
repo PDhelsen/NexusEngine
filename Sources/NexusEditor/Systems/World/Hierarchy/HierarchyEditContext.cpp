@@ -1,12 +1,13 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyEditContext.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEd
 {
-	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager)
-		: Edit::Context(ContextId), Manager(Manager)
+	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel)
+		: Edit::Context(ContextId), Manager(Manager), Panel(Panel)
 	{
 	}
 
@@ -283,6 +284,6 @@ namespace NxEd
 
 	void HierarchyEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
 	{
-		Manager->SelectItem(Manager->GetItem(InstanceId), State);
+		Panel->Select(InstanceId, State, true);
 	}
 }

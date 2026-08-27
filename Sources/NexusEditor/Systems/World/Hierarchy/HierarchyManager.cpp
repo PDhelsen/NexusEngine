@@ -9,10 +9,10 @@ namespace NxEd
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
-		Context = new HierarchyEditContext(this);
-		Edit->RegisterContext(Context);
 		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
-		Panel->SetManager(this);
+		Context = new HierarchyEditContext(this, Panel);
+		Panel->SetManager(this, Context);
+		Edit->RegisterContext(Context);
 
 		Panel->AppendAction(NxEn::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });
 		Panel->AppendAction(NxEn::TreeAction{ .Name = "Rename", .Action = [&]() { Edit->Rename(); }, .Priority = -1 });
@@ -99,12 +99,6 @@ namespace NxEd
 		delete Item;
 	}
 
-	void HierarchyManager::SelectItem(HierarchyItem* Item, bool State)
-	{
-		Panel->Select(Item->GetId(), State, true, false);
-		Edit->SetSelected(Item->GetId(), State, Context->GetId());
-	}
-
 	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId)
 	{
 		NxFr::Handle<NxEn::Object> GameObject = Worlds->GetObject(GameObjectId, WorldId);
@@ -121,10 +115,5 @@ namespace NxEd
 		{
 			RemoveItem(GameObject);
 		}
-	}
-
-	void HierarchyManager::SetEditContext()
-	{
-		Edit->SetContext(Context->GetId());
 	}
 }

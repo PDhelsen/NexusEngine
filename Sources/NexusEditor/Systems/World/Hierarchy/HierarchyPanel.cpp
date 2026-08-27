@@ -1,4 +1,5 @@
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyPanel.h"
+#include "NexusEditor/Systems/World/Hierarchy/HierarchyEditContext.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 
 namespace NxEd
@@ -15,9 +16,12 @@ namespace NxEd
 		return Manager->GetItem(InstanceId);
 	}
 
-	void HierarchyPanel::SetManager(HierarchyManager* Manager)
+	void HierarchyPanel::SetManager(HierarchyManager* Manager, HierarchyEditContext* Context)
 	{
 		this->Manager = Manager;
+		this->Context = Context;
+		
+		Edit = NxEn::Application::GetSystem<EditSystem>();
 	}
 
 	void HierarchyPanel::Find(NxFr::StringView Query)
@@ -49,7 +53,7 @@ namespace NxEd
 	{
 		if (NxEn::GUI::Utils::IsPanelActive())
 		{
-			Manager->SetEditContext();
+			Edit->SetContext(Context->GetId());
 		}
 
 		TreePanel::OnDraw();
@@ -57,6 +61,6 @@ namespace NxEd
 
 	void HierarchyPanel::OnSelectItem(NxFr::GUID InstanceId, bool State)
 	{
-		Manager->SelectItem(GetItem(InstanceId), State);
+		Edit->SetSelected(InstanceId, State, Context->GetId());
 	}
 }

@@ -28,11 +28,12 @@ namespace NxEd
 	class NX_EDITOR_API HierarchyEditContext : public Edit::Context
 	{
 		friend class HierarchyManager;
+		friend class HierarchyPanel;
 
 	public:
 		inline static const NxFr::StringId ContextId = "HierarchyContext"_Sid;
 
-		HierarchyEditContext(HierarchyManager* Manager);
+		HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel);
 		~HierarchyEditContext();
 
 		NxFr::Array<NxFr::GUID> FilterSelection(HierarchyFilter Mode = HierarchyFilter::Default, NxFr::GUID* Active = nullptr) const;
@@ -54,6 +55,7 @@ namespace NxEd
 
 	private:
 		HierarchyManager* Manager;
+		HierarchyPanel* Panel;
 	};
 }
 

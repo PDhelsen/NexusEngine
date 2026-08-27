@@ -1,12 +1,13 @@
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
+#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserPanel.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 
 #include "NexusEngine/Misc/GUI/InputTextPopup.h"
 
 namespace NxEd
 {
-	AssetsBrowserEditContext::AssetsBrowserEditContext(AssetsBrowser* Browser)
-		: Edit::Context(ContextId), Browser(Browser)
+	AssetsBrowserEditContext::AssetsBrowserEditContext(AssetsBrowser* Browser, AssetsBrowserPanel* Panel)
+		: Edit::Context(ContextId), Browser(Browser), Panel(Panel)
 	{
 	}
 
@@ -306,6 +307,6 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::OnSelectionChanged(NxFr::GUID InstanceId, bool State) const
 	{
-		Browser->SelectItem(Browser->GetItem(InstanceId), State);
+		Panel->Select(InstanceId, State, true);
 	}
 }

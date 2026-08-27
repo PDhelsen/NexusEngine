@@ -2,6 +2,7 @@
 
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEngine/Misc/GUI/TreePanel.h"
+#include "NexusEditor/Systems/Edit/EditSystem.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowserItem.h"
 
 namespace NxEd
@@ -9,13 +10,14 @@ namespace NxEd
 	class NX_EDITOR_API AssetsBrowserPanel : public NxEn::TreePanel
 	{
 		friend class AssetsBrowser;
+		friend class AssetsBrowserEditContext;
 
 	public:
 		NX_OBJECT(AssetsBrowserPanel)
 
 		AssetsBrowserItem* GetItem(NxFr::GUID Id) override;
 
-		void SetBrowser(AssetsBrowser* Browser);
+		void SetBrowser(AssetsBrowser* Browser, AssetsBrowserEditContext* Context);
 
 		void Refresh() override;
 
@@ -26,7 +28,10 @@ namespace NxEd
 		void OnSelectItem(NxFr::GUID Id, bool State) override;
 
 	private:
+		EditSystem* Edit;
+
 		AssetsBrowser* Browser;
+		AssetsBrowserEditContext* Context;
 	};
 }
 
