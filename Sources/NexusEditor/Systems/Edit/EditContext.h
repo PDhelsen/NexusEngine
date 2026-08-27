@@ -25,6 +25,7 @@ namespace NxEd
 		protected:
 			virtual NxFr::Array<NxFr::GUID> GetAll() = 0;
 			virtual uint64 GetCount() = 0;
+			virtual void Clear();
 
 			virtual void Create() = 0;
 			virtual void Rename() = 0;

@@ -22,6 +22,14 @@ namespace NxEd
 			OnSelection.Clear();
 		}
 
+		void Context::Clear()
+		{
+			Clipboard.Clear();
+			Selection.Clear();
+			Selected = 0;
+			IsCutting = false;
+		}
+
 		void Context::Cut()
 		{
 			Clipboard.Clear();

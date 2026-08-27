@@ -19,6 +19,7 @@ namespace NxEd
 
 		NxFr::Array<NxFr::GUID> GetAll(NxFr::StringId ContextId = 0);
 		uint64 GetCount(NxFr::StringId ContextId = 0);
+		void Clear(NxFr::StringId ContextId = 0);
 
 		void Create(NxFr::StringId ContextId = 0);
 		void Rename(NxFr::StringId ContextId = 0);

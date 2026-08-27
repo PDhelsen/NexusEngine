@@ -233,7 +233,7 @@ namespace NxEd
 	void AssetsBrowser::ClearItems()
 	{
 		Panel->Clear();
-		Edit->Unselect(Context->GetId());
+		Edit->Clear(Context->GetId());
 
 		for (auto [InstanceId, Item] : Items)
 		{

@@ -151,6 +151,17 @@ namespace NxEd
 		return Ctx->GetCount();
 	}
 
+	void EditSystem::Clear(NxFr::StringId ContextId)
+	{
+		Edit::Context* Ctx = GetContext(ContextId);
+		if (!Ctx)
+		{
+			return;
+		}
+
+		Ctx->Clear();
+	}
+
 	void EditSystem::Create(NxFr::StringId ContextId)
 	{
 		Edit::Context* Ctx = GetContext(ContextId);

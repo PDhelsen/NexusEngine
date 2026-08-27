@@ -61,7 +61,7 @@ namespace NxEd
 	void HierarchyManager::ClearItems()
 	{
 		Panel->Clear();
-		Edit->Unselect(Context->GetId());
+		Edit->Clear(Context->GetId());
 
 		for (auto [GameObjectId, Item] : Items)
 		{
