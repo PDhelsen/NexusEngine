@@ -1,6 +1,7 @@
 #include "NexusEditor/Core/NexusEditorApplication.h"
 
 #include "NexusEditor/Systems/Edit/EditSystem.h"
+#include "NexusEditor/Systems/Stages/StagesSystem.h"
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 #include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
@@ -28,12 +29,14 @@ namespace NxEd
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 		Systems.CreateSystem<EditSystem>();
+		Systems.CreateSystem<StagesSystem>();
 	}
 
 	NexusEditorApplication::~NexusEditorApplication()
 	{
 		NxEn::SystemManager& Systems = GetSystems();
 		Systems.DestroySystem<EditSystem>();
+		Systems.DestroySystem<StagesSystem>();
 	}
 
 	void NexusEditorApplication::SaveAll()
@@ -67,6 +70,7 @@ namespace NxEd
 		});
 
 		Bootstrap.AppendSystem<EditSystem>();
+		Bootstrap.AppendSystem<StagesSystem>();
 
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Create Assets & Worlds Managers", [&]()
 		{
@@ -140,11 +144,7 @@ namespace NxEd
 				NxFr::GUID Id = Edit->GetSelected();
 				NxEn::Asset* Instance = Assets->Load(Id);
 
-				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();
-				Inspector->Show(Instance);
-				ViewerPanel* Viewer = GetSystem<NxEn::GUISystem>()->GetPanel<ViewerPanel>();
-				Viewer->Show(Instance);
-
+				GetSystem<StagesSystem>()->CreateStage(Instance);
 			}, .Priority = 1 });
 
 			HierarchyPanel* PanelHierarchy = GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
@@ -212,19 +212,11 @@ namespace NxEd
 					Worlds->UnpackPrefab(Instance);
 				}
 			}, .Priority = 1 });
-			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "View / Inspect", .Action = [&]()
-			{
-				NxEn::WorldSystem* World = GetSystem<NxEn::WorldSystem>();
-				EditSystem* Edit = GetSystem<EditSystem>();
-
-				NxFr::GUID Id = Edit->GetSelected();
-				NxFr::Handle<NxEn::GameObject> Instance = World->Cast<NxEn::GameObject>(World->GetObject(Id));
-
-				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();
-				Inspector->Show(Instance);
-				ViewerPanel* Viewer = GetSystem<NxEn::GUISystem>()->GetPanel<ViewerPanel>();
-				Viewer->Show(Instance->GetWorld());
-			}, .Priority = 1 });
+		});
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Create Main Stage", [&]()
+		{
+			NxEn::World* World = GetSystem<NxEn::WorldSystem>()->GetWorld();
+			GetSystem<StagesSystem>()->GetMainStage()->Initialize(World);
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
 		{
@@ -265,6 +257,7 @@ namespace NxEd
 		});
 
 		Unbootstrap.AppendSystem<EditSystem>();
+		Unbootstrap.AppendSystem<StagesSystem>();
 
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event HID - Editor", [&]()
 		{
@@ -290,6 +283,8 @@ namespace NxEd
 	{
 		NexusEngineApplication::OnRun();
 		NxEn::Ticker& Ticks = GetTicker();
+
+		Ticks.AppendSystem<StagesSystem>(NxEn::Ticker::TickBucket::Engine);
 	}
 
 	void NexusEditorApplication::ApplySettings()
