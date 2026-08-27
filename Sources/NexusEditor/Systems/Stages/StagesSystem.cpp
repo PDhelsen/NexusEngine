@@ -35,9 +35,8 @@ namespace NxEd
 	{
 		if (Instance->GetId() == MainStage->GetTarget()->GetId())
 		{
-			StagePanel* Panel = GetMainStage();
-			Panel->Show();
-			return Panel;
+			MainStage->Show();
+			return MainStage;
 		}
 
 		StagePanel** Handle = Stages.TryGet(Instance->GetId());
@@ -81,7 +80,7 @@ namespace NxEd
 	{
 		if (Id == MainStage->GetTarget()->GetId())
 		{
-			return GetMainStage();
+			return MainStage;
 		}
 
 		StagePanel** Handle = Stages.TryGet(Id);
@@ -98,7 +97,7 @@ namespace NxEd
 			}
 		}
 
-		return GetMainStage();
+		return MainStage;
 	}
 
 	StagePanel* StagesSystem::GetMainStage()
