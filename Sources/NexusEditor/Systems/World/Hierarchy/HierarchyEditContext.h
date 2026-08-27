@@ -33,7 +33,7 @@ namespace NxEd
 	public:
 		inline static const NxFr::StringId ContextId = "HierarchyContext"_Sid;
 
-		HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel);
+		HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel, NxFr::StringId Id);
 		~HierarchyEditContext();
 
 		NxFr::Array<NxFr::GUID> FilterSelection(HierarchyFilter Mode = HierarchyFilter::Default, NxFr::GUID* Active = nullptr) const;

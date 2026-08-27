@@ -10,7 +10,7 @@ namespace NxEd
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
 		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
-		Context = new HierarchyEditContext(this, Panel);
+		Context = new HierarchyEditContext(this, Panel, HierarchyEditContext::ContextId);
 		Panel->Initialize(this, Context);
 		Edit->RegisterContext(Context);
 

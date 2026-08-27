@@ -6,8 +6,8 @@
 
 namespace NxEd
 {
-	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel)
-		: Edit::Context(ContextId), Manager(Manager), Panel(Panel)
+	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel, NxFr::StringId Id)
+		: Edit::Context(Id), Manager(Manager), Panel(Panel)
 	{
 		OnSelection += [this](NxFr::GUID InstanceId, bool State) { this->Panel->Select(InstanceId, State, true); };
 	}

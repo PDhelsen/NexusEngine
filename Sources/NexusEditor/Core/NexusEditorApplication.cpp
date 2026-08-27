@@ -76,7 +76,7 @@ namespace NxEd
 			AssetsBrowserPanel* PanelBrowser = GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "Import / Reimport", .Action = [&]()
 			{
-				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
+				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>();
 
 				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::NoDirectory | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
 				for (auto& Id : Ids)
@@ -97,7 +97,7 @@ namespace NxEd
 			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "Load / Reload", .Action = [&]()
 			{
 				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
-				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
+				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>();
 
 				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
 				for (auto& Id : Ids)
@@ -109,7 +109,7 @@ namespace NxEd
 			{
 				NxEn::WorldSystem* Worlds = GetSystem<NxEn::WorldSystem>();
 				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
-				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>(AssetsBrowserEditContext::ContextId);
+				AssetsBrowserEditContext* Context = GetSystem<EditSystem>()->GetContext<AssetsBrowserEditContext>();
 
 				NxFr::Array<NxFr::GUID> Ids = Context->FilterSelection(AssetsBrowserFilter::AssetsOnly | AssetsBrowserFilter::MultiSelection | AssetsBrowserFilter::Recursive);
 				for (auto& Id : Ids)
@@ -137,7 +137,7 @@ namespace NxEd
 				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
 				EditSystem* Edit = GetSystem<EditSystem>();
 
-				NxFr::GUID Id = Edit->GetSelected(AssetsBrowserEditContext::ContextId);
+				NxFr::GUID Id = Edit->GetSelected();
 				NxEn::Asset* Instance = Assets->Load(Id);
 
 				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();
@@ -153,7 +153,7 @@ namespace NxEd
 				NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 				Popup->RegisterCallback([=](NxFr::StringView Input)
 				{
-					HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>(HierarchyEditContext::ContextId);
+					HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>();
 					NxEn::AssetsSystem * Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 					NxEn::WorldSystem * Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 
@@ -175,7 +175,7 @@ namespace NxEd
 			}, .Priority = 1 });
 			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "Prefab - Pack", .Action = [&]()
 			{
-				HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>(HierarchyEditContext::ContextId);
+				HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>();
 				NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 				NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 
@@ -195,7 +195,7 @@ namespace NxEd
 			}, .Priority = 1 });
 			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "Prefab - Unpack", .Action = [&]()
 			{
-				HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>(HierarchyEditContext::ContextId);
+				HierarchyEditContext* Context = GetSystem<EditSystem>()->GetContext<HierarchyEditContext>();
 				NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 				NxEn::WorldSystem* Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 
@@ -217,7 +217,7 @@ namespace NxEd
 				NxEn::WorldSystem* World = GetSystem<NxEn::WorldSystem>();
 				EditSystem* Edit = GetSystem<EditSystem>();
 
-				NxFr::GUID Id = Edit->GetSelected(HierarchyEditContext::ContextId);
+				NxFr::GUID Id = Edit->GetSelected();
 				NxFr::Handle<NxEn::GameObject> Instance = World->Cast<NxEn::GameObject>(World->GetObject(Id));
 
 				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();

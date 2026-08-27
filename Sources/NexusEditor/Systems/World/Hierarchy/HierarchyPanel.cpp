@@ -20,6 +20,7 @@ namespace NxEd
 	{
 		this->Manager = Manager;
 		this->Context = Context;
+		this->Actions = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>()->Actions;
 
 		TreePanel::Initialize();
 	}
