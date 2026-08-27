@@ -17,7 +17,7 @@ namespace NxEd
 
 		HierarchyItem* GetItem(NxFr::GUID InstanceId) override;
 
-		void SetManager(HierarchyManager* Manager, HierarchyEditContext* Context);
+		void Initialize(HierarchyManager* Manager, HierarchyEditContext* Context);
 
 		void Find(NxFr::StringView Query) override;
 

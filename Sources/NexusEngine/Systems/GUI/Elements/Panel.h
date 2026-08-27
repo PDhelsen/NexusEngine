@@ -13,10 +13,13 @@ namespace NxEn
 			NX_OBJECT(Panel)
 
 			template<typename T>
-			static T* Create()
+			static T* Create(bool Initialize = true)
 			{
 				T* Instance = new T();
-				Instance->Initialize();
+				if (Initialize)
+				{
+					Instance->Panel::Initialize();
+				}
 				return static_cast<T*>(GUISystem::GetPanels().Register(T::GetClassType(), Instance));
 			}
 

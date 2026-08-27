@@ -4,7 +4,7 @@
 
 namespace NxEd
 {
-	static AssetsBrowserPanel* Panel = NxEn::GUI::Panel::Create<AssetsBrowserPanel>();
+	static AssetsBrowserPanel* Panel = NxEn::GUI::Panel::Create<AssetsBrowserPanel>(false);
 
 	static const NxEn::GUI::Menu::Item* MenuItemBrowser = NxEn::GUI::Menu::Create("Object/Assets/Browser", NxFr::Delegate<void()>([]()
 	{
@@ -16,12 +16,12 @@ namespace NxEd
 		return Browser->GetItem(InstanceId);
 	}
 
-	void AssetsBrowserPanel::SetBrowser(AssetsBrowser* Browser, AssetsBrowserEditContext* Context)
+	void AssetsBrowserPanel::Initialize(AssetsBrowser* Browser, AssetsBrowserEditContext* Context)
 	{
 		this->Browser = Browser;
 		this->Context = Context;
 
-		Edit = NxEn::Application::GetSystem<EditSystem>();
+		TreePanel::Initialize();
 	}
 
 	void AssetsBrowserPanel::Refresh()
@@ -33,6 +33,8 @@ namespace NxEd
 	{
 		TreePanel::OnInitialize();
 		SetNameId("Assets");
+
+		Edit = NxEn::Application::GetSystem<EditSystem>();
 	}
 
 	void AssetsBrowserPanel::OnDraw()

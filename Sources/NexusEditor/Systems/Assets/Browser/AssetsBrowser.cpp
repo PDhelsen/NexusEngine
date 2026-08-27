@@ -34,7 +34,7 @@ namespace NxEd
 
 		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<AssetsBrowserPanel>();
 		Context = new AssetsBrowserEditContext(this, Panel);
-		Panel->SetBrowser(this, Context);
+		Panel->Initialize(this, Context);
 		Edit->RegisterContext(Context);
 
 		Panel->AppendAction(NxEn::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });

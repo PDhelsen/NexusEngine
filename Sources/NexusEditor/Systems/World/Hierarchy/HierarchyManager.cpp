@@ -11,7 +11,7 @@ namespace NxEd
 
 		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
 		Context = new HierarchyEditContext(this, Panel);
-		Panel->SetManager(this, Context);
+		Panel->Initialize(this, Context);
 		Edit->RegisterContext(Context);
 
 		Panel->AppendAction(NxEn::TreeAction{ .Name = "Create", .Action = [&]() { Edit->Create(); }, .Priority = -1 });

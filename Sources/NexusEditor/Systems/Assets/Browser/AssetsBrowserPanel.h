@@ -17,7 +17,7 @@ namespace NxEd
 
 		AssetsBrowserItem* GetItem(NxFr::GUID InstanceId) override;
 
-		void SetBrowser(AssetsBrowser* Browser, AssetsBrowserEditContext* Context);
+		void Initialize(AssetsBrowser* Browser, AssetsBrowserEditContext* Context);
 
 		void Refresh() override;
 

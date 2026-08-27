@@ -4,7 +4,7 @@
 
 namespace NxEd
 {
-	static HierarchyPanel* Panel = NxEn::GUI::Panel::Create<HierarchyPanel>();
+	static HierarchyPanel* Panel = NxEn::GUI::Panel::Create<HierarchyPanel>(false);
 
 	static const NxEn::GUI::Menu::Item* MenuItemHierarchy = NxEn::GUI::Menu::Create("Object/World/Hierarchy", NxFr::Delegate<void()>([]()
 	{
@@ -16,12 +16,12 @@ namespace NxEd
 		return Manager->GetItem(InstanceId);
 	}
 
-	void HierarchyPanel::SetManager(HierarchyManager* Manager, HierarchyEditContext* Context)
+	void HierarchyPanel::Initialize(HierarchyManager* Manager, HierarchyEditContext* Context)
 	{
 		this->Manager = Manager;
 		this->Context = Context;
-		
-		Edit = NxEn::Application::GetSystem<EditSystem>();
+
+		TreePanel::Initialize();
 	}
 
 	void HierarchyPanel::Find(NxFr::StringView Query)
@@ -47,6 +47,8 @@ namespace NxEd
 	{
 		TreePanel::OnInitialize();
 		SetNameId("Hierarchy");
+
+		Edit = NxEn::Application::GetSystem<EditSystem>();
 	}
 
 	void HierarchyPanel::OnDraw()
