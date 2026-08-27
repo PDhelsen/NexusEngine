@@ -4,6 +4,7 @@
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
 #include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
+#include "NexusEditor/Misc/Object/Viewer/ViewerPanel.h"
 #include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 namespace NxEd
@@ -131,13 +132,19 @@ namespace NxEd
 					}
 				}
 			}, .Priority = 1 });
-			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "Inspect", .Action = [&]()
+			PanelBrowser->AppendAction(NxEn::TreeAction{ .Name = "View / Inspect", .Action = [&]()
 			{
-				NxFr::GUID Id = GetSystem<EditSystem>()->GetSelected(AssetsBrowserEditContext::ContextId);
-				NxEn::Asset* Instance = GetSystem<NxEn::AssetsSystem>()->Load(Id);
+				NxEn::AssetsSystem* Assets = GetSystem<NxEn::AssetsSystem>();
+				EditSystem* Edit = GetSystem<EditSystem>();
+
+				NxFr::GUID Id = Edit->GetSelected(AssetsBrowserEditContext::ContextId);
+				NxEn::Asset* Instance = Assets->Load(Id);
 
 				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();
 				Inspector->Show(Instance);
+				ViewerPanel* Viewer = GetSystem<NxEn::GUISystem>()->GetPanel<ViewerPanel>();
+				Viewer->Show(Instance);
+
 			}, .Priority = 1 });
 
 			HierarchyPanel* PanelHierarchy = GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
@@ -205,13 +212,18 @@ namespace NxEd
 					Worlds->UnpackPrefab(Instance);
 				}
 			}, .Priority = 1 });
-			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "Inspect", .Action = [&]()
+			PanelHierarchy->AppendAction(NxEn::TreeAction{ .Name = "View / Inspect", .Action = [&]()
 			{
-				NxFr::GUID Id = GetSystem<EditSystem>()->GetSelected(HierarchyEditContext::ContextId);
-				NxFr::Handle<NxEn::Object> Instance = GetSystem<NxEn::WorldSystem>()->GetObject(Id);
+				NxEn::WorldSystem* World = GetSystem<NxEn::WorldSystem>();
+				EditSystem* Edit = GetSystem<EditSystem>();
+
+				NxFr::GUID Id = Edit->GetSelected(HierarchyEditContext::ContextId);
+				NxFr::Handle<NxEn::GameObject> Instance = World->Cast<NxEn::GameObject>(World->GetObject(Id));
 
 				InspectorPanel* Inspector = GetSystem<NxEn::GUISystem>()->GetPanel<InspectorPanel>();
 				Inspector->Show(Instance);
+				ViewerPanel* Viewer = GetSystem<NxEn::GUISystem>()->GetPanel<ViewerPanel>();
+				Viewer->Show(Instance->GetWorld());
 			}, .Priority = 1 });
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
