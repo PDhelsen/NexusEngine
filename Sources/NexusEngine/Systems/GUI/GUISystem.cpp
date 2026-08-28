@@ -71,6 +71,11 @@ namespace NxEn
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
 			GeneratePath(NameDefault, ExtensionImGui),
@@ -94,6 +99,11 @@ namespace NxEn
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameImGui), ExtensionImGui),
 			"", Name.IsEmpty());
@@ -113,6 +123,11 @@ namespace NxEn
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
 			GeneratePath(NameDefault, ExtensionStyle),
@@ -130,6 +145,11 @@ namespace NxEn
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
 	{
+		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
+		{
+			return;
+		}
+
 		NxFr::String Path = Application::GetInstance()->GetProject().GetSavedConfigPath(
 			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
 			"", Name.IsEmpty());
@@ -393,11 +413,6 @@ namespace NxEn
 
 	void GUISystem::LoadLayoutImGui(NxFr::StringView Path) const
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NX_INSTUMENT_FUNCTION();
 
 		ImGui::LoadIniSettingsFromDisk(Path.C());
@@ -427,11 +442,6 @@ namespace NxEn
 
 	void GUISystem::SaveLayoutImGui(NxFr::StringView Path) const
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NX_INSTUMENT_FUNCTION();
 
 		ImGui::SaveIniSettingsToDisk(Path.C());
@@ -458,11 +468,6 @@ namespace NxEn
 
 	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NX_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();
@@ -637,11 +642,6 @@ namespace NxEn
 
 	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
 	{
-		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
-		{
-			return;
-		}
-
 		NX_INSTUMENT_FUNCTION();
 
 		ImGuiStyle& Style = ImGui::GetStyle();

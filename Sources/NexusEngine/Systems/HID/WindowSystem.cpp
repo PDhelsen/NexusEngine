@@ -101,10 +101,10 @@ namespace NxEn
 		return *this;
 #endif
 
-		Target.WindowMode = Mode;
-		Target.Monitor = Target.WindowMode != Window::Mode::Windowed ? NxFr::Math::Max(Target.Monitor, (int8)0) : -1;
 		if (Target.Instance)
 		{
+			Target.WindowMode = Mode;
+			Target.Monitor = Target.WindowMode != Window::Mode::Windowed ? NxFr::Math::Max(Target.Monitor, (int8)0) : -1;
 			Glfw::SetWindowMode(Target.Instance,
 				(uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr,
 				Target.Position, Target.Resolution, Target.RefreshRate);
@@ -132,9 +132,9 @@ namespace NxEn
 			return *this;
 		}
 
-		Target.Monitor = NxFr::Math::Max(Index, (int8)0);
 		if (Target.Instance)
 		{
+			Target.Monitor = NxFr::Math::Max(Index, (int8)0);
 			Glfw::SetWindowMode(Target.Instance,
 				(uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr,
 				Target.Position, Target.Resolution, Target.RefreshRate);
@@ -156,9 +156,9 @@ namespace NxEn
 			return *this;
 		}
 
-		Target.RefreshRate = RefreshRate;
 		if (Target.Instance)
 		{
+			Target.RefreshRate = RefreshRate;
 			Glfw::SetWindowMode(Target.Instance,
 				(uint8)Target.WindowMode, Target.Monitor >= 0 ? Monitors[Target.Monitor].Instance : nullptr,
 				Target.Position, Target.Resolution, Target.RefreshRate);
@@ -169,9 +169,9 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowVSync(bool VSync)
 	{
-		Target.VSync = VSync;
 		if (Target.Instance)
 		{
+			Target.VSync = VSync;
 			Glfw::SetSwapInterval(VSync);
 		}
 
@@ -186,9 +186,9 @@ namespace NxEn
 			return *this;
 		}
 
-		Target.Position = Position;
 		if (Target.Instance)
 		{
+			Target.Position = Position;
 			Glfw::SetWindowPosition(Target.Instance, Position);
 		}
 
@@ -197,9 +197,9 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowResolution(NxFr::Vector2i Resolution)
 	{
-		Target.Resolution = Resolution;
 		if (Target.Instance)
 		{
+			Target.Resolution = Resolution;
 			Glfw::SetWindowSize(Target.Instance, Resolution);
 		}
 
@@ -208,9 +208,9 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowTitle(NxFr::StringView Title)
 	{
-		Target.Title = Title;
 		if (Target.Instance)
 		{
+			Target.Title = Title;
 			Glfw::SetWindowTitle(Target.Instance, Title);
 		}
 
@@ -219,9 +219,9 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowIcon(const Image* Icon)
 	{
-		Target.Icon = Icon;
 		if (Target.Instance)
 		{
+			Target.Icon = Icon;
 			Glfw::SetWindowIcon(Target.Instance,
 				Icon ? Icon->GetResolution() : NxFr::Vector2i::Zero,
 				Icon ? const_cast<uint8*>(static_cast<const uint8*>(Target.Icon->GetPixels())) : nullptr);
@@ -237,9 +237,9 @@ namespace NxEn
 			return *this;
 		}
 
-		Pointer.CursorMode = Mode;
 		if (Target.Instance && Pointer.Instance)
 		{
+			Pointer.CursorMode = Mode;
 			Glfw::SetCursorMode(Target.Instance, (uint32)Pointer.CursorMode);
 		}
 
@@ -253,10 +253,10 @@ namespace NxEn
 			return *this;
 		}
 
-		Pointer.CursorIcon = Icon;
-		Pointer.IconCustom = IconCustom;
 		if (Target.Instance && Pointer.Instance)
 		{
+			Pointer.CursorIcon = Icon;
+			Pointer.IconCustom = IconCustom;
 			DestroyCursor();
 			CreateCursor();
 		}
@@ -268,13 +268,13 @@ namespace NxEn
 	{
 		System::OnInitialize();
 
-		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
-		Application::GetSystem<InputSystem>()->GetOnPoll() += Glfw::PollInput;
-
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			return;
 		}
+
+		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, &WindowSystem::ApplySettings };
+		Application::GetSystem<InputSystem>()->GetOnPoll() += Glfw::PollInput;
 
 		Glfw::Initialize();
 
@@ -298,13 +298,13 @@ namespace NxEn
 	{
 		System::OnShutdown();
 
-		Application::GetSystem<SettingsSystem>()->GetOnChange() -= { this, &WindowSystem::ApplySettings };
-		Application::GetSystem<InputSystem>()->GetOnPoll() -= Glfw::PollInput;
-
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			return;
 		}
+
+		Application::GetSystem<SettingsSystem>()->GetOnChange() -= { this, &WindowSystem::ApplySettings };
+		Application::GetSystem<InputSystem>()->GetOnPoll() -= Glfw::PollInput;
 
 		DestroyCursor();
 		DestroyWindow();
