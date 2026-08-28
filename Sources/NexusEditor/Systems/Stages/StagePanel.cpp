@@ -106,7 +106,7 @@ namespace NxEd
 		Dock->Shutdown();
 		delete Dock;
 
-		if (World)
+		if (World && World != Target.Get())
 		{
 			Worlds->DestroyWorld(World->GetId());
 			World = nullptr;
