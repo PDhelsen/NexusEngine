@@ -28,25 +28,25 @@ namespace NxEd
 		Context = nullptr;
 	}
 
-	void ViewerPanel::Show(NxEn::Object* Instance)
+	void ViewerPanel::Show(NxEn::ObjectInstance<NxEn::Object> Target)
 	{
 		Clear();
 
-		if (!Instance)
+		if (!Target)
 		{
 			return;
 		}
 
 		Panel::Show();
 
-		Context = GetFactory().Create(Instance->GetObjectType());
+		Context = GetFactory().Create(Target->GetObjectType());
 		if (!Context)
 		{
-			NX_LOG(Warning, Default, "No ViewerContext is associated to this object %llu", Instance->GetId());
+			NX_LOG(Warning, Default, "No ViewerContext is associated to this object %llu", Target->GetId());
 			return;
 		}
 
-		Context->Setup(Instance);
+		Context->Setup(Target);
 	}
 
 	void ViewerPanel::OnInitialize()

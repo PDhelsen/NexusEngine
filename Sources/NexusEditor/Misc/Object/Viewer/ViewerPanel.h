@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEngine/Misc/Object/ObjectInstance.h"
 
 namespace NxEd
 {
@@ -14,7 +15,7 @@ namespace NxEd
 
 	protected:
 		virtual void Clear() = 0;
-		virtual void Setup(NxEn::Object* Instance) = 0;
+		virtual void Setup(NxEn::ObjectInstance<NxEn::Object> Target) = 0;
 		virtual void Draw() = 0;
 	};
 
@@ -26,7 +27,7 @@ namespace NxEd
 		NX_OBJECT(ViewerPanel)
 
 		void Clear();
-		void Show(NxEn::Object* Instance);
+		void Show(NxEn::ObjectInstance<NxEn::Object> Target);
 
 	protected:
 		void OnInitialize() override;
