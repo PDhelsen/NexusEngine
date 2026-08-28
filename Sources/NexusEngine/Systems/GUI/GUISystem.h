@@ -43,8 +43,6 @@ namespace NxEn
 	protected:
 		void OnInitialize() override;
 		void OnShutdown() override;
-		void OnEnable() override;
-		void OnDisable() override;
 		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
