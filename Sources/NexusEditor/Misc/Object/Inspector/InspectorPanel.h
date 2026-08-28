@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEngine/Systems/GUI/Elements/Panel.h"
+#include "NexusEngine/Systems/GUI/Elements/Menu.h"
 #include "NexusEngine/Misc/Object/ObjectInstance.h"
 
 namespace NxEd

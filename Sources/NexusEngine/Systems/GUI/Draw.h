@@ -3,7 +3,6 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/Style.h"
 #include "NexusEngine/Systems/GUI/Utils.h"
-#include "NexusEngine/Systems/GUI/Misc/Styles.h"
 
 namespace NxEn
 {

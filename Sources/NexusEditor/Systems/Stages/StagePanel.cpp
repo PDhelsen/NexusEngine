@@ -57,23 +57,23 @@ namespace NxEd
 			World = nullptr;
 		}
 
-		SetNameId(Target->GetName(), NxEn::GUI::Utils::GenerateElementId(this, Target->GetName()));
+		SetNameId(Target->GetName(), NxEn::GUI::Element::GenerateElementId(this, Target->GetName()));
 
 		Dock = new NxEn::GUI::Dock();
 		Dock->Initialize();
 		Dock->SetGuiFlag(NxEn::GUI::ElementFlags::AutoDraw, false);
 		Dock->SetGuiFlag(NxEn::GUI::ElementFlags::HideInsteadOfClose, true);
-		Dock->SetNameId(Target->GetName(), NxEn::GUI::Utils::GenerateElementId(Dock, Target->GetName()));
+		Dock->SetNameId(Target->GetName(), NxEn::GUI::Element::GenerateElementId(Dock, Target->GetName()));
 
 		Viewer = new ViewerPanel();
 		Viewer->Initialize();
 		Viewer->SetGuiFlag(NxEn::GUI::ElementFlags::AutoDraw, false);
-		Viewer->SetNameId("Viewer", NxEn::GUI::Utils::GenerateElementId(Viewer, Target->GetName()));
+		Viewer->SetNameId("Viewer", NxEn::GUI::Element::GenerateElementId(Viewer, Target->GetName()));
 		
 		Inspector = new InspectorPanel();
 		Inspector->Initialize();
 		Inspector->SetGuiFlag(NxEn::GUI::ElementFlags::AutoDraw, false);
-		Inspector->SetNameId("Inspector", NxEn::GUI::Utils::GenerateElementId(Inspector, Target->GetName()));
+		Inspector->SetNameId("Inspector", NxEn::GUI::Element::GenerateElementId(Inspector, Target->GetName()));
 
 		if (World)
 		{
@@ -82,7 +82,7 @@ namespace NxEd
 			Context = new HierarchyEditContext(Manager, Hierarchy, Target->GetId());
 			Hierarchy->Initialize(Manager, Context);
 			Hierarchy->SetGuiFlag(NxEn::GUI::ElementFlags::AutoDraw, false);
-			Hierarchy->SetNameId("Hierarchy", NxEn::GUI::Utils::GenerateElementId(Hierarchy, Target->GetName()));
+			Hierarchy->SetNameId("Hierarchy", NxEn::GUI::Element::GenerateElementId(Hierarchy, Target->GetName()));
 			Hierarchy->SetRoot(World->GetRoot()->GetId());
 			Context->GetOnSelection() += { this, & StagePanel::OnSelection };
 		}

@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Application/Application.h"
+#include "NexusEngine/Systems/HID/Input.h"
 
 namespace NxEn
 {

@@ -4,8 +4,6 @@
 #include "NexusEditor/Systems/Stages/StagesSystem.h"
 
 #include "NexusEditor/Systems/Assets/Importer/AssetImporter.h"
-#include "NexusEditor/Misc/Object/Inspector/InspectorPanel.h"
-#include "NexusEditor/Misc/Object/Viewer/ViewerPanel.h"
 #include "NexusEngine/Systems/Resources/Resources/Image.h"
 
 namespace NxEd

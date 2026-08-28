@@ -1,5 +1,4 @@
 #include "NexusEditor/Systems/Edit/EditSystem.h"
-#include "NexusEditor/Systems/Assets/Browser/AssetsBrowserEditContext.h"
 
 namespace NxEd
 {

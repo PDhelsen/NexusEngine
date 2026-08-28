@@ -43,6 +43,8 @@ namespace NxEn
 				return static_cast<T*>(Instance);
 			}
 
+			static NxFr::GUID GenerateElementId(Element* Instance, NxFr::StringView Name);
+
 			NX_OBJECT(Element)
 
 			Element();

@@ -2,6 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/Elements/Panel.h"
+#include "NexusEngine/Systems/GUI/Elements/Menu.h"
 
 namespace NxEn
 {

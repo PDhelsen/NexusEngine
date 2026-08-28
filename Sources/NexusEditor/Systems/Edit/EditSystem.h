@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NexusEditor/Core/NexusEditorCore.h"
+#include "NexusEngine/Application/Systems/System.h"
 #include "NexusEditor/Systems/Edit/EditContext.h"
 
 namespace NxEd

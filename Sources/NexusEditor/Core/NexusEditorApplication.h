@@ -3,6 +3,7 @@
 #include "NexusEditor/Core/NexusEditorCore.h"
 #include "NexusEngine/Core/NexusEngineApplication.h"
 
+#include "NexusEngine/Systems/HID/Input.h"
 #include "NexusEditor/Systems/Assets/Browser/AssetsBrowser.h"
 #include "NexusEditor/Systems/World/Hierarchy/HierarchyManager.h"
 

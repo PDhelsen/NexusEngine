@@ -1,8 +1,6 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Application/Application.h"
 
-#include "NexusEngine/Application/Flow/EntryPoint.h"
-
 namespace NxEn
 {
 	Application* Application::Instance = nullptr;

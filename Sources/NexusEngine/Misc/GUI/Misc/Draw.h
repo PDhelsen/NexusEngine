@@ -2,7 +2,6 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/GUI/Draw.h"
-#include "NexusEngine/Systems/GUI/Misc/Styles.h"
 
 namespace NxEn
 {

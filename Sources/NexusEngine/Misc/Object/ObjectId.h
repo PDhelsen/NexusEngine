@@ -2,7 +2,7 @@
 
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Misc/Object/ObjectInstance.h"
-#include "NexusEngine/Systems/GUI/GUISystem.h"
+#include "NexusEngine/Systems/GUI/Draw.h"
 
 namespace NxEn
 {

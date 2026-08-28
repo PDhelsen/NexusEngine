@@ -5,6 +5,11 @@ namespace NxEn
 {
 	namespace GUI
 	{
+		NxFr::GUID  Element::GenerateElementId(Element* Instance, NxFr::StringView Name)
+		{
+			return NxFr::Hash<>::CombineHashes(Instance->GetObjectType(), NxFr::Hash<>::HashObject(Name));
+		}
+
 		Element::Element()
 			: Id(0), Name(), NamedId(),
 			GuiFlags(ElementFlags::None), ImGuiFlags(0)

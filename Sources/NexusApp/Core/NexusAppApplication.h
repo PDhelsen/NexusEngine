@@ -3,6 +3,8 @@
 #include "NexusApp/Core/NexusAppCore.h"
 #include "NexusEngine/Core/NexusEngineApplication.h"
 
+#include "NexusEngine/Systems/HID/Input.h"
+
 namespace NxAp
 {
 	NX_APPLICATION_DECLARATION(NX_APP_API, ::NxAp::NexusAppApplication)
