@@ -18,11 +18,6 @@ namespace NxEd
 		Panel::Initialize();
 	}
 
-	void StagePanel::Draw()
-	{
-		OnDraw();
-	}
-
 	void StagePanel::Select(NxFr::Handle<NxEn::GameObject> Instance)
 	{
 		Show();

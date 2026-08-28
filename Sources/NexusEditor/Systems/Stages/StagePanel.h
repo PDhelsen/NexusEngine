@@ -17,7 +17,6 @@ namespace NxEd
 		NX_OBJECT(StagePanel)
 
 		void Initialize(NxEn::ObjectInstance<NxEn::Object> Target);
-		void Draw() override;
 
 		void Select(NxFr::Handle<NxEn::GameObject> Instance);
 		

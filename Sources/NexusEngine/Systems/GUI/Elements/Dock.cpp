@@ -22,23 +22,8 @@ namespace NxEn
 			}
 
 			NxFr::GUID DockId = ImGui::GetID(GetNamedId().C());
-			bool IsOpen = true;
-			bool IsMain = GetGuiFlag(NxEn::GUI::ElementFlags::Main);
 			bool FirstTime = ImGui::DockBuilderGetNode(DockId) == nullptr || Relayout;
-			const ImGuiViewport* Viewport = ImGui::GetMainViewport();
 			Relayout = false;
-
-			NxFr::Vector2f Position = IsMain ? (NxFr::Vector2f)Viewport->WorkPos : NxFr::Vector2f(50.0f);
-			NxFr::Vector2f Size = IsMain ? (NxFr::Vector2f)Viewport->WorkSize : (NxFr::Vector2f)Viewport->WorkSize * 0.8f;
-
-			ImGui::SetNextWindowPos(Position, IsMain ? ImGuiCond_Always : ImGuiCond_FirstUseEver);
-			ImGui::SetNextWindowSize(Size, IsMain ? ImGuiCond_Always : ImGuiCond_FirstUseEver);
-
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-			ImGui::Begin(GetNamedId().C(), &IsOpen, GetImGuiFlags());
-			ImGui::PopStyleVar(3);
 
 			ImGui::DockSpace(DockId, NxFr::Vector2f::Zero, ImGuiDockNodeFlags_PassthruCentralNode);
 
@@ -68,13 +53,6 @@ namespace NxEn
 			}
 
 			OnDraw();
-
-			ImGui::End();
-
-			if (!IsOpen)
-			{
-				Close();
-			}
 		}
 
 		void Dock::DockElement(Element* Instance, ImGuiDir Direction, float Ratio, bool Force)

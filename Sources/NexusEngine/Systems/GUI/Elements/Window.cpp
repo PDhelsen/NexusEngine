@@ -21,10 +21,26 @@ namespace NxEn
 				return;
 			}
 
-			Menu.Draw();
-			Dock.Draw();
+			bool IsOpen = true;
+			const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+
+			ImGui::SetNextWindowPos(Viewport->WorkPos, ImGuiCond_Always);
+			ImGui::SetNextWindowSize(Viewport->WorkSize, ImGuiCond_Always);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			ImGui::Begin(GetNamedId().C(), &IsOpen, GetImGuiFlags());
+			ImGui::PopStyleVar(3);
 
 			OnDraw();
+
+			ImGui::End();
+
+			if (!IsOpen)
+			{
+				Close();
+			}
 		}
 
 		void Window::OnInitialize()
@@ -36,13 +52,13 @@ namespace NxEn
 			Menu.SetNameId("Main Menu");
 			Dock.SetNameId("Main Dock");
 
+			SetGuiFlag(ElementFlags::Main, true);
 			SetGuiFlag(ElementFlags::AutoDraw, false);
-			Menu.SetGuiFlag(ElementFlags::Main, true);
-			Dock.SetGuiFlag(ElementFlags::Main, true);
-			Dock.SetImGuiFlags(
+			SetImGuiFlags(
 				ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoDocking |
 				ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoFocusOnAppearing
 			);
+			Menu.SetGuiFlag(ElementFlags::Main, true);
 		}
 
 		void Window::OnShutdown()
@@ -64,6 +80,12 @@ namespace NxEn
 			Dock.Hide();
 			Menu.Hide();
 			Element::OnDisable();
+		}
+
+		void Window::OnDraw()
+		{
+			Menu.Draw();
+			Dock.Draw();
 		}
 	}
 }

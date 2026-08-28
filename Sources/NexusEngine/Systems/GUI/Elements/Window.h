@@ -27,6 +27,7 @@ namespace NxEn
 			void OnShutdown() override;
 			void OnEnable() override;
 			void OnDisable() override;
+			void OnDraw() override;
 
 		private:
 			Menu Menu;

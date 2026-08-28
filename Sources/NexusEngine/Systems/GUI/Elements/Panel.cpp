@@ -21,6 +21,10 @@ namespace NxEn
 			}
 
 			bool IsOpen = true;
+			const ImGuiViewport* Viewport = ImGui::GetMainViewport();
+
+			ImGui::SetNextWindowPos(NxFr::Vector2f(100.0f), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(NxFr::Vector2f(1280, 720.0f), ImGuiCond_FirstUseEver);
 
 			if (ImGui::Begin(GetNamedId().C(), &IsOpen, GetImGuiFlags()))
 			{
