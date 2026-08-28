@@ -101,9 +101,13 @@ namespace NxEn
 				{
 					if (Callback->EventFlag == ImGuiInputTextFlags_CallbackResize)
 					{
-						NxFr::String* Text =static_cast<NxFr::String*>(Callback->UserData);
-						Text->Reserve(NxFr::Math::Max<uint64>(Text->GetCapacity() * 2, Callback->BufTextLen + 1));
-						Callback->Buf = Text->Characters();
+						NxFr::String* Text = static_cast<NxFr::String*>(Callback->UserData);
+						uint64 Requested = Callback->BufTextLen + 1;
+						if (Text->GetCapacity() < Requested)
+						{
+							Text->Reserve(NxFr::Math::Max(Text->GetCapacity() * 2, Requested));
+							Callback->Buf = Text->Characters();
+						}
 					}
 
 					return 0;

@@ -189,7 +189,13 @@ namespace NxEn
 				return;
 			}
 
-			Input::Button Button = GlfwKeyCodeToNexusButton()[KeyCode];
+			auto& Buttons = GlfwKeyCodeToNexusButton();
+			if (!Buttons.IsValidIndex(KeyCode))
+			{
+				return;
+			}
+
+			Input::Button Button = Buttons[KeyCode];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
 			Inputs->GetOnButtonChange().Invoke(Button, State);
 		}
@@ -206,7 +212,13 @@ namespace NxEn
 				return;
 			}
 
-			Input::Button Button = GlfwMouseCodeToNexusButton()[Mouse];
+			auto& Buttons = GlfwMouseCodeToNexusButton();
+			if (!Buttons.IsValidIndex(Mouse))
+			{
+				return;
+			}
+
+			Input::Button Button = Buttons[Mouse];
 			Input::State State = Action == GLFW_PRESS ? Input::State::Pressed : Input::State::Released;
 			Inputs->GetOnButtonChange().Invoke(Button, State);
 		}
