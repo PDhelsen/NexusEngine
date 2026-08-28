@@ -31,6 +31,12 @@ namespace NxEd
 		NodePanel::Select(Id);
 	}
 
+	void ReferencesPanel::OnInitialize()
+	{
+		NodePanel::OnInitialize();
+		SetNameId("References");
+	}
+
 	void ReferencesPanel::OnDraw()
 	{
 		Menu.Draw();

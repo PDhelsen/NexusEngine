@@ -340,7 +340,7 @@ namespace NxEn
 
 	void GUISystem::AddMenuWindowPanels(NxEn::GUI::Panel* Panel)
 	{
-		NxFr::String Path = "Window/Panels/" + Panel->GetName();
+		NxFr::String Path = "Window/Panels/" + (!Panel->GetName().IsEmpty() ? Panel->GetName() : Panel->GetObjectType().GetString());
 		auto& Menu = Window.GetMenu();
 		Menu.AddMenuItem(Path, [=]()
 		{

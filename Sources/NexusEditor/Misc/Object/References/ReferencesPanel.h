@@ -14,6 +14,7 @@ namespace NxEd
 		void Select(NxFr::GUID Id) override;
 
 	protected:
+		void OnInitialize() override;
 		void OnDraw() override;
 
 	private:
