@@ -2,51 +2,6 @@
 
 namespace NxEd
 {
-	static NxEn::Command* CmdEditCreate = NxEn::Command::Create("Edit.Create"_Sid, "Create object in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Create();
-	}));
-	static NxEn::Command* CmdEditRename = NxEn::Command::Create("Edit.Rename"_Sid, "Rename selected objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Rename();
-	}));
-	static NxEn::Command* CmdEditMove = NxEn::Command::Create("Edit.Move"_Sid, "Move selected objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Move();
-	}));
-	static NxEn::Command* CmdEditDuplicate = NxEn::Command::Create("Edit.Duplicate"_Sid, "Duplicate selected objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Duplicate();
-	}));
-	static NxEn::Command* CmdEditDelete = NxEn::Command::Create("Edit.Delete"_Sid, "Delete selected objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Delete();
-	}));
-	static NxEn::Command* CmdEditCut = NxEn::Command::Create("Edit.Cut"_Sid, "Rename selected objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Cut();
-	}));
-	static NxEn::Command* CmdEditCopy = NxEn::Command::Create("Edit.Copy"_Sid, "Duplicate selected objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Copy();
-	}));
-	static NxEn::Command* CmdEditPaste = NxEn::Command::Create("Edit.Paste"_Sid, "Delete selected objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Paste();
-	}));
-	static NxEn::Command* CmdEditSelectAll = NxEn::Command::Create("Edit.SelectAll"_Sid, "Select all objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Select();
-	}));
-	static NxEn::Command* CmdEditUnselectAll = NxEn::Command::Create("Edit.UnselectAll"_Sid, "Unselect all objects in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->Unselect();
-	}));
-	static NxEn::Command* CmdEditInvertSelection = NxEn::Command::Create("Edit.InvertSelection"_Sid, "Invert selection in the current context", NxFr::Delegate<void()>([]()
-	{
-		NxEn::Application::GetSystem<EditSystem>()->InvertSelection();
-	}));
-
 	static const NxEn::GUI::Menu::Item* MenuItemEditCreate = NxEn::GUI::Menu::Create("Edit/Clipboard/Create", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.Create");
@@ -90,6 +45,51 @@ namespace NxEd
 	static const NxEn::GUI::Menu::Item* MenuItemEditInvert = NxEn::GUI::Menu::Create("Edit/Selection/InvertSelection", NxFr::Delegate<void()>([]()
 	{
 		NxEn::Application::GetSystem<NxEn::CommandsSystem>()->Execute("Edit.InvertSelection");
+	}));
+
+	static NxEn::Command* CmdEditCreate = NxEn::Command::Create("Edit.Create"_Sid, "Create object in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Create();
+	}));
+	static NxEn::Command* CmdEditRename = NxEn::Command::Create("Edit.Rename"_Sid, "Rename selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Rename();
+	}));
+	static NxEn::Command* CmdEditMove = NxEn::Command::Create("Edit.Move"_Sid, "Move selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Move();
+	}));
+	static NxEn::Command* CmdEditDuplicate = NxEn::Command::Create("Edit.Duplicate"_Sid, "Duplicate selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Duplicate();
+	}));
+	static NxEn::Command* CmdEditDelete = NxEn::Command::Create("Edit.Delete"_Sid, "Delete selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Delete();
+	}));
+	static NxEn::Command* CmdEditCut = NxEn::Command::Create("Edit.Cut"_Sid, "Rename selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Cut();
+	}));
+	static NxEn::Command* CmdEditCopy = NxEn::Command::Create("Edit.Copy"_Sid, "Duplicate selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Copy();
+	}));
+	static NxEn::Command* CmdEditPaste = NxEn::Command::Create("Edit.Paste"_Sid, "Delete selected objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Paste();
+	}));
+	static NxEn::Command* CmdEditSelectAll = NxEn::Command::Create("Edit.SelectAll"_Sid, "Select all objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Select();
+	}));
+	static NxEn::Command* CmdEditUnselectAll = NxEn::Command::Create("Edit.UnselectAll"_Sid, "Unselect all objects in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->Unselect();
+	}));
+	static NxEn::Command* CmdEditInvertSelection = NxEn::Command::Create("Edit.InvertSelection"_Sid, "Invert selection in the current context", NxFr::Delegate<void()>([]()
+	{
+		NxEn::Application::GetSystem<EditSystem>()->InvertSelection();
 	}));
 
 	void EditSystem::RegisterContext(Edit::Context* Ctx)

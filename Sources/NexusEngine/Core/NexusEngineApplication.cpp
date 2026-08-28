@@ -3,15 +3,15 @@
 
 namespace NxEn
 {
-	static Command* CmdQuit = Command::Create("Application.Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]()
-	{
-		Application::GetInstance()->Quit();
-	}));
-
 	static const NxEn::GUI::Menu::Item* MenuItemQuit = GUI::Menu::Create("File/Quit", NxFr::Delegate<void()>([]()
 	{
 		Application::GetSystem<CommandsSystem>()->Execute("Application.Quit");
 	}), 2);
+
+	static Command* CmdQuit = Command::Create("Application.Quit"_Sid, "Request application to quit", NxFr::Delegate<void()>([]()
+	{
+		Application::GetInstance()->Quit();
+	}));
 
 	NX_APPLICATION_IMPLEMENTATION(::NxEn::NexusEngineApplication)
 
