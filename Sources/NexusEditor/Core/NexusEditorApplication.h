@@ -30,7 +30,7 @@ namespace NxEd
 		virtual void OnRun() override;
 
 	private:
-		void ApplySettings();
+		void ApplyShortcuts();
 
 		NxFr::Event<> OnSave;
 

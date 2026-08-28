@@ -52,16 +52,16 @@ namespace NxEd
 		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event HID - Editor", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
 		{
 			Inputs = new NxEn::Input::Schema();
 			GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, Inputs);
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event Shortcuts", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect Shortcuts", [&]()
 		{
-			GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, & NexusEditorApplication::ApplySettings };
+			GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, & NexusEditorApplication::ApplyShortcuts };
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event Save", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect SaveAll", [&]()
 		{
 			OnSave += []() { GetSystem<NxEn::WorldSystem>()->PackScenes(); };
 			OnSave += []() { GetSystem<NxEn::AssetsSystem>()->SaveDirty(); };
@@ -72,7 +72,7 @@ namespace NxEd
 		Bootstrap.AppendSystem<EditSystem>();
 		Bootstrap.AppendSystem<StagesSystem>();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Create Assets & Worlds Managers", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Assets & Worlds Managers", [&]()
 		{
 			Browser = new AssetsBrowser();
 			Hierarchy = new HierarchyManager();
@@ -213,12 +213,14 @@ namespace NxEd
 				}
 			}, .Priority = 1 });
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Create Main Stage", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Main Stage", [&]()
 		{
 			NxEn::World* World = GetSystem<NxEn::WorldSystem>()->GetWorld();
-			GetSystem<StagesSystem>()->GetMainStage()->Initialize(World);
+			StagePanel* Panel = GetSystem<StagesSystem>()->GetMainStage();
+			Panel->Initialize(World);
+			Panel->Show();
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Set Icon", []()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Load Icon", []()
 		{
 			NxEn::Image* Icon = GetSystem<NxEn::ResourcesSystem>()->Load<NxEn::Image>("Logo_Small.png");
 			GetSystem<NxEn::WindowSystem>()->SetWindowIcon(Icon);
@@ -245,12 +247,18 @@ namespace NxEd
 		{
 			GetSystem<NxEn::GUISystem>()->GetWindow()->Hide();
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Set Icon", []()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Unload Icon", []()
 		{
 			GetSystem<NxEn::WindowSystem>()->SetWindowIcon(nullptr);
 			GetSystem<NxEn::ResourcesSystem>()->Unload("Logo_Small.png");
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Destroy Assets & Worlds Managers", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Main Stage", []()
+		{
+			StagePanel* Panel = GetSystem<StagesSystem>()->GetMainStage();
+			Panel->Hide();
+			Panel->Shutdown();
+		});
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Assets & Worlds Managers", [&]()
 		{
 			delete Hierarchy;
 			delete Browser;
@@ -259,16 +267,16 @@ namespace NxEd
 		Unbootstrap.AppendSystem<EditSystem>();
 		Unbootstrap.AppendSystem<StagesSystem>();
 
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event HID - Editor", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
 		{
 			GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
 			delete Inputs;
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event Shortcuts", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect Shortcuts", [&]()
 		{
-			GetSystem<NxEn::SettingsSystem>()->GetOnChange() -= { this, & NexusEditorApplication::ApplySettings };
+			GetSystem<NxEn::SettingsSystem>()->GetOnChange() -= { this, & NexusEditorApplication::ApplyShortcuts };
 		});
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event Save", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect Save", [&]()
 		{
 			OnSave -= []() { GetSystem<NxEn::GUISystem>()->SaveLayout(); };
 			OnSave -= []() { GetSystem<NxEn::SettingsSystem>()->SaveSettings(); };
@@ -287,7 +295,7 @@ namespace NxEd
 		Ticks.AppendSystem<StagesSystem>(NxEn::Ticker::TickBucket::Engine);
 	}
 
-	void NexusEditorApplication::ApplySettings()
+	void NexusEditorApplication::ApplyShortcuts()
 	{
 		auto& Shortcuts = SettingShortcuts->GetValue();
 

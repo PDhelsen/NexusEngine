@@ -53,13 +53,13 @@ namespace NxEn
 		Application::OnInitialize();
 		Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Connect event HID - Engine", [&]()
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
 		{
 			Inputs = new Input::Schema();
 			GetSystem<InputSystem>()->AddSchema("Engine"_Sid, Inputs);
 
 			WindowSystem* Window = GetSystem<WindowSystem>();
-			Window->GetOnClose() += { (Application*)this, &Application::Quit };
+			Window->GetOnClose() += { (Application*)this, & NexusEngineApplication::Quit };
 			Window->SetWindowTitle(GetProject().GetName());
 		});
 
@@ -89,7 +89,7 @@ namespace NxEn
 	{
 		Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Disconnect event HID - Engine", [&]()
+		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
 		{
 			GetSystem<InputSystem>()->RemoveSchema("Engine"_Sid);
 			delete Inputs;

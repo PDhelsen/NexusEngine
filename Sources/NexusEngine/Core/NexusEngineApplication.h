@@ -13,7 +13,7 @@ namespace NxEn
 		NexusEngineApplication(const NxEn::Project& ProjectInfo);
 		virtual ~NexusEngineApplication();
 
-		Input::Schema* GetInputEngine() { return Inputs; }
+		Input::Schema* GetInputsEngine() { return Inputs; }
 		bool IsHeadless() const { return Headless; }
 
 	protected:

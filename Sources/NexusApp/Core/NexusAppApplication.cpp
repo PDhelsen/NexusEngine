@@ -20,15 +20,17 @@ namespace NxAp
 		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect event HID - App", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - App", [&]()
 		{
 			Inputs = new NxEn::Input::Schema();
-			Inputs->Mapping.Append("Window"_Sid,
-				NxEn::Input::Action(
-					{ NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None },
-					{ this, &NexusAppApplication::ShowWindow })
-			);
 			GetSystem<NxEn::InputSystem>()->AddSchema("App"_Sid, Inputs);
+		});
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Connect Window", [&]()
+		{
+			Inputs->Mapping.Append("Window"_Sid, NxEn::Input::Action(
+				{ NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None },
+				{ this, &NexusAppApplication::ToggleWindow })
+			);
 		});
 	}
 
@@ -36,7 +38,7 @@ namespace NxAp
 	{
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect event HID - App", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - App", [&]()
 		{
 			GetSystem<NxEn::InputSystem>()->RemoveSchema("App"_Sid);
 			delete Inputs;
@@ -50,7 +52,7 @@ namespace NxAp
 		NexusEngineApplication::OnRun();
 	}
 
-	void NexusAppApplication::ShowWindow()
+	void NexusAppApplication::ToggleWindow()
 	{
 		NxEn::GUISystem* GUI = NxEn::Application::GetSystem<NxEn::GUISystem>();
 		NxEn::ConsolePanel* Console = GUI->GetPanel<NxEn::ConsolePanel>();
