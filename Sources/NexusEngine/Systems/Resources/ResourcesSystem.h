@@ -39,7 +39,7 @@ namespace NxEn
 		Resource* Instance = GetResource(Path);
 		if (Instance != nullptr)
 		{
-			NX_LOG(Warning, Default, "Resources %s is already tracked", Path.C());
+			NX_LOG(Warning, System, "Resources %s is already tracked", Path.C());
 			return nullptr;
 		}
 

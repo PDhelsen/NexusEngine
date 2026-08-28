@@ -206,14 +206,14 @@ namespace NxEd
 	{
 		if (Selected == 0 || Selection.GetCount() <= 1)
 		{
-			NX_LOG(Warning, System, "Can only move AssetsBrowserItem if a target directory is selected");
+			NX_LOG(Warning, Default, "Can only move AssetsBrowserItem if a target directory is selected");
 			return;
 		}
 
 		AssetsBrowserItem* Target =  Browser->GetItem(Selected);
 		if (Target->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
 		{
-			NX_LOG(Error, System, "Can only move AssetsBrowserItem in directory");
+			NX_LOG(Error, Default, "Can only move AssetsBrowserItem in directory");
 			return;
 		}
 
@@ -263,14 +263,14 @@ namespace NxEd
 	{
 		if (Selected == 0)
 		{
-			NX_LOG(Warning, System, "Can only move AssetsBrowserItem if a target directory is selected");
+			NX_LOG(Warning, Default, "Can only move AssetsBrowserItem if a target directory is selected");
 			return;
 		}
 
 		AssetsBrowserItem* Target = Browser->GetItem(Selected);
 		if (Target->GetObjectType() != AssetsBrowserItemDirectory::GetClassType())
 		{
-			NX_LOG(Error, System, "Can only paste AssetsBrowserItem in directory");
+			NX_LOG(Error, Default, "Can only paste AssetsBrowserItem in directory");
 			return;
 		}
 

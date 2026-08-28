@@ -236,7 +236,7 @@ namespace NxEn
 		NX_INSTUMENT_FUNCTION();
 
 		OnPoll();
-		NX_ASSERT(GetButton(Input::Button::Invalid) == Input::State::Up, System, "Unsupported Button pressed");
+		NX_ASSERT_RETURN(GetButton(Input::Button::Invalid) == Input::State::Up, , System, "Unsupported Button pressed");
 	}
 
 	void InputSystem::TriggerActions()

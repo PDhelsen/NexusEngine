@@ -195,7 +195,7 @@ namespace NxEd
 	{
 		if (Selected == 0 || Selection.GetCount() <= 1)
 		{
-			NX_LOG(Warning, System, "Can only move GameObject if a target is selected");
+			NX_LOG(Warning, Default, "Can only move GameObject if a target is selected");
 			return;
 		}
 
@@ -252,7 +252,7 @@ namespace NxEd
 	{
 		if (Selected == 0)
 		{
-			NX_LOG(Warning, System, "Can only move GameObject if a target is selected");
+			NX_LOG(Warning, Default, "Can only move GameObject if a target is selected");
 			return;
 		}
 

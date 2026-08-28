@@ -16,7 +16,7 @@ namespace NxEn
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
-			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			NX_LOG(Warning, System, "Resources %s was not tracked", Path.C());
 			return;
 		}
 
@@ -31,7 +31,7 @@ namespace NxEn
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
-			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			NX_LOG(Warning, System, "Resources %s was not tracked", Path.C());
 			return;
 		}
 
@@ -45,7 +45,7 @@ namespace NxEn
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
-			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			NX_LOG(Warning, System, "Resources %s was not tracked", Path.C());
 			return;
 		}
 
@@ -58,7 +58,7 @@ namespace NxEn
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
-			NX_LOG(Warning, Default, "Resources %s was not tracked", Path.C());
+			NX_LOG(Warning, System, "Resources %s was not tracked", Path.C());
 			return;
 		}
 

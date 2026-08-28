@@ -67,8 +67,8 @@ namespace NxEd
 
 	void AssetsBrowser::Create(NxFr::StringId Type, NxFr::StringView TargetPath)
 	{
-		NX_ASSERT(Type != NxFr::StringUtility::Id, Default, "Can't create the Asset without type");
-		NX_ASSERT(!TargetPath.IsEmpty(), Default, "Can't create the Assets/ folder");
+		NX_ASSERT_RETURN(Type != NxFr::StringUtility::Id, , Default, "Can't create the Asset without type");
+		NX_ASSERT_RETURN(!TargetPath.IsEmpty(), , Default, "Can't create the Assets/ folder");
 
 		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
 		AssetsBrowserItem* Parent = GetItem(PathToParent(TargetPath));
@@ -78,7 +78,7 @@ namespace NxEd
 
 	void AssetsBrowser::Move(NxFr::StringView ItemPath, NxFr::StringView TargetPath)
 	{
-		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
+		NX_ASSERT_RETURN(!ItemPath.IsEmpty(), , Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID InstanceId = ItemPathToId(Validate(ItemPath));
 		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
@@ -87,7 +87,7 @@ namespace NxEd
 
 		if (!Item)
 		{
-			NX_LOG(Error, System, "Failed to move asset at path %s", ItemPath.C());
+			NX_LOG(Error, Default, "Failed to move asset at path %s", ItemPath.C());
 			return;
 		}
 
@@ -96,7 +96,7 @@ namespace NxEd
 
 	void AssetsBrowser::Duplicate(NxFr::StringView ItemPath, NxFr::StringView TargetPath)
 	{
-		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
+		NX_ASSERT_RETURN(!ItemPath.IsEmpty(), , Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID InstanceId = ItemPathToId(Validate(ItemPath));
 		NxFr::String Target = MakeUniquePath(Validate(TargetPath));
@@ -105,7 +105,7 @@ namespace NxEd
 
 		if (!Item)
 		{
-			NX_LOG(Error, System, "Failed to move asset at path %s", ItemPath.C());
+			NX_LOG(Error, Default, "Failed to move asset at path %s", ItemPath.C());
 			return;
 		}
 
@@ -114,14 +114,14 @@ namespace NxEd
 
 	void AssetsBrowser::Delete(NxFr::StringView ItemPath)
 	{
-		NX_ASSERT(!ItemPath.IsEmpty(), Default, "Can't move the Assets/ folder");
+		NX_ASSERT_RETURN(!ItemPath.IsEmpty(), , Default, "Can't move the Assets/ folder");
 
 		NxFr::GUID InstanceId = ItemPathToId(Validate(ItemPath));
 		AssetsBrowserItem* Item = GetItem(InstanceId);
 
 		if (!Item)
 		{
-			NX_LOG(Error, System, "Failed to move asset at path %s", ItemPath.C());
+			NX_LOG(Error, Default, "Failed to move asset at path %s", ItemPath.C());
 			return;
 		}
 

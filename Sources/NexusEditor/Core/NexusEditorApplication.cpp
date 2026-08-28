@@ -130,7 +130,7 @@ namespace NxEd
 					}
 					else
 					{
-						NX_LOG(Warning, System, "Instantiate is not supported for this asset type. Use Load instead");
+						NX_LOG(Warning, Default, "Instantiate is not supported for this asset type. Use Load instead");
 					}
 				}
 			}, .Priority = 1 });
@@ -161,7 +161,7 @@ namespace NxEd
 						NxFr::Handle<NxEn::GameObject> Instance = Hierarchy->GetItem(Id)->GetTarget();
 						if (Assets->IsTracked(Instance->GetTemplateId()))
 						{
-							NX_LOG(Error, System, "%s is already a prefab", Instance->GetName().C());
+							NX_LOG(Error, Default, "%s is already a prefab", Instance->GetName().C());
 							continue;
 						}
 
@@ -183,7 +183,7 @@ namespace NxEd
 					NxFr::Handle<NxEn::GameObject> Instance = Hierarchy->GetItem(Id)->GetTarget();
 					if (!Assets->IsTracked(Instance->GetTemplateId()))
 					{
-						NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
+						NX_LOG(Error, Default, "%s is not a prefab", Instance->GetName().C());
 						continue;
 					}
 
@@ -203,7 +203,7 @@ namespace NxEd
 					NxFr::Handle<NxEn::GameObject> Instance = Hierarchy->GetItem(Id)->GetTarget();
 					if (!Assets->IsTracked(Instance->GetTemplateId()))
 					{
-						NX_LOG(Error, System, "%s is not a prefab", Instance->GetName().C());
+						NX_LOG(Error, Default, "%s is not a prefab", Instance->GetName().C());
 						continue;
 					}
 
