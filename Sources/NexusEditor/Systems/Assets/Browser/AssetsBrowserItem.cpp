@@ -64,8 +64,7 @@ namespace NxEd
 		NxFr::StringView Extension = NxFr::Path::GetExtension(TargetPath);
 
 		NxEn::AssetsSystem* Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
-		NxEn::Asset* Instance = Assets->Create(Type, AssetPath, Extension);
-		Assets->Save(Instance->GetId());
+		Assets->Create(Type, AssetPath, Extension);
 	}
 
 	void AssetsBrowserItemAsset::OnMove(NxFr::StringView CurrentPath, NxFr::StringView TargetPath)

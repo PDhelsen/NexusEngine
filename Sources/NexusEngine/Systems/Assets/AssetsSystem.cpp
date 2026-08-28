@@ -238,7 +238,7 @@ namespace NxEn
 	void AssetsSystem::Track(Asset* Instance, NxFr::StringView Path, NxFr::StringView Extension)
 	{
 		NX_ASSERT_RETURN(Instance->GetId() == Object::NullId, , System, "Already tracked asset %llu", Instance->GetId());
-		
+
 		AssetMetadata& Metadata = Registry->Append(Instance->GetObjectType(), Path, Extension);
 		AssetHandle& Handle = Manager->Append(Metadata.GetId(), Instance);
 
@@ -247,6 +247,11 @@ namespace NxEn
 		Instance->Dirty = true;
 
 		OnEvent.Invoke(EventCreatedId, Metadata.GetId());
+
+		if (!Path.IsEmpty())
+		{
+			Save(Instance->GetId());
+		}
 	}
 
 	Asset* AssetsSystem::Clone(NxFr::GUID Id)
@@ -384,6 +389,8 @@ namespace NxEn
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
+
+		Save(Instance->GetId());
 		return Instance;
 	}
 
@@ -409,6 +416,8 @@ namespace NxEn
 		Instance->Initialize();
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
+
+		Save(Instance->GetId());
 		return Instance;
 	}
 

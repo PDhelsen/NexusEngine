@@ -59,8 +59,6 @@ namespace NxEd
 		}
 
 		Instance = Exist ? Assets->Reimport(Id, AssetData) : Assets->Import(Type, AssetData, Path, Extension);
-		Assets->Save(Instance->GetId());
-
 		return Instance;
 	}
 }

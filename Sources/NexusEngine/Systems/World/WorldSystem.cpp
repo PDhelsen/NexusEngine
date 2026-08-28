@@ -331,10 +331,10 @@ namespace NxEn
 			return;
 		}
 
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
 		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> Scenes = Manager->GetScenes();
 		for (auto [Id, Original] : Scenes)
 		{
-			AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
 			Scene* SceneInstance = Assets->GetAsset<Scene>(Id);
 			DestroyScene(SceneInstance, WorldId);
 		}
@@ -370,10 +370,10 @@ namespace NxEn
 			return;
 		}
 
+		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
 		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> Scenes = Manager->GetScenes();
 		for (auto [Id, Original] : Scenes)
 		{
-			AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
 			Scene* SceneInstance = Assets->GetAsset<Scene>(Id);
 			PackScene(SceneInstance, WorldId);
 		}
