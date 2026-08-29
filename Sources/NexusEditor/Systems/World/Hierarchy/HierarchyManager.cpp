@@ -4,13 +4,13 @@ namespace NxEd
 {
 	HierarchyManager::HierarchyManager()
 		: Worlds(nullptr), Edit(nullptr),
-		Items(), Panel(nullptr), Context(nullptr)
+		Items(), Panels(), Contexts()
 	{
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
 
-		Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
-		Context = new HierarchyEditContext(this, Panel, HierarchyEditContext::ContextId);
+		HierarchyPanel* Panel = NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>();
+		HierarchyEditContext* Context = new HierarchyEditContext(this, Panel, HierarchyEditContext::ContextId);
 		Panel->Initialize(this, Context);
 		Edit->RegisterContext(Context);
 
@@ -31,7 +31,7 @@ namespace NxEd
 
 		Worlds->GetOnWorldObjectChange() -= { this, &HierarchyManager::OnHierarchyChanged };
 
-		Edit->UnregisterContext(Context->GetId());
+		Edit::Context* Context = Edit->UnregisterContext(HierarchyEditContext::ContextId);
 		delete Context;
 	}
 
@@ -55,13 +55,19 @@ namespace NxEd
 		}
 
 		NxFr::Handle<NxEn::GameObject> Root = Worlds->GetWorld(NxEn::WorldSystem::MainWorldId)->GetRoot();
-		Panel->SetRoot(Root->GetId());
+		NxEn::Application::GetSystem<NxEn::GUISystem>()->GetPanel<HierarchyPanel>()->SetRoot(Root->GetId());
 	}
 
 	void HierarchyManager::ClearItems()
 	{
-		Panel->Clear();
-		Edit->Clear(Context->GetId());
+		for (auto Panel : Panels)
+		{
+			Panel->Clear();
+		}
+		for (auto Context : Contexts)
+		{
+			Edit->Clear(Context->GetId());
+		}
 
 		for (auto [GameObjectId, Item] : Items)
 		{
@@ -76,8 +82,14 @@ namespace NxEd
 		HierarchyItem* Item = new HierarchyItem();
 		Item->Target = Instance;
 
-		Panel->OnCreateItem(Item->GetId());
-		Context->OnCreated.Invoke(Item->GetId());
+		for (auto Panel : Panels)
+		{
+			Panel->OnCreateItem(Item->GetId());
+		}
+		for (auto Context : Contexts)
+		{
+			Context->OnCreated.Invoke(Item->GetId());
+		}
 
 		NxFr::Handle<NxEn::GameObject> Iterator = Instance->GetChild();
 		while (Iterator)
@@ -100,8 +112,14 @@ namespace NxEd
 			Iterator = Iterator->GetNext();
 		}
 
-		Panel->OnDestroyItem(Item->GetId());
-		Context->OnDestroyed.Invoke(Item->GetId());
+		for (auto Panel : Panels)
+		{
+			Panel->OnDestroyItem(Item->GetId());
+		}
+		for (auto Context : Contexts)
+		{
+			Context->OnDestroyed.Invoke(Item->GetId());
+		}
 
 		Items.Remove(Item->GetId());
 		delete Item;

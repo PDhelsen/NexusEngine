@@ -23,6 +23,7 @@ namespace NxEd
 
 	protected:
 		void OnInitialize() override;
+		void OnShutdown() override;
 		void OnDraw() override;
 
 		void OnSelectItem(NxFr::GUID InstanceId, bool State) override;

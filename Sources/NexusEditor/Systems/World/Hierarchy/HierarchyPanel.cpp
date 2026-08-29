@@ -50,6 +50,13 @@ namespace NxEd
 		SetNameId("Hierarchy");
 
 		Edit = NxEn::Application::GetSystem<EditSystem>();
+		Manager->Panels.Append(this);
+	}
+
+	void HierarchyPanel::OnShutdown()
+	{
+		Manager->Panels.Remove(this);
+		TreePanel::OnShutdown();
 	}
 
 	void HierarchyPanel::OnDraw()

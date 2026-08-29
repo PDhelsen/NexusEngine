@@ -90,7 +90,7 @@ namespace NxEd
 			Hierarchy->SetGuiFlag(NxEn::GUI::ElementFlags::AutoDraw, false);
 			Hierarchy->SetNameId("Hierarchy", NxEn::GUI::Element::GenerateElementId(Hierarchy, Target->GetName()));
 			Hierarchy->SetRoot(World->GetRoot()->GetId());
-			Context->GetOnSelection() += { this, & StagePanel::OnSelection };
+			Context->GetOnSelection() += { this, &StagePanel::OnSelection };
 		}
 	}
 
@@ -120,7 +120,7 @@ namespace NxEd
 
 		if (Assets->IsTracked(Target->GetId()))
 		{
-			Assets->Release(Target->GetId());
+			Assets->Release(Target->GetId(), true);
 		}
 
 		Panel::OnShutdown();
@@ -181,10 +181,8 @@ namespace NxEd
 
 		NxFr::Handle<NxEn::Object> Target = Worlds->GetObject(Id, World->GetId());
 		NxFr::Handle<NxEn::GameObject> Instance = Worlds->Cast<NxEn::GameObject>(Target);
-		if (State && Instance)
-		{
-			Inspector->Show(Instance);
-		}
+
+		Inspector->Show(State && Instance ? Instance : NxEn::ObjectInstance<NxEn::Object>());
 	}
 
 	bool StagePanel::AreElementsEnabled()

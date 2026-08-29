@@ -33,8 +33,8 @@ namespace NxEd
 		EditSystem* Edit;
 
 		NxFr::Dictionary<NxFr::GUID, HierarchyItem*> Items;
-		HierarchyPanel* Panel;
-		HierarchyEditContext* Context;
+		NxFr::Set<HierarchyPanel*> Panels;
+		NxFr::Set<HierarchyEditContext*> Contexts;
 	};
 }
 

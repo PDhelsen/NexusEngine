@@ -9,11 +9,14 @@ namespace NxEd
 	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel, NxFr::StringId Id)
 		: Edit::Context(Id), Manager(Manager), Panel(Panel)
 	{
+		Manager->Contexts.Append(this);
+
 		OnSelection += [this](NxFr::GUID InstanceId, bool State) { this->Panel->Select(InstanceId, State, true); };
 	}
 
 	HierarchyEditContext::~HierarchyEditContext()
 	{
+		Manager->Contexts.Remove(this);
 	}
 
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::FilterSelection(HierarchyFilter Mode, NxFr::GUID* Active) const
