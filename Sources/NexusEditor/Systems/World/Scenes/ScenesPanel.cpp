@@ -151,7 +151,7 @@ namespace NxEd
 
 	void ScenesPanel::Save(const SceneInfo& Info)
 	{
-		NxEn::Scene* SceneInstance = Assets->GetAsset<NxEn::Scene>(Info.Id);
+		NxEn::Scene* SceneInstance = Assets->Load<NxEn::Scene>(Info.Id);
 		Worlds->PackScene(SceneInstance, GetWorldId());
 		Assets->Save(SceneInstance->GetId());
 	}
@@ -184,7 +184,7 @@ namespace NxEd
 
 	void ScenesPanel::Unload(const SceneInfo& Info)
 	{
-		NxEn::Scene* SceneInstance = Assets->GetAsset<NxEn::Scene>(Info.Id);
+		NxEn::Scene* SceneInstance = Assets->Load<NxEn::Scene>(Info.Id);
 		Worlds->DestroyScene(SceneInstance, GetWorldId());
 		Assets->Release(SceneInstance->GetId());
 	}

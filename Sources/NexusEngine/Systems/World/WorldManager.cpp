@@ -171,7 +171,7 @@ namespace NxEn
 				}
 				else if (Mode == ReferenceMode::Resolve)
 				{
-					NxFr::Handle<GameObject> Target = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Child->GetTemplateId())->GetRoot();
+					NxFr::Handle<GameObject> Target = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Child->GetTemplateId())->GetRoot();
 					DuplicateGameObject(Target, Instance, ReferenceMode::Resolve);
 				}
 				else // Mode == ReferenceMode::Ignore

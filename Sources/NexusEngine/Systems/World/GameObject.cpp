@@ -232,7 +232,7 @@ namespace NxEn
 			const GameObject* Target = IteratorInstance.GetRedirectedPointer();
 			if (Target->Proxy)
 			{
-				Target = Application::GetSystem<AssetsSystem>()->GetAsset<Prefab>(Target->TemplateId)->GetRoot().GetRedirectedPointer();
+				Target = Application::GetSystem<AssetsSystem>()->Load<Prefab>(Target->TemplateId)->GetRoot().GetRedirectedPointer();
 			}
 
 			Iterator->Clone(Target);

@@ -342,7 +342,7 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> Scenes = Manager->GetScenes();
 		for (auto [Id, Original] : Scenes)
 		{
-			Scene* SceneInstance = Assets->GetAsset<Scene>(Id);
+			Scene* SceneInstance = Assets->Load<Scene>(Id);
 			DestroyScene(SceneInstance, WorldId);
 		}
 	}
@@ -383,7 +383,7 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> Scenes = Manager->GetScenes();
 		for (auto [Id, Original] : Scenes)
 		{
-			Scene* SceneInstance = Assets->GetAsset<Scene>(Id);
+			Scene* SceneInstance = Assets->Load<Scene>(Id);
 			PackScene(SceneInstance, WorldId);
 		}
 	}
