@@ -40,6 +40,7 @@ namespace NxEd
 		void OnSelection(NxFr::GUID Id, bool State);
 		bool AreElementsEnabled();
 
+		NxEn::AssetsSystem* Assets;
 		NxEn::WorldSystem* Worlds;
 		EditSystem* Edit;
 

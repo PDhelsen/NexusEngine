@@ -185,7 +185,7 @@ namespace NxEd
 						continue;
 					}
 
-					NxEn::Prefab * Prefab = Assets->Load<NxEn::Prefab>(Instance->GetTemplateId());
+					NxEn::Prefab* Prefab = Assets->Load<NxEn::Prefab>(Instance->GetTemplateId());
 					Worlds->PackPrefab(Prefab, Instance);
 				}
 			}, .Priority = 1 });

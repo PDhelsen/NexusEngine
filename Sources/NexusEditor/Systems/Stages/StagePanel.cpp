@@ -33,8 +33,14 @@ namespace NxEd
 	{
 		Panel::OnInitialize();
 
+		Assets = NxEn::Application::GetSystem<NxEn::AssetsSystem>();
 		Worlds = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 		Edit = NxEn::Application::GetSystem<EditSystem>();
+
+		if (Assets->IsTracked(Target->GetId()))
+		{
+			Assets->Acquire(Target->GetId());
+		}
 
 		if (Target->GetObjectType() == NxEn::World::GetClassType())
 		{
@@ -110,6 +116,11 @@ namespace NxEd
 		{
 			Worlds->DestroyWorld(World->GetId());
 			World = nullptr;
+		}
+
+		if (Assets->IsTracked(Target->GetId()))
+		{
+			Assets->Release(Target->GetId());
 		}
 
 		Panel::OnShutdown();
