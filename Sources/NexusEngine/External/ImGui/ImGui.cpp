@@ -44,9 +44,6 @@ namespace NxEn
 
 		void Render()
 		{
-			// TODO: Move to RenderingSystem
-			ImGui_ImplOpenGL3_Clear();
-
 			ImGui::Render();
 			ImDrawData* Data = ImGui::GetDrawData();
 			ImGui_ImplOpenGL3_RenderDrawData(Data);
