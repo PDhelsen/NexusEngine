@@ -16,6 +16,8 @@ namespace NxEn
 
 	JobHandle JobSystem::Dispatch(uint64 Count, uint64 Group, NxFr::Delegate<void(uint64)> Work)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		uint64 Batch = (Count + Group - 1) / Group;
 		JobCompletion* Completion = new JobCompletion(Batch);
 
@@ -37,6 +39,8 @@ namespace NxEn
 
 	JobHandle JobSystem::Dispatch(uint64 Count, NxFr::Delegate<void(uint64)> Work)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		JobCompletion* Completion = new JobCompletion(Count);
 
 		for (uint64 Index = 0; Index < Count; ++Index)
@@ -52,6 +56,8 @@ namespace NxEn
 
 	JobHandle JobSystem::Submit(const NxFr::Delegate<void()>& Work)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		JobCompletion* Completion = new JobCompletion(1);
 
 		Enqueue(Completion, Work);
@@ -110,6 +116,8 @@ namespace NxEn
 	{
 		while (true)
 		{
+			NX_INSTUMENT_SCOPE("Worker");
+
 			Job* Instance;
 
 			// Wait & Fetch
@@ -129,8 +137,12 @@ namespace NxEn
 			}
 
 			// Execute
-			Instance->Execute();
-			delete Instance;
+			{
+				NX_INSTUMENT_SCOPE("Work");
+
+				Instance->Execute();
+				delete Instance;
+			}
 
 			// Notify
 			{

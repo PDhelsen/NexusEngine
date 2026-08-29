@@ -13,6 +13,8 @@ namespace NxEn
 {
 	void ResourcesSystem::Move(NxFr::StringView Path, NxFr::StringView Target)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
@@ -28,6 +30,8 @@ namespace NxEn
 
 	void ResourcesSystem::Delete(NxFr::StringView Path)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
@@ -42,6 +46,8 @@ namespace NxEn
 
 	void ResourcesSystem::Unload(NxFr::StringView Path)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
@@ -55,6 +61,8 @@ namespace NxEn
 
 	void ResourcesSystem::Save(NxFr::StringView Path)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Resource* Instance = GetResource(Path);
 		if (Instance == nullptr)
 		{
@@ -67,6 +75,8 @@ namespace NxEn
 
 	void ResourcesSystem::UnloadAll()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		for (auto& [Path, Instance] : Resources)
 		{
 			Instance->Unload();
@@ -77,6 +87,8 @@ namespace NxEn
 
 	void ResourcesSystem::SaveAll()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		for (auto& [Path, Instance] : Resources)
 		{
 			Instance->Save(GetResourceFsPath(Path));

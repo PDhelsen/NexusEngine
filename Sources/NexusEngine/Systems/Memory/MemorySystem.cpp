@@ -56,6 +56,8 @@ namespace NxEn
 
 	void MemorySystem::Defragment(float Budget)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		NX_LOG(Info, System, "Memory - Defragmentation (Budget: %f)", Budget);
 		DefragmentManagedAllocators(Budget);
 	}
@@ -92,7 +94,7 @@ namespace NxEn
 	// TODO: Defragmentation might not be full because Handle might be scattered across multiple manager
 	void MemorySystem::DefragmentManagedAllocators(float Budget)
 	{
-		NX_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_SCOPE("Defragment");
 
 		NxFr::Stopwatch Watch(true);
 		NxFr::List<NxFr::HandleManager*>& Managers = GetHandles().Managers;
@@ -124,6 +126,8 @@ namespace NxEn
 
 	void MemorySystem::ClearTempAllocators()
 	{
+		NX_INSTUMENT_SCOPE("Clear Temp allocators");
+
 		GetTempAllocator().Clear();
 		if (Time->GetFrameIndex() & 1)
 		{

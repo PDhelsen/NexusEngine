@@ -38,16 +38,22 @@ namespace NxEn
 
 	void CommandsSystem::Run(NxFr::StringView Cmd)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Run(ParseCommand(Cmd));
 	}
 
 	void CommandsSystem::Execute(NxFr::StringView Cmd)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Execute(ParseCommand(Cmd));
 	}
 
 	void CommandsSystem::File(NxFr::StringView Path)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Path = NxFr::Path::Combine(Application::GetInstance()->GetProject().GetRootPath(), Path);
 		if (Path.IsEmpty() || !NxFr::Path::Exist(Path))
 		{
@@ -150,7 +156,7 @@ namespace NxEn
 
 	void CommandsSystem::Execute(const CommandInfo& Info)
 	{
-		NX_INSTUMENT_SCOPE(Info.Id.C());
+		NX_INSTUMENT_SCOPE(Info.Id);
 
 		NxFr::Registry<Command>& Commands = GetCommands();
 		Command* Instance = Commands.TryGet(Info.Id);

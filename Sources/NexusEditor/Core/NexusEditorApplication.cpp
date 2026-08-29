@@ -39,8 +39,6 @@ namespace NxEd
 
 	void NexusEditorApplication::SaveAll()
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		OnSave.Invoke();
 		NX_LOG(Info, Application, "Saved");
 	}

@@ -71,6 +71,8 @@ namespace NxEn
 
 	void GUISystem::LoadLayout(NxFr::StringView Name)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			return;
@@ -99,6 +101,8 @@ namespace NxEn
 
 	void GUISystem::SaveLayout(NxFr::StringView Name)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			return;
@@ -123,6 +127,8 @@ namespace NxEn
 
 	void GUISystem::LoadTheme(NxFr::StringView Name)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			return;
@@ -145,6 +151,8 @@ namespace NxEn
 
 	void GUISystem::SaveTheme(NxFr::StringView Name)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Application::GetInstance<NexusEngineApplication>()->IsHeadless())
 		{
 			return;
@@ -401,15 +409,11 @@ namespace NxEn
 
 	void GUISystem::LoadLayoutImGui(NxFr::StringView Path) const
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		ImGui::LoadIniSettingsFromDisk(Path.C());
 	}
 
 	void GUISystem::LoadLayoutNexus(NxFr::StringView Path) const
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Read, false);
 
@@ -430,15 +434,11 @@ namespace NxEn
 
 	void GUISystem::SaveLayoutImGui(NxFr::StringView Path) const
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		ImGui::SaveIniSettingsToDisk(Path.C());
 	}
 
 	void GUISystem::SaveLayoutNexus(NxFr::StringView Path) const
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		NxFr::TextStream Stream(Path);
 		Stream.Open(NxFr::File::Mode::Write, true);
 
@@ -456,8 +456,6 @@ namespace NxEn
 
 	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		ImGuiStyle& Style = ImGui::GetStyle();
 
 		Style.FontSizeBase = Node["FontSizeBase"].as<float>();
@@ -589,8 +587,6 @@ namespace NxEn
 
 	void GUISystem::LoadThemeNexus(const YAML::Node& Node)
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		const YAML::Node& Vars = Node["Vars"];
 		for (YAML::const_iterator It = Vars.begin(); It != Vars.end(); ++It)
 		{
@@ -630,8 +626,6 @@ namespace NxEn
 
 	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		ImGuiStyle& Style = ImGui::GetStyle();
 
 		Emitter << YAML::BeginMap;
@@ -769,8 +763,6 @@ namespace NxEn
 
 	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter) const
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		Emitter << YAML::BeginMap;
 
 		Emitter << YAML::Key << "Vars" << YAML::Value;

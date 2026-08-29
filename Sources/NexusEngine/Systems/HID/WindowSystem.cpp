@@ -40,6 +40,8 @@ namespace NxEn
 
 	void WindowSystem::Close()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Glfw::CloseWindow(Target.Instance);
@@ -48,6 +50,8 @@ namespace NxEn
 
 	void WindowSystem::Minimize()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Glfw::MinimizeWindow(Target.Instance);
@@ -56,6 +60,8 @@ namespace NxEn
 
 	void WindowSystem::Maximize()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Glfw::MaximizeWindow(Target.Instance);
@@ -64,6 +70,8 @@ namespace NxEn
 
 	void WindowSystem::Restore()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Glfw::RestoreWindow(Target.Instance);
@@ -72,6 +80,8 @@ namespace NxEn
 
 	void WindowSystem::Show()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Glfw::ShowWindow(Target.Instance);
@@ -80,6 +90,8 @@ namespace NxEn
 
 	void WindowSystem::Hide()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Glfw::HideWindow(Target.Instance);
@@ -88,6 +100,8 @@ namespace NxEn
 
 	void WindowSystem::Focus()
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Glfw::FocusWindow(Target.Instance);
@@ -96,6 +110,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowMode(Window::Mode Mode)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 #if NX_EDITOR
 		NX_LOG(Warning, System, "In Editor SetWindowMode won't have an impact");
 		return *this;
@@ -115,6 +131,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowMonitor(int8 Index)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 #if NX_EDITOR
 		NX_LOG(Warning, System, "In Editor SetWindowMonitor won't have an impact");
 		return *this;
@@ -145,6 +163,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowRefreshRate(uint64 RefreshRate)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 #if NX_EDITOR
 		NX_LOG(Warning, System, "In Editor SetWindowRefreshRate won't have an impact");
 		return *this;
@@ -169,6 +189,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowVSync(bool VSync)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Target.VSync = VSync;
@@ -180,6 +202,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowPosition(NxFr::Vector2i Position)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.WindowMode != Window::Mode::Windowed)
 		{
 			NX_LOG(Warning, System, "Window is not in windowed mode, SetWindowPosition won't have an impact");
@@ -197,6 +221,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowResolution(NxFr::Vector2i Resolution)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Target.Resolution = Resolution;
@@ -208,6 +234,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowTitle(NxFr::StringView Title)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Target.Title = Title;
@@ -219,6 +247,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetWindowIcon(const Image* Icon)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Target.Instance)
 		{
 			Target.Icon = Icon;
@@ -232,6 +262,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetCursorMode(Cursor::Mode Mode)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Pointer.CursorMode == Mode)
 		{
 			return *this;
@@ -248,6 +280,8 @@ namespace NxEn
 
 	WindowSystem& WindowSystem::SetCursorIcon(Cursor::Icon Icon, const Image* IconCustom)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Pointer.CursorIcon == Icon && Pointer.IconCustom == IconCustom)
 		{
 			return *this;
@@ -341,8 +375,6 @@ namespace NxEn
 
 	void WindowSystem::FetchMonitors()
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		NxFr::Array<void*> Instances = Glfw::GetMonitors();
 
 		Monitors = NxFr::Array<Monitor>(Instances.GetCount());
@@ -357,29 +389,23 @@ namespace NxEn
 
 	void WindowSystem::CreateWindow()
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		Target.Instance = Glfw::CreateWindow();
 	}
 
 	void WindowSystem::DestroyWindow()
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		Glfw::DestroyWindow(Target.Instance);
 	}
 
 	void WindowSystem::TickWindow()
 	{
-		NX_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_SCOPE("Swap Buffer");
 
 		Glfw::TickWindow(Target.Instance);
 	}
 
 	void WindowSystem::CreateCursor()
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		Glfw::CreateCursor(Target.Instance,
 			(uint8)Pointer.CursorIcon,
 			Pointer.IconCustom ? Pointer.IconCustom->GetResolution() : NxFr::Vector2i::Zero,
@@ -388,8 +414,6 @@ namespace NxEn
 
 	void WindowSystem::DestroyCursor()
 	{
-		NX_INSTUMENT_FUNCTION();
-
 		Glfw::DestroyCursor(Pointer.Instance);
 	}
 

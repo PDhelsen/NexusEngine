@@ -159,6 +159,8 @@ namespace NxEn
 
 	World* WorldSystem::CreateWorld(NxFr::StringId Name)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		WorldManager* Manager = GetManager(Name);
 		if (Manager)
 		{
@@ -187,6 +189,8 @@ namespace NxEn
 
 	void WorldSystem::DestroyWorld(NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		WorldManager* Manager = GetManager(WorldId);
 		if (!Manager)
 		{
@@ -262,6 +266,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::InstantiateScene(Scene* Instance, NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance, NxFr::Handle<GameObject>(), Default, "Instance should be valid");
 		NX_ASSERT_RETURN(WorldId != TemplateWorldId, NxFr::Handle<GameObject>(), Default, "Can't be use on the prefab world");
 
@@ -297,6 +302,7 @@ namespace NxEn
 
 	void WorldSystem::DestroyScene(Scene* Instance, NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance, , Default, "Instance should be valid");
 		NX_ASSERT_RETURN(WorldId != TemplateWorldId, , Default, "Can't be use on the prefab world");
 
@@ -322,6 +328,7 @@ namespace NxEn
 
 	void WorldSystem::DestroyScenes(NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(WorldId != TemplateWorldId, , Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
@@ -342,6 +349,7 @@ namespace NxEn
 
 	void WorldSystem::PackScene(Scene* Instance, NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance, , Default, "Instance should be valid");
 		NX_ASSERT_RETURN(WorldId != TemplateWorldId, , Default, "Can't be use on the prefab world");
 
@@ -361,6 +369,7 @@ namespace NxEn
 
 	void WorldSystem::PackScenes(NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(WorldId != TemplateWorldId, , Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
@@ -407,6 +416,7 @@ namespace NxEn
 
 	void WorldSystem::PackPrefab(Prefab* Instance, NxFr::Handle<GameObject> Original)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance, , Default, "Instance should be valid");
 
 		NxFr::Handle<GameObject> Root = TemplateGameObject(Original, Instance->GetId());
@@ -417,6 +427,7 @@ namespace NxEn
 
 	void WorldSystem::UnpackPrefab(NxFr::Handle<GameObject> Original)
 	{
+		NX_INSTUMENT_FUNCTION();
 		UntemplateGameObject(Original);
 	}
 
@@ -433,6 +444,8 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::CreateGameObject(NxFr::StringView Name, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Parent)
 		{
 			WorldId = Parent->GetWorldId();
@@ -464,6 +477,8 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::InstantiateGameObject(NxFr::Handle<GameObject> Original, NxFr::Handle<GameObject> Parent, NxFr::GUID WorldId)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (Parent)
 		{
 			WorldId = Parent->GetWorldId();
@@ -500,6 +515,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Original->GetWorldId() != TemplateWorldId, NxFr::Handle<GameObject>(), Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Original->GetWorldId());
@@ -529,6 +545,8 @@ namespace NxEn
 
 	void WorldSystem::DestroyGameObject(NxFr::Handle<GameObject> Instance)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (!Instance)
 		{
 			return;
@@ -550,6 +568,7 @@ namespace NxEn
 
 	void WorldSystem::AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance->GetWorldId() != TemplateWorldId, , Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(Instance->GetWorldId());
@@ -577,6 +596,7 @@ namespace NxEn
 
 	YAML::Node WorldSystem::SerializeGameObject(NxFr::Handle<GameObject> Instance)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance, YAML::Node(), Default, "Instance should be valid");
 		NX_ASSERT_RETURN(Belong(Instance, TemplateWorldId), YAML::Node(), Default, "Instance should be a template");
 
@@ -585,6 +605,8 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::DeserializeGameObject(YAML::Node Node)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		WorldManager* Manager = GetManager(TemplateWorldId);
 		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
 
@@ -597,6 +619,7 @@ namespace NxEn
 
 	void WorldSystem::UnloadGameObject(NxFr::Handle<GameObject> Instance)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance, , Default, "Instance should be valid");
 		NX_ASSERT_RETURN(Belong(Instance, TemplateWorldId), , Default, "Instance should be a template");
 
@@ -610,6 +633,7 @@ namespace NxEn
 
 	NxFr::Handle<GameObject> WorldSystem::TemplateGameObject(NxFr::Handle<GameObject> Original, NxFr::GUID TemplateId)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Original, NxFr::Handle<GameObject>(), Default, "Original should be valid");
 		NX_ASSERT_RETURN(!Belong(Original, TemplateWorldId), NxFr::Handle<GameObject>(), Default, "Original should not be a template");
 
@@ -631,6 +655,7 @@ namespace NxEn
 
 	void WorldSystem::UntemplateGameObject(NxFr::Handle<GameObject> Instance)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Instance, , Default, "Original should be valid");
 		NX_ASSERT_RETURN(!Belong(Instance, TemplateWorldId), , Default, "Original should not be a template");
 
@@ -639,6 +664,7 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> WorldSystem::CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Target, NxFr::Handle<Behaviour>(), Default, "Target should be valid");
 		NX_ASSERT_RETURN(Target->GetWorldId() != TemplateWorldId, NxFr::Handle<Behaviour>(), Default, "Can't be use on the prefab world");
 
@@ -655,6 +681,7 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> WorldSystem::InstantiateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Target, NxFr::Handle<Behaviour>(), Default, "Target should be valid");
 		NX_ASSERT_RETURN(Original, NxFr::Handle<Behaviour>(), Default, "Original should be valid");
 		NX_ASSERT_RETURN(Target->GetWorldId() != TemplateWorldId, NxFr::Handle<Behaviour>(), Default, "Can't be use on the prefab world");
@@ -674,6 +701,7 @@ namespace NxEn
 
 	NxFr::Handle<Behaviour> WorldSystem::DuplicateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Target, NxFr::Handle<Behaviour>(), Default, "Target should be valid");
 		NX_ASSERT_RETURN(Original, NxFr::Handle<Behaviour>(), Default, "Original should be valid");
 		NX_ASSERT_RETURN(Target->GetWorldId() != TemplateWorldId, NxFr::Handle<Behaviour>(), Default, "Can't be use on the prefab world");
@@ -692,6 +720,8 @@ namespace NxEn
 
 	void WorldSystem::DestroyBehaviour(NxFr::Handle<Behaviour> Instance)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (!Instance)
 		{
 			return;
@@ -710,6 +740,7 @@ namespace NxEn
 
 	NxFr::Handle<Component> WorldSystem::CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Target, NxFr::Handle<Component>(), Default, "Target should be valid");
 		NX_ASSERT_RETURN(Target->GetWorldId() != TemplateWorldId, NxFr::Handle<Component>(), Default, "Can't be use on the prefab world");
 
@@ -726,6 +757,7 @@ namespace NxEn
 
 	NxFr::Handle<Component> WorldSystem::InstantiateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Target, NxFr::Handle<Component>(), Default, "Target should be valid");
 		NX_ASSERT_RETURN(Original, NxFr::Handle<Component>(), Default, "Original should be valid");
 		NX_ASSERT_RETURN(Target->GetWorldId() != TemplateWorldId, NxFr::Handle<Component>(), Default, "Can't be use on the prefab world");
@@ -745,6 +777,7 @@ namespace NxEn
 
 	NxFr::Handle<Component> WorldSystem::DuplicateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target)
 	{
+		NX_INSTUMENT_FUNCTION();
 		NX_ASSERT_RETURN(Target, NxFr::Handle<Component>(), Default, "Target should be valid");
 		NX_ASSERT_RETURN(Original, NxFr::Handle<Component>(), Default, "Original should be valid");
 		NX_ASSERT_RETURN(Target->GetWorldId() != TemplateWorldId, NxFr::Handle<Component>(), Default, "Can't be use on the prefab world");
@@ -763,6 +796,8 @@ namespace NxEn
 
 	void WorldSystem::DestroyComponent(NxFr::Handle<Component> Instance)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (!Instance)
 		{
 			return;
@@ -1060,8 +1095,12 @@ namespace NxEn
 
 	void WorldSystem::OnTick(float TimeStep)
 	{
+		NX_INSTUMENT_SCOPE("Worlds - Tick");
+
 		for (auto [Id, Manager] : Managers)
 		{
+			NX_INSTUMENT_SCOPE(Manager->GetWorld()->GetName());
+
 			Manager->Tick(TimeStep);
 		}
 	}

@@ -48,6 +48,8 @@ namespace NxEn
 
 	void SettingsSystem::LoadSettings() const
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		NxFr::String FolderPath = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
 		NxFr::Dictionary<NxFr::StringView, NxFr::Dictionary<NxFr::StringView, Setting*>> Settings = GetAllSettings();
 
@@ -79,6 +81,8 @@ namespace NxEn
 
 	void SettingsSystem::SaveSettings() const
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		NxFr::String FolderPath = Application::GetInstance()->GetProject().GetSavedConfigPath(Folder);
 		NxFr::Array<NxFr::Array<Setting*>> Settings = GetAllSettingsSorted();
 
@@ -99,6 +103,8 @@ namespace NxEn
 
 	void SettingsSystem::ApplySettings() const
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		OnChange.Invoke();
 		NX_LOG(Info, System, "Settings applied");
 	}

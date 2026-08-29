@@ -30,18 +30,24 @@ namespace NxEn
 
 	void InputSystem::AddSchema(NxFr::StringId Id, Input::Schema* Schema)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Schemas.AppendOrAssign(Id, Schema);
 		NX_LOG(Info, System, "Register Input schema: %s", Id.C());
 	}
 
 	void InputSystem::RemoveSchema(NxFr::StringId Id)
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		Schemas.Remove(Id);
 		NX_LOG(Info, System, "Unregister Input schema: %s", Id.C());
 	}
 
 	void InputSystem::ExecuteAction(const Input::Action& Action) const
 	{
+		NX_INSTUMENT_FUNCTION();
+
 		if (CheckTrigger(Action.Input))
 		{
 			Action.Callback.Invoke();
@@ -233,7 +239,7 @@ namespace NxEn
 
 	void InputSystem::PollInputs()
 	{
-		NX_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_SCOPE("Poll");
 
 		OnPoll();
 		NX_ASSERT_RETURN(GetButton(Input::Button::Invalid) == Input::State::Up, , System, "Unsupported Button pressed");
@@ -241,12 +247,16 @@ namespace NxEn
 
 	void InputSystem::TriggerActions()
 	{
-		NX_INSTUMENT_FUNCTION();
+		NX_INSTUMENT_SCOPE("Actions");
 
 		for (auto& [Id, Schema] : Schemas)
 		{
+			NX_INSTUMENT_SCOPE(Id);
+
 			for (auto& [Tag, Action] : Schema->Mapping)
 			{
+				NX_INSTUMENT_SCOPE(Tag);
+
 				ExecuteAction(Action);
 			}
 		}
