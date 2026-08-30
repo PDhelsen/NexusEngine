@@ -28,7 +28,7 @@ namespace NxEn
 		WorldSystem* Worlds = Application::GetSystem<WorldSystem>();
 
 		Scene* SceneInstance = Assets->Load<Scene>(NxFr::StringUtility::FromString<NxFr::GUID>(SceneId));
-		Worlds->InstantiateScene(SceneInstance, !WorldId.IsEmpty() ? NxFr::StringId(WorldId) : WorldSystem::MainWorldId);
+		Worlds->InstantiateScene(SceneInstance->GetRoot(), !WorldId.IsEmpty() ? NxFr::StringId(WorldId) : WorldSystem::MainWorldId);
 	}));
 	static Command* CmdWorldSceneDestroy = Command::Create("World.Scene.Destroy"_Sid, "Destroy Scene", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView SceneId, NxFr::StringView WorldId)
 	{
@@ -36,7 +36,7 @@ namespace NxEn
 		WorldSystem* Worlds = Application::GetSystem<WorldSystem>();
 
 		Scene* SceneInstance = Assets->Load<Scene>(NxFr::StringUtility::FromString<NxFr::GUID>(SceneId));
-		Worlds->DestroyScene(SceneInstance, !WorldId.IsEmpty() ? NxFr::StringId(WorldId) : WorldSystem::MainWorldId);
+		Worlds->DestroyScene(SceneInstance->GetId(), !WorldId.IsEmpty() ? NxFr::StringId(WorldId) : WorldSystem::MainWorldId);
 	}));
 	static Command* CmdWorldPrefabPack = Command::Create("World.Prefab.Pack"_Sid, "Pack Prefab", NxFr::Delegate<void(NxFr::StringView, NxFr::StringView)>([](NxFr::StringView PrefabId, NxFr::StringView GameObjectId)
 	{
@@ -264,10 +264,10 @@ namespace NxEn
 		return Instance == Manager->GetWorld()->GetRoot();
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::InstantiateScene(Scene* Instance, NxFr::GUID WorldId)
+	NxFr::Handle<GameObject> WorldSystem::InstantiateScene(NxFr::Handle<GameObject> Original, NxFr::GUID WorldId)
 	{
 		NX_INSTUMENT_FUNCTION();
-		NX_ASSERT_RETURN(Instance, NxFr::Handle<GameObject>(), Default, "Instance should be valid");
+		NX_ASSERT_RETURN(IsScene(Original), NxFr::Handle<GameObject>(), Default, "Original should be a valid scene");
 		NX_ASSERT_RETURN(WorldId != TemplateWorldId, NxFr::Handle<GameObject>(), Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
@@ -278,7 +278,6 @@ namespace NxEn
 		}
 
 		NxFr::Handle<GameObject> Parent = Manager->GetWorld()->GetRoot();
-		NxFr::Handle<GameObject> Original = Instance->GetRoot();
 
 		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>>::Value IdMap = Manager->GetIdsRemap().PushValue();
 		NxFr::Handle<GameObject> Root = Manager->DuplicateGameObject(Original, Parent, WorldManager::ReferenceMode::Resolve);
@@ -286,24 +285,24 @@ namespace NxEn
 		Root->Initialize();
 		Root->UpdateHierarchy();
 
-		Manager->RegisterScene(Instance->GetId(), Root);
+		Manager->RegisterScene(Original->GetTemplateId(), Root);
 
-		OnWorldChange.Invoke(EventCreatedId, Instance->GetId(), true);
+		OnWorldChange.Invoke(EventCreatedId, Original->GetTemplateId(), true);
 		OnWorldObjectChange.Invoke(EventCreatedId, Root->GetWorldId(), Root->GetId());
 
 		return Root;
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::InstantiateSceneSingle(Scene* Instance, NxFr::GUID WorldId)
+	NxFr::Handle<GameObject> WorldSystem::InstantiateSceneSingle(NxFr::Handle<GameObject> Original, NxFr::GUID WorldId)
 	{
 		DestroyScenes(WorldId);
-		return InstantiateScene(Instance, WorldId);
+		return InstantiateScene(Original, WorldId);
 	}
 
-	void WorldSystem::DestroyScene(Scene* Instance, NxFr::GUID WorldId)
+	void WorldSystem::DestroyScene(NxFr::GUID SceneId, NxFr::GUID WorldId)
 	{
 		NX_INSTUMENT_FUNCTION();
-		NX_ASSERT_RETURN(Instance, , Default, "Instance should be valid");
+		NX_ASSERT_RETURN(SceneId, , Default, "SceneId should be a valid scene");
 		NX_ASSERT_RETURN(WorldId != TemplateWorldId, , Default, "Can't be use on the prefab world");
 
 		WorldManager* Manager = GetManager(WorldId);
@@ -313,13 +312,13 @@ namespace NxEn
 			return;
 		}
 
-		NxFr::Handle<GameObject> Root = Manager->GetScene(Instance->GetId());
-		NX_ASSERT_RETURN(Instance, , Default, "Scene is not loaded");
+		NxFr::Handle<GameObject> Root = Manager->GetScene(SceneId);
+		NX_ASSERT_RETURN(Root, , Default, "Scene is not loaded");
 
 		OnWorldObjectChange.Invoke(EventDestroyedId, Root->GetWorldId(), Root->GetId());
-		OnWorldChange.Invoke(EventDestroyedId, Instance->GetId(), true);
+		OnWorldChange.Invoke(EventDestroyedId, SceneId, true);
 
-		Manager->UnregisterScene(Instance->GetId());
+		Manager->UnregisterScene(SceneId);
 
 		Root->SetEnabled(false);
 		Root->Shutdown();
@@ -338,12 +337,10 @@ namespace NxEn
 			return;
 		}
 
-		AssetsSystem* Assets = Application::GetSystem<AssetsSystem>();
 		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> Scenes = Manager->GetScenes();
 		for (auto [Id, Original] : Scenes)
 		{
-			Scene* SceneInstance = Assets->Load<Scene>(Id);
-			DestroyScene(SceneInstance, WorldId);
+			DestroyScene(Id, WorldId);
 		}
 	}
 

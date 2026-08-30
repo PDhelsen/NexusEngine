@@ -174,18 +174,18 @@ namespace NxEd
 		NxEn::Scene* SceneInstance = Assets->Acquire<NxEn::Scene>(Info.Id);
 		if (SettingLoadSingle->GetValue())
 		{
-			Worlds->InstantiateSceneSingle(SceneInstance, GetWorldId());
+			Worlds->InstantiateSceneSingle(SceneInstance->GetRoot(), GetWorldId());
 		}
 		else
 		{
-			Worlds->InstantiateScene(SceneInstance, GetWorldId());
+			Worlds->InstantiateScene(SceneInstance->GetRoot(), GetWorldId());
 		}
 	}
 
 	void ScenesPanel::Unload(const SceneInfo& Info)
 	{
 		NxEn::Scene* SceneInstance = Assets->Load<NxEn::Scene>(Info.Id);
-		Worlds->DestroyScene(SceneInstance, GetWorldId());
+		Worlds->DestroyScene(SceneInstance->GetId(), GetWorldId());
 		Assets->Release(SceneInstance->GetId());
 	}
 }

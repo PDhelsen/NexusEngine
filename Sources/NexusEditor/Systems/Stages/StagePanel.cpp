@@ -56,7 +56,7 @@ namespace NxEd
 		{
 			NxEn::Scene* Instance = static_cast<NxEn::Scene*>(Target.Get());
 			World = Worlds->CreateWorld(Target->GetName());
-			Worlds->InstantiateScene(Instance, World->GetId());
+			Worlds->InstantiateScene(Instance->GetRoot(), World->GetId());
 		}
 		else
 		{

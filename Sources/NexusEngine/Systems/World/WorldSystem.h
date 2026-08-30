@@ -34,9 +34,9 @@ namespace NxEn
 		NxFr::Array<NxFr::GUID> GetWorlds(bool IncludeTemplateWorld = false);
 		bool IsWorld(NxFr::Handle<GameObject> Instance);
 
-		NxFr::Handle<GameObject> InstantiateScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
-		NxFr::Handle<GameObject> InstantiateSceneSingle(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
-		void DestroyScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
+		NxFr::Handle<GameObject> InstantiateScene(NxFr::Handle<GameObject> Original, NxFr::GUID WorldId = MainWorldId);
+		NxFr::Handle<GameObject> InstantiateSceneSingle(NxFr::Handle<GameObject> Original, NxFr::GUID WorldId = MainWorldId);
+		void DestroyScene(NxFr::GUID SceneId, NxFr::GUID WorldId = MainWorldId);
 		void DestroyScenes(NxFr::GUID WorldId = MainWorldId);
 		void PackScene(Scene* Instance, NxFr::GUID WorldId = MainWorldId);
 		void PackScenes(NxFr::GUID WorldId = MainWorldId);

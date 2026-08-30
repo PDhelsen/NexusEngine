@@ -124,7 +124,7 @@ namespace NxEd
 					else if (Type == NxEn::Scene::GetClassType())
 					{
 						NxEn::Scene* Instance = Assets->Load<NxEn::Scene>(Id);
-						Worlds->InstantiateScene(Instance);
+						Worlds->InstantiateScene(Instance->GetRoot());
 					}
 					else
 					{
