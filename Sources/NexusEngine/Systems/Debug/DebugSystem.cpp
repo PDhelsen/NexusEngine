@@ -38,6 +38,11 @@ namespace NxEn
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		if (NxFr::StringUtility::FromString<bool>(Enabled)) Stats->StartRecording(); else Stats->StopRecording();
 	}));
+	static Command* CmdDebugMemory = Command::Create("Debug.Memory"_Sid, "Enable/Disable memory", NxFr::Delegate<void(NxFr::StringView)>([](NxFr::StringView Enabled)
+	{
+		NxFr::MemoryTracker* Memory = Application::GetSystem<DebugSystem>()->GetMemory();
+		if (NxFr::StringUtility::FromString<bool>(Enabled)) Memory->StartRecording(); else Memory->StopRecording();
+	}));
 
 	DebugSystem::DebugSystem()
 		: Time(nullptr), Logs(NxFr::Globals::Debug::Logs), Statistiques(nullptr), Instrumentor(nullptr), Memory(nullptr)
@@ -82,6 +87,11 @@ namespace NxEn
 			Statistiques->StopRecording();
 		}
 
+		if (Memory->IsRecording())
+		{
+			Memory->StopRecording();
+		}
+
 		delete Instrumentor;
 		delete Statistiques;
 		delete Memory;
@@ -116,6 +126,7 @@ namespace NxEn
 			NX_LOG(Info, System, "Debug Tools will start automatically");
 			Instrumentor->StartRecording();
 			Statistiques->StartRecording();
+			Memory->StartRecording();
 		}
 	}
 

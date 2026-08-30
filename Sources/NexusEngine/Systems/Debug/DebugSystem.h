@@ -18,7 +18,7 @@ namespace NxEn
 		NxFr::Logger* GetLogger() const { return Logs; }
 		NxFr::Stats* GetStats() const { return Statistiques; };
 		NxFr::Instruments* GetInstruments() const { return Instrumentor; }
-		NxFr::MemoryTracker* GetMemoryTracker() const { return Memory; }
+		NxFr::MemoryTracker* GetMemory() const { return Memory; }
 
 	protected:
 		void OnInitialize() override;

@@ -27,6 +27,7 @@ namespace NxEn
 
 		NxFr::Instruments* Instruments;
 		NxFr::Stats* Stats;
+		NxFr::MemoryTracker* Memory;
 		NxFr::List<NxFr::String> Ids;
 		NxFr::Dictionary<NxFr::StringId, const NxFr::Stats::Stat*> Values;
 		Utils::Filter Filter;

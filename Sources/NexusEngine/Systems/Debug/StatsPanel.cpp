@@ -30,6 +30,7 @@ namespace NxEn
 		DebugSystem* Debug = Application::GetSystem<DebugSystem>();
 		Instruments = Debug->GetInstruments();
 		Stats = Debug->GetStats();
+		Memory = Debug->GetMemory();
 
 		Values = Stats->GetStats();
 		Ids = NxFr::List<NxFr::String>(Values.GetCount());
@@ -43,7 +44,6 @@ namespace NxEn
 	void StatsPanel::OnDraw()
 	{
 		DrawButtons();
-		GUI::Utils::SameLine();
 		DrawFilter();
 
 		for (uint64 Index = 0; Index < Ids.GetCount(); ++Index)
@@ -78,7 +78,7 @@ namespace NxEn
 		GUI::Utils::SameLine();
 
 		{
-			GUI::Style::Scope _ = !Instruments->IsRecording() ? &GUI::Styles::ButtonNormal() : &GUI::Styles::ButtonPressed();
+			GUI::Style::Scope _ = !Stats->IsRecording() ? &GUI::Styles::ButtonNormal() : &GUI::Styles::ButtonPressed();
 			if (GUI::Draw::Button("Stats", NxFr::Vector2f(GUI::Styles::WidthButton(), 0)))
 			{
 				if (!Stats->IsRecording())
@@ -88,6 +88,24 @@ namespace NxEn
 				else
 				{
 					Stats->StopRecording();
+				}
+			}
+		}
+
+
+		GUI::Utils::SameLine();
+
+		{
+			GUI::Style::Scope _ = !Memory->IsRecording() ? &GUI::Styles::ButtonNormal() : &GUI::Styles::ButtonPressed();
+			if (GUI::Draw::Button("Memory", NxFr::Vector2f(GUI::Styles::WidthButton(), 0)))
+			{
+				if (!Memory->IsRecording())
+				{
+					Memory->StartRecording();
+				}
+				else
+				{
+					Memory->StopRecording();
 				}
 			}
 		}
