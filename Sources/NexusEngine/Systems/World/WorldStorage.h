@@ -3,7 +3,7 @@
 #include "NexusEngine/Core/NexusEngineCore.h"
 #include "NexusEngine/Systems/World/Misc/Iterator.h"
 
-#define NX_WORLD_OBJECT(Type) NxFr::Factory<NxEn::WorldStorage>::Creator* Factory##Type = NxEn::WorldStorage::GetFactory().Register<NxEn::WorldStorageOf<Type>>(Type::GetClassType());
+#define NX_WORLD_OBJECT(Type) static NxFr::Factory<NxEn::WorldStorage>::Creator* Factory##Type = NxEn::WorldStorage::GetFactory().Register<NxEn::WorldStorageOf<Type>>(Type::GetClassType());
 
 namespace NxEn
 {
