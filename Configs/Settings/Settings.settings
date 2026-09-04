@@ -5,7 +5,7 @@ JobReservedThread: 4
 LoggerAutoFlush: false
 LoggerChannel: {Application: true, Command: true, Default: true, System: true, Verbose: true}
 LoggerVerbosity: [true, true, true, true]
-MemoryAllocatorsSize: [0, 1048576, 1048576, 1048576, 1048576, 1048576, 1048576]
+MemoryAllocatorsSize: [0, 1048576, 1048576, 1048576, 1048576, 1048576]
 MemoryDefragmentBudget: 1
 MemoryHandlesPerManager: 1024
 WindowMode: 1

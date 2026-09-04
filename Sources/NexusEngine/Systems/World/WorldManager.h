@@ -75,7 +75,7 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::StringId, WorldStorage*> Storages;
 		NxFr::Dictionary<NxFr::GUID, WorldObject> Objects;
 		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>> Remap;
-		HandleManager Handles;
+		NxFr::HandleBucketManager Handles;
 
 		World* WorldInstance;
 		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> SceneInstances;

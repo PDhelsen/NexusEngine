@@ -1,6 +1,8 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/Systems/Memory/MemorySystem.h"
 
+#include "NexusEngine/Core/NexusConfig.h"
+
 namespace NxFr
 {
 	namespace StatsHeader
@@ -13,32 +15,26 @@ namespace NxFr
 
 namespace NxEn
 {
-	static HandleManager& GetHandles() { static HandleManager Instance; return Instance; }
-	static Allocator& GetRawAllocator() { static Allocator Instance(AllocatorType::Raw); return Instance; }
-	static Allocator& GetGeneralAllocator() { static Allocator Instance(AllocatorType::General); return Instance; }
-	static Allocator& GetTempAllocator() { static Allocator Instance(AllocatorType::Temp); return Instance; }
-	static Allocator& GetTemp2Allocator() { static Allocator Instance(AllocatorType::Temp2); return Instance; }
-	static Allocator& GetConstantAllocator() { static Allocator Instance(AllocatorType::Constant); return Instance; }
-	static Allocator& GetSmallAllocator() { static Allocator Instance(AllocatorType::Small); return Instance; }
-	static Allocator& GetManagedAllocator() { static Allocator Instance(AllocatorType::Managed); return Instance; }
+	static NxFr::SystemAllocator& GetSystemAllocator() { static NxFr::SystemAllocator Instance; return Instance; }
+	static NxFr::ContinuousAllocator& GetGeneralAllocator() { static NxFr::ContinuousAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::HeapAllocator>()); return Instance; }
+	static NxFr::ContinuousAllocator& GetTempAllocator() { static NxFr::ContinuousAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::StackAllocator>()); return Instance; }
+	static NxFr::ContinuousAllocator& GetConstantAllocator() { static NxFr::ContinuousAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::HeapAllocator>()); return Instance; }
+	static NxFr::FixedAllocator& GetFixedAllocator() { static NxFr::FixedAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE); return Instance; }
+	static NxFr::ManagedAllocator& GetManagedAllocator() { static NxFr::ManagedAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_HANDLES_COUNT); return Instance; }
 
+	static SettingSeq<uint64>* SettingAllocatorSizes = SettingSeq<uint64>::Create("Settings", "MemoryAllocatorsSize", { 0, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_ALLOCATOR_SIZE });
+	static SettingVar<uint64>* SettingHandlesPerManager = SettingVar<uint64>::Create("Settings", "MemoryHandlesPerManager", NX_MEMORY_HANDLES_COUNT);
 	static SettingVar<float>* SettingDefragmentBudget = SettingVar<float>::Create("Settings", "MemoryDefragmentBudget", 1.0f);
 
-	NxEn::HandleManager* MemorySystem::GetHandleManager()
-	{
-		return &GetHandles();
-	}
-
-	NxEn::Allocator* MemorySystem::GetAllocator(AllocatorType Type)
+	NxFr::Allocator* MemorySystem::GetAllocator(AllocatorType Type)
 	{
 		switch (Type)
 		{
-		case NxEn::AllocatorType::Raw: return &GetRawAllocator();
+		case NxEn::AllocatorType::System: return &GetSystemAllocator();
 		case NxEn::AllocatorType::General: return &GetGeneralAllocator();
 		case NxEn::AllocatorType::Temp: return &GetTempAllocator();
-		case NxEn::AllocatorType::Temp2: return &GetTemp2Allocator();
 		case NxEn::AllocatorType::Constant: return &GetConstantAllocator();
-		case NxEn::AllocatorType::Small: return &GetSmallAllocator();
+		case NxEn::AllocatorType::Fixed: return &GetFixedAllocator();
 		case NxEn::AllocatorType::Managed: return &GetManagedAllocator();
 		}
 
@@ -46,7 +42,6 @@ namespace NxEn
 	}
 
 	MemorySystem::MemorySystem()
-		: Time(nullptr), Defragmentation()
 	{
 	}
 
@@ -65,17 +60,19 @@ namespace NxEn
 	void MemorySystem::OnInitialize()
 	{
 		System::OnInitialize();
-		Time = &Application::GetInstance()->GetTime();
 
 		NxFr::Stats* Stats = Application::GetSystem<DebugSystem>()->GetStats();
 		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocatedId, Integer, Set);
 		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::MemoryAllocationId, Integer, Set);
 		NX_STAT_HEADER_INSTANCE(Stats, NxFr::StatsHeader::PlatformMemoryId, Integer, Set);
+
+		Application::GetSystem<SettingsSystem>()->GetOnChange() += { this, & MemorySystem::ApplySettings };
 	}
 
 	void MemorySystem::OnShutdown()
 	{
-		Time = nullptr;
+		Application::GetSystem<SettingsSystem>()->GetOnChange() -= { this, & MemorySystem::ApplySettings };
+
 		System::OnShutdown();
 	}
 
@@ -91,47 +88,28 @@ namespace NxEn
 		NX_STAT_INTEGER(NxFr::StatsHeader::PlatformMemoryId, NxFr::Globals::PlatformTarget->GetMemoryInfo().CurrentUsage);
 	}
 
-	// TODO: Defragmentation might not be full because Handle might be scattered across multiple manager
+	void MemorySystem::ApplySettings()
+	{
+		GetGeneralAllocator().SetBucketSize(SettingAllocatorSizes->GetValue()[(uint64)AllocatorType::General]);
+		GetTempAllocator().SetBucketSize(SettingAllocatorSizes->GetValue()[(uint64)AllocatorType::Temp]);
+		GetConstantAllocator().SetBucketSize(SettingAllocatorSizes->GetValue()[(uint64)AllocatorType::Constant]);
+		GetFixedAllocator().SetBucketSize(SettingAllocatorSizes->GetValue()[(uint64)AllocatorType::Fixed]);
+		GetManagedAllocator().SetBucketSize(SettingAllocatorSizes->GetValue()[(uint64)AllocatorType::Managed]);
+
+		GetManagedAllocator().SetHandleBucketSize(SettingHandlesPerManager->GetValue());
+	}
+
 	void MemorySystem::DefragmentManagedAllocators(float Budget)
 	{
-		NX_INSTUMENT_SCOPE("Defragment");
+		NX_INSTUMENT_SCOPE("Defragment managed allocators");
 
-		NxFr::Stopwatch Watch(true);
-		NxFr::List<NxFr::HandleManager*>& Managers = GetHandles().Managers;
-		NxFr::List<NxFr::Allocator*>& Allocators = GetManagedAllocator().Allocators;
-
-		for (uint64 AllocatorIndex = 0; AllocatorIndex < Allocators.GetCount(); ++AllocatorIndex)
-		{
-			NxFr::Allocator* Allocator = Allocators[(AllocatorIndex + Defragmentation.x) % Allocators.GetCount()];
-			NxFr::HeapAllocator* Heap = static_cast<NxFr::HeapAllocator*>(Allocator);
-
-			for (uint64 ManagerIndex = 0; ManagerIndex < Managers.GetCount(); ++ManagerIndex)
-			{
-				NxFr::HandleManager* Manager = Managers[(ManagerIndex + Defragmentation.y) % Managers.GetCount()];
-				Heap->Defragment(Manager, Budget);
-
-				if (Budget > 0.0f)
-				{
-					Budget -= (float)Watch.Peek(NxFr::Time::SecondToMilli);
-					if (Budget <= 0.0f)
-					{
-						Defragmentation.x = (AllocatorIndex + Defragmentation.x) % Allocators.GetCount();
-						Defragmentation.y = (ManagerIndex + Defragmentation.y) % Managers.GetCount();
-						break;
-					}
-				}
-			}
-		}
+		GetManagedAllocator().Defragment(Budget);
 	}
 
 	void MemorySystem::ClearTempAllocators()
 	{
-		NX_INSTUMENT_SCOPE("Clear Temp allocators");
+		NX_INSTUMENT_SCOPE("Clear temp allocators");
 
 		GetTempAllocator().Clear();
-		if (Time->GetFrameIndex() & 1)
-		{
-			GetTemp2Allocator().Clear();
-		}
 	}
 }

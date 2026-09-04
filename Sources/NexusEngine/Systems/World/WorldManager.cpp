@@ -2,11 +2,12 @@
 #include "NexusEngine/Systems/World/WorldManager.h"
 
 #include "NexusEngine/Misc/Utils/Filter.h"
+#include "NexusEngine/Core/NexusConfig.h"
 
 namespace NxEn
 {
 	WorldManager::WorldManager()
-		: Storages(), Objects(), Remap(), Handles(),
+		: Storages(), Objects(), Remap(), Handles(NX_MEMORY_HANDLES_COUNT),
 		WorldInstance(nullptr), SceneInstances()
 	{
 		
@@ -497,7 +498,7 @@ namespace NxEn
 		Object* Instance = &Storage->Append();
 		uint64 Index = Storage->GetCount() - 1;
 
-		NxFr::Handle<Object> Handle = Handles.AcquireHandle(Instance);
+		NxFr::Handle<Object> Handle = Handles.Acquire(Instance);
 		Objects.Append(ObjectId, WorldObject{ .Id = ObjectId, .Type = Type, .Index = Index, .Handle = Handle });
 
 		return Handle;
@@ -509,7 +510,7 @@ namespace NxEn
 		WorldObject Info = Objects.Get(Id);
 		uint64 Index = Info.Index;
 
-		Handles.ReleaseHandle(Instance);
+		Handles.Release(Instance);
 		Objects.Remove(Id);
 		Storage->Remove(Info.Index);
 
@@ -533,7 +534,7 @@ namespace NxEn
 		WorldObject& Info = Objects.Get(Id);
 		Info.Index = Index;
 
-		Handles.UpdateHandle(Info.Handle, &Instance);
+		Handles.Update(Info.Handle, &Instance);
 	}
 
 	void WorldManager::Resize(WorldStorage* Storage, uint64 Size)
