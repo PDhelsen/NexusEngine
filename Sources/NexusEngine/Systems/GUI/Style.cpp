@@ -32,24 +32,18 @@ namespace NxEn
 
 		NxFr::Registry<float>& Style::GetVars()
 		{
-			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
 			static NxFr::Registry<float> Vars;
 			return Vars;
 		}
 
 		NxFr::Registry<NxFr::Color>& Style::GetColors()
 		{
-			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
 			static NxFr::Registry<NxFr::Color> Colors;
 			return Colors;
 		}
 
 		NxFr::Registry<Style>& Style::GetStyles()
 		{
-			NxFr::Allocator::Scope Allocator(MemorySystem::GetAllocator(AllocatorType::General));
-
 			static NxFr::Registry<Style> Styles;
 			return Styles;
 		}
