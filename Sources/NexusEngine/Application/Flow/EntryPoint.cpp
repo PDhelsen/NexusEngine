@@ -45,7 +45,7 @@ namespace NxEn
 		int Main(int argc, char* argv[])
 		{
 			// Globals - Initialization
-			NxFr::Allocator::Scope Memory(nullptr);
+			NxFr::Allocator::Scope Memory = nullptr;
 			NxFr::Globals::CreateArgs(argc, argv);
 			NxFr::Globals::CreatePlatform();
 			NxFr::Globals::Debug::Logs = new NxFr::Logger(NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE, "", true);
