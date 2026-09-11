@@ -50,17 +50,20 @@ namespace NxEn
 
 	void NexusEngineApplication::OnInitialize()
 	{
-		Application::OnInitialize();
 		Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
+		Application::OnInitialize();
+
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Window", [&]()
+		{
+			WindowSystem* Window = GetSystem<WindowSystem>();
+			Window->GetOnClose() += { (Application*)this, &NexusEngineApplication::Quit };
+			Window->SetWindowTitle(GetProject().GetName());
+		});
+		Bootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Input - Engine", [&]()
 		{
 			Inputs = new Input::Schema();
 			GetSystem<InputSystem>()->AddSchema("Engine"_Sid, Inputs);
-
-			WindowSystem* Window = GetSystem<WindowSystem>();
-			Window->GetOnClose() += { (Application*)this, & NexusEngineApplication::Quit };
-			Window->SetWindowTitle(GetProject().GetName());
 		});
 
 		Bootstrap.AppendSystem<DebugSystem>();
@@ -89,13 +92,15 @@ namespace NxEn
 	{
 		Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "HID - Engine", [&]()
+		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Input - Engine", [&]()
 		{
 			GetSystem<InputSystem>()->RemoveSchema("Engine"_Sid);
 			delete Inputs;
-
+		});
+		Unbootstrap.AppendStep(Bootstrapper::BootBucket::BeforeSystem, "Window", [&]()
+		{
 			WindowSystem* Window = GetSystem<WindowSystem>();
-			Window->GetOnClose() -= { (Application*)this, & Application::Quit };
+			Window->GetOnClose() -= { (Application*)this, &Application::Quit };
 		});
 
 		Unbootstrap.AppendSystem<DebugSystem>();
@@ -115,8 +120,9 @@ namespace NxEn
 
 	void NexusEngineApplication::OnRun()
 	{
-		Application::OnRun();
 		Ticker& Ticks = GetTicker();
+
+		Application::OnRun();
 
 		Ticks.AppendSystem<InputSystem>(Ticker::TickBucket::Input);
 		Ticks.AppendSystem<CommandsSystem>(Ticker::TickBucket::Input, Ticker::LowFrequency).AppendDependency<CommandsSystem, InputSystem>();

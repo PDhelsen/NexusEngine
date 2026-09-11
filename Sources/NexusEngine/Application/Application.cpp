@@ -70,6 +70,7 @@ namespace NxEn
 		{
 			NX_LOG(Info, Application, "Application last for %llu seconds", (uint64)Application::GetInstance()->GetTime().GetUnscaledTime());
 		});
+
 		Bootstrap.AppendStep(Bootstrapper::BootBucket::AfterSystem, "Cleanup Folders", &NxFr::Globals::DestroyTempFolder);
 	}
 

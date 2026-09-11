@@ -17,15 +17,16 @@ namespace NxAp
 
 	void NexusAppApplication::OnInitialize()
 	{
-		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - App", [&]()
+		NexusEngineApplication::OnInitialize();
+
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Input - App", [&]()
 		{
 			Inputs = new NxEn::Input::Schema();
 			GetSystem<NxEn::InputSystem>()->AddSchema("App"_Sid, Inputs);
 		});
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Connect Window", [&]()
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect Window", [&]()
 		{
 			Inputs->Mapping.Append("Window"_Sid, NxEn::Input::Action(
 				{ NxEn::Input::Button::Equal, NxEn::Input::State::Released, NxEn::Input::Modifier::None },
@@ -38,7 +39,7 @@ namespace NxAp
 	{
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
 
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - App", [&]()
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Input - App", [&]()
 		{
 			GetSystem<NxEn::InputSystem>()->RemoveSchema("App"_Sid);
 			delete Inputs;

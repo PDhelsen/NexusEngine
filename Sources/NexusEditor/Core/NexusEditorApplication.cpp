@@ -45,17 +45,18 @@ namespace NxEd
 
 	void NexusEditorApplication::OnInitialize()
 	{
-		NexusEngineApplication::OnInitialize();
 		NxEn::Bootstrapper& Bootstrap = GetBootstrapper();
 
-		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
+		NexusEngineApplication::OnInitialize();
+
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Input - Editor", [&]()
 		{
 			Inputs = new NxEn::Input::Schema();
 			GetSystem<NxEn::InputSystem>()->AddSchema("Editor"_Sid, Inputs);
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect Shortcuts", [&]()
 		{
-			GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, & NexusEditorApplication::ApplyShortcuts };
+			GetSystem<NxEn::SettingsSystem>()->GetOnChange() += { this, &NexusEditorApplication::ApplyShortcuts };
 		});
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Connect SaveAll", [&]()
 		{
@@ -260,14 +261,6 @@ namespace NxEd
 			delete Browser;
 		});
 
-		Unbootstrap.AppendSystem<StagesSystem>();
-		Unbootstrap.AppendSystem<EditSystem>().AppendDependency<EditSystem, StagesSystem>();
-
-		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
-		{
-			GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
-			delete Inputs;
-		});
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Disconnect Shortcuts", [&]()
 		{
 			GetSystem<NxEn::SettingsSystem>()->GetOnChange() -= { this, & NexusEditorApplication::ApplyShortcuts };
@@ -279,6 +272,14 @@ namespace NxEd
 			OnSave -= []() { GetSystem<NxEn::WorldSystem>()->PackScenes(); };
 			OnSave -= []() { GetSystem<NxEn::AssetsSystem>()->SaveDirty(); };
 		});
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Input - Editor", [&]()
+		{
+			GetSystem<NxEn::InputSystem>()->RemoveSchema("Editor"_Sid);
+			delete Inputs;
+		});
+
+		Unbootstrap.AppendSystem<StagesSystem>();
+		Unbootstrap.AppendSystem<EditSystem>().AppendDependency<EditSystem, StagesSystem>();
 
 		NexusEngineApplication::OnShutdown();
 
@@ -287,8 +288,9 @@ namespace NxEd
 
 	void NexusEditorApplication::OnRun()
 	{
-		NexusEngineApplication::OnRun();
 		NxEn::Ticker& Ticks = GetTicker();
+
+		NexusEngineApplication::OnRun();
 
 		Ticks.AppendSystem<StagesSystem>(NxEn::Ticker::TickBucket::Engine);
 	}
