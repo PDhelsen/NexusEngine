@@ -123,6 +123,8 @@ namespace NxEd
 			Assets->Release(Target->GetId(), true);
 		}
 
+		Target = nullptr;
+
 		Panel::OnShutdown();
 	}
 

@@ -9,18 +9,26 @@ namespace NxEd
 	HierarchyEditContext::HierarchyEditContext(HierarchyManager* Manager, HierarchyPanel* Panel, NxFr::StringId Id)
 		: Edit::Context(Id), Manager(Manager), Panel(Panel)
 	{
-		Manager->Contexts.Append(this);
+		if (Manager)
+		{
+			Manager->Contexts.Append(this);
+		}
 
 		OnSelection += [this](NxFr::GUID InstanceId, bool State) { this->Panel->Select(InstanceId, State, true); };
 	}
 
 	HierarchyEditContext::~HierarchyEditContext()
 	{
-		Manager->Contexts.Remove(this);
+		if (Manager)
+		{
+			Manager->Contexts.Remove(this);
+		}
 	}
 
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::FilterSelection(HierarchyFilter Mode, NxFr::GUID* Active) const
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		const bool Unfiltered = Mode == HierarchyFilter::Unfiltered;
 		const bool MultiSelection = NxFr::Enum::CheckFlag(Mode, HierarchyFilter::MultiSelection);
 		const bool Recursive = NxFr::Enum::CheckFlag(Mode, HierarchyFilter::Recursive);
@@ -134,6 +142,8 @@ namespace NxEd
 
 	NxFr::Array<NxFr::GUID> HierarchyEditContext::GetAll()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		HierarchyItem* Instance = Manager->GetItem(Panel->GetRoot());
 		if (!Instance)
 		{
@@ -154,6 +164,8 @@ namespace NxEd
 
 	uint64 HierarchyEditContext::GetCount()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		HierarchyItem* Instance = Manager->GetItem(Panel->GetRoot());
 		if (!Instance)
 		{
@@ -166,6 +178,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Create()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([&](NxFr::StringView Input)
 		{
@@ -182,6 +196,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Rename()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([&](NxFr::StringView Input)
 		{
@@ -196,6 +212,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Move()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		if (Selected == 0 || Selection.GetCount() <= 1)
 		{
 			NX_LOG(Warning, Default, "Can only move GameObject if a target is selected");
@@ -215,6 +233,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Duplicate()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 
 		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost);
@@ -227,6 +247,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Delete()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		NxEn::WorldSystem* System = NxEn::Application::GetSystem<NxEn::WorldSystem>();
 
 		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost);
@@ -239,6 +261,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Cut()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		Clipboard.Clear();
 		Clipboard.AppendRange(FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost));
 		IsCutting = true;
@@ -246,6 +270,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Copy()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		Clipboard.Clear();
 		Clipboard.AppendRange(FilterSelection(HierarchyFilter::MultiSelection | HierarchyFilter::TopMost));
 		IsCutting = false;
@@ -253,6 +279,8 @@ namespace NxEd
 
 	void HierarchyEditContext::Paste()
 	{
+		NX_ASSERT(Manager, Default, "Invalid Manager");
+
 		if (Selected == 0)
 		{
 			NX_LOG(Warning, Default, "Can only move GameObject if a target is selected");

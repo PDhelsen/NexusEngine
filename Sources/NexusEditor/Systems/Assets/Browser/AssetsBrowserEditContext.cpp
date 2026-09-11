@@ -18,6 +18,8 @@ namespace NxEd
 
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::FilterSelection(AssetsBrowserFilter Mode, NxFr::GUID* Active) const
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		const bool Unfiltered = Mode == AssetsBrowserFilter::Unfiltered;
 		const bool NoDirectory = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::NoDirectory);
 		const bool NoAssets = NxFr::Enum::CheckFlag(Mode, AssetsBrowserFilter::NoAssets);
@@ -162,16 +164,22 @@ namespace NxEd
 
 	NxFr::Array<NxFr::GUID> AssetsBrowserEditContext::GetAll()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		return NxFr::ContainerUtility::ToArrayKeys(Browser->Items);
 	}
 
 	uint64 AssetsBrowserEditContext::GetCount()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		return Browser->Items.GetCount();
 	}
 
 	void AssetsBrowserEditContext::Create()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([&](NxFr::StringView Input)
 		{
@@ -190,6 +198,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Rename()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		NxEn::InputTextPopup* Popup = NxEn::GUI::Element::Acquire<NxEn::InputTextPopup>();
 		Popup->RegisterCallback([&](NxFr::StringView Input)
 		{
@@ -204,6 +214,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Move()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		if (Selected == 0 || Selection.GetCount() <= 1)
 		{
 			NX_LOG(Warning, Default, "Can only move AssetsBrowserItem if a target directory is selected");
@@ -227,6 +239,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Duplicate()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::TopMost | AssetsBrowserFilter::MultiSelection);
 		for (auto InstanceId : InstanceIds)
 		{
@@ -237,6 +251,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Delete()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		NxFr::Array<NxFr::GUID> InstanceIds = FilterSelection(AssetsBrowserFilter::TopMost | AssetsBrowserFilter::MultiSelection);
 		for (auto InstanceId : InstanceIds)
 		{
@@ -247,6 +263,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Cut()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		Clipboard.Clear();
 		Clipboard.AppendRange(FilterSelection(AssetsBrowserFilter::TopMost | AssetsBrowserFilter::MultiSelection));
 		IsCutting = true;
@@ -254,6 +272,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Copy()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		Clipboard.Clear();
 		Clipboard.AppendRange(FilterSelection(AssetsBrowserFilter::TopMost | AssetsBrowserFilter::MultiSelection));
 		IsCutting = false;
@@ -261,6 +281,8 @@ namespace NxEd
 
 	void AssetsBrowserEditContext::Paste()
 	{
+		NX_ASSERT(Browser, Default, "Invalid Browser");
+
 		if (Selected == 0)
 		{
 			NX_LOG(Warning, Default, "Can only move AssetsBrowserItem if a target directory is selected");

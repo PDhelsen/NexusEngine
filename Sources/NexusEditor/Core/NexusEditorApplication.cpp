@@ -66,7 +66,7 @@ namespace NxEd
 		});
 
 		Bootstrap.AppendSystem<EditSystem>();
-		Bootstrap.AppendSystem<StagesSystem>();
+		Bootstrap.AppendSystem<StagesSystem>().AppendDependency<StagesSystem, EditSystem>();
 
 		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Assets & Worlds Managers", [&]()
 		{
@@ -260,8 +260,8 @@ namespace NxEd
 			delete Browser;
 		});
 
-		Unbootstrap.AppendSystem<EditSystem>();
 		Unbootstrap.AppendSystem<StagesSystem>();
+		Unbootstrap.AppendSystem<EditSystem>().AppendDependency<EditSystem, StagesSystem>();
 
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "HID - Editor", [&]()
 		{
@@ -281,6 +281,8 @@ namespace NxEd
 		});
 
 		NexusEngineApplication::OnShutdown();
+
+		Unbootstrap.AppendDependency<NxEn::WorldSystem, StagesSystem>();
 	}
 
 	void NexusEditorApplication::OnRun()

@@ -13,7 +13,7 @@ namespace NxEd
 
 	HierarchyItem* HierarchyPanel::GetItem(NxFr::GUID InstanceId)
 	{
-		return Manager->GetItem(InstanceId);
+		return Manager ? Manager->GetItem(InstanceId) : nullptr;
 	}
 
 	void HierarchyPanel::Initialize(HierarchyManager* Manager, HierarchyEditContext* Context)
@@ -31,7 +31,7 @@ namespace NxEd
 		Filter += Query;
 
 		Filtered.Clear();
-		if (Filter.IsEmpty())
+		if (Filter.IsEmpty() || !Manager)
 		{
 			return;
 		}
@@ -50,18 +50,25 @@ namespace NxEd
 		SetNameId("Hierarchy");
 
 		Edit = NxEn::Application::GetSystem<EditSystem>();
-		Manager->Panels.Append(this);
+		if (Manager)
+		{
+			Manager->Panels.Append(this);
+		}
 	}
 
 	void HierarchyPanel::OnShutdown()
 	{
-		Manager->Panels.Remove(this);
+		if (Manager)
+		{
+			Manager->Panels.Remove(this);
+		}
+
 		TreePanel::OnShutdown();
 	}
 
 	void HierarchyPanel::OnDraw()
 	{
-		if (NxEn::GUI::Utils::IsPanelActive())
+		if (NxEn::GUI::Utils::IsPanelActive() && Context)
 		{
 			Edit->SetContext(Context->GetId());
 		}
@@ -71,6 +78,11 @@ namespace NxEd
 
 	void HierarchyPanel::OnSelectItem(NxFr::GUID InstanceId, bool State)
 	{
+		if (!Context)
+		{
+			return;
+		}
+		
 		Edit->SetSelected(InstanceId, State, Context->GetId());
 	}
 }

@@ -33,7 +33,7 @@ namespace NxEd
 
 	StagePanel* StagesSystem::CreateStage(NxEn::ObjectInstance<NxEn::Object> Instance)
 	{
-		if (Instance->GetId() == MainStage->GetTarget()->GetId())
+		if (MainStage && MainStage->GetTarget() && MainStage->GetTarget()->GetId() == Instance->GetId())
 		{
 			MainStage->Show();
 			return MainStage;
@@ -57,7 +57,7 @@ namespace NxEd
 
 	void StagesSystem::DestroyStage(NxFr::GUID Id)
 	{
-		if (Id == MainStage->GetTarget()->GetId())
+		if (MainStage && MainStage->GetTarget() && MainStage->GetTarget()->GetId() == Id)
 		{
 			return;
 		}
@@ -78,7 +78,7 @@ namespace NxEd
 
 	StagePanel* StagesSystem::GetStage(NxFr::GUID Id)
 	{
-		if (Id == MainStage->GetTarget()->GetId())
+		if (MainStage && MainStage->GetTarget() && MainStage->GetTarget()->GetId() == Id)
 		{
 			return MainStage;
 		}
@@ -119,8 +119,7 @@ namespace NxEd
 			DestroyStage(Id);
 		}
 
-		MainStage->Hide();
-		MainStage->Shutdown();
+		MainStage = nullptr;
 
 		System::OnShutdown();
 	}

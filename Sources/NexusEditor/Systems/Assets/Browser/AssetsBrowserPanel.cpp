@@ -13,7 +13,7 @@ namespace NxEd
 
 	AssetsBrowserItem* AssetsBrowserPanel::GetItem(NxFr::GUID InstanceId)
 	{
-		return Browser->GetItem(InstanceId);
+		return Browser ? Browser->GetItem(InstanceId) : nullptr;
 	}
 
 	void AssetsBrowserPanel::Initialize(AssetsBrowser* Browser, AssetsBrowserEditContext* Context)
@@ -26,6 +26,11 @@ namespace NxEd
 
 	void AssetsBrowserPanel::Refresh()
 	{
+		if (!Browser)
+		{
+			return;
+		}
+
 		Browser->Refresh();
 	}
 
@@ -39,7 +44,7 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnDraw()
 	{
-		if (NxEn::GUI::Utils::IsPanelActive())
+		if (NxEn::GUI::Utils::IsPanelActive() && Context)
 		{
 			Edit->SetContext(Context->GetId());
 		}
@@ -49,6 +54,11 @@ namespace NxEd
 
 	void AssetsBrowserPanel::OnSelectItem(NxFr::GUID InstanceId, bool State)
 	{
+		if (!Context)
+		{
+			return;
+		}
+
 		Edit->SetSelected(InstanceId, State, Context->GetId());
 	}
 }

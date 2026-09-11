@@ -33,6 +33,15 @@ namespace NxEd
 
 		Edit::Context* Context = Edit->UnregisterContext(HierarchyEditContext::ContextId);
 		delete Context;
+
+		for (auto Panel : Panels)
+		{
+			Panel->Manager = nullptr;
+		}
+		for (auto Context : Contexts)
+		{
+			Context->Manager = nullptr;
+		}
 	}
 
 	HierarchyItem* HierarchyManager::GetItem(NxFr::GUID GameObjectId)
