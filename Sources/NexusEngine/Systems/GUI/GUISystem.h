@@ -24,7 +24,7 @@ namespace NxEn
 		NX_OBJECT(GUISystem)
 
 		static NxFr::Registry<GUI::Panel*>& GetPanels();
-		static NxFr::Registry<GUI::Menu::Item>& GetMenuItems();
+		static NxFr::Registry<GUI::Menu::Item*>& GetMenuItems();
 
 		GUISystem();
 		~GUISystem();

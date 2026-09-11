@@ -53,9 +53,9 @@ namespace NxEn
 		return Panels;
 	}
 
-	NxFr::Registry<GUI::Menu::Item>& GUISystem::GetMenuItems()
+	NxFr::Registry<GUI::Menu::Item*>& GUISystem::GetMenuItems()
 	{
-		static NxFr::Registry<GUI::Menu::Item> MenuItems;
+		static NxFr::Registry<GUI::Menu::Item*> MenuItems;
 		return MenuItems;
 	}
 
@@ -225,6 +225,7 @@ namespace NxEn
 		LoadTheme();
 
 		Window.Initialize();
+
 		AddMenuWindowItems();
 		AddMenuWindowPanels();
 		AddMenuWindowLayouts();
@@ -234,8 +235,6 @@ namespace NxEn
 	{
 		Destroy(Destroyed);
 		Destroy(Availables);
-		GetPanels().Clear();
-		GetMenuItems().Clear();
 
 		Window.Shutdown();
 
@@ -335,7 +334,7 @@ namespace NxEn
 		auto& MenuItems = GetMenuItems();
 		for (auto It = MenuItems.Begin(); It != MenuItems.End(); ++It)
 		{
-			AddMenuWindowItems(It->Value);
+			AddMenuWindowItems(*It->Value);
 		}
 	}
 

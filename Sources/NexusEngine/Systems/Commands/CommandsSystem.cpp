@@ -21,9 +21,9 @@ namespace NxEn
 		Application::GetSystem<CommandsSystem>()->File(Path);
 	}));
 
-	NxFr::Registry<Command>& CommandsSystem::GetCommands()
+	NxFr::Registry<Command*>& CommandsSystem::GetCommands()
 	{
-		static NxFr::Registry<Command> Commands;
+		static NxFr::Registry<Command*> Commands;
 		return Commands;
 	}
 
@@ -74,13 +74,13 @@ namespace NxEn
 
 	void CommandsSystem::Help()
 	{
-		NxFr::Registry<Command>& Commands = GetCommands();
+		NxFr::Registry<Command*>& Commands = GetCommands();
 
 		uint64 Index = 0;
 		NxFr::Array<Command*> Cmds = Commands.GetCount();
 		for (auto It = Commands.Begin(); It != Commands.End(); ++It)
 		{
-			Cmds[Index++] = &It->Value;
+			Cmds[Index++] = It->Value;
 		}
 		NxFr::ContainerUtility::Sort<Command*>(Cmds, [](const Command* A, const Command* B)
 		{
@@ -105,12 +105,6 @@ namespace NxEn
 				Run(Cmd);
 			}
 		}
-	}
-
-	void CommandsSystem::OnShutdown()
-	{
-		GetCommands().Clear();
-		System::OnShutdown();
 	}
 
 	void CommandsSystem::OnTick(float TimeStep)
@@ -158,7 +152,7 @@ namespace NxEn
 	{
 		NX_INSTUMENT_SCOPE(Info.Id);
 
-		NxFr::Registry<Command>& Commands = GetCommands();
+		NxFr::Registry<Command*>& Commands = GetCommands();
 		Command* Instance = Commands.TryGet(Info.Id);
 		if (!Instance)
 		{

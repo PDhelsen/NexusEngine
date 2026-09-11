@@ -14,7 +14,7 @@ namespace NxEn
 		inline static const NxFr::String SeparatorCommands = ";";
 		inline static const NxFr::String SeparatorArgs = " ";
 
-		static NxFr::Registry<Command>& GetCommands();
+		static NxFr::Registry<Command*>& GetCommands();
 
 		CommandsSystem();
 		~CommandsSystem();
@@ -30,7 +30,6 @@ namespace NxEn
 
 	protected:
 		void OnInitialize() override;
-		void OnShutdown() override;
 		void OnTick(float TimeStep = 0.0f) override;
 
 	private:
