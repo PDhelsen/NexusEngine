@@ -11,11 +11,11 @@ namespace NxEn
 		RootPath = NxFr::Path::GetDriveAndFolder(Path);
 		ExecutablePath = NxFr::Path::Normalize(NxFr::Globals::Args->Get(0));
 
-		YAML::Node File = NxFr::Yaml::LoadAndDeserialize(Path);
+		NxFr::Yaml::Node File = NxFr::Yaml::LoadAndDeserialize(Path);
 
-		Mode = NxFr::StringUtility::FromString<ProjectMode>(NxFr::Globals::Args->Get("Mode", File["Mode"].as<NxFr::String>()));
-		Name = File["Name"].as<NxFr::String>();
-		DllPath = NxFr::Path::Combine(RootPath, File["Dll"].as<NxFr::String>(), "NexusProject-" + NxFr::StringUtility::ToString(Mode) + ".dll");
+		Mode = NxFr::StringUtility::FromString<ProjectMode>(NxFr::Globals::Args->Get("Mode", File["Mode"].As<NxFr::String>()));
+		Name = File["Name"].As<NxFr::String>();
+		DllPath = NxFr::Path::Combine(RootPath, File["Dll"].As<NxFr::String>(), "NexusProject-" + NxFr::StringUtility::ToString(Mode) + ".dll");
 	}
 
 	Project::~Project()

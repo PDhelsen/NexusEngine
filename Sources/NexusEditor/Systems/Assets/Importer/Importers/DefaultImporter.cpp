@@ -10,7 +10,7 @@ namespace NxEd
 	static AssetImporter* ArtifactImporter = AssetImporter::Create<NxEn::Artifact, DefaultImporter>({ "bin" });
 	static AssetImporter* TableImporter = AssetImporter::Create<NxEn::Table, DefaultImporter>({ "yaml" });
 
-	void DefaultImporter::OnImport(YAML::Node& Node, NxFr::StringView ContentPath, bool Reimport)
+	void DefaultImporter::OnImport(NxFr::Yaml::Node& Node, NxFr::StringView ContentPath, bool Reimport)
 	{
 	}
 }

@@ -52,8 +52,8 @@ namespace NxEn
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>());
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
-		YAML::Node SerializeGameObject(NxFr::Handle<GameObject> Instance);
-		NxFr::Handle<GameObject> DeserializeGameObject(YAML::Node Node);
+		NxFr::Yaml::Node SerializeGameObject(NxFr::Handle<GameObject> Instance);
+		NxFr::Handle<GameObject> DeserializeGameObject(NxFr::Yaml::Node Node);
 		void UnloadGameObject(NxFr::Handle<GameObject> Instance);
 		NxFr::Handle<GameObject> TemplateGameObject(NxFr::Handle<GameObject> Original, NxFr::GUID TemplateId);
 		void UntemplateGameObject(NxFr::Handle<GameObject> Instance);

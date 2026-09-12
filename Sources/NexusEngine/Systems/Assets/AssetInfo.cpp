@@ -35,9 +35,9 @@ namespace NxEn
 	{
 	}
 
-	YAML::Node AssetMetadata::Serialize() const
+	NxFr::Yaml::Node AssetMetadata::Serialize() const
 	{
-		YAML::Node Node;
+		NxFr::Yaml::Node Node;
 		Node["Id"] = Id;
 		Node["Type"] = Type;
 		Node["Name"] = Name;
@@ -48,14 +48,14 @@ namespace NxEn
 		return Node;
 	}
 
-	void AssetMetadata::Deserialize(const YAML::Node& Node)
+	void AssetMetadata::Deserialize(const NxFr::Yaml::Node& Node)
 	{
-		Id = Node["Id"].as<NxFr::GUID>();
-		Type = Node["Type"].as<NxFr::StringId>();
-		Name = Node["Name"].as<NxFr::String>();
-		Path = Node["Path"].as<NxFr::String>();
-		Extension = Node["Extension"].as<NxFr::String>();
-		Dependencies = Node["Dependencies"].as<NxFr::Array<NxFr::GUID>>();
-		Data = Node["Data"].as<NxFr::Dictionary<NxFr::String, NxFr::String>>();
+		Id = Node["Id"].As<NxFr::GUID>();
+		Type = Node["Type"].As<NxFr::StringId>();
+		Name = Node["Name"].As<NxFr::String>();
+		Path = Node["Path"].As<NxFr::String>();
+		Extension = Node["Extension"].As<NxFr::String>();
+		Dependencies = Node["Dependencies"].As<NxFr::Array<NxFr::GUID>>();
+		Data = Node["Data"].As<NxFr::Dictionary<NxFr::String, NxFr::String>>();
 	}
 }

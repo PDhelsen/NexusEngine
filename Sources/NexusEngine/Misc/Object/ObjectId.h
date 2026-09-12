@@ -57,17 +57,17 @@ namespace NxEn
 		}
 
 		template<typename T>
-		YAML::Node Serialize(ObjectInstance<T> Instance)
+		NxFr::Yaml::Node Serialize(ObjectInstance<T> Instance)
 		{
-			YAML::Node Node;
+			NxFr::Yaml::Node Node;
 			Node = GetId<T>(Instance);
 			return Node;
 		}
 
 		template<typename T>
-		ObjectInstance<T> Deserialize(YAML::Node Node)
+		ObjectInstance<T> Deserialize(NxFr::Yaml::Node Node)
 		{
-			return Resolve<T>(Node.as<NxFr::GUID>());
+			return Resolve<T>(Node.As<NxFr::GUID>());
 		}
 	};
 

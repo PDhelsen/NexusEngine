@@ -74,7 +74,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	void Component::OnSerialize(YAML::Node& Node) const
+	void Component::OnSerialize(NxFr::Yaml::Node& Node) const
 	{
 		Node["Type"] = GetObjectType();
 		Node["Id"] = ComponentId;
@@ -82,8 +82,8 @@ namespace NxEn
 		Node["Enabled"] = GetFlag(ObjectFlags::Enabled);
 	}
 
-	void Component::OnDeserialize(const YAML::Node& Node)
+	void Component::OnDeserialize(const NxFr::Yaml::Node& Node)
 	{
-		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
+		SetFlag(ObjectFlags::Enabled, Node["Enabled"].As<bool>());
 	}
 }

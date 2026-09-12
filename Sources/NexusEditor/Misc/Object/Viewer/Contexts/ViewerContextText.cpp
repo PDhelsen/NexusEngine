@@ -46,7 +46,7 @@ namespace NxEd
 		}
 		else if (ViewMode == Mode::Table)
 		{
-			if (NxEn::GUI::Drawer<YAML::Node>::Field(Table->GetRoot(), "Root")) 
+			if (NxEn::GUI::Drawer<NxFr::Yaml::Node>::Field(Table->GetRoot(), "Root")) 
 			{
 				Table->SetDirty();
 			}

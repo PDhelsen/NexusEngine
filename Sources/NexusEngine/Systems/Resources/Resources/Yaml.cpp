@@ -24,6 +24,6 @@ namespace NxEn
 
 	void Yaml::OnUnload()
 	{
-		Data = YAML::Node();
+		Data = NxFr::Yaml::Node();
 	}
 }

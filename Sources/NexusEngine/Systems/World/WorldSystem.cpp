@@ -591,16 +591,16 @@ namespace NxEn
 		OnWorldObjectChange.Invoke(EventMovedId, Instance->GetWorldId(), Instance->GetId());
 	}
 
-	YAML::Node WorldSystem::SerializeGameObject(NxFr::Handle<GameObject> Instance)
+	NxFr::Yaml::Node WorldSystem::SerializeGameObject(NxFr::Handle<GameObject> Instance)
 	{
 		NX_INSTUMENT_FUNCTION();
-		NX_ASSERT_RETURN(Instance, YAML::Node(), Default, "Instance should be valid");
-		NX_ASSERT_RETURN(Belong(Instance, TemplateWorldId), YAML::Node(), Default, "Instance should be a template");
+		NX_ASSERT_RETURN(Instance, NxFr::Yaml::Node(), Default, "Instance should be valid");
+		NX_ASSERT_RETURN(Belong(Instance, TemplateWorldId), NxFr::Yaml::Node(), Default, "Instance should be a template");
 
 		return Instance->Serialize();
 	}
 
-	NxFr::Handle<GameObject> WorldSystem::DeserializeGameObject(YAML::Node Node)
+	NxFr::Handle<GameObject> WorldSystem::DeserializeGameObject(NxFr::Yaml::Node Node)
 	{
 		NX_INSTUMENT_FUNCTION();
 

@@ -140,7 +140,7 @@ namespace NxEn
 			Name.IsEmpty());
 		if (NxFr::Path::Exist(Path))
 		{
-			YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
+			NxFr::Yaml::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
 
 			LoadThemeImGui(Data["ImGui"]);
 			LoadThemeNexus(Data["Nexus"]);
@@ -162,13 +162,9 @@ namespace NxEn
 			GeneratePath((!Name.IsEmpty() ? Name : NameStyle), ExtensionStyle),
 			"", Name.IsEmpty());
 
-		YAML::Emitter Data;
-		Data << YAML::BeginMap;
-		Data << YAML::Key << "ImGui" << YAML::Value;
-		SaveThemeImGui(Data);
-		Data << YAML::Key << "Nexus" << YAML::Value;
-		SaveThemeNexus(Data);
-		Data << YAML::EndMap;
+		NxFr::Yaml::Node Data;
+		Data["ImGui"] = SaveThemeImGui();
+		Data["Nexus"] = SaveThemeNexus();
 
 		NxFr::Yaml::SerializeAndSave(Data, Path);
 
@@ -453,341 +449,333 @@ namespace NxEn
 		Stream.Close();
 	}
 
-	void GUISystem::LoadThemeImGui(const YAML::Node& Node) const
+	void GUISystem::LoadThemeImGui(const NxFr::Yaml::Node& Node) const
 	{
 		ImGuiStyle& Style = ImGui::GetStyle();
 
-		Style.FontSizeBase = Node["FontSizeBase"].as<float>();
-		Style.FontScaleMain = Node["FontScaleMain"].as<float>();
-		Style.FontScaleDpi = Node["FontScaleDpi"].as<float>();
-		Style.Alpha = Node["Alpha"].as<float>();
-		Style.DisabledAlpha = Node["DisabledAlpha"].as<float>();
-		Style.WindowPadding = Node["WindowPadding"].as<NxFr::Vector2f>();
-		Style.WindowRounding = Node["WindowRounding"].as<float>();
-		Style.WindowBorderSize = Node["WindowBorderSize"].as<float>();
-		Style.WindowBorderHoverPadding = Node["WindowBorderHoverPadding"].as<float>();
-		Style.WindowMinSize = Node["WindowMinSize"].as<NxFr::Vector2f>();
-		Style.WindowTitleAlign = Node["WindowTitleAlign"].as<NxFr::Vector2f>();
-		Style.WindowMenuButtonPosition = (ImGuiDir)Node["WindowMenuButtonPosition"].as<int32>();
-		Style.ChildRounding = Node["ChildRounding"].as<float>();
-		Style.ChildBorderSize = Node["ChildBorderSize"].as<float>();
-		Style.PopupRounding = Node["PopupRounding"].as<float>();
-		Style.PopupBorderSize = Node["PopupBorderSize"].as<float>();
-		Style.FramePadding = Node["FramePadding"].as<NxFr::Vector2f>();
-		Style.FrameRounding = Node["FrameRounding"].as<float>();
-		Style.FrameBorderSize = Node["FrameBorderSize"].as<float>();
-		Style.ItemSpacing = Node["ItemSpacing"].as<NxFr::Vector2f>();
-		Style.ItemInnerSpacing = Node["ItemInnerSpacing"].as<NxFr::Vector2f>();
-		Style.CellPadding = Node["CellPadding"].as<NxFr::Vector2f>();
-		Style.TouchExtraPadding = Node["TouchExtraPadding"].as<NxFr::Vector2f>();
-		Style.IndentSpacing = Node["IndentSpacing"].as<float>();
-		Style.ColumnsMinSpacing = Node["ColumnsMinSpacing"].as<float>();
-		Style.ScrollbarSize = Node["ScrollbarSize"].as<float>();
-		Style.ScrollbarRounding = Node["ScrollbarRounding"].as<float>();
-		Style.GrabMinSize = Node["GrabMinSize"].as<float>();
-		Style.GrabRounding = Node["GrabRounding"].as<float>();
-		Style.LogSliderDeadzone = Node["LogSliderDeadzone"].as<float>();
-		Style.ImageBorderSize = Node["ImageBorderSize"].as<float>();
-		Style.TabRounding = Node["TabRounding"].as<float>();
-		Style.TabBorderSize = Node["TabBorderSize"].as<float>();
-		Style.TabCloseButtonMinWidthSelected = Node["TabCloseButtonMinWidthSelected"].as<float>();
-		Style.TabCloseButtonMinWidthUnselected = Node["TabCloseButtonMinWidthUnselected"].as<float>();
-		Style.TabBarBorderSize = Node["TabBarBorderSize"].as<float>();
-		Style.TabBarOverlineSize = Node["TabBarOverlineSize"].as<float>();
-		Style.TableAngledHeadersAngle = Node["TableAngledHeadersAngle"].as<float>();
-		Style.TableAngledHeadersTextAlign = Node["TableAngledHeadersTextAlign"].as<NxFr::Vector2f>();
-		Style.TreeLinesFlags = (ImGuiTreeNodeFlags)Node["TreeLinesFlags"].as<int32>();
-		Style.TreeLinesSize = Node["TreeLinesSize"].as<float>();
-		Style.TreeLinesRounding = Node["TreeLinesRounding"].as<float>();
-		Style.ColorButtonPosition = (ImGuiDir)Node["ColorButtonPosition"].as<int32>();
-		Style.ButtonTextAlign = Node["ButtonTextAlign"].as<NxFr::Vector2f>();
-		Style.SelectableTextAlign = Node["SelectableTextAlign"].as<NxFr::Vector2f>();
-		Style.SeparatorTextBorderSize = Node["SeparatorTextBorderSize"].as<float>();
-		Style.SeparatorTextAlign = Node["SeparatorTextAlign"].as<NxFr::Vector2f>();
-		Style.SeparatorTextPadding = Node["SeparatorTextPadding"].as<NxFr::Vector2f>();
-		Style.DisplayWindowPadding = Node["DisplayWindowPadding"].as<NxFr::Vector2f>();
-		Style.DisplaySafeAreaPadding = Node["DisplaySafeAreaPadding"].as<NxFr::Vector2f>();
-		Style.DockingSeparatorSize = Node["DockingSeparatorSize"].as<float>();
-		Style.AntiAliasedLines = Node["AntiAliasedLines"].as<bool>();
-		Style.AntiAliasedLinesUseTex = Node["AntiAliasedLinesUseTex"].as<bool>();
-		Style.AntiAliasedFill = Node["AntiAliasedFill"].as<bool>();
-		Style.CurveTessellationTol = Node["CurveTessellationTol"].as<float>();
-		Style.CircleTessellationMaxError = Node["CircleTessellationMaxError"].as<float>();
-		Style.HoverStationaryDelay = Node["HoverStationaryDelay"].as<float>();
-		Style.HoverDelayShort = Node["HoverDelayShort"].as<float>();
-		Style.HoverDelayNormal = Node["HoverDelayNormal"].as<float>();
-		Style.HoverFlagsForTooltipMouse = (ImGuiHoveredFlags)Node["HoverFlagsForTooltipMouse"].as<int32>();
-		Style.HoverFlagsForTooltipNav = (ImGuiHoveredFlags)Node["HoverFlagsForTooltipNav"].as<int32>();
+		Style.FontSizeBase = Node["FontSizeBase"].As<float>();
+		Style.FontScaleMain = Node["FontScaleMain"].As<float>();
+		Style.FontScaleDpi = Node["FontScaleDpi"].As<float>();
+		Style.Alpha = Node["Alpha"].As<float>();
+		Style.DisabledAlpha = Node["DisabledAlpha"].As<float>();
+		Style.WindowPadding = Node["WindowPadding"].As<NxFr::Vector2f>();
+		Style.WindowRounding = Node["WindowRounding"].As<float>();
+		Style.WindowBorderSize = Node["WindowBorderSize"].As<float>();
+		Style.WindowBorderHoverPadding = Node["WindowBorderHoverPadding"].As<float>();
+		Style.WindowMinSize = Node["WindowMinSize"].As<NxFr::Vector2f>();
+		Style.WindowTitleAlign = Node["WindowTitleAlign"].As<NxFr::Vector2f>();
+		Style.WindowMenuButtonPosition = (ImGuiDir)Node["WindowMenuButtonPosition"].As<int32>();
+		Style.ChildRounding = Node["ChildRounding"].As<float>();
+		Style.ChildBorderSize = Node["ChildBorderSize"].As<float>();
+		Style.PopupRounding = Node["PopupRounding"].As<float>();
+		Style.PopupBorderSize = Node["PopupBorderSize"].As<float>();
+		Style.FramePadding = Node["FramePadding"].As<NxFr::Vector2f>();
+		Style.FrameRounding = Node["FrameRounding"].As<float>();
+		Style.FrameBorderSize = Node["FrameBorderSize"].As<float>();
+		Style.ItemSpacing = Node["ItemSpacing"].As<NxFr::Vector2f>();
+		Style.ItemInnerSpacing = Node["ItemInnerSpacing"].As<NxFr::Vector2f>();
+		Style.CellPadding = Node["CellPadding"].As<NxFr::Vector2f>();
+		Style.TouchExtraPadding = Node["TouchExtraPadding"].As<NxFr::Vector2f>();
+		Style.IndentSpacing = Node["IndentSpacing"].As<float>();
+		Style.ColumnsMinSpacing = Node["ColumnsMinSpacing"].As<float>();
+		Style.ScrollbarSize = Node["ScrollbarSize"].As<float>();
+		Style.ScrollbarRounding = Node["ScrollbarRounding"].As<float>();
+		Style.GrabMinSize = Node["GrabMinSize"].As<float>();
+		Style.GrabRounding = Node["GrabRounding"].As<float>();
+		Style.LogSliderDeadzone = Node["LogSliderDeadzone"].As<float>();
+		Style.ImageBorderSize = Node["ImageBorderSize"].As<float>();
+		Style.TabRounding = Node["TabRounding"].As<float>();
+		Style.TabBorderSize = Node["TabBorderSize"].As<float>();
+		Style.TabCloseButtonMinWidthSelected = Node["TabCloseButtonMinWidthSelected"].As<float>();
+		Style.TabCloseButtonMinWidthUnselected = Node["TabCloseButtonMinWidthUnselected"].As<float>();
+		Style.TabBarBorderSize = Node["TabBarBorderSize"].As<float>();
+		Style.TabBarOverlineSize = Node["TabBarOverlineSize"].As<float>();
+		Style.TableAngledHeadersAngle = Node["TableAngledHeadersAngle"].As<float>();
+		Style.TableAngledHeadersTextAlign = Node["TableAngledHeadersTextAlign"].As<NxFr::Vector2f>();
+		Style.TreeLinesFlags = (ImGuiTreeNodeFlags)Node["TreeLinesFlags"].As<int32>();
+		Style.TreeLinesSize = Node["TreeLinesSize"].As<float>();
+		Style.TreeLinesRounding = Node["TreeLinesRounding"].As<float>();
+		Style.ColorButtonPosition = (ImGuiDir)Node["ColorButtonPosition"].As<int32>();
+		Style.ButtonTextAlign = Node["ButtonTextAlign"].As<NxFr::Vector2f>();
+		Style.SelectableTextAlign = Node["SelectableTextAlign"].As<NxFr::Vector2f>();
+		Style.SeparatorTextBorderSize = Node["SeparatorTextBorderSize"].As<float>();
+		Style.SeparatorTextAlign = Node["SeparatorTextAlign"].As<NxFr::Vector2f>();
+		Style.SeparatorTextPadding = Node["SeparatorTextPadding"].As<NxFr::Vector2f>();
+		Style.DisplayWindowPadding = Node["DisplayWindowPadding"].As<NxFr::Vector2f>();
+		Style.DisplaySafeAreaPadding = Node["DisplaySafeAreaPadding"].As<NxFr::Vector2f>();
+		Style.DockingSeparatorSize = Node["DockingSeparatorSize"].As<float>();
+		Style.AntiAliasedLines = Node["AntiAliasedLines"].As<bool>();
+		Style.AntiAliasedLinesUseTex = Node["AntiAliasedLinesUseTex"].As<bool>();
+		Style.AntiAliasedFill = Node["AntiAliasedFill"].As<bool>();
+		Style.CurveTessellationTol = Node["CurveTessellationTol"].As<float>();
+		Style.CircleTessellationMaxError = Node["CircleTessellationMaxError"].As<float>();
+		Style.HoverStationaryDelay = Node["HoverStationaryDelay"].As<float>();
+		Style.HoverDelayShort = Node["HoverDelayShort"].As<float>();
+		Style.HoverDelayNormal = Node["HoverDelayNormal"].As<float>();
+		Style.HoverFlagsForTooltipMouse = (ImGuiHoveredFlags)Node["HoverFlagsForTooltipMouse"].As<int32>();
+		Style.HoverFlagsForTooltipNav = (ImGuiHoveredFlags)Node["HoverFlagsForTooltipNav"].As<int32>();
 
-		YAML::Node Colors = Node["Colors"];
-		{
-			Style.Colors[ImGuiCol_Text] = Colors["Text"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TextDisabled] = Colors["TextDisabled"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_WindowBg] = Colors["WindowBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ChildBg] = Colors["ChildBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_PopupBg] = Colors["PopupBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_Border] = Colors["Border"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_BorderShadow] = Colors["BorderShadow"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_FrameBg] = Colors["FrameBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_FrameBgHovered] = Colors["FrameBgHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_FrameBgActive] = Colors["FrameBgActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TitleBg] = Colors["TitleBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TitleBgActive] = Colors["TitleBgActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TitleBgCollapsed] = Colors["TitleBgCollapsed"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_MenuBarBg] = Colors["MenuBarBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ScrollbarBg] = Colors["ScrollbarBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ScrollbarGrab] = Colors["ScrollbarGrab"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ScrollbarGrabHovered] = Colors["ScrollbarGrabHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ScrollbarGrabActive] = Colors["ScrollbarGrabActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_CheckMark] = Colors["CheckMark"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_SliderGrab] = Colors["SliderGrab"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_SliderGrabActive] = Colors["SliderGrabActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_Button] = Colors["Button"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ButtonHovered] = Colors["ButtonHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ButtonActive] = Colors["ButtonActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_Header] = Colors["Header"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_HeaderHovered] = Colors["HeaderHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_HeaderActive] = Colors["HeaderActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_Separator] = Colors["Separator"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_SeparatorHovered] = Colors["SeparatorHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_SeparatorActive] = Colors["SeparatorActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ResizeGrip] = Colors["ResizeGrip"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ResizeGripHovered] = Colors["ResizeGripHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ResizeGripActive] = Colors["ResizeGripActive"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_InputTextCursor] = Colors["InputTextCursor"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TabHovered] = Colors["TabHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_Tab] = Colors["Tab"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TabSelected] = Colors["TabSelected"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TabSelectedOverline] = Colors["TabSelectedOverline"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TabDimmed] = Colors["TabDimmed"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TabDimmedSelected] = Colors["TabDimmedSelected"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TabDimmedSelectedOverline] = Colors["TabDimmedSelectedOverline"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_DockingPreview] = Colors["DockingPreview"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_DockingEmptyBg] = Colors["DockingEmptyBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_PlotLines] = Colors["PlotLines"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_PlotLinesHovered] = Colors["PlotLinesHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_PlotHistogram] = Colors["PlotHistogram"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_PlotHistogramHovered] = Colors["PlotHistogramHovered"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TableHeaderBg] = Colors["TableHeaderBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TableBorderStrong] = Colors["TableBorderStrong"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TableBorderLight] = Colors["TableBorderLight"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TableRowBg] = Colors["TableRowBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TableRowBgAlt] = Colors["TableRowBgAlt"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TextLink] = Colors["TextLink"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TextSelectedBg] = Colors["TextSelectedBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_TreeLines] = Colors["TreeLines"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_DragDropTarget] = Colors["DragDropTarget"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_NavCursor] = Colors["NavCursor"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_NavWindowingHighlight] = Colors["NavWindowingHighlight"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_NavWindowingDimBg] = Colors["NavWindowingDimBg"].as<NxFr::Color>();
-			Style.Colors[ImGuiCol_ModalWindowDimBg] = Colors["ModalWindowDimBg"].as<NxFr::Color>();
-		}
+		NxFr::Yaml::Node Colors = Node["Colors"];
+		Style.Colors[ImGuiCol_Text] = Colors["Text"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TextDisabled] = Colors["TextDisabled"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_WindowBg] = Colors["WindowBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ChildBg] = Colors["ChildBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_PopupBg] = Colors["PopupBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_Border] = Colors["Border"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_BorderShadow] = Colors["BorderShadow"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_FrameBg] = Colors["FrameBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_FrameBgHovered] = Colors["FrameBgHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_FrameBgActive] = Colors["FrameBgActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TitleBg] = Colors["TitleBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TitleBgActive] = Colors["TitleBgActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TitleBgCollapsed] = Colors["TitleBgCollapsed"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_MenuBarBg] = Colors["MenuBarBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ScrollbarBg] = Colors["ScrollbarBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ScrollbarGrab] = Colors["ScrollbarGrab"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ScrollbarGrabHovered] = Colors["ScrollbarGrabHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ScrollbarGrabActive] = Colors["ScrollbarGrabActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_CheckMark] = Colors["CheckMark"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_SliderGrab] = Colors["SliderGrab"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_SliderGrabActive] = Colors["SliderGrabActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_Button] = Colors["Button"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ButtonHovered] = Colors["ButtonHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ButtonActive] = Colors["ButtonActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_Header] = Colors["Header"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_HeaderHovered] = Colors["HeaderHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_HeaderActive] = Colors["HeaderActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_Separator] = Colors["Separator"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_SeparatorHovered] = Colors["SeparatorHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_SeparatorActive] = Colors["SeparatorActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ResizeGrip] = Colors["ResizeGrip"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ResizeGripHovered] = Colors["ResizeGripHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ResizeGripActive] = Colors["ResizeGripActive"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_InputTextCursor] = Colors["InputTextCursor"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TabHovered] = Colors["TabHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_Tab] = Colors["Tab"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TabSelected] = Colors["TabSelected"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TabSelectedOverline] = Colors["TabSelectedOverline"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TabDimmed] = Colors["TabDimmed"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TabDimmedSelected] = Colors["TabDimmedSelected"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TabDimmedSelectedOverline] = Colors["TabDimmedSelectedOverline"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_DockingPreview] = Colors["DockingPreview"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_DockingEmptyBg] = Colors["DockingEmptyBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_PlotLines] = Colors["PlotLines"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_PlotLinesHovered] = Colors["PlotLinesHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_PlotHistogram] = Colors["PlotHistogram"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_PlotHistogramHovered] = Colors["PlotHistogramHovered"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TableHeaderBg] = Colors["TableHeaderBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TableBorderStrong] = Colors["TableBorderStrong"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TableBorderLight] = Colors["TableBorderLight"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TableRowBg] = Colors["TableRowBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TableRowBgAlt] = Colors["TableRowBgAlt"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TextLink] = Colors["TextLink"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TextSelectedBg] = Colors["TextSelectedBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_TreeLines] = Colors["TreeLines"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_DragDropTarget] = Colors["DragDropTarget"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_NavCursor] = Colors["NavCursor"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_NavWindowingHighlight] = Colors["NavWindowingHighlight"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_NavWindowingDimBg] = Colors["NavWindowingDimBg"].As<NxFr::Color>();
+		Style.Colors[ImGuiCol_ModalWindowDimBg] = Colors["ModalWindowDimBg"].As<NxFr::Color>();
 	}
 
-	void GUISystem::LoadThemeNexus(const YAML::Node& Node)
+	void GUISystem::LoadThemeNexus(const NxFr::Yaml::Node& Node)
 	{
-		const YAML::Node& Vars = Node["Vars"];
-		for (YAML::const_iterator It = Vars.begin(); It != Vars.end(); ++It)
+		NxFr::Yaml::Node Vars = Node["Vars"];
+		for (auto It = Vars.Begin(); It != Vars.End(); ++It)
 		{
-			const YAML::Node NodeId = It->first;
-			const YAML::Node NodeProperties = It->second;
+			NxFr::Yaml::Node NodeId = It.Key();
+			NxFr::Yaml::Node NodeProperties = It.Value();
 
-			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
-			float Var = NodeProperties.as<float>();
+			NxFr::StringId Id = NodeId.As<NxFr::StringId>();
+			float Var = NodeProperties.As<float>();
 
 			GUI::Style::GetVars().Register(Id, Var, true);
 		}
 
-		const YAML::Node& Colors = Node["Colors"];
-		for (YAML::const_iterator It = Colors.begin(); It != Colors.end(); ++It)
+		NxFr::Yaml::Node Colors = Node["Colors"];
+		for (auto It = Colors.Begin(); It != Colors.End(); ++It)
 		{
-			const YAML::Node NodeId = It->first;
-			const YAML::Node NodeProperties = It->second;
+			NxFr::Yaml::Node NodeId = It.Key();
+			NxFr::Yaml::Node NodeProperties = It.Value();
 
-			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
-			NxFr::Color Color = NodeProperties.as<NxFr::Color>();
+			NxFr::StringId Id = NodeId.As<NxFr::StringId>();
+			NxFr::Color Color = NodeProperties.As<NxFr::Color>();
 
 			GUI::Style::GetColors().Register(Id, Color, true);
 		}
 
-		const YAML::Node& Styles = Node["Styles"];
-		for (YAML::const_iterator It = Styles.begin(); It != Styles.end(); ++It)
+		NxFr::Yaml::Node Styles = Node["Styles"];
+		for (auto It = Styles.Begin(); It != Styles.End(); ++It)
 		{
-			const YAML::Node NodeId = It->first;
-			const YAML::Node NodeProperties = It->second;
+			NxFr::Yaml::Node NodeId = It.Key();
+			NxFr::Yaml::Node NodeProperties = It.Value();
 
-			NxFr::StringId Id = NodeId.as<NxFr::StringId>();
-			GUI::Style Style = NodeProperties.as<GUI::Style>();
+			NxFr::StringId Id = NodeId.As<NxFr::StringId>();
+			GUI::Style Style = NodeProperties.As<GUI::Style>();
 
 			GUI::Style::GetStyles().Register(Id, Style, true);
 		}
 	}
 
-	void GUISystem::SaveThemeImGui(YAML::Emitter& Emitter) const
+	NxFr::Yaml::Node GUISystem::SaveThemeImGui() const
 	{
 		ImGuiStyle& Style = ImGui::GetStyle();
 
-		Emitter << YAML::BeginMap;
+		NxFr::Yaml::Node Node;
+		Node["FontSizeBase"] = Style.FontSizeBase;
+		Node["FontScaleMain"] = Style.FontScaleMain;
+		Node["FontScaleDpi"] = Style.FontScaleDpi;
+		Node["Alpha"] = Style.Alpha;
+		Node["DisabledAlpha"] = Style.DisabledAlpha;
+		Node["WindowPadding"] = NxFr::Vector2f(Style.WindowPadding.x, Style.WindowPadding.y);
+		Node["WindowRounding"] = Style.WindowRounding;
+		Node["WindowBorderSize"] = Style.WindowBorderSize;
+		Node["WindowBorderHoverPadding"] = Style.WindowBorderHoverPadding;
+		Node["WindowMinSize"] = NxFr::Vector2f(Style.WindowMinSize.x, Style.WindowMinSize.y);
+		Node["WindowTitleAlign"] = NxFr::Vector2f(Style.WindowTitleAlign.x, Style.WindowTitleAlign.y);
+		Node["WindowMenuButtonPosition"] = (int32)Style.WindowMenuButtonPosition;
+		Node["ChildRounding"] = Style.ChildRounding;
+		Node["ChildBorderSize"] = Style.ChildBorderSize;
+		Node["PopupRounding"] = Style.PopupRounding;
+		Node["PopupBorderSize"] = Style.PopupBorderSize;
+		Node["FramePadding"] = NxFr::Vector2f(Style.FramePadding.x, Style.FramePadding.y);
+		Node["FrameRounding"] = Style.FrameRounding;
+		Node["FrameBorderSize"] = Style.FrameBorderSize;
+		Node["ItemSpacing"] = NxFr::Vector2f(Style.ItemSpacing.x, Style.ItemSpacing.y);
+		Node["ItemInnerSpacing"] = NxFr::Vector2f(Style.ItemInnerSpacing.x, Style.ItemInnerSpacing.y);
+		Node["CellPadding"] = NxFr::Vector2f(Style.CellPadding.x, Style.CellPadding.y);
+		Node["TouchExtraPadding"] = NxFr::Vector2f(Style.TouchExtraPadding.x, Style.TouchExtraPadding.y);
+		Node["IndentSpacing"] = Style.IndentSpacing;
+		Node["ColumnsMinSpacing"] = Style.ColumnsMinSpacing;
+		Node["ScrollbarSize"] = Style.ScrollbarSize;
+		Node["ScrollbarRounding"] = Style.ScrollbarRounding;
+		Node["GrabMinSize"] = Style.GrabMinSize;
+		Node["GrabRounding"] = Style.GrabRounding;
+		Node["LogSliderDeadzone"] = Style.LogSliderDeadzone;
+		Node["ImageBorderSize"] = Style.ImageBorderSize;
+		Node["TabRounding"] = Style.TabRounding;
+		Node["TabBorderSize"] = Style.TabBorderSize;
+		Node["TabCloseButtonMinWidthSelected"] = Style.TabCloseButtonMinWidthSelected;
+		Node["TabCloseButtonMinWidthUnselected"] = Style.TabCloseButtonMinWidthUnselected;
+		Node["TabBarBorderSize"] = Style.TabBarBorderSize;
+		Node["TabBarOverlineSize"] = Style.TabBarOverlineSize;
+		Node["TableAngledHeadersAngle"] = Style.TableAngledHeadersAngle;
+		Node["TableAngledHeadersTextAlign"] = NxFr::Vector2f(Style.TableAngledHeadersTextAlign.x, Style.TableAngledHeadersTextAlign.y);
+		Node["TreeLinesFlags"] = (int32)Style.TreeLinesFlags;
+		Node["TreeLinesSize"] = Style.TreeLinesSize;
+		Node["TreeLinesRounding"] = Style.TreeLinesRounding;
+		Node["ColorButtonPosition"] = (int32)Style.ColorButtonPosition;
+		Node["ButtonTextAlign"] = NxFr::Vector2f(Style.ButtonTextAlign.x, Style.ButtonTextAlign.y);
+		Node["SelectableTextAlign"] = NxFr::Vector2f(Style.SelectableTextAlign.x, Style.SelectableTextAlign.y);
+		Node["SeparatorTextBorderSize"] = Style.SeparatorTextBorderSize;
+		Node["SeparatorTextAlign"] = NxFr::Vector2f(Style.SeparatorTextAlign.x, Style.SeparatorTextAlign.y);
+		Node["SeparatorTextPadding"] = NxFr::Vector2f(Style.SeparatorTextPadding.x, Style.SeparatorTextPadding.y);
+		Node["DisplayWindowPadding"] = NxFr::Vector2f(Style.DisplayWindowPadding.x, Style.DisplayWindowPadding.y);
+		Node["DisplaySafeAreaPadding"] = NxFr::Vector2f(Style.DisplaySafeAreaPadding.x, Style.DisplaySafeAreaPadding.y);
+		Node["DockingSeparatorSize"] = Style.DockingSeparatorSize;
+		Node["MouseCursorScale"] = Style.MouseCursorScale;
+		Node["AntiAliasedLines"] = Style.AntiAliasedLines;
+		Node["AntiAliasedLinesUseTex"] = Style.AntiAliasedLinesUseTex;
+		Node["AntiAliasedFill"] = Style.AntiAliasedFill;
+		Node["CurveTessellationTol"] = Style.CurveTessellationTol;
+		Node["CircleTessellationMaxError"] = Style.CircleTessellationMaxError;
+		Node["HoverStationaryDelay"] = Style.HoverStationaryDelay;
+		Node["HoverDelayShort"] = Style.HoverDelayShort;
+		Node["HoverDelayNormal"] = Style.HoverDelayNormal;
+		Node["HoverFlagsForTooltipMouse"] = (int32)Style.HoverFlagsForTooltipMouse;
+		Node["HoverFlagsForTooltipNav"] = (int32)Style.HoverFlagsForTooltipNav;
 
-		Emitter << YAML::Key << "FontSizeBase" << YAML::Value << Style.FontSizeBase;
-		Emitter << YAML::Key << "FontScaleMain" << YAML::Value << Style.FontScaleMain;
-		Emitter << YAML::Key << "FontScaleDpi" << YAML::Value << Style.FontScaleDpi;
-		Emitter << YAML::Key << "Alpha" << YAML::Value << Style.Alpha;
-		Emitter << YAML::Key << "DisabledAlpha" << YAML::Value << Style.DisabledAlpha;
-		Emitter << YAML::Key << "WindowPadding" << YAML::Value << NxFr::Vector2f(Style.WindowPadding.x, Style.WindowPadding.y);
-		Emitter << YAML::Key << "WindowRounding" << YAML::Value << Style.WindowRounding;
-		Emitter << YAML::Key << "WindowBorderSize" << YAML::Value << Style.WindowBorderSize;
-		Emitter << YAML::Key << "WindowBorderHoverPadding" << YAML::Value << Style.WindowBorderHoverPadding;
-		Emitter << YAML::Key << "WindowMinSize" << YAML::Value << NxFr::Vector2f(Style.WindowMinSize.x, Style.WindowMinSize.y);
-		Emitter << YAML::Key << "WindowTitleAlign" << YAML::Value << NxFr::Vector2f(Style.WindowTitleAlign.x, Style.WindowTitleAlign.y);
-		Emitter << YAML::Key << "WindowMenuButtonPosition" << YAML::Value << (int32)Style.WindowMenuButtonPosition;
-		Emitter << YAML::Key << "ChildRounding" << YAML::Value << Style.ChildRounding;
-		Emitter << YAML::Key << "ChildBorderSize" << YAML::Value << Style.ChildBorderSize;
-		Emitter << YAML::Key << "PopupRounding" << YAML::Value << Style.PopupRounding;
-		Emitter << YAML::Key << "PopupBorderSize" << YAML::Value << Style.PopupBorderSize;
-		Emitter << YAML::Key << "FramePadding" << YAML::Value << NxFr::Vector2f(Style.FramePadding.x, Style.FramePadding.y);
-		Emitter << YAML::Key << "FrameRounding" << YAML::Value << Style.FrameRounding;
-		Emitter << YAML::Key << "FrameBorderSize" << YAML::Value << Style.FrameBorderSize;
-		Emitter << YAML::Key << "ItemSpacing" << YAML::Value << NxFr::Vector2f(Style.ItemSpacing.x, Style.ItemSpacing.y);
-		Emitter << YAML::Key << "ItemInnerSpacing" << YAML::Value << NxFr::Vector2f(Style.ItemInnerSpacing.x, Style.ItemInnerSpacing.y);
-		Emitter << YAML::Key << "CellPadding" << YAML::Value << NxFr::Vector2f(Style.CellPadding.x, Style.CellPadding.y);
-		Emitter << YAML::Key << "TouchExtraPadding" << YAML::Value << NxFr::Vector2f(Style.TouchExtraPadding.x, Style.TouchExtraPadding.y);
-		Emitter << YAML::Key << "IndentSpacing" << YAML::Value << Style.IndentSpacing;
-		Emitter << YAML::Key << "ColumnsMinSpacing" << YAML::Value << Style.ColumnsMinSpacing;
-		Emitter << YAML::Key << "ScrollbarSize" << YAML::Value << Style.ScrollbarSize;
-		Emitter << YAML::Key << "ScrollbarRounding" << YAML::Value << Style.ScrollbarRounding;
-		Emitter << YAML::Key << "GrabMinSize" << YAML::Value << Style.GrabMinSize;
-		Emitter << YAML::Key << "GrabRounding" << YAML::Value << Style.GrabRounding;
-		Emitter << YAML::Key << "LogSliderDeadzone" << YAML::Value << Style.LogSliderDeadzone;
-		Emitter << YAML::Key << "ImageBorderSize" << YAML::Value << Style.ImageBorderSize;
-		Emitter << YAML::Key << "TabRounding" << YAML::Value << Style.TabRounding;
-		Emitter << YAML::Key << "TabBorderSize" << YAML::Value << Style.TabBorderSize;
-		Emitter << YAML::Key << "TabCloseButtonMinWidthSelected" << YAML::Value << Style.TabCloseButtonMinWidthSelected;
-		Emitter << YAML::Key << "TabCloseButtonMinWidthUnselected" << YAML::Value << Style.TabCloseButtonMinWidthUnselected;
-		Emitter << YAML::Key << "TabBarBorderSize" << YAML::Value << Style.TabBarBorderSize;
-		Emitter << YAML::Key << "TabBarOverlineSize" << YAML::Value << Style.TabBarOverlineSize;
-		Emitter << YAML::Key << "TableAngledHeadersAngle" << YAML::Value << Style.TableAngledHeadersAngle;
-		Emitter << YAML::Key << "TableAngledHeadersTextAlign" << YAML::Value << NxFr::Vector2f(Style.TableAngledHeadersTextAlign.x, Style.TableAngledHeadersTextAlign.y);
-		Emitter << YAML::Key << "TreeLinesFlags" << YAML::Value << (int32)Style.TreeLinesFlags;
-		Emitter << YAML::Key << "TreeLinesSize" << YAML::Value << Style.TreeLinesSize;
-		Emitter << YAML::Key << "TreeLinesRounding" << YAML::Value << Style.TreeLinesRounding;
-		Emitter << YAML::Key << "ColorButtonPosition" << YAML::Value << (int32)Style.ColorButtonPosition;
-		Emitter << YAML::Key << "ButtonTextAlign" << YAML::Value << NxFr::Vector2f(Style.ButtonTextAlign.x, Style.ButtonTextAlign.y);
-		Emitter << YAML::Key << "SelectableTextAlign" << YAML::Value << NxFr::Vector2f(Style.SelectableTextAlign.x, Style.SelectableTextAlign.y);
-		Emitter << YAML::Key << "SeparatorTextBorderSize" << YAML::Value << Style.SeparatorTextBorderSize;
-		Emitter << YAML::Key << "SeparatorTextAlign" << YAML::Value << NxFr::Vector2f(Style.SeparatorTextAlign.x, Style.SeparatorTextAlign.y);
-		Emitter << YAML::Key << "SeparatorTextPadding" << YAML::Value << NxFr::Vector2f(Style.SeparatorTextPadding.x, Style.SeparatorTextPadding.y);
-		Emitter << YAML::Key << "DisplayWindowPadding" << YAML::Value << NxFr::Vector2f(Style.DisplayWindowPadding.x, Style.DisplayWindowPadding.y);
-		Emitter << YAML::Key << "DisplaySafeAreaPadding" << YAML::Value << NxFr::Vector2f(Style.DisplaySafeAreaPadding.x, Style.DisplaySafeAreaPadding.y);
-		Emitter << YAML::Key << "DockingSeparatorSize" << YAML::Value << Style.DockingSeparatorSize;
-		Emitter << YAML::Key << "MouseCursorScale" << YAML::Value << Style.MouseCursorScale;
-		Emitter << YAML::Key << "AntiAliasedLines" << YAML::Value << Style.AntiAliasedLines;
-		Emitter << YAML::Key << "AntiAliasedLinesUseTex" << YAML::Value << Style.AntiAliasedLinesUseTex;
-		Emitter << YAML::Key << "AntiAliasedFill" << YAML::Value << Style.AntiAliasedFill;
-		Emitter << YAML::Key << "CurveTessellationTol" << YAML::Value << Style.CurveTessellationTol;
-		Emitter << YAML::Key << "CircleTessellationMaxError" << YAML::Value << Style.CircleTessellationMaxError;
-		Emitter << YAML::Key << "HoverStationaryDelay" << YAML::Value << Style.HoverStationaryDelay;
-		Emitter << YAML::Key << "HoverDelayShort" << YAML::Value << Style.HoverDelayShort;
-		Emitter << YAML::Key << "HoverDelayNormal" << YAML::Value << Style.HoverDelayNormal;
-		Emitter << YAML::Key << "HoverFlagsForTooltipMouse" << YAML::Value << (int32)Style.HoverFlagsForTooltipMouse;
-		Emitter << YAML::Key << "HoverFlagsForTooltipNav" << YAML::Value << (int32)Style.HoverFlagsForTooltipNav;
+		NxFr::Yaml::Node NodeColor;
+		NodeColor["Text"] = (NxFr::Color)Style.Colors[0];
+		NodeColor["TextDisabled"] = (NxFr::Color)Style.Colors[1];
+		NodeColor["WindowBg"] = (NxFr::Color)Style.Colors[2];
+		NodeColor["ChildBg"] = (NxFr::Color)Style.Colors[3];
+		NodeColor["PopupBg"] = (NxFr::Color)Style.Colors[4];
+		NodeColor["Border"] = (NxFr::Color)Style.Colors[5];
+		NodeColor["BorderShadow"] = (NxFr::Color)Style.Colors[6];
+		NodeColor["FrameBg"] = (NxFr::Color)Style.Colors[7];
+		NodeColor["FrameBgHovered"] = (NxFr::Color)Style.Colors[8];
+		NodeColor["FrameBgActive"] = (NxFr::Color)Style.Colors[9];
+		NodeColor["TitleBg"] = (NxFr::Color)Style.Colors[10];
+		NodeColor["TitleBgActive"] = (NxFr::Color)Style.Colors[11];
+		NodeColor["TitleBgCollapsed"] = (NxFr::Color)Style.Colors[12];
+		NodeColor["MenuBarBg"] = (NxFr::Color)Style.Colors[13];
+		NodeColor["ScrollbarBg"] = (NxFr::Color)Style.Colors[14];
+		NodeColor["ScrollbarGrab"] = (NxFr::Color)Style.Colors[15];
+		NodeColor["ScrollbarGrabHovered"] = (NxFr::Color)Style.Colors[16];
+		NodeColor["ScrollbarGrabActive"] = (NxFr::Color)Style.Colors[17];
+		NodeColor["CheckMark"] = (NxFr::Color)Style.Colors[18];
+		NodeColor["SliderGrab"] = (NxFr::Color)Style.Colors[19];
+		NodeColor["SliderGrabActive"] = (NxFr::Color)Style.Colors[20];
+		NodeColor["Button"] = (NxFr::Color)Style.Colors[21];
+		NodeColor["ButtonHovered"] = (NxFr::Color)Style.Colors[22];
+		NodeColor["ButtonActive"] = (NxFr::Color)Style.Colors[23];
+		NodeColor["Header"] = (NxFr::Color)Style.Colors[24];
+		NodeColor["HeaderHovered"] = (NxFr::Color)Style.Colors[25];
+		NodeColor["HeaderActive"] = (NxFr::Color)Style.Colors[26];
+		NodeColor["Separator"] = (NxFr::Color)Style.Colors[27];
+		NodeColor["SeparatorHovered"] = (NxFr::Color)Style.Colors[28];
+		NodeColor["SeparatorActive"] = (NxFr::Color)Style.Colors[29];
+		NodeColor["ResizeGrip"] = (NxFr::Color)Style.Colors[30];
+		NodeColor["ResizeGripHovered"] = (NxFr::Color)Style.Colors[31];
+		NodeColor["ResizeGripActive"] = (NxFr::Color)Style.Colors[32];
+		NodeColor["InputTextCursor"] = (NxFr::Color)Style.Colors[33];
+		NodeColor["TabHovered"] = (NxFr::Color)Style.Colors[34];
+		NodeColor["Tab"] = (NxFr::Color)Style.Colors[35];
+		NodeColor["TabSelected"] = (NxFr::Color)Style.Colors[36];
+		NodeColor["TabSelectedOverline"] = (NxFr::Color)Style.Colors[37];
+		NodeColor["TabDimmed"] = (NxFr::Color)Style.Colors[38];
+		NodeColor["TabDimmedSelected"] = (NxFr::Color)Style.Colors[39];
+		NodeColor["TabDimmedSelectedOverline"] = (NxFr::Color)Style.Colors[40];
+		NodeColor["DockingPreview"] = (NxFr::Color)Style.Colors[41];
+		NodeColor["DockingEmptyBg"] = (NxFr::Color)Style.Colors[42];
+		NodeColor["PlotLines"] = (NxFr::Color)Style.Colors[43];
+		NodeColor["PlotLinesHovered"] = (NxFr::Color)Style.Colors[44];
+		NodeColor["PlotHistogram"] = (NxFr::Color)Style.Colors[45];
+		NodeColor["PlotHistogramHovered"] = (NxFr::Color)Style.Colors[46];
+		NodeColor["TableHeaderBg"] = (NxFr::Color)Style.Colors[47];
+		NodeColor["TableBorderStrong"] = (NxFr::Color)Style.Colors[48];
+		NodeColor["TableBorderLight"] = (NxFr::Color)Style.Colors[49];
+		NodeColor["TableRowBg"] = (NxFr::Color)Style.Colors[50];
+		NodeColor["TableRowBgAlt"] = (NxFr::Color)Style.Colors[51];
+		NodeColor["TextLink"] = (NxFr::Color)Style.Colors[52];
+		NodeColor["TextSelectedBg"] = (NxFr::Color)Style.Colors[53];
+		NodeColor["TreeLines"] = (NxFr::Color)Style.Colors[54];
+		NodeColor["DragDropTarget"] = (NxFr::Color)Style.Colors[55];
+		NodeColor["NavCursor"] = (NxFr::Color)Style.Colors[56];
+		NodeColor["NavWindowingHighlight"] = (NxFr::Color)Style.Colors[57];
+		NodeColor["NavWindowingDimBg"] = (NxFr::Color)Style.Colors[58];
+		NodeColor["ModalWindowDimBg"] = (NxFr::Color)Style.Colors[59];
+		Node["Colors"] = NodeColor;
 
-		Emitter << YAML::Key << "Colors" << YAML::Value << YAML::BeginMap;
-		{
-			Emitter << YAML::Key << "Text" << YAML::Value << Style.Colors[0];
-			Emitter << YAML::Key << "TextDisabled" << YAML::Value << Style.Colors[1];
-			Emitter << YAML::Key << "WindowBg" << YAML::Value << Style.Colors[2];
-			Emitter << YAML::Key << "ChildBg" << YAML::Value << Style.Colors[3];
-			Emitter << YAML::Key << "PopupBg" << YAML::Value << Style.Colors[4];
-			Emitter << YAML::Key << "Border" << YAML::Value << Style.Colors[5];
-			Emitter << YAML::Key << "BorderShadow" << YAML::Value << Style.Colors[6];
-			Emitter << YAML::Key << "FrameBg" << YAML::Value << Style.Colors[7];
-			Emitter << YAML::Key << "FrameBgHovered" << YAML::Value << Style.Colors[8];
-			Emitter << YAML::Key << "FrameBgActive" << YAML::Value << Style.Colors[9];
-			Emitter << YAML::Key << "TitleBg" << YAML::Value << Style.Colors[10];
-			Emitter << YAML::Key << "TitleBgActive" << YAML::Value << Style.Colors[11];
-			Emitter << YAML::Key << "TitleBgCollapsed" << YAML::Value << Style.Colors[12];
-			Emitter << YAML::Key << "MenuBarBg" << YAML::Value << Style.Colors[13];
-			Emitter << YAML::Key << "ScrollbarBg" << YAML::Value << Style.Colors[14];
-			Emitter << YAML::Key << "ScrollbarGrab" << YAML::Value << Style.Colors[15];
-			Emitter << YAML::Key << "ScrollbarGrabHovered" << YAML::Value << Style.Colors[16];
-			Emitter << YAML::Key << "ScrollbarGrabActive" << YAML::Value << Style.Colors[17];
-			Emitter << YAML::Key << "CheckMark" << YAML::Value << Style.Colors[18];
-			Emitter << YAML::Key << "SliderGrab" << YAML::Value << Style.Colors[19];
-			Emitter << YAML::Key << "SliderGrabActive" << YAML::Value << Style.Colors[20];
-			Emitter << YAML::Key << "Button" << YAML::Value << Style.Colors[21];
-			Emitter << YAML::Key << "ButtonHovered" << YAML::Value << Style.Colors[22];
-			Emitter << YAML::Key << "ButtonActive" << YAML::Value << Style.Colors[23];
-			Emitter << YAML::Key << "Header" << YAML::Value << Style.Colors[24];
-			Emitter << YAML::Key << "HeaderHovered" << YAML::Value << Style.Colors[25];
-			Emitter << YAML::Key << "HeaderActive" << YAML::Value << Style.Colors[26];
-			Emitter << YAML::Key << "Separator" << YAML::Value << Style.Colors[27];
-			Emitter << YAML::Key << "SeparatorHovered" << YAML::Value << Style.Colors[28];
-			Emitter << YAML::Key << "SeparatorActive" << YAML::Value << Style.Colors[29];
-			Emitter << YAML::Key << "ResizeGrip" << YAML::Value << Style.Colors[30];
-			Emitter << YAML::Key << "ResizeGripHovered" << YAML::Value << Style.Colors[31];
-			Emitter << YAML::Key << "ResizeGripActive" << YAML::Value << Style.Colors[32];
-			Emitter << YAML::Key << "InputTextCursor" << YAML::Value << Style.Colors[33];
-			Emitter << YAML::Key << "TabHovered" << YAML::Value << Style.Colors[34];
-			Emitter << YAML::Key << "Tab" << YAML::Value << Style.Colors[35];
-			Emitter << YAML::Key << "TabSelected" << YAML::Value << Style.Colors[36];
-			Emitter << YAML::Key << "TabSelectedOverline" << YAML::Value << Style.Colors[37];
-			Emitter << YAML::Key << "TabDimmed" << YAML::Value << Style.Colors[38];
-			Emitter << YAML::Key << "TabDimmedSelected" << YAML::Value << Style.Colors[39];
-			Emitter << YAML::Key << "TabDimmedSelectedOverline" << YAML::Value << Style.Colors[40];
-			Emitter << YAML::Key << "DockingPreview" << YAML::Value << Style.Colors[41];
-			Emitter << YAML::Key << "DockingEmptyBg" << YAML::Value << Style.Colors[42];
-			Emitter << YAML::Key << "PlotLines" << YAML::Value << Style.Colors[43];
-			Emitter << YAML::Key << "PlotLinesHovered" << YAML::Value << Style.Colors[44];
-			Emitter << YAML::Key << "PlotHistogram" << YAML::Value << Style.Colors[45];
-			Emitter << YAML::Key << "PlotHistogramHovered" << YAML::Value << Style.Colors[46];
-			Emitter << YAML::Key << "TableHeaderBg" << YAML::Value << Style.Colors[47];
-			Emitter << YAML::Key << "TableBorderStrong" << YAML::Value << Style.Colors[48];
-			Emitter << YAML::Key << "TableBorderLight" << YAML::Value << Style.Colors[49];
-			Emitter << YAML::Key << "TableRowBg" << YAML::Value << Style.Colors[50];
-			Emitter << YAML::Key << "TableRowBgAlt" << YAML::Value << Style.Colors[51];
-			Emitter << YAML::Key << "TextLink" << YAML::Value << Style.Colors[52];
-			Emitter << YAML::Key << "TextSelectedBg" << YAML::Value << Style.Colors[53];
-			Emitter << YAML::Key << "TreeLines" << YAML::Value << Style.Colors[54];
-			Emitter << YAML::Key << "DragDropTarget" << YAML::Value << Style.Colors[55];
-			Emitter << YAML::Key << "NavCursor" << YAML::Value << Style.Colors[56];
-			Emitter << YAML::Key << "NavWindowingHighlight" << YAML::Value << Style.Colors[57];
-			Emitter << YAML::Key << "NavWindowingDimBg" << YAML::Value << Style.Colors[58];
-			Emitter << YAML::Key << "ModalWindowDimBg" << YAML::Value << Style.Colors[59];
-		}
-		Emitter << YAML::EndMap;
-
-		Emitter << YAML::EndMap;
+		return Node;
 	}
 
-	void GUISystem::SaveThemeNexus(YAML::Emitter& Emitter) const
+	NxFr::Yaml::Node GUISystem::SaveThemeNexus() const
 	{
-		Emitter << YAML::BeginMap;
+		NxFr::Yaml::Node Node;
 
-		Emitter << YAML::Key << "Vars" << YAML::Value;
-		Emitter << YAML::BeginMap;
+		NxFr::Yaml::Node NodeVars;
 		for (auto It = GUI::Style::GetVars().Begin(); It != GUI::Style::GetVars().End(); ++It)
 		{
-			Emitter << YAML::Key << It->Key << YAML::Value << It->Value;
+			NodeVars[It->Key] = It->Value;
 		}
-		Emitter << YAML::EndMap;
+		Node["Vars"] = NodeVars;
 
-		Emitter << YAML::Key << "Colors" << YAML::Value;
-		Emitter << YAML::BeginMap;
+		NxFr::Yaml::Node NodeColors;
 		for (auto It = GUI::Style::GetColors().Begin(); It != GUI::Style::GetColors().End(); ++It)
 		{
-			Emitter << YAML::Key << It->Key << YAML::Value << It->Value;
+			NodeColors[It->Key] = It->Value;
 		}
-		Emitter << YAML::EndMap;
+		Node["Colors"] = NodeColors;
 
-		Emitter << YAML::Key << "Styles" << YAML::Value;
-		Emitter << YAML::BeginMap;
+		NxFr::Yaml::Node NodeStyles;
 		for (auto It = GUI::Style::GetStyles().Begin(); It != GUI::Style::GetStyles().End(); ++It)
 		{
-			Emitter << YAML::Key << It->Key << YAML::Value << It->Value;
+			NodeStyles[It->Key] = It->Value;
 		}
-		Emitter << YAML::EndMap;
+		Node["Styles"] = NodeStyles;
 
-		Emitter << YAML::EndMap;
+		return Node;
 	}
 }

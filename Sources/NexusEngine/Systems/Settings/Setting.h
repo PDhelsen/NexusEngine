@@ -25,8 +25,8 @@ namespace NxEn
 
 	protected:
 		virtual void OnDraw() override = 0;
-		virtual void OnSerialize(YAML::Node& Node) const override = 0;
-		virtual void OnDeserialize(const YAML::Node& Node) override = 0;
+		virtual void OnSerialize(NxFr::Yaml::Node& Node) const override = 0;
+		virtual void OnDeserialize(const NxFr::Yaml::Node& Node) override = 0;
 
 	private:
 		NxFr::StringId Id;

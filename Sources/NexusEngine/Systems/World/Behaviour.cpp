@@ -74,7 +74,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::Tickable, Instance.IsTickable());
 	}
 
-	void Behaviour::OnSerialize(YAML::Node& Node) const
+	void Behaviour::OnSerialize(NxFr::Yaml::Node& Node) const
 	{
 		Node["Type"] = GetObjectType();
 		Node["Id"] = BehaviourId;
@@ -83,9 +83,9 @@ namespace NxEn
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
 	}
 
-	void Behaviour::OnDeserialize(const YAML::Node& Node)
+	void Behaviour::OnDeserialize(const NxFr::Yaml::Node& Node)
 	{
-		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
-		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
+		SetFlag(ObjectFlags::Enabled, Node["Enabled"].As<bool>());
+		SetFlag(ObjectFlags::Tickable, Node["Tickable"].As<bool>());
 	}
 }

@@ -48,8 +48,8 @@ namespace NxEn
 	protected:
 		void OnDraw() override;
 		void OnClone(const Object& Other) override;
-		void OnSerialize(YAML::Node& Node) const override;
-		void OnDeserialize(const YAML::Node& Node) override;
+		void OnSerialize(NxFr::Yaml::Node& Node) const override;
+		void OnDeserialize(const NxFr::Yaml::Node& Node) override;
 		void OnUpdateHierarchy() override;
 
 	private:

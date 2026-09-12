@@ -10,7 +10,7 @@ namespace NxEn
 	public:
 		NX_OBJECT(Table)
 
-		YAML::Node& GetRoot() { return Data; }
+		NxFr::Yaml::Node& GetRoot() { return Data; }
 
 	protected:
 		void OnDraw() override;
@@ -20,6 +20,6 @@ namespace NxEn
 		void OnUnload() override;
 
 	private:
-		YAML::Node Data;
+		NxFr::Yaml::Node Data;
 	};
 }

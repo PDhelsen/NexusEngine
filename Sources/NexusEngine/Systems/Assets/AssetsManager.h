@@ -15,8 +15,8 @@ namespace NxEn
 		void Remove(NxFr::GUID Id);
 		AssetHandle& Get(NxFr::GUID Id);
 
-		YAML::Node SerializeAndSave(NxFr::GUID Id, NxFr::StringView ContentFsPath);
-		void LoadAndDeserialize(NxFr::GUID Id, const YAML::Node& Assetdata, NxFr::StringView ContentFsPath);
+		NxFr::Yaml::Node SerializeAndSave(NxFr::GUID Id, NxFr::StringView ContentFsPath);
+		void LoadAndDeserialize(NxFr::GUID Id, const NxFr::Yaml::Node& Assetdata, NxFr::StringView ContentFsPath);
 		void Unload(NxFr::GUID Id);
 
 		void Acquire(NxFr::GUID Id);

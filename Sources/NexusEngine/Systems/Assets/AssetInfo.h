@@ -48,8 +48,8 @@ namespace NxEn
 		NxFr::Dictionary<NxFr::String, NxFr::String>& GetData() { return Data; }
 
 	private:
-		YAML::Node Serialize() const;
-		void Deserialize(const YAML::Node& Node);
+		NxFr::Yaml::Node Serialize() const;
+		void Deserialize(const NxFr::Yaml::Node& Node);
 
 		NxFr::GUID Id;
 		NxFr::StringId Type;

@@ -17,7 +17,7 @@ namespace NxEn
 		Text* TemplateScene = Application::GetSystem<ResourcesSystem>()->Load<Text>("TemplateScene.scene");
 		NxFr::String NewScene = NxFr::StringUtility::FormatTo(TemplateScene->GetText(), GetName().C(), GetId());
 
-		YAML::Node Data = NxFr::Yaml::Deserialize(NewScene);
+		NxFr::Yaml::Node Data = NxFr::Yaml::Deserialize(NewScene);
 		SetRoot(Application::GetSystem<WorldSystem>()->DeserializeGameObject(Data));
 	}
 
@@ -35,13 +35,13 @@ namespace NxEn
 
 	void Scene::OnSave(NxFr::StringView Path) const
 	{
-		YAML::Node Data = Application::GetSystem<WorldSystem>()->SerializeGameObject(Root);
+		NxFr::Yaml::Node Data = Application::GetSystem<WorldSystem>()->SerializeGameObject(Root);
 		NxFr::Yaml::SerializeAndSave(Data, Path);
 	}
 
 	void Scene::OnLoad(NxFr::StringView Path)
 	{
-		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
+		NxFr::Yaml::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
 		SetRoot(Application::GetSystem<WorldSystem>()->DeserializeGameObject(Data));
 	}
 

@@ -44,23 +44,4 @@ namespace YAML
 			return true;
 		}
 	};
-
-	inline YAML::Emitter& operator<<(YAML::Emitter& out, const NxEn::GUI::Style& rhs)
-	{
-		out << YAML::BeginMap;
-		out << YAML::Key << "Color" << YAML::Value << rhs.Color;
-		out << YAML::Key << "ColorText" << YAML::Value << rhs.ColorText;
-		out << YAML::Key << "ColorBackground" << YAML::Value << rhs.ColorBackground;
-		out << YAML::Key << "ColorBorder" << YAML::Value << rhs.ColorBorder;
-		out << YAML::Key << "Alpha" << YAML::Value << rhs.Alpha;
-		out << YAML::Key << "Align" << YAML::Value << rhs.Align;
-		out << YAML::Key << "Spacing" << YAML::Value << rhs.Spacing;
-		out << YAML::Key << "Padding" << YAML::Value << rhs.Padding;
-		out << YAML::Key << "Rounding" << YAML::Value << rhs.Rounding;
-		out << YAML::Key << "Border" << YAML::Value << rhs.Border;
-		out << YAML::Key << "Font" << YAML::Value << rhs.Font;
-		out << YAML::Key << "Flag" << YAML::Value << rhs.Flag;
-		out << YAML::EndMap;
-		return out;
-	}
 }

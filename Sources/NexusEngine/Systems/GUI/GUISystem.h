@@ -65,10 +65,10 @@ namespace NxEn
 		void LoadLayoutNexus(NxFr::StringView Path) const;
 		void SaveLayoutImGui(NxFr::StringView Path) const;
 		void SaveLayoutNexus(NxFr::StringView Path) const;
-		void LoadThemeImGui(const YAML::Node& Node) const;
-		void LoadThemeNexus(const YAML::Node& Node);
-		void SaveThemeImGui(YAML::Emitter& Emitter) const;
-		void SaveThemeNexus(YAML::Emitter& Emitter) const;
+		void LoadThemeImGui(const NxFr::Yaml::Node& Node) const;
+		void LoadThemeNexus(const NxFr::Yaml::Node& Node);
+		NxFr::Yaml::Node SaveThemeImGui() const;
+		NxFr::Yaml::Node SaveThemeNexus() const;
 
 	private:
 		GUI::Window Window;

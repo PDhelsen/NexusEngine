@@ -117,28 +117,28 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<GameObject> WorldManager::CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent, ReferenceMode Mode)
+	NxFr::Handle<GameObject> WorldManager::CreateGameObject(NxFr::Yaml::Node Node, NxFr::Handle<GameObject> Parent, ReferenceMode Mode)
 	{
-		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
-		NxFr::GUID TemplateId = Node["TemplateId"].as<NxFr::GUID>();
+		NxFr::GUID Id = Node["Id"].As<NxFr::GUID>();
+		NxFr::GUID TemplateId = Node["TemplateId"].As<NxFr::GUID>();
 
 		NxFr::Handle<GameObject> Instance = CreateGameObject(Parent, !Objects.TryGet(Id) ? Id : 0, TemplateId, Mode);
 		RecordIds(Id, Instance->GetId());
 
-		YAML::Node NodeBehaviours = Node["Behaviours"];
-		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
+		NxFr::Yaml::Node NodeBehaviours = Node["Behaviours"];
+		for (uint64 Index = 0; Index < NodeBehaviours.GetCount(); ++Index)
 		{
 			CreateBehaviour(NodeBehaviours[Index], Instance);
 		}
 
-		YAML::Node NodeComponents = Node["Components"];
-		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
+		NxFr::Yaml::Node NodeComponents = Node["Components"];
+		for (uint64 Index = 0; Index < NodeComponents.GetCount(); ++Index)
 		{
 			CreateComponent(NodeComponents[Index], Instance);
 		}
 
-		YAML::Node NodeChildren = Node["Children"];
-		for (uint64 Index = 0; Index < NodeChildren.size(); ++Index)
+		NxFr::Yaml::Node NodeChildren = Node["Children"];
+		for (uint64 Index = 0; Index < NodeChildren.GetCount(); ++Index)
 		{
 			CreateGameObject(NodeChildren[Index], Instance, ReferenceMode::Keep);
 		}
@@ -291,10 +291,10 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<Behaviour> WorldManager::CreateBehaviour(YAML::Node Node, NxFr::Handle<GameObject> Target)
+	NxFr::Handle<Behaviour> WorldManager::CreateBehaviour(NxFr::Yaml::Node Node, NxFr::Handle<GameObject> Target)
 	{
-		NxFr::StringId Type = Node["Type"].as<NxFr::StringId>();
-		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
+		NxFr::StringId Type = Node["Type"].As<NxFr::StringId>();
+		NxFr::GUID Id = Node["Id"].As<NxFr::GUID>();
 
 		NxFr::Handle<Behaviour> Instance = CreateBehaviour(Type, Target, !Objects.TryGet(Id) ? Id : 0);
 		RecordIds(Id, Instance->GetId());
@@ -337,10 +337,10 @@ namespace NxEn
 		return Instance;
 	}
 
-	NxFr::Handle<Component> WorldManager::CreateComponent(YAML::Node Node, NxFr::Handle<GameObject> Target)
+	NxFr::Handle<Component> WorldManager::CreateComponent(NxFr::Yaml::Node Node, NxFr::Handle<GameObject> Target)
 	{
-		NxFr::StringId Type = Node["Type"].as<NxFr::StringId>();
-		NxFr::GUID Id = Node["Id"].as<NxFr::GUID>();
+		NxFr::StringId Type = Node["Type"].As<NxFr::StringId>();
+		NxFr::GUID Id = Node["Id"].As<NxFr::GUID>();
 
 		NxFr::Handle<Component> Instance = CreateComponent(Type, Target, !Objects.TryGet(Id) ? Id : 0);
 		RecordIds(Id, Instance->GetId());

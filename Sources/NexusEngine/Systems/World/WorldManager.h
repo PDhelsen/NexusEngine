@@ -37,19 +37,19 @@ namespace NxEn
 		void UnregisterScene(NxFr::GUID SceneId);
 
 		NxFr::Handle<GameObject> CreateGameObject(NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), NxFr::GUID GameObjectId = 0, NxFr::GUID TemplateId = 0, ReferenceMode Mode = ReferenceMode::Ignore);
-		NxFr::Handle<GameObject> CreateGameObject(YAML::Node Node, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), ReferenceMode Mode = ReferenceMode::Ignore);
+		NxFr::Handle<GameObject> CreateGameObject(NxFr::Yaml::Node Node, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), ReferenceMode Mode = ReferenceMode::Ignore);
 		NxFr::Handle<GameObject> DuplicateGameObject(NxFr::Handle<const GameObject> Original, NxFr::Handle<GameObject> Parent = NxFr::Handle<GameObject>(), ReferenceMode Mode = ReferenceMode::Ignore);
 		void DestroyGameObject(NxFr::Handle<GameObject> Instance);
 		void AttachGameObject(NxFr::Handle<GameObject> Instance, NxFr::Handle<GameObject> Parent, int64 Index = -1);
 		void DetachGameObject(NxFr::Handle<GameObject> Instance);
 
 		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID BehaviourId = 0);
-		NxFr::Handle<Behaviour> CreateBehaviour(YAML::Node Node, NxFr::Handle<GameObject> Target);
+		NxFr::Handle<Behaviour> CreateBehaviour(NxFr::Yaml::Node Node, NxFr::Handle<GameObject> Target);
 		NxFr::Handle<Behaviour> DuplicateBehaviour(NxFr::Handle<const Behaviour> Original, NxFr::Handle<GameObject> Target);
 		void DestroyBehaviour(NxFr::Handle<Behaviour> Instance);
 
 		NxFr::Handle<Component> CreateComponent(NxFr::StringId Type, NxFr::Handle<GameObject> Target, NxFr::GUID ComponentId = 0);
-		NxFr::Handle<Component> CreateComponent(YAML::Node Node, NxFr::Handle<GameObject> Target);
+		NxFr::Handle<Component> CreateComponent(NxFr::Yaml::Node Node, NxFr::Handle<GameObject> Target);
 		NxFr::Handle<Component> DuplicateComponent(NxFr::Handle<const Component> Original, NxFr::Handle<GameObject> Target);
 		void DestroyComponent(NxFr::Handle<Component> Instance);
 

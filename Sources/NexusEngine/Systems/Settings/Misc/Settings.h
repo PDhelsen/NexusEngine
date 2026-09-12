@@ -16,14 +16,14 @@ namespace NxEn
 			GUI::Drawer<T>::Field(Data, GetName(), GetKey());
 		}
 
-		void OnSerialize(YAML::Node& Node) const override
+		void OnSerialize(NxFr::Yaml::Node& Node) const override
 		{
 			Node = Data;
 		}
 
-		void OnDeserialize(const YAML::Node& Node) override
+		void OnDeserialize(const NxFr::Yaml::Node& Node) override
 		{
-			Data = Node.as<T>();
+			Data = Node.As<T>();
 		}
 
 		T& GetValue()

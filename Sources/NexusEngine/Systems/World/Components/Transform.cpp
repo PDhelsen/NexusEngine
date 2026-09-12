@@ -219,7 +219,7 @@ namespace NxEn
 		SetDirty();
 	}
 
-	void Transform::OnSerialize(YAML::Node& Node) const
+	void Transform::OnSerialize(NxFr::Yaml::Node& Node) const
 	{
 		Component::OnSerialize(Node);
 
@@ -228,13 +228,13 @@ namespace NxEn
 		Node["Scaling"] = Scaling;
 	}
 
-	void Transform::OnDeserialize(const YAML::Node& Node)
+	void Transform::OnDeserialize(const NxFr::Yaml::Node& Node)
 	{
 		Component::OnDeserialize(Node);
 
-		Position = Node["Position"].as<NxFr::Vector3f>();
-		Rotation = Node["Rotation"].as<NxFr::Quaternion>();
-		Scaling = Node["Scaling"].as<NxFr::Vector3f>();
+		Position = Node["Position"].As<NxFr::Vector3f>();
+		Rotation = Node["Rotation"].As<NxFr::Quaternion>();
+		Scaling = Node["Scaling"].As<NxFr::Vector3f>();
 
 		SetDirty();
 	}

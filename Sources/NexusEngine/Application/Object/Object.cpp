@@ -133,14 +133,14 @@ namespace NxEn
 		OnClone(*Other);
 	}
 
-	YAML::Node Object::Serialize() const
+	NxFr::Yaml::Node Object::Serialize() const
 	{
-		YAML::Node Node;
+		NxFr::Yaml::Node Node;
 		OnSerialize(Node);
 		return Node;
 	}
 
-	void Object::Deserialize(const YAML::Node& Node)
+	void Object::Deserialize(const NxFr::Yaml::Node& Node)
 	{
 		OnDeserialize(Node);
 	}
@@ -226,12 +226,12 @@ namespace NxEn
 
 	}
 
-	void Object::OnSerialize(YAML::Node& Node) const
+	void Object::OnSerialize(NxFr::Yaml::Node& Node) const
 	{
 
 	}
 
-	void Object::OnDeserialize(const YAML::Node& Node)
+	void Object::OnDeserialize(const NxFr::Yaml::Node& Node)
 	{
 
 	}

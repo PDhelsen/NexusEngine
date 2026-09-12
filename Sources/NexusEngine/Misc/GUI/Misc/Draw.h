@@ -8,9 +8,9 @@ namespace NxEn
 	namespace GUI
 	{
 		template<>
-		struct Drawer<YAML::Node>
+		struct Drawer<NxFr::Yaml::Node>
 		{
-			static void Property(const YAML::Node& Data, NxFr::StringView Label = "", const Transform& Visual = {})
+			static void Property(const NxFr::Yaml::Node& Data, NxFr::StringView Label = "", const Transform& Visual = {})
 			{
 				NxFr::String ImGuiId = Utils::GenerateStringId("", Label);
 				ImGui::PushID(ImGuiId.C());
@@ -18,7 +18,7 @@ namespace NxEn
 				Transform NodeVisual = Visual;
 				NodeVisual.Label = -1.0f;
 				
-				switch (Data.Type())
+				switch (Data.GetType())
 				{
 					case YAML::NodeType::Undefined:
 					{
@@ -34,7 +34,7 @@ namespace NxEn
 					}
 					case YAML::NodeType::Scalar:
 					{
-						NxFr::String NodeValue = Data.as<NxFr::String>();
+						NxFr::String NodeValue = Data.As<NxFr::String>();
 						Drawer<NxFr::String>::Property(NodeValue, Label, NodeVisual);
 						break;
 					}
@@ -42,11 +42,11 @@ namespace NxEn
 					{
 						if (ImGui::TreeNode(Label.C()))
 						{
-							for (uint64 Index = 0; Index < Data.size(); ++Index)
+							for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 							{
-								YAML::Node NodeValue = Data[Index];
+								NxFr::Yaml::Node NodeValue = Data[Index];
 								NxFr::String NodeLabel = "- [" + NxFr::StringUtility::ToString(Index) + "]";
-								Drawer<YAML::Node>::Property(NodeValue, NodeLabel, NodeVisual);
+								Drawer<NxFr::Yaml::Node>::Property(NodeValue, NodeLabel, NodeVisual);
 							}
 							ImGui::TreePop();
 						}
@@ -56,11 +56,11 @@ namespace NxEn
 					{
 						if (ImGui::TreeNode(Label.C()))
 						{
-							for (auto It = Data.begin(); It != Data.end(); ++It)
+							for (auto It = Data.Begin(); It != Data.End(); ++It)
 							{
-								YAML::Node NodeValue = It->second;
-								NxFr::String NodeLabel = "- " + It->first.as<NxFr::String>();
-								Drawer<YAML::Node>::Property(NodeValue, NodeLabel, NodeVisual);
+								NxFr::Yaml::Node NodeValue = It.Value();
+								NxFr::String NodeLabel = "- " + It.Key().As<NxFr::String>();
+								Drawer<NxFr::Yaml::Node>::Property(NodeValue, NodeLabel, NodeVisual);
 							}
 							ImGui::TreePop();
 						}
@@ -71,7 +71,7 @@ namespace NxEn
 				ImGui::PopID();
 			}
 
-			static bool Field(YAML::Node& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
+			static bool Field(NxFr::Yaml::Node& Data, NxFr::StringView Label = "", NxFr::StringView Id = "", const Transform& Visual = {})
 			{
 				bool Result = false;
 
@@ -81,7 +81,7 @@ namespace NxEn
 				Transform NodeVisual = Visual;
 				NodeVisual.Label = -1.0f;
 
-				switch (Data.Type())
+				switch (Data.GetType())
 				{
 					case YAML::NodeType::Undefined:
 					{
@@ -105,7 +105,7 @@ namespace NxEn
 					}
 					case YAML::NodeType::Scalar:
 					{
-						NxFr::String NodeValue = Data.as<NxFr::String>();
+						NxFr::String NodeValue = Data.As<NxFr::String>();
 						Result |= Drawer<NxFr::String>::Field(NodeValue, Label, "", NodeVisual);
 						if (Result)
 						{
@@ -117,11 +117,11 @@ namespace NxEn
 					{
 						if (ImGui::TreeNode(Label.C()))
 						{
-							for (uint64 Index = 0; Index < Data.size(); ++Index)
+							for (uint64 Index = 0; Index < Data.GetCount(); ++Index)
 							{
-								YAML::Node NodeValue = Data[Index];
+								NxFr::Yaml::Node NodeValue = Data[Index];
 								NxFr::String NodeLabel = "- [" + NxFr::StringUtility::ToString(Index) + "]";
-								Result |= Drawer<YAML::Node>::Field(NodeValue, NodeLabel, "", NodeVisual);
+								Result |= Drawer<NxFr::Yaml::Node>::Field(NodeValue, NodeLabel, "", NodeVisual);
 							}
 							ImGui::TreePop();
 						}
@@ -131,11 +131,11 @@ namespace NxEn
 					{
 						if (ImGui::TreeNode(Label.C()))
 						{
-							for (auto It = Data.begin(); It != Data.end(); ++It)
+							for (auto It = Data.Begin(); It != Data.End(); ++It)
 							{
-								YAML::Node NodeValue = It->second;
-								NxFr::String NodeLabel = "- " + It->first.as<NxFr::String>();
-								Result |= Drawer<YAML::Node>::Field(NodeValue, NodeLabel, "", NodeVisual);
+								NxFr::Yaml::Node NodeValue = It.Value();
+								NxFr::String NodeLabel = "- " + It.Key().As<NxFr::String>();
+								Result |= Drawer<NxFr::Yaml::Node>::Field(NodeValue, NodeLabel, "", NodeVisual);
 							}
 							ImGui::TreePop();
 						}

@@ -241,30 +241,30 @@ namespace NxEn
 		}
 	}
 
-	YAML::Node GameObject::Serialize() const
+	NxFr::Yaml::Node GameObject::Serialize() const
 	{
-		YAML::Node Node;
+		NxFr::Yaml::Node Node;
 		OnSerialize(Node);
 
-		YAML::Node NodeBehaviours;
+		NxFr::Yaml::Node NodeBehaviours;
 		for (auto& B : Behaviours)
 		{
-			NodeBehaviours.push_back(B->Serialize());
+			NodeBehaviours.Push(B->Serialize());
 		}
 		Node["Behaviours"] = NodeBehaviours;
 
-		YAML::Node NodeComponents;
+		NxFr::Yaml::Node NodeComponents;
 		for (auto& C : Components)
 		{
-			NodeComponents.push_back(C->Serialize());
+			NodeComponents.Push(C->Serialize());
 		}
 		Node["Components"] = NodeComponents;
 
-		YAML::Node NodeChildren;
+		NxFr::Yaml::Node NodeChildren;
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
-			NodeChildren.push_back(Iterator->Serialize());
+			NodeChildren.Push(Iterator->Serialize());
 			Iterator = Iterator->GetNext();
 		}
 		Node["Children"] = NodeChildren;
@@ -272,24 +272,24 @@ namespace NxEn
 		return Node;
 	}
 
-	void GameObject::Deserialize(const YAML::Node& Node)
+	void GameObject::Deserialize(const NxFr::Yaml::Node& Node)
 	{
 		OnDeserialize(Node);
 
-		YAML::Node NodeBehaviours = Node["Behaviours"];
-		for (uint64 Index = 0; Index < NodeBehaviours.size(); ++Index)
+		NxFr::Yaml::Node NodeBehaviours = Node["Behaviours"];
+		for (uint64 Index = 0; Index < NodeBehaviours.GetCount(); ++Index)
 		{
 			Behaviours[Index]->Deserialize(NodeBehaviours[Index]);
 		}
 
-		YAML::Node NodeComponents = Node["Components"];
-		for (uint64 Index = 0; Index < NodeComponents.size(); ++Index)
+		NxFr::Yaml::Node NodeComponents = Node["Components"];
+		for (uint64 Index = 0; Index < NodeComponents.GetCount(); ++Index)
 		{
 			Components[Index]->Deserialize(NodeComponents[Index]);
 		}
 
 		uint64 NodeChildrenIndex = 0;
-		YAML::Node NodeChildren = Node["Children"];
+		NxFr::Yaml::Node NodeChildren = Node["Children"];
 		NxFr::Handle<GameObject> Iterator = GetChild();
 		while (Iterator)
 		{
@@ -743,7 +743,7 @@ namespace NxEn
 		SetFlag(ObjectFlags::EnabledInHierarchy, false);
 	}
 
-	void GameObject::OnSerialize(YAML::Node& Node) const
+	void GameObject::OnSerialize(NxFr::Yaml::Node& Node) const
 	{
 		Node["Name"] = Name;
 		Node["Id"] = GameObjectId;
@@ -752,11 +752,11 @@ namespace NxEn
 		Node["Tickable"] = GetFlag(ObjectFlags::Tickable);
 	}
 
-	void GameObject::OnDeserialize(const YAML::Node& Node)
+	void GameObject::OnDeserialize(const NxFr::Yaml::Node& Node)
 	{
-		Name = Node["Name"].as<NxFr::String>();
-		SetFlag(ObjectFlags::Enabled, Node["Enabled"].as<bool>());
-		SetFlag(ObjectFlags::Tickable, Node["Tickable"].as<bool>());
+		Name = Node["Name"].As<NxFr::String>();
+		SetFlag(ObjectFlags::Enabled, Node["Enabled"].As<bool>());
+		SetFlag(ObjectFlags::Tickable, Node["Tickable"].As<bool>());
 		SetFlag(ObjectFlags::EnabledInHierarchy, false);
 	}
 

@@ -11,8 +11,8 @@ namespace NxEn
 		Yaml(NxFr::StringView Path);
 		~Yaml();
 
-		YAML::Node& GetRoot() { return Data; }
-		const YAML::Node& GetRoot() const { return Data; }
+		NxFr::Yaml::Node& GetRoot() { return Data; }
+		const NxFr::Yaml::Node& GetRoot() const { return Data; }
 
 	protected:
 		void OnSave(NxFr::StringView Path) const override;
@@ -20,6 +20,6 @@ namespace NxEn
 		void OnUnload() override;
 
 	private:
-		YAML::Node Data;
+		NxFr::Yaml::Node Data;
 	};
 }

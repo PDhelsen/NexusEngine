@@ -41,7 +41,7 @@ namespace NxEd
 		AssetImporter() = default;
 		virtual ~AssetImporter() = default;
 
-		virtual void OnImport(YAML::Node& Node, NxFr::StringView ContentPath, bool Reimport) = 0;
+		virtual void OnImport(NxFr::Yaml::Node& Node, NxFr::StringView ContentPath, bool Reimport) = 0;
 
 	private:
 		static NxEn::Asset* Run(NxFr::StringId Type, NxFr::StringView ContentPath, NxFr::GUID Id);

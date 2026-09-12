@@ -61,13 +61,13 @@ namespace NxEn
 				continue;
 			}
 
-			YAML::Node Root = NxFr::Yaml::LoadAndDeserialize(PagePath);
-			for (auto It = Root.begin(); It != Root.end(); ++It)
+			NxFr::Yaml::Node Root = NxFr::Yaml::LoadAndDeserialize(PagePath);
+			for (auto It = Root.Begin(); It != Root.End(); ++It)
 			{
-				YAML::Node& Key = It->first;
-				YAML::Node& Value = It->second;
+				NxFr::Yaml::Node Key = It.Key();
+				NxFr::Yaml::Node Value = It.Value();
 
-				NxFr::String SettingName = Key.as<NxFr::String>();
+				NxFr::String SettingName = Key.As<NxFr::String>();
 				if (Instances.TryGet(SettingName))
 				{
 					Setting* Instance = Instances[SettingName];
@@ -90,7 +90,7 @@ namespace NxEn
 		{
 			NxFr::String PagePath = NxFr::Path::Combine(FolderPath, Page[0]->GetPage() + NxFr::Path::SeparatorExtension + Extension);
 
-			YAML::Node Root;
+			NxFr::Yaml::Node Root;
 			for (Setting* Instance : Page)
 			{
 				Root[Instance->GetName()] = Instance->Serialize();

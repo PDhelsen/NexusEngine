@@ -31,7 +31,7 @@ namespace NxEn
 			return;
 		}
 
-		YAML::Node Data = Application::GetSystem<WorldSystem>()->SerializeGameObject(Root);
+		NxFr::Yaml::Node Data = Application::GetSystem<WorldSystem>()->SerializeGameObject(Root);
 		NxFr::Yaml::SerializeAndSave(Data, Path);
 	}
 
@@ -42,7 +42,7 @@ namespace NxEn
 			return;
 		}
 
-		YAML::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
+		NxFr::Yaml::Node Data = NxFr::Yaml::LoadAndDeserialize(Path);
 		SetRoot(Application::GetSystem<WorldSystem>()->DeserializeGameObject(Data));
 	}
 
