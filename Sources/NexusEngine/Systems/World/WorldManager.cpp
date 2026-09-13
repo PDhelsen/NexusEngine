@@ -7,14 +7,17 @@
 namespace NxEn
 {
 	WorldManager::WorldManager()
-		: Storages(), Objects(), Remap(), Handles(NX_MEMORY_HANDLES_COUNT),
-		WorldInstance(nullptr), SceneInstances()
+		: Allocator(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::HeapAllocator>()), Handles(NX_MEMORY_HANDLES_COUNT),
+		Storages(11, &Allocator), Objects(11, &Allocator), Remap(),
+		WorldInstance(nullptr), SceneInstances(3, &Allocator)
 	{
 		
 	}
 
 	WorldManager::~WorldManager()
 	{
+		NxFr::Allocator::Scope _ = &Allocator;
+
 		for (auto [Type, Storage] : Storages)
 		{
 			delete Storage;
@@ -60,6 +63,8 @@ namespace NxEn
 
 	World* WorldManager::CreateWorld(NxFr::StringId Name)
 	{
+		NxFr::Allocator::Scope _ = &Allocator;
+
 		WorldInstance = new World();
 		WorldInstance->WorldId = Name;
 		return WorldInstance;
@@ -67,6 +72,8 @@ namespace NxEn
 
 	void WorldManager::DestroyWorld()
 	{
+		NxFr::Allocator::Scope _ = &Allocator;
+
 		delete WorldInstance;
 	}
 
@@ -559,6 +566,8 @@ namespace NxEn
 
 		if (!Storage)
 		{
+			NxFr::Allocator::Scope _ = &Allocator;
+
 			Storage = &Storages.Append(Type, WorldStorage::GetFactory().Create(Type));
 		}
 

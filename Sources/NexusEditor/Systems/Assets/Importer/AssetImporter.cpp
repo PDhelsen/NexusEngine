@@ -13,12 +13,16 @@ namespace NxEd
 
 	NxFr::Registry<AssetImporter*>& AssetImporter::GetImporters()
 	{
+		NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Constant);
+
 		static NxFr::Registry<AssetImporter*> Importers;
 		return Importers;
 	}
 
 	NxFr::Registry<NxFr::StringId>& AssetImporter::GetTypes()
 	{
+		NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Constant);
+
 		static NxFr::Registry<NxFr::StringId> Types;
 		return Types;
 	}

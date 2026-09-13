@@ -15,6 +15,8 @@ namespace NxEn
 			template<typename T>
 			static T* Create(bool Initialize = true)
 			{
+				NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 				T* Instance = new T();
 				if (Initialize)
 				{

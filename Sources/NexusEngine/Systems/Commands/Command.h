@@ -12,6 +12,8 @@ namespace NxEn
 		template<typename... Args>
 		static Command* Create(NxFr::StringId Id, NxFr::StringView Tooltip, NxFr::Delegate<void(Args...)> Callback)
 		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 			return CommandsSystem::GetCommands().Register(Id, new Command(Id, Tooltip, [=](const NxFr::List<NxFr::StringView>& Arguments)
 			{
 				InvokeWithArguments(Callback, Arguments, NxFr::MakeIndexSequence<sizeof...(Args)>{});

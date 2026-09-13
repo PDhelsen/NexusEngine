@@ -23,6 +23,8 @@ namespace NxEn
 
 	NxFr::Registry<Command*>& CommandsSystem::GetCommands()
 	{
+		NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 		static NxFr::Registry<Command*> Commands;
 		return Commands;
 	}

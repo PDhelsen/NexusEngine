@@ -55,6 +55,8 @@ namespace NxEn
 	public:
 		static SettingVar<T>* Create(NxFr::StringView Page, NxFr::StringView Name, const T& Data)
 		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 			SettingVar<T>* Instance = new SettingVar<T>(Page, Name, Data);
 			SettingsSystem::GetSettings().Register(Instance->GetId(), Instance);
 			return Instance;
@@ -83,6 +85,8 @@ namespace NxEn
 	public:
 		static SettingSeq<T>* Create(NxFr::StringView Page, NxFr::StringView Name, const NxFr::List<T>& Data)
 		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 			SettingSeq<T>* Instance = new SettingSeq<T>(Page, Name, Data);
 			SettingsSystem::GetSettings().Register(Instance->GetId(), Instance);
 			return Instance;
@@ -111,6 +115,8 @@ namespace NxEn
 	public:
 		static SettingMap<T>* Create(NxFr::StringView Page, NxFr::StringView Name, const NxFr::Dictionary<NxFr::String, T>& Data)
 		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 			SettingMap<T>* Instance = new SettingMap<T>(Page, Name, Data);
 			SettingsSystem::GetSettings().Register(Instance->GetId(), Instance);
 			return Instance;

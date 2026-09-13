@@ -78,9 +78,12 @@ namespace NxEd
 			Edit->Clear(Context->GetId());
 		}
 
-		for (auto [GameObjectId, Item] : Items)
 		{
-			delete Item;
+			NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Fixed);
+			for (auto [GameObjectId, Item] : Items)
+			{
+				delete Item;
+			}
 		}
 
 		Items.Clear();
@@ -88,7 +91,13 @@ namespace NxEd
 
 	void HierarchyManager::AppendItem(NxFr::Handle<NxEn::GameObject> Instance)
 	{
-		HierarchyItem* Item = new HierarchyItem();
+		HierarchyItem* Item = nullptr;
+
+		{
+			NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Fixed);
+			Item = new HierarchyItem();
+		}
+
 		Item->Target = Instance;
 
 		for (auto Panel : Panels)
@@ -131,7 +140,11 @@ namespace NxEd
 		}
 
 		Items.Remove(Item->GetId());
-		delete Item;
+
+		{
+			NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Fixed);
+			delete Item;
+		}
 	}
 
 	void HierarchyManager::OnHierarchyChanged(NxFr::StringId EventId, NxFr::GUID WorldId, NxFr::GUID GameObjectId)

@@ -235,9 +235,12 @@ namespace NxEd
 		Panel->Clear();
 		Edit->Clear(Context->GetId());
 
-		for (auto [InstanceId, Item] : Items)
 		{
-			delete Item;
+			NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Fixed);
+			for (auto [InstanceId, Item] : Items)
+			{
+				delete Item;
+			}
 		}
 
 		Items.Clear();
@@ -245,6 +248,8 @@ namespace NxEd
 
 	AssetsBrowserItem* AssetsBrowser::AppendItem(NxFr::StringView ItemPath)
 	{
+		NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Fixed);
+
 		AssetsBrowserItem* Item = nullptr;
 		if (NxFr::Path::IsDirectory(ItemPath) || ItemPath == NxFr::StringUtility::Empty)
 		{
@@ -294,7 +299,11 @@ namespace NxEd
 		Context->OnDestroyed.Invoke(Item->GetId());
 
 		Items.TryRemove(Item->GetId());
-		delete Item;
+
+		{
+			NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Fixed);
+			delete Item;
+		}
 	}
 
 	void AssetsBrowser::AttachItem(AssetsBrowserItem* Item, AssetsBrowserItem* Parent)

@@ -22,6 +22,8 @@ namespace NxEn
 
 	NxFr::Registry<Setting*>& SettingsSystem::GetSettings()
 	{
+		NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 		static NxFr::Registry<Setting*> Settings;
 		return Settings;
 	}

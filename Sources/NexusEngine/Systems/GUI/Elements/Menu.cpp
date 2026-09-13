@@ -7,6 +7,8 @@ namespace NxEn
 	{
 		const Menu::Item* Menu::Create(NxFr::StringView Path, const NxFr::Delegate<void()>& Callback, int64 Priority, const NxFr::Delegate<bool()>& Validate)
 		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 			return GUISystem::GetMenuItems().Register(Path, new Menu::Item(Callback, Validate, Path, Priority, Menu::ItemMode::Callback, 0, nullptr));
 		}
 

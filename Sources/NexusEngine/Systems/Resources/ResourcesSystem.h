@@ -43,7 +43,11 @@ namespace NxEn
 			return nullptr;
 		}
 
-		Instance = new T(Path);
+		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			Instance = new T(Path);
+		}
+
 		Resources.AppendConstruct(Path, Instance);
 
 		return static_cast<T*>(Instance);
@@ -58,8 +62,12 @@ namespace NxEn
 			return static_cast<T*>(Instance);
 		}
 
-		Instance = new T(Path);
-		Instance->Load(GetResourceFsPath(Path));
+		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			Instance = new T(Path);
+			Instance->Load(GetResourceFsPath(Path));
+		}
+
 		Resources.AppendConstruct(Path, Instance);
 
 		return static_cast<T*>(Instance);

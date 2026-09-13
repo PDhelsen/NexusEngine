@@ -22,7 +22,11 @@ namespace NxEn
 			return;
 		}
 
-		Instance->Path = Path;
+		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			Instance->Path = Path;
+		}
+
 		Resources.Remove(Path);
 		Resources.Append(Target, Instance);
 		NxFr::File(GetResourceFsPath(Path)).Move(GetResourceFsPath(Target), true);
@@ -39,7 +43,11 @@ namespace NxEn
 			return;
 		}
 
-		Instance->Unload();
+		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			Instance->Unload();
+		}
+
 		Resources.Remove(Path);
 		NxFr::File(GetResourceFsPath(Path)).Delete();
 	}
@@ -55,7 +63,11 @@ namespace NxEn
 			return;
 		}
 
-		Instance->Unload();
+		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			Instance->Unload();
+		}
+
 		Resources.Remove(Path);
 	}
 
@@ -70,16 +82,22 @@ namespace NxEn
 			return;
 		}
 
-		Instance->Save(GetResourceFsPath(Path));
+		{
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			Instance->Save(GetResourceFsPath(Path));
+		}
 	}
 
 	void ResourcesSystem::UnloadAll()
 	{
 		NX_INSTUMENT_FUNCTION();
 
-		for (auto& [Path, Instance] : Resources)
 		{
-			Instance->Unload();
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			for (auto& [Path, Instance] : Resources)
+			{
+				Instance->Unload();
+			}
 		}
 
 		Resources.Clear();
@@ -89,9 +107,12 @@ namespace NxEn
 	{
 		NX_INSTUMENT_FUNCTION();
 
-		for (auto& [Path, Instance] : Resources)
 		{
-			Instance->Save(GetResourceFsPath(Path));
+			NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::System);
+			for (auto& [Path, Instance] : Resources)
+			{
+				Instance->Save(GetResourceFsPath(Path));
+			}
 		}
 	}
 

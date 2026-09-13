@@ -17,7 +17,7 @@ namespace NxEn
 {
 	static NxFr::SystemAllocator& GetSystemAllocator() { static NxFr::SystemAllocator Instance; return Instance; }
 	static NxFr::ContinuousAllocator& GetGeneralAllocator() { static NxFr::ContinuousAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::HeapAllocator>()); return Instance; }
-	static NxFr::ContinuousAllocator& GetTempAllocator() { static NxFr::ContinuousAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::StackAllocator>()); return Instance; }
+	static NxFr::ContinuousAllocator& GetTempAllocator() { static NxFr::ContinuousAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::HeapAllocator>()); return Instance; }
 	static NxFr::ContinuousAllocator& GetConstantAllocator() { static NxFr::ContinuousAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NxFr::ContinuousAllocator::DefaultCreator<NxFr::HeapAllocator>()); return Instance; }
 	static NxFr::FixedAllocator& GetFixedAllocator() { static NxFr::FixedAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE); return Instance; }
 	static NxFr::ManagedAllocator& GetManagedAllocator() { static NxFr::ManagedAllocator Instance(NX_MEMORY_ALLOCATOR_SIZE, NX_MEMORY_HANDLES_COUNT); return Instance; }

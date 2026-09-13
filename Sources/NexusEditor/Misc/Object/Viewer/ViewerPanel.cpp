@@ -11,6 +11,8 @@ namespace NxEd
 
 	NxFr::Factory<ViewerContext>& ViewerPanel::GetFactory()
 	{
+		NxFr::Allocator::Scope _ = NxEn::MemorySystem::GetAllocator(NxEn::AllocatorType::Constant);
+
 		static NxFr::Factory<ViewerContext> Factory;
 		return Factory;
 	}

@@ -59,6 +59,7 @@ namespace NxEn
 			// Application
 			do
 			{
+				NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::General);
 				Restart = false;
 
 				Application* Instance = CreateApplication.Invoke(ProjectInfo);

@@ -49,12 +49,16 @@ namespace NxEn
 
 	NxFr::Registry<GUI::Panel*>& GUISystem::GetPanels()
 	{
+		NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 		static NxFr::Registry<GUI::Panel*> Panels;
 		return Panels;
 	}
 
 	NxFr::Registry<GUI::Menu::Item*>& GUISystem::GetMenuItems()
 	{
+		NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 		static NxFr::Registry<GUI::Menu::Item*> MenuItems;
 		return MenuItems;
 	}

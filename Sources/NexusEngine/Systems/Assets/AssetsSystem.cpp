@@ -91,6 +91,8 @@ namespace NxEn
 
 	NxFr::Factory<Asset>& AssetsSystem::GetFactory()
 	{
+		NxFr::Allocator::Scope _ = MemorySystem::GetAllocator(AllocatorType::Constant);
+
 		static NxFr::Factory<Asset> Factory;
 		return Factory;
 	}
@@ -99,10 +101,22 @@ namespace NxEn
 	{
 		NX_INSTUMENT_FUNCTION();
 
-		NxEn::Asset* Instance = GetFactory().Create(Type);
+		NxFr::Allocator* Allocator = MemorySystem::GetAllocator(AllocatorType::System);
+		NxEn::Asset* Instance = nullptr;
+
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Instance = GetFactory().Create(Type);
+		}
 
 		Track(Instance, Path, Extension);
-		Instance->Initialize();
+
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Instance->Initialize();
+		}
 
 		return Instance;
 	}
@@ -201,8 +215,9 @@ namespace NxEn
 
 		Metadata.Name = Instance->GetName();
 		Metadata.Dependencies = Instance->GetDependencies();
+		NxFr::String ContentPath = Registry->IdToContentFsPath(Id);
 
-		NxFr::Yaml::Node Assetdata = Manager->SerializeAndSave(Id, Registry->IdToContentFsPath(Id));
+		NxFr::Yaml::Node Assetdata = Manager->SerializeAndSave(Id, ContentPath);
 		Registry->SerializeAndSave(Id, Assetdata);
 
 		Instance->Dirty = false;
@@ -272,15 +287,21 @@ namespace NxEn
 		NX_ASSERT_RETURN(IsTracked(Id), nullptr, System, "Unknown asset %llu", Id);
 		NX_ASSERT_RETURN(IsLoaded(Id), nullptr, System, "Asset %llu is not loaded", Id);
 
+		NxFr::Allocator* Allocator = MemorySystem::GetAllocator(AllocatorType::System);
 		AssetMetadata& Metadata = Registry->Get(Id);
 		AssetHandle& Handle = Manager->Get(Id);
-		Asset* Instance = GetFactory().Create(Metadata.GetType());
+		Asset* Instance = nullptr;
 
-		Instance->Id = Metadata.GetId();
-		Instance->Name = Metadata.GetName();
+		{
+			NxFr::Allocator::Scope _ = Allocator;
 
-		Instance->Object::Clone((const Object*)Handle.GetInstance());
-		Instance->Initialize();
+			Instance = GetFactory().Create(Metadata.GetType());
+			Instance->Id = Metadata.GetId();
+			Instance->Name = Metadata.GetName();
+
+			Instance->Object::Clone((const Object*)Handle.GetInstance());
+			Instance->Initialize();
+		}
 
 		return Instance;
 	}
@@ -319,16 +340,29 @@ namespace NxEn
 
 		NX_ASSERT_RETURN(Registry->HasFile(Id), nullptr, System, "Asset has no associated path(%llu)", Id);
 
+		NxFr::Allocator* Allocator = MemorySystem::GetAllocator(AllocatorType::System);
 		AssetMetadata& Metadata = Registry->Get(Id);
-		Asset* Instance = GetFactory().Create(Metadata.GetType());
+		Asset* Instance = nullptr;
+
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Instance = GetFactory().Create(Metadata.GetType());
+		}
+
 		AssetHandle& Handle = Manager->Append(Id, Instance);
-
-		Instance->Id = Id;
-		Instance->Name = Metadata.GetName();
-
 		NxFr::Yaml::Node Assetdata = Registry->LoadAndDeserialize(Id);
-		Manager->LoadAndDeserialize(Id, Assetdata, Registry->IdToContentFsPath(Id));
-		Instance->Initialize();
+		NxFr::String ContentPath = Registry->IdToContentFsPath(Id);
+
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Instance->Id = Id;
+			Instance->Name = Metadata.GetName();
+
+			Manager->LoadAndDeserialize(Id, Assetdata, ContentPath);
+			Instance->Initialize();
+		}
 
 		OnEvent.Invoke(EventLoadedId, Id);
 		return Instance;
@@ -345,17 +379,23 @@ namespace NxEn
 			return;
 		}
 
+		NxFr::Allocator* Allocator = MemorySystem::GetAllocator(AllocatorType::System);
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
-
-		Instance->Shutdown();
-		Manager->Unload(Id);
-
-		Instance->Dirty = false;
-
 		NxFr::Yaml::Node Assetdata = Registry->LoadAndDeserialize(Id);
-		Manager->LoadAndDeserialize(Id, Assetdata, Registry->IdToContentFsPath(Id));
-		Instance->Initialize();
+		NxFr::String ContentPath = Registry->IdToContentFsPath(Id);
+
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Instance->Shutdown();
+			Manager->Unload(Id);
+
+			Instance->Dirty = false;
+
+			Manager->LoadAndDeserialize(Id, Assetdata, ContentPath);
+			Instance->Initialize();
+		}
 
 		OnEvent.Invoke(EventLoadedId, Id);
 	}
@@ -370,14 +410,24 @@ namespace NxEn
 			return;
 		}
 
+		NxFr::Allocator* Allocator = MemorySystem::GetAllocator(AllocatorType::System);
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
 
-		Instance->Shutdown();
-		Manager->Unload(Id);
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Instance->Shutdown();
+			Manager->Unload(Id);
+		}
+
 		Manager->Remove(Id);
 
-		delete Instance;
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			delete Instance;
+		}
 
 		OnEvent.Invoke(EventUnloadedId, Id);
 	}
@@ -404,11 +454,24 @@ namespace NxEn
 	{
 		NX_INSTUMENT_FUNCTION();
 
-		NxEn::Asset* Instance = GetFactory().Create(Type);
+		NxFr::Allocator* Allocator = MemorySystem::GetAllocator(AllocatorType::System);
+		NxEn::Asset* Instance = nullptr;
+
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Instance = GetFactory().Create(Type);
+		}
 
 		Track(Instance, Path, Extension);
-		Manager->LoadAndDeserialize(Instance->GetId(), Assetdata, Registry->IdToContentFsPath(Instance->GetId()));
-		Instance->Initialize();
+		NxFr::String ContentPath = Registry->IdToContentFsPath(Instance->GetId());
+
+		{
+			NxFr::Allocator::Scope _ = Allocator;
+
+			Manager->LoadAndDeserialize(Instance->GetId(), Assetdata, ContentPath);
+			Instance->Initialize();
+		}
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
 
@@ -427,16 +490,22 @@ namespace NxEn
 			return Load(Id);
 		}
 
+		NxFr::Allocator* Allocator = MemorySystem::GetAllocator(AllocatorType::System);
 		AssetHandle& Handle = Manager->Get(Id);
 		Asset* Instance = Handle.GetInstance();
+		NxFr::String ContentPath = Registry->IdToContentFsPath(Id);
 
-		Instance->Shutdown();
-		Manager->Unload(Id);
+		{
+			NxFr::Allocator::Scope _ = Allocator;
 
-		Instance->Dirty = true;
+			Instance->Shutdown();
+			Manager->Unload(Id);
 
-		Manager->LoadAndDeserialize(Id, Assetdata, Registry->IdToContentFsPath(Id));
-		Instance->Initialize();
+			Instance->Dirty = true;
+
+			Manager->LoadAndDeserialize(Id, Assetdata, ContentPath);
+			Instance->Initialize();
+		}
 
 		OnEvent.Invoke(EventImportedId, Instance->GetId());
 

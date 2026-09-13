@@ -72,10 +72,12 @@ namespace NxEn
 		void Resize(WorldStorage* Storage, uint64 Size);
 		WorldStorage* GetStorage(NxFr::StringId Type);
 
+		NxFr::ContinuousAllocator Allocator;
+		NxFr::HandleBucketManager Handles;
+
 		NxFr::Dictionary<NxFr::StringId, WorldStorage*> Storages;
 		NxFr::Dictionary<NxFr::GUID, WorldObject> Objects;
 		NxFr::Context<NxFr::Dictionary<NxFr::GUID, NxFr::GUID>> Remap;
-		NxFr::HandleBucketManager Handles;
 
 		World* WorldInstance;
 		NxFr::Dictionary<NxFr::GUID, NxFr::Handle<GameObject>> SceneInstances;
