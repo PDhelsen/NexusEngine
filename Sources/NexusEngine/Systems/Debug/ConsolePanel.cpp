@@ -69,7 +69,9 @@ namespace NxEn
 		Logger->RegisterCallback({ this, &ConsolePanel::AddLogs });
 
 		uint8 VerbosityCount = NxFr::Enum::FlagIndex(NxFr::LoggerVerbosity::COUNT);
+		FlagsVerbosity.Clear();
 		FlagsVerbosity.Reserve(VerbosityCount);
+		Menu.Remove("Verbosity/");
 		for (uint64 Index = 0; Index < VerbosityCount; ++Index)
 		{
 			uint64 Priority = FlagsVerbosity.GetCount();
@@ -82,7 +84,9 @@ namespace NxEn
 
 		NxFr::Array<NxFr::StringId> Channels = Logger->GetChannels();
 		NxFr::ContainerUtility::Sort<NxFr::StringId>(Channels, [](const NxFr::StringId& A, const NxFr::StringId& B) { return A.C() <= B.C(); });
+		FlagsChannels.Clear();
 		FlagsChannels.Reserve(Channels.GetCount());
+		Menu.Remove("Channels/");
 		for (uint64 Index = 0; Index < Channels.GetCount(); ++Index)
 		{
 			uint64 Priority = FlagsVerbosity.GetCount() + FlagsChannels.GetCount();

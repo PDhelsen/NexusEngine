@@ -46,8 +46,8 @@ namespace NxEn
 		{
 			// Globals - Initialization
 			NxFr::Allocator::Scope Memory = nullptr;
-			NxFr::Globals::CreateArgs(argc, argv);
 			NxFr::Globals::CreatePlatform();
+			NxFr::Globals::CreateArgs(argc, argv);
 			NxFr::Globals::Debug::Logs = new NxFr::Logger(NxFr::LoggerVerbosity::All, NxFr::LoggerOutput::Console | NxFr::LoggerOutput::IDE, "", true);
 			NxFr::Globals::Debug::Logs->AddChannel(NxFr::LoggerChannel::Default, true);
 
