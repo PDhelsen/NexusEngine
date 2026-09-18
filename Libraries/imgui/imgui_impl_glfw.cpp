@@ -112,23 +112,21 @@
 #pragma GCC diagnostic ignored "-Wfloat-equal"          // warning: comparing floating-point with '==' or '!=' is unsafe
 #endif
 
-// NEXUS - Begin
-
 // GLFW
-#include "glfw/include/GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 #ifdef _WIN32
 #undef APIENTRY
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
 #endif
-#include "glfw/include/GLFW/glfw3native.h" // for glfwGetWin32Window()
+#include <GLFW/glfw3native.h>   // for glfwGetWin32Window()
 #endif
 #ifdef __APPLE__
 #ifndef GLFW_EXPOSE_NATIVE_COCOA
 #define GLFW_EXPOSE_NATIVE_COCOA
 #endif
-#include "glfw/include/GLFW/glfw3native.h"   // for glfwGetCocoaWindow()
+#include <GLFW/glfw3native.h>   // for glfwGetCocoaWindow()
 #endif
 #ifndef _WIN32
 #include <unistd.h>             // for usleep()
@@ -139,12 +137,11 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 #ifdef EMSCRIPTEN_USE_PORT_CONTRIB_GLFW3
-#include //<GLFW/emscripten_glfw3.h>
+#include <GLFW/emscripten_glfw3.h>
 #else
 #define EMSCRIPTEN_USE_EMBEDDED_GLFW3
 #endif
 #endif
-// NEXUS - End
 
 // We gather version tests as define in order to easily see which features are version-dependent.
 #define GLFW_VERSION_COMBINED           (GLFW_VERSION_MAJOR * 1000 + GLFW_VERSION_MINOR * 100 + GLFW_VERSION_REVISION)

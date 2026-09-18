@@ -500,7 +500,8 @@ project (ImGui)
 
 	includedirs
 	{
-		Libraries
+		Libraries,
+		Libraries .. "glfw/include/"
 	}
 
 	links
@@ -511,7 +512,9 @@ project (ImGui)
 	defines
 	{
 		"IMGUI_DLL",
-		"GLFW_DLL"
+		"GLFW_DLL",
+
+		'IMGUI_USER_CONFIG="' .. Sources .. 'NexusEngine/External/ImGui/Config.h"'
 	}
 
 	postbuildcommands
