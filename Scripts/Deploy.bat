@@ -10,16 +10,17 @@ set Deploy=%Target%\NexusEngine\
 if exist %Deploy% rmdir /s /q %Deploy%
 mkdir %Deploy%
 
-set FolderLastIndex=8
+set FolderLastIndex=9
 set Folders[0]=NexusEngine
 set Folders[1]=NexusApp
 set Folders[2]=NexusEditor
 set Folders[3]=NexusStarter
 set Folders[4]=NexusUtility
 set Folders[5]=NexusFramework
-set Folders[6]=yaml-cpp
-set Folders[7]=glfw
-set Folders[8]=imgui
+set Folders[6]=gtest
+set Folders[7]=yaml-cpp
+set Folders[8]=glfw
+set Folders[9]=imgui
 
 robocopy %Root%Configs %Deploy%Configs /it /is /e /v
 call :CopyFolder %Root%Libraries %Deploy%Libraries "*.h *.hpp *.cpp *.cc *.natvis"
@@ -29,7 +30,16 @@ call :CopyFiles %Root%builds\artifacts %Deploy%
 
 rename %Deploy%NexusStarter.exe NexusEditor.exe
 
-if errorlevel 1 (pause) else (exit /b 0)
+if errorlevel 1 (
+	pause
+) else (
+	choice /M "Do you want to save %Deploy% to the NexusEngine environment variable?"
+	if %errorlevel%==1 (
+		setx NexusEngine %Target%\NexusEngine
+	)
+	
+	exit /b 0
+)
 
 ::------------------------------------------------
 :CopyFolder

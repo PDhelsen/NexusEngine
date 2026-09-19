@@ -2,6 +2,7 @@
 
 set Root=%~dp0..\
 
+call :DeleteFolder %Root%.vs
 call :DeleteFolder %Root%builds
 call :DeleteFolder %Root%cooked
 call :DeleteFolder %Root%saved
