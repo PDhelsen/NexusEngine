@@ -33,11 +33,21 @@ namespace NxAp
 				{ this, &NexusAppApplication::ToggleWindow })
 			);
 		});
+
+		Bootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::AfterSystem, "Show Window", [&]()
+		{
+			GetSystem<NxEn::GUISystem>()->GetWindow()->Show();
+		});
 	}
 
 	void NexusAppApplication::OnShutdown()
 	{
 		NxEn::Bootstrapper& Unbootstrap = GetBootstrapper();
+
+		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Hide Window", []()
+		{
+			GetSystem<NxEn::GUISystem>()->GetWindow()->Hide();
+		});
 
 		Unbootstrap.AppendStep(NxEn::Bootstrapper::BootBucket::BeforeSystem, "Input - App", [&]()
 		{
@@ -59,9 +69,8 @@ namespace NxAp
 		NxEn::ConsolePanel* Console = GUI->GetPanel<NxEn::ConsolePanel>();
 		NxEn::GUI::Window* Window = GUI->GetWindow();
 
-		bool State = !Window->IsEnabled();
+		bool State = !Console->IsEnabled();
 		Console->SetEnabled(State);
-		Window->SetEnabled(State);
 		Window->GetDock().DockElement(Console, ImGuiDir_None, 0.0f, true);
 	}
 }
