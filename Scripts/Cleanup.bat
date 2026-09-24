@@ -33,9 +33,16 @@ setlocal
 set FolderPath=%1
 set Extensions=%2
 if exist %FolderPath% (
-	for /R "%FolderPath%" %%F in (*.%Extensions%) do (
-		del "%%F"
-   		echo File %%F deleted.
+    for /R "%FolderPath%" %%F in (*.%Extensions%) do (
+		set "IgnoreFile="
+
+		echo %%F | findstr /I /C:Libraries\ImGui\examples >nul
+		if not errorlevel 1 set "IgnoreFile=1"
+
+		if not defined IgnoreFile (
+			del "%%F"
+			echo File %%F deleted.
+		)
 	)
 )
 

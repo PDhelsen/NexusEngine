@@ -20,9 +20,9 @@ if "%Project%"=="NexusEngine" (
 	set FrameworkPlatform=%Platform:-Editor=%
 	set Framework=%NexusFramework%\Builds\NexusFramework_!FrameworkPlatform!_%Configuration%\
 	robocopy !Framework! %Artifacts% *.dll /it /is /v
-	set GTest=%NexusFramework%\Builds\gtest_!FrameworkPlatform!_%Configuration%\
+	set GTest=%NexusFramework%\Builds\GTest_!FrameworkPlatform!_%Configuration%\
 	robocopy !GTest! %Artifacts% *.dll /it /is /v
-	set Yaml=%NexusFramework%\Builds\yaml-cpp_!FrameworkPlatform!_%Configuration%\
+	set Yaml=%NexusFramework%\Builds\YamlCpp_!FrameworkPlatform!_%Configuration%\
 	robocopy !Yaml! %Artifacts% *.dll /it /is /v
 )
 

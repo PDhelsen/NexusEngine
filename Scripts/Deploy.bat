@@ -17,10 +17,10 @@ set Folders[2]=NexusEditor
 set Folders[3]=NexusStarter
 set Folders[4]=NexusUtility
 set Folders[5]=NexusFramework
-set Folders[6]=gtest
-set Folders[7]=yaml-cpp
-set Folders[8]=glfw
-set Folders[9]=imgui
+set Folders[6]=GTest
+set Folders[7]=YamlCpp
+set Folders[8]=Glfw
+set Folders[9]=ImGui
 
 robocopy %Root%Configs %Deploy%Configs /it /is /e /v
 call :CopyFolder %Root%Libraries %Deploy%Libraries "*.h *.hpp *.cpp *.cc *.natvis"

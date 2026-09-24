@@ -7,7 +7,7 @@ Utility = "NexusUtility"
 Project = "NexusProject"
 Sandbox = "NexusSandbox"
 GTest = "GTest"
-YamlCpp = "yaml-cpp"
+YamlCpp = "YamlCpp"
 Glfw = "Glfw"
 ImGui = "ImGui"
 StbImage = "StbImage"
@@ -68,9 +68,12 @@ Object = Intermediates .. OutputDirectory .. "/"
 Includes = 
 {
 	Sources,
-	Libraries,
+	Libraries .. ImGui .. "/",
+	Libraries .. Glfw .. "/include/",
+	Libraries .. StbImage .. "/",
 	InstallFramework .. "Sources/",
-	InstallFramework .. "Libraries/"
+	InstallFramework .. "Libraries/" .. GTest .. "/googletest/include/",
+    InstallFramework .. "Libraries/" .. YamlCpp .. "/include/",
 }
 
 LibrariesIncludes = 
@@ -486,7 +489,7 @@ project (Glfw)
 
 	includedirs
     {
-        Libraries
+        ThirdParty .. "include/"
     }
 
 	defines
@@ -535,15 +538,21 @@ project (ImGui)
 
 	files
     {
-        ThirdParty .. "**.h",
-		ThirdParty .. "**.cpp",
+        ThirdParty .. "*.h",
+		ThirdParty .. "*.cpp",
 		ThirdParty .. "**.natvis",
+
+		ThirdParty .. "backends/imgui_impl_glfw.h",
+		ThirdParty .. "backends/imgui_impl_glfw.cpp",
+		ThirdParty .. "backends/imgui_impl_opengl3.h",
+		ThirdParty .. "backends/imgui_impl_opengl3.cpp",
+		ThirdParty .. "backends/imgui_impl_opengl3_loader.h",
     }
 
 	includedirs
 	{
-		Libraries,
-		Libraries .. "glfw/include/"
+		ThirdParty,
+		Libraries .. Glfw .. "/include/"
 	}
 
 	links
@@ -581,7 +590,7 @@ project (StbImage)
 
 	includedirs
     {
-        Libraries
+        ThirdParty
     }
 
 	postbuildcommands

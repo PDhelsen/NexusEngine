@@ -1,7 +1,7 @@
 #include "NexusEngine/Core/NexusEnginePch.h"
 #include "NexusEngine/External/Glfw/Glfw.h"
 
-#include "glfw/include/GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 namespace NxEn
 {

@@ -51,7 +51,7 @@ namespace NxEd
 	void ReferencesPanel::DrawHeader()
 	{
 		NxFr::Vector2f Size = NxFr::Vector2f(0.0f, ImGui::GetTextLineHeight() * 5.0f);
-		ImGui::BeginChild("References", Size, ImGuiChildFlags_Border);
+		ImGui::BeginChild("References", Size, ImGuiChildFlags_Borders);
 
 		NxEn::GUI::Drawer<uint64>::Property(ObjectsIds.GetCount(), "Tracked");
 		if (NxEn::GUI::Drawer<NxFr::GUID>::Field(Selected, "Selected", "IdSelected"))
